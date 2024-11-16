@@ -27,35 +27,9 @@ MS5611_SPI::MS5611_SPI(uint8_t select, __SPI_CLASS__ * mySPI)
   _pressure          = MS5611_NOT_READ;
   _result            = MS5611_NOT_READ;
   _lastRead          = 0;
-  _pressureOffset    = 0;
-  _temperatureOffset = 0;
   _compensation      = true;
-
-  //  SPI
   _select   = select;
-  _dataIn   = 255;
-  _dataOut  = 255;
-  _clock    = 255;
   _mySPI    = mySPI;
-}
-
-MS5611_SPI::MS5611_SPI(uint8_t select, uint8_t dataOut, uint8_t dataIn, uint8_t clock)
-{
-  _samplingRate      = OSR_ULTRA_LOW;
-  _temperature       = MS5611_NOT_READ;
-  _pressure          = MS5611_NOT_READ;
-  _result            = MS5611_NOT_READ;
-  _lastRead          = 0;
-  _pressureOffset    = 0;
-  _temperatureOffset = 0;
-  _compensation      = false;
-
-  //  SPI
-  _select   = select;
-  _dataIn   = dataIn;
-  _dataOut  = dataOut;
-  _clock    = clock;
-  _mySPI    = NULL;
 }
 
 bool MS5611_SPI::begin()
@@ -148,14 +122,12 @@ void MS5611_SPI::setOversampling(osr_t samplingRate)
 
 float MS5611_SPI::getTemperature() const
 {
-  if (_temperatureOffset == 0) return _temperature * 0.01;
-  return _temperature * 0.01 + _temperatureOffset;
+  return _temperature * 0.01;
 }
 
 float MS5611_SPI::getPressure() const
 {
-  if (_pressureOffset == 0) return _pressure * 0.01;
-  return _pressure * 0.01 + _pressureOffset;
+  return _pressure * 0.01;
 }
 
 void MS5611_SPI::setSPIspeed(uint32_t speed)
