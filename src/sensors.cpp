@@ -1,6 +1,6 @@
 #include <sensors.h>
 
-Sensors::Sensors(Vehicle * vehicle): spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus), 
+Sensors::Sensors(Vehicle * vehicle): spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus, 1000000, OSR_ULTRA_HIGH), 
                                      i2c_bus(PB9, PB8), ina219(&i2c_bus, 0x40, 0.01) {
     _vehicle = vehicle;
 }
@@ -14,7 +14,6 @@ void Sensors::setup() {
     imu.begin();
 
     baro.begin();
-    baro.setOversampling(OSR_ULTRA_HIGH);
 
     mag.begin_SPI(PC13, &spi_bus);
     mag.setGain(MLX90393_GAIN_1X);
