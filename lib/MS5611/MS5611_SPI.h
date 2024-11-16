@@ -31,8 +31,7 @@ protected:
   void convert(const uint8_t addr);
   uint32_t readADC();
   uint16_t readProm(uint8_t reg);
-  void  command(const uint8_t command);
-  void initConstants();
+  void command(const uint8_t command);
   uint8_t _samplingRate;
   int32_t _temperature;
   int32_t _pressure;
@@ -41,4 +40,5 @@ protected:
   uint8_t _select;
   SPIClass * _mySPI;
   SPISettings _spi_settings;
+  int _state = 0;
 };

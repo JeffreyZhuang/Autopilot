@@ -31,7 +31,13 @@ bool MS5611_SPI::reset()
   command(MS5611_CMD_RESET);
   delayMicroseconds(3000);
 
-  initConstants();
+  C[0] = 1;
+  C[1] = 32768L;
+  C[2] = 65536L;
+  C[3] = 3.90625E-3; 
+  C[4] = 7.8125E-3;   
+  C[5] = 256;         
+  C[6] = 1.1920928955E-7; 
 
   bool ROM_OK = true;
   for (uint8_t reg = 0; reg < 7; reg++)
@@ -50,6 +56,14 @@ bool MS5611_SPI::reset()
 
 int MS5611_SPI::read()
 {
+  if (_state == 0) {
+
+  } else if (_state == 1) {
+
+  } else if (_state == 2) {
+    
+  }
+
   convert(MS5611_CMD_CONVERT_D1);
   uint32_t _D1 = readADC();
 
@@ -158,15 +172,4 @@ void MS5611_SPI::command(const uint8_t command)
   _mySPI->endTransaction();
 
   digitalWrite(_select, HIGH);
-}
-
-void MS5611_SPI::initConstants()
-{
-  C[0] = 1;
-  C[1] = 32768L;
-  C[2] = 65536L;
-  C[3] = 3.90625E-3; 
-  C[4] = 7.8125E-3;   
-  C[5] = 256;         
-  C[6] = 1.1920928955E-7; 
 }
