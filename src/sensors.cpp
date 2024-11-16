@@ -1,6 +1,6 @@
 #include <sensors.h>
 
-Sensors::Sensors(Vehicle * vehicle): spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus, 1000000, OSR_ULTRA_HIGH), 
+Sensors::Sensors(Vehicle * vehicle): spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
                                      i2c_bus(PB9, PB8), ina219(&i2c_bus, 0x40, 0.01) {
     _vehicle = vehicle;
 }
@@ -25,8 +25,6 @@ void Sensors::setup() {
 }
 
 void Sensors::poll() {
-    // Poll from sensors
-    
     // IMU
     imu.getAGT();
     _vehicle->imu_ax = imu.accX();
@@ -43,7 +41,7 @@ void Sensors::poll() {
     // Barometer
     // if (baro.read()) {}
     baro.read();
-    _vehicle->baro_alt = 145366.45 * 0.3048 * (1 - pow(baro.getPressure() / 1013.25, 0.190284));
+    _vehicle->baro_alt = (pow(1013.25/baro.getPressure(), 1.0 / 5.257) - 1.0) * (baro.getTemperature() + 273.15) / 0.0065;
 
     // Power monitoring
     _vehicle->batt_voltage = analogRead(PC0) * (3.3 / 1023.0);
