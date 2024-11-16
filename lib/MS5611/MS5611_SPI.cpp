@@ -65,10 +65,10 @@ int MS5611_SPI::read()
   }
 
   convert(MS5611_CMD_CONVERT_D1);
-  uint32_t _D1 = readADC();
+  _D1 = readADC();
 
   convert(MS5611_CMD_CONVERT_D2);
-  uint32_t _D2 = readADC();
+  _D2 = readADC();
 
   float dT = _D2 - C[5];
   _temperature = 2000 + dT * C[6];

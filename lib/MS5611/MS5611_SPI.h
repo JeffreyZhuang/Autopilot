@@ -44,4 +44,6 @@ protected:
   uint16_t _waitTime;
   int _state = 0;
   uint32_t _startTime;
+  uint32_t _D1;
+  uint32_t _D2;
 };
