@@ -1,33 +1,19 @@
-//
-//    FILE: MS5611_SPI.cpp
-//  AUTHOR: Rob Tillaart
-// VERSION: 0.3.1
-// PURPOSE: MS5611 (SPI) Temperature & Pressure library for Arduino
-//     URL: https://github.com/RobTillaart/MS5611_SPI
-//
-//  HISTORY: see changelog.md
+// https://github.com/RobTillaart/MS5611_SPI
 
 #include "MS5611_SPI.h"
 
-// datasheet page 10
 #define MS5611_CMD_READ_ADC       0x00
 #define MS5611_CMD_READ_PROM      0xA0
 #define MS5611_CMD_RESET          0x1E
 #define MS5611_CMD_CONVERT_D1     0x40
 #define MS5611_CMD_CONVERT_D2     0x50
 
-/////////////////////////////////////////////////////
-//
-//  PUBLIC
-//
-MS5611_SPI::MS5611_SPI(uint8_t select, __SPI_CLASS__ * mySPI)
+MS5611_SPI::MS5611_SPI(uint8_t select, SPIClass * mySPI)
 {
   _samplingRate      = OSR_ULTRA_LOW;
   _temperature       = MS5611_NOT_READ;
   _pressure          = MS5611_NOT_READ;
   _result            = MS5611_NOT_READ;
-  _lastRead          = 0;
-  _compensation      = true;
   _select   = select;
   _mySPI    = mySPI;
 }
@@ -45,32 +31,22 @@ bool MS5611_SPI::begin()
 bool MS5611_SPI::reset(uint8_t mathMode)
 {
   command(MS5611_CMD_RESET);
-  uint32_t start = micros();
-  //  while loop prevents blocking RTOS
-  while (micros() - start < 3000)     //  increased as first ROM values were missed.
-  {
-    yield();
-    delayMicroseconds(10);
-  }
+  delayMicroseconds(3000);
 
-  //  initialize the C[] array
   initConstants(mathMode);
 
-  //  read factory calibrations from EEPROM.
   bool ROM_OK = true;
   for (uint8_t reg = 0; reg < 7; reg++)
   {
-    //  used indices match datasheet.
-    //  C[0] == manufacturer - read but not used;
-    //  C[7] == CRC - skipped.
     uint16_t tmp = readProm(reg);
     C[reg] *= tmp;
-    //  Serial.println(readProm(reg));
+
     if (reg > 0)
     {
       ROM_OK = ROM_OK && (tmp != 0);
     }
   }
+  
   return ROM_OK;
 }
 
@@ -88,30 +64,26 @@ int MS5611_SPI::read(uint8_t bits)
   float offset =  C[2] + dT * C[4];
   float sens = C[1] + dT * C[3];
 
-  if (_compensation)
+  if (_temperature < 2000)
   {
-    if (_temperature < 2000)
-    {
-      float T2 = dT * dT * 4.6566128731E-10;
-      float t = (_temperature - 2000) * (_temperature - 2000);
-      float offset2 = 2.5 * t;
-      float sens2 = 1.25 * t;
+    float T2 = dT * dT * 4.6566128731E-10;
+    float t = (_temperature - 2000) * (_temperature - 2000);
+    float offset2 = 2.5 * t;
+    float sens2 = 1.25 * t;
 
-      if (_temperature < -1500)
-      {
-        t = (_temperature + 1500) * (_temperature + 1500);
-        offset2 += 7 * t;
-        sens2 += 5.5 * t;
-      }
-      _temperature -= T2;
-      offset -= offset2;
-      sens -= sens2;
+    if (_temperature < -1500)
+    {
+      t = (_temperature + 1500) * (_temperature + 1500);
+      offset2 += 7 * t;
+      sens2 += 5.5 * t;
     }
+    _temperature -= T2;
+    offset -= offset2;
+    sens -= sens2;
   }
 
   _pressure = (_D1 * sens * 4.76837158205E-7 - offset) * 3.051757813E-5;
 
-  _lastRead = millis();
   return MS5611_READ_OK;
 }
 
@@ -136,13 +108,8 @@ void MS5611_SPI::setSPIspeed(uint32_t speed)
   _spi_settings = SPISettings(_SPIspeed, MSBFIRST, SPI_MODE0);
 }
 
-/////////////////////////////////////////////////////
-//
-//  PRIVATE
-//
 void MS5611_SPI::convert(const uint8_t addr, uint8_t bits)
 {
-  //  values from page 3 datasheet - MAX column (rounded up)
   uint16_t del[5] = {600, 1200, 2300, 4600, 9100};
 
   uint8_t index = bits;
@@ -153,18 +120,11 @@ void MS5611_SPI::convert(const uint8_t addr, uint8_t bits)
   command(addr + offset);
 
   uint16_t waitTime = del[index];
-  uint32_t start = micros();
-  //  while loop prevents blocking RTOS
-  while (micros() - start < waitTime)
-  {
-    yield();
-    delayMicroseconds(10);
-  }
+  delayMicroseconds(waitTime);
 }
 
 uint16_t MS5611_SPI::readProm(uint8_t reg)
 {
-  //  last EEPROM register is CRC - Page 13 datasheet.
   uint8_t promCRCRegister = 7;
   if (reg > promCRCRegister) return 0;
 
@@ -184,8 +144,6 @@ uint16_t MS5611_SPI::readProm(uint8_t reg)
 
 uint32_t MS5611_SPI::readADC()
 {
-  //  command(MS5611_CMD_READ_ADC);
-
   uint32_t value = 0;
 
   digitalWrite(_select, LOW);
@@ -204,9 +162,8 @@ uint32_t MS5611_SPI::readADC()
   return value;
 }
 
-int MS5611_SPI::command(const uint8_t command)
+void MS5611_SPI::command(const uint8_t command)
 {
-  yield();
   digitalWrite(_select, LOW);
 
   _mySPI->beginTransaction(_spi_settings);
@@ -214,29 +171,23 @@ int MS5611_SPI::command(const uint8_t command)
   _mySPI->endTransaction();
 
   digitalWrite(_select, HIGH);
-  return 0;
 }
 
 void MS5611_SPI::initConstants(uint8_t mathMode)
 {
-  //  constants that were multiplied in read() - datasheet page 8
-  //  do this once and you save CPU cycles
-  //
-  //                               datasheet ms5611     |    appNote
-  //                                mode = 0;           |    mode = 1
   C[0] = 1;
-  C[1] = 32768L;          //  SENSt1   = C[1] * 2^15    |    * 2^16
-  C[2] = 65536L;          //  OFFt1    = C[2] * 2^16    |    * 2^17
-  C[3] = 3.90625E-3;      //  TCS      = C[3] / 2^8     |    / 2^7
-  C[4] = 7.8125E-3;       //  TCO      = C[4] / 2^7     |    / 2^6
-  C[5] = 256;             //  Tref     = C[5] * 2^8     |    * 2^8
-  C[6] = 1.1920928955E-7; //  TEMPSENS = C[6] / 2^23    |    / 2^23
+  C[1] = 32768L;
+  C[2] = 65536L;
+  C[3] = 3.90625E-3; 
+  C[4] = 7.8125E-3;   
+  C[5] = 256;         
+  C[6] = 1.1920928955E-7; 
 
-  if (mathMode == 1)      //  Appnote version for pressure.
+  if (mathMode == 1)     
   {
-    C[1] = 65536L;        //  SENSt1
-    C[2] = 131072L;       //  OFFt1
-    C[3] = 7.8125E-3;     //  TCS
-    C[4] = 1.5625e-2;     //  TCO
+    C[1] = 65536L;        
+    C[2] = 131072L;      
+    C[3] = 7.8125E-3;  
+    C[4] = 1.5625e-2;  
   }
 }
