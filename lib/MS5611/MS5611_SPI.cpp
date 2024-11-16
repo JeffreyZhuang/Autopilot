@@ -8,14 +8,14 @@
 
 MS5611_SPI::MS5611_SPI(uint8_t select, SPIClass * mySPI, uint32_t spi_speed, osr_t samplingRate)
 {
-  _samplingRate = OSR_ULTRA_LOW;
   _temperature = MS5611_NOT_READ;
   _pressure = MS5611_NOT_READ;
   _result = MS5611_NOT_READ;
   _select = select;
   _mySPI = mySPI;
   _spi_settings = SPISettings(spi_speed, MSBFIRST, SPI_MODE0);
-  _samplingRate = (uint8_t) samplingRate;
+  _samplingRate = (uint8_t)samplingRate;
+  _waitTime = _del[_samplingRate - 8];
 }
 
 bool MS5611_SPI::begin()
@@ -57,7 +57,7 @@ bool MS5611_SPI::reset()
 int MS5611_SPI::read()
 {
   if (_state == 0) {
-
+    _startTime = micros();
   } else if (_state == 1) {
 
   } else if (_state == 2) {
@@ -111,17 +111,10 @@ float MS5611_SPI::getPressure() const
 
 void MS5611_SPI::convert(const uint8_t addr)
 {
-  uint16_t del[5] = {600, 1200, 2300, 4600, 9100};
-
-  uint8_t index = (uint8_t)_samplingRate;
-  if (index < 8) index = 8;
-  else if (index > 12) index = 12;
-  index -= 8;
-  uint8_t offset = index * 2;
+  uint8_t offset = (_samplingRate - 8) * 2;
   command(addr + offset);
 
-  uint16_t waitTime = del[index];
-  delayMicroseconds(waitTime);
+  delayMicroseconds(_waitTime);
 }
 
 uint16_t MS5611_SPI::readProm(uint8_t reg)

@@ -40,5 +40,8 @@ protected:
   uint8_t _select;
   SPIClass * _mySPI;
   SPISettings _spi_settings;
+  uint16_t _del[5] = {600, 1200, 2300, 4600, 9100};
+  uint16_t _waitTime;
   int _state = 0;
+  uint32_t _startTime;
 };
