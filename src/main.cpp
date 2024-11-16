@@ -6,6 +6,7 @@ Sensors sensors(&vehicle);
 Navigation navigation(&vehicle);
 DataLog data_log(&vehicle);
 SWOStream swo(2000000);
+uint32_t prev_time;
 
 void setup_leds() {
   pinMode(PC1, OUTPUT);
@@ -38,4 +39,7 @@ void loop() {
   swo.println(vehicle.autopilot_current, 6);
   swo.println(vehicle.batt_voltage, 6);
   swo.println(vehicle.batt_current, 6);
+
+  swo.println("dt: " + String((micros() - prev_time) / 1000));
+  prev_time = micros();
 }
