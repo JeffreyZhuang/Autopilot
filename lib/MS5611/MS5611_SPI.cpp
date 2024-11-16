@@ -57,44 +57,47 @@ bool MS5611_SPI::reset()
 int MS5611_SPI::read()
 {
   if (_state == 0) {
+    convert(MS5611_CMD_CONVERT_D1);
+
     _startTime = micros();
-  } else if (_state == 1) {
+    _state = 1;
+  } else if (_state == 1 && (micros() - _startTime) > _waitTime) {
+    _D1 = readADC();
+    convert(MS5611_CMD_CONVERT_D2);
 
-  } else if (_state == 2) {
-    
-  }
+    _startTime = micros();
+    _state = 2;
+  } else if (_state == 2 && (micros() - _startTime) > _waitTime) {
+    _D2 = readADC();
 
-  convert(MS5611_CMD_CONVERT_D1);
-  _D1 = readADC();
+    float dT = _D2 - C[5];
+    _temperature = 2000 + dT * C[6];
 
-  convert(MS5611_CMD_CONVERT_D2);
-  _D2 = readADC();
+    float offset =  C[2] + dT * C[4];
+    float sens = C[1] + dT * C[3];
 
-  float dT = _D2 - C[5];
-  _temperature = 2000 + dT * C[6];
-
-  float offset =  C[2] + dT * C[4];
-  float sens = C[1] + dT * C[3];
-
-  if (_temperature < 2000)
-  {
-    float T2 = dT * dT * 4.6566128731E-10;
-    float t = (_temperature - 2000) * (_temperature - 2000);
-    float offset2 = 2.5 * t;
-    float sens2 = 1.25 * t;
-
-    if (_temperature < -1500)
+    if (_temperature < 2000)
     {
-      t = (_temperature + 1500) * (_temperature + 1500);
-      offset2 += 7 * t;
-      sens2 += 5.5 * t;
-    }
-    _temperature -= T2;
-    offset -= offset2;
-    sens -= sens2;
-  }
+      float T2 = dT * dT * 4.6566128731E-10;
+      float t = (_temperature - 2000) * (_temperature - 2000);
+      float offset2 = 2.5 * t;
+      float sens2 = 1.25 * t;
 
-  _pressure = (_D1 * sens * 4.76837158205E-7 - offset) * 3.051757813E-5;
+      if (_temperature < -1500)
+      {
+        t = (_temperature + 1500) * (_temperature + 1500);
+        offset2 += 7 * t;
+        sens2 += 5.5 * t;
+      }
+      _temperature -= T2;
+      offset -= offset2;
+      sens -= sens2;
+    }
+
+    _pressure = (_D1 * sens * 4.76837158205E-7 - offset) * 3.051757813E-5;
+
+    _state = 0;
+  }
 
   return MS5611_READ_OK;
 }
@@ -113,8 +116,6 @@ void MS5611_SPI::convert(const uint8_t addr)
 {
   uint8_t offset = (_samplingRate - 8) * 2;
   command(addr + offset);
-
-  delayMicroseconds(_waitTime);
 }
 
 uint16_t MS5611_SPI::readProm(uint8_t reg)
