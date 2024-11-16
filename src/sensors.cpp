@@ -41,6 +41,7 @@ void Sensors::poll() {
     mag.readData(&_vehicle->compass_mx, &_vehicle->compass_my, &_vehicle->compass_mz);
 
     // Barometer
+    // if (baro.read()) {}
     baro.read();
     _vehicle->baro_alt = 145366.45 * 0.3048 * (1 - pow(baro.getPressure() / 1013.25, 0.190284));
 

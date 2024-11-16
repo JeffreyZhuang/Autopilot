@@ -54,7 +54,7 @@ bool MS5611_SPI::reset()
   return ROM_OK;
 }
 
-int MS5611_SPI::read()
+bool MS5611_SPI::read()
 {
   if (_state == 0) {
     convert(MS5611_CMD_CONVERT_D1);
@@ -97,9 +97,11 @@ int MS5611_SPI::read()
     _pressure = (_D1 * sens * 4.76837158205E-7 - offset) * 3.051757813E-5;
 
     _state = 0;
+
+    return true;
   }
 
-  return MS5611_READ_OK;
+  return false;
 }
 
 float MS5611_SPI::getTemperature() const

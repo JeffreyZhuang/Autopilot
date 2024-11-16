@@ -12,31 +12,9 @@ void DataLog::setup() {
     swo.println("Initialization done");
 
     file = SD.open("datalog.txt", FILE_WRITE);
-    if (file) {
-        swo.print("Writing to datalog.txt...");
-        file.println("testing 1, 2, 3.");
-        file.flush();
-        swo.println("done.");
-    } else {
+    if (!file) {
         swo.println("error opening test.txt");
     }
-
-    // myFile.close();
-    // myFile = SD.open("datalog.txt");
-    // if (myFile) {
-    //     swo.println("test.txt:");
-
-    //     while (myFile.available()) {
-    //         swo.write(myFile.read());
-    //     }
-
-    //     myFile.close();
-    // } else {
-    //     swo.println("error opening test.txt");
-    // }
-    // if (!SD.end()) {
-    //     swo.println("Failed to properly end the SD.");
-    // }
 }
 
 void DataLog::write() {

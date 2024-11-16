@@ -24,7 +24,7 @@ public:
   MS5611_SPI(uint8_t select, SPIClass * mySPI, uint32_t spi_speed, osr_t samplingRate);
   bool begin();
   bool reset();
-  int read();
+  bool read();
   float getTemperature() const;
   float getPressure() const;
 protected:
