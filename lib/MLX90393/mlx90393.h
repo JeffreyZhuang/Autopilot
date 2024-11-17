@@ -92,16 +92,18 @@ public:
     MLX90393(SPIClass * spi_bus, uint8_t cs_pin, uint32_t spi_speed);
     void setup();
     void reset();
-    void exit_mode();
-    void start_burst_mode();
+    uint8_t exit_mode();
+    uint8_t start_burst_mode();
     void read_measurement(float *x, float *y, float *z);
     void set_gain(mlx90393_gain_t gain);
+    mlx90393_gain_t get_gain();
     void set_res(enum mlx90393_axis axis, enum mlx90393_resolution resolution);
+    enum mlx90393_resolution get_res();
     void set_oversampling(enum mlx90393_oversampling oversampling);
     void set_filter(enum mlx90393_filter filter);
 private:
-    void write_register(uint8_t reg, uint16_t data);
-    void read_register(uint8_t reg, uint16_t *data);
+    uint8_t write_register(uint8_t reg, uint16_t data);
+    uint8_t read_register(uint8_t reg, uint16_t *data);
     SPIClass * _spi_bus;
     SPISettings _spi_settings;
     uint8_t _cs_pin;

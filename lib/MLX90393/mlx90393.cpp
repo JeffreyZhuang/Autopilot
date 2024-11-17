@@ -31,38 +31,49 @@ void MLX90393::reset() {
     digitalWrite(_cs_pin, HIGH);
 }
 
-void MLX90393::exit_mode() {
+uint8_t MLX90393::exit_mode() {
     digitalWrite(_cs_pin, LOW);
 
     _spi_bus->beginTransaction(_spi_settings);
     _spi_bus->transfer(0x80);
-    _spi_bus->transfer(0x00);
+    uint8_t status = _spi_bus->transfer(0x00);
     _spi_bus->endTransaction();
 
     digitalWrite(_cs_pin, HIGH);
+
+    return status;
 }
 
-void MLX90393::start_burst_mode() {
+uint8_t MLX90393::start_burst_mode() {
     digitalWrite(_cs_pin, LOW);
 
     _spi_bus->beginTransaction(_spi_settings);
     _spi_bus->transfer(0x10 | 0x0E);
-    _spi_bus->transfer(0x00);
+    uint8_t status = _spi_bus->transfer(0x00);
     _spi_bus->endTransaction();
 
     digitalWrite(_cs_pin, HIGH);
+
+    return status;
 }
 
 void MLX90393::set_gain(mlx90393_gain_t gain) {
     _gain = gain;
 
     uint16_t data;
-    read_register(0x00, &data);
+    swo.println(read_register(0x00, &data));
 
     data &= ~0x0070;
     data |= gain << 4;
 
-    write_register(0x00, data);
+    swo.println(write_register(0x00, data));
+}
+
+mlx90393_gain_t MLX90393::get_gain() {
+    uint16_t data;
+    read_register(0x00, &data);
+    data &= 0x0070;
+    return (mlx90393_gain_t)(data >> 4);
 }
 
 void MLX90393::set_res(enum mlx90393_axis axis, enum mlx90393_resolution resolution) {
@@ -88,6 +99,13 @@ void MLX90393::set_res(enum mlx90393_axis axis, enum mlx90393_resolution resolut
     }
 
     write_register(0x02, data);
+}
+
+enum mlx90393_resolution MLX90393::get_res() {
+    uint16_t data;
+    read_register(0x02, &data);
+    data &=0x0060;
+    return (mlx90393_resolution_t)(data >> 5);
 }
 
 void MLX90393::set_oversampling(enum mlx90393_oversampling oversampling) {
@@ -122,9 +140,9 @@ void MLX90393::read_measurement(float *x, float *y, float *z) {
 
     _spi_bus->beginTransaction(_spi_settings);
     _spi_bus->transfer(0x40 | 0x0E);
-    _spi_bus->transfer(0x00);
-    _spi_bus->transfer(0x00);
-    _spi_bus->transfer(0x00);
+    uint8_t status = _spi_bus->transfer(0x00);
+    //_spi_bus->transfer(0x00); // Temperature not needed
+    //_spi_bus->transfer(0x00); 
     for (int i = 0; i < rx_len; i++) {
         rx_buf[i] = _spi_bus->transfer(0x00);
     }
@@ -156,7 +174,7 @@ void MLX90393::read_measurement(float *x, float *y, float *z) {
     *z = (float)zi * mlx90393_lsb_lookup[0][_gain][_res_z][1];
 }
 
-void MLX90393::read_register(uint8_t reg, uint16_t *data) {
+uint8_t MLX90393::read_register(uint8_t reg, uint16_t *data) {
     uint8_t rx_buf[2];
     
     digitalWrite(_cs_pin, LOW);
@@ -172,9 +190,11 @@ void MLX90393::read_register(uint8_t reg, uint16_t *data) {
     digitalWrite(_cs_pin, HIGH);
 
     *data = ((uint16_t)rx_buf[0] << 8) | rx_buf[1];
+
+    return status;
 }
 
-void MLX90393::write_register(uint8_t reg, uint16_t data) {
+uint8_t MLX90393::write_register(uint8_t reg, uint16_t data) {
     digitalWrite(_cs_pin, LOW);
 
     _spi_bus->beginTransaction(_spi_settings);
@@ -186,4 +206,6 @@ void MLX90393::write_register(uint8_t reg, uint16_t data) {
     _spi_bus->endTransaction();
 
     digitalWrite(_cs_pin, HIGH);
+
+    return status;
 }
