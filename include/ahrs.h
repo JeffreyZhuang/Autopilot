@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <MadgwickAHRS.h>
-#include <vehicle_parameters.h>
+#include <vehicle.h>
 
 class AHRS {
 public:

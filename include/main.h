@@ -5,7 +5,7 @@
 #include <log.h>
 #include <ahrs.h>
 #include <navigation.h>
-#include <vehicle_parameters.h>
+#include <vehicle.h>
 
 void setup_leds();
 void setup();

@@ -2,7 +2,7 @@
 #include <MS5611_SPI.h>
 #include <Arduino.h>
 #include <SWOStream.h>
-#include <vehicle_parameters.h>
+#include <vehicle.h>
 #include <ina219.h>
 #include <mlx90393.h>
 

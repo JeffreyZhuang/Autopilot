@@ -1,4 +1,4 @@
-#include <vehicle_parameters.h>
+#include <vehicle.h>
 
 class Navigation {
 public:
