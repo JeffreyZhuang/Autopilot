@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include <SPI.h>
 
+#include <SWOStream.h>
+extern SWOStream swo;
+
 typedef enum mlx90393_gain {
   MLX90393_GAIN_5X = (0x00),
   MLX90393_GAIN_4X,

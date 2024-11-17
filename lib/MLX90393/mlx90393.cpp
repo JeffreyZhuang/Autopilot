@@ -163,8 +163,8 @@ void MLX90393::read_register(uint8_t reg, uint16_t *data) {
 
     _spi_bus->beginTransaction(_spi_settings);
     _spi_bus->transfer(0x50);
-    _spi_bus->transfer(reg << 2);
-    _spi_bus->transfer(0x00);
+    _spi_bus->transfer((uint8_t)(reg << 2));
+    uint8_t status = _spi_bus->transfer(0x00);
     rx_buf[0] = _spi_bus->transfer(0x00);
     rx_buf[1] = _spi_bus->transfer(0x00);
     _spi_bus->endTransaction();
@@ -179,10 +179,10 @@ void MLX90393::write_register(uint8_t reg, uint16_t data) {
 
     _spi_bus->beginTransaction(_spi_settings);
     _spi_bus->transfer(0x60);
-    _spi_bus->transfer(data >> 8);
-    _spi_bus->transfer(data & 0xFF);
-    _spi_bus->transfer(reg << 2);
-    _spi_bus->transfer(0x00);
+    _spi_bus->transfer((uint8_t)(data >> 8));
+    _spi_bus->transfer((uint8_t)(data & 0xFF));
+    _spi_bus->transfer((uint8_t)(reg << 2));
+    uint8_t status = _spi_bus->transfer(0x00);
     _spi_bus->endTransaction();
 
     digitalWrite(_cs_pin, HIGH);
