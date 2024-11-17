@@ -18,6 +18,6 @@ void DataLog::setup() {
 }
 
 void DataLog::write() {
-    file.println(String(millis()) + "," + String(_vehicle->baro_alt) + "," + String(_vehicle->imu_az));
+    file.println(String(micros()) + "," + String(_vehicle->baro_alt) + "," + String(_vehicle->imu_az));
     file.flush();
 }

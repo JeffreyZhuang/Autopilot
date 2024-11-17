@@ -33,7 +33,7 @@ void loop() {
   navigation.update();
   data_log.write();
 
-  if (micros() - prev_print_time > 150000) {
+  if (micros() - prev_print_time > 50000) {
     // Replace with USB instead of SWO
     // swo.println("Time: " + String(millis()));
     swo.println(String(vehicle.baro_alt) + "\t" + String(vehicle.imu_ax) + "\t" + String(vehicle.imu_ay) + "\t" + String(vehicle.imu_gz) + "\t" + String(vehicle.compass_mx));

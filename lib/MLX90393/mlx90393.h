@@ -44,7 +44,6 @@ typedef enum mlx90393_axis {
 } mlx90393_axis_t;
 
 const float mlx90393_lsb_lookup[2][8][4][2] = {
-
     /* HALLCONF = 0xC (default) */
     {
         /* GAIN_SEL = 0, 5x gain */
