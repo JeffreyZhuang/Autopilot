@@ -62,6 +62,7 @@ void MLX90393::set_gain(mlx90393_gain_t gain) {
 
     uint16_t data;
     swo.println(read_register(0x00, &data));
+    swo.println(data);
 
     data &= ~0x0070;
     data |= gain << 4;
