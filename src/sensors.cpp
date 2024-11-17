@@ -1,7 +1,7 @@
 #include <sensors.h>
 
 Sensors::Sensors(Vehicle * vehicle): spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
-                                     i2c_bus(PB9, PB8), ina219(&i2c_bus, 0x40, 0.01), mag(&spi_bus, PC13, 1000000) {
+                                     i2c_bus(PB9, PB8), ina219(&i2c_bus, 0x40, 0.01), mag(&spi_bus, PC13, 10000000) {
     _vehicle = vehicle;
 }
 
@@ -12,9 +12,7 @@ void Sensors::setup() {
 
     // Setup sensors
     imu.begin();
-
     baro.begin();
-
     mag.setup();
 }
 
@@ -30,7 +28,7 @@ void Sensors::poll() {
     _vehicle->imu_temp = imu.temp();
 
     // Compass
-    if (micros() - prev_time > 200000) {
+    if (micros() - prev_time > 100000) {
         mag.read_measurement(&_vehicle->compass_mx, &_vehicle->compass_my, &_vehicle->compass_mz);
     }
 

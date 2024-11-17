@@ -98,7 +98,6 @@ public:
     void set_oversampling(enum mlx90393_oversampling oversampling);
     void set_filter(enum mlx90393_filter filter);
 private:
-    void command(const uint8_t data);
     void write_register(uint8_t reg, uint16_t data);
     void read_register(uint8_t reg, uint16_t *data);
     SPIClass * _spi_bus;

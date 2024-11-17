@@ -3,7 +3,7 @@
 MLX90393::MLX90393(SPIClass * spi_bus, uint8_t cs_pin, uint32_t spi_speed) {
     _spi_bus = spi_bus;
     _cs_pin = cs_pin;
-    _spi_settings = SPISettings(spi_speed, MSBFIRST, SPI_MODE0);
+    _spi_settings = SPISettings(spi_speed, MSBFIRST, SPI_MODE3);
 }
 
 void MLX90393::setup() {
@@ -22,15 +22,35 @@ void MLX90393::setup() {
 }
 
 void MLX90393::reset() {
-    command(0xF0);
+    digitalWrite(_cs_pin, LOW);
+
+    _spi_bus->beginTransaction(_spi_settings);
+    _spi_bus->transfer(0xF0);
+    _spi_bus->endTransaction();
+
+    digitalWrite(_cs_pin, HIGH);
 }
 
 void MLX90393::exit_mode() {
-    command(0x80);
+    digitalWrite(_cs_pin, LOW);
+
+    _spi_bus->beginTransaction(_spi_settings);
+    _spi_bus->transfer(0x80);
+    _spi_bus->transfer(0x00);
+    _spi_bus->endTransaction();
+
+    digitalWrite(_cs_pin, HIGH);
 }
 
 void MLX90393::start_burst_mode() {
-    command(0x10 | 0x0E);
+    digitalWrite(_cs_pin, LOW);
+
+    _spi_bus->beginTransaction(_spi_settings);
+    _spi_bus->transfer(0x10 | 0x0E);
+    _spi_bus->transfer(0x00);
+    _spi_bus->endTransaction();
+
+    digitalWrite(_cs_pin, HIGH);
 }
 
 void MLX90393::set_gain(mlx90393_gain_t gain) {
@@ -144,6 +164,7 @@ void MLX90393::read_register(uint8_t reg, uint16_t *data) {
     _spi_bus->beginTransaction(_spi_settings);
     _spi_bus->transfer(0x50);
     _spi_bus->transfer(reg << 2);
+    _spi_bus->transfer(0x00);
     rx_buf[0] = _spi_bus->transfer(0x00);
     rx_buf[1] = _spi_bus->transfer(0x00);
     _spi_bus->endTransaction();
@@ -161,16 +182,7 @@ void MLX90393::write_register(uint8_t reg, uint16_t data) {
     _spi_bus->transfer(data >> 8);
     _spi_bus->transfer(data & 0xFF);
     _spi_bus->transfer(reg << 2);
-    _spi_bus->endTransaction();
-
-    digitalWrite(_cs_pin, HIGH);
-}
-
-void MLX90393::command(const uint8_t data) {
-    digitalWrite(_cs_pin, LOW);
-
-    _spi_bus->beginTransaction(_spi_settings);
-    _spi_bus->transfer(data);
+    _spi_bus->transfer(0x00);
     _spi_bus->endTransaction();
 
     digitalWrite(_cs_pin, HIGH);
