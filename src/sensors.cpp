@@ -28,8 +28,9 @@ void Sensors::poll() {
     _vehicle->imu_temp = imu.temp();
 
     // Compass
-    if (micros() - prev_time > 50000) {
+    if (micros() - prev_time > 250000) {
         mag.read_measurement(&_vehicle->compass_mx, &_vehicle->compass_my, &_vehicle->compass_mz);
+        prev_time = micros();
     }
 
     // Barometer
