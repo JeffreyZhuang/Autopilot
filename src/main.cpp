@@ -6,7 +6,8 @@ Sensors sensors(&vehicle);
 Navigation navigation(&vehicle);
 DataLog data_log(&vehicle);
 SWOStream swo(2000000);
-uint32_t prev_time;
+uint32_t prev_loop_time;
+uint32_t prev_print_time;
 
 void setup_leds() {
   pinMode(PC1, OUTPUT);
@@ -32,14 +33,17 @@ void loop() {
   navigation.update();
   data_log.write();
 
-  // Replace with USB instead of SWO
-  // swo.println("Time: " + String(millis()));
-  swo.println(String(vehicle.baro_alt) + "\t" + String(vehicle.imu_ax) + "\t" + String(vehicle.imu_ay) + "\t" + String(vehicle.imu_gz) + "\t" + String(vehicle.compass_mx));
-  // swo.println(vehicle.autopilot_voltage, 6);
-  // swo.println(vehicle.autopilot_current, 6);
-  // swo.println(vehicle.batt_voltage, 6);
-  // swo.println(vehicle.batt_current, 6);
-
-  swo.println("dt: " + String((micros() - prev_time) / 1000));
-  prev_time = micros();
+  if (micros() - prev_print_time > 500000) {
+    // Replace with USB instead of SWO
+    // swo.println("Time: " + String(millis()));
+    swo.println(String(vehicle.baro_alt) + "\t" + String(vehicle.imu_ax) + "\t" + String(vehicle.imu_ay) + "\t" + String(vehicle.imu_gz) + "\t" + String(vehicle.compass_mx));
+    // swo.println(vehicle.autopilot_voltage, 6);
+    // swo.println(vehicle.autopilot_current, 6);
+    // swo.println(vehicle.batt_voltage, 6);
+    // swo.println(vehicle.batt_current, 6);
+    swo.println("dt: " + String((micros() - prev_loop_time) / 1000));
+    prev_print_time = micros();
+  }
+  
+  prev_loop_time = micros();
 }
