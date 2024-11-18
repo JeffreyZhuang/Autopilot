@@ -36,14 +36,15 @@ void loop() {
   if (micros() - prev_print_time > 300000) {
     // Replace with USB instead of SWO
     // swo.println("Time: " + String(millis()));
-    swo.println(String(vehicle.baro_alt) + "\t" + String(vehicle.imu_ax) + "\t" + String(vehicle.imu_ay) + 
-                "\t" + String(vehicle.imu_gz) + "\t" + String(vehicle.compass_mx) + "\t" + 
-                String(vehicle.compass_my) + "\t" + String(vehicle.compass_mz));
+    // swo.println(String(vehicle.baro_alt) + "\t" + String(vehicle.imu_ax) + "\t" + String(vehicle.imu_ay) + 
+    //             "\t" + String(vehicle.imu_gz) + "\t" + String(vehicle.compass_mx) + "\t" + 
+    //             String(vehicle.compass_my) + "\t" + String(vehicle.compass_mz));
     // swo.println(vehicle.autopilot_voltage, 6);
     // swo.println(vehicle.autopilot_current, 6);
     // swo.println(vehicle.batt_voltage, 6);
     // swo.println(vehicle.batt_current, 6);
-    swo.println("dt: " + String((micros() - prev_loop_time) / 1000));
+    // swo.println("dt: " + String((micros() - prev_loop_time) / 1000));
+    swo.println(String(vehicle.ahrs_roll) + "\t" + String(vehicle.ahrs_pitch) + "\t" + String(vehicle.ahrs_yaw));
     prev_print_time = micros();
   }
   
