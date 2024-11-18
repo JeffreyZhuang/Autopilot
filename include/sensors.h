@@ -4,7 +4,7 @@
 #include <SWOStream.h>
 #include <vehicle.h>
 #include <ina219.h>
-#include <mlx90393.h>
+#include <Adafruit_MLX90393.h>
 
 extern SWOStream swo;
 
@@ -27,12 +27,10 @@ private:
     SPIClass spi_bus;
     TwoWire i2c_bus;
 
-    uint32_t prev_time = micros();
-
     // Sensors
     ICM42688 imu;
     MS5611_SPI baro;
-    MLX90393 mag;
+    Adafruit_MLX90393 mag;
     INA219 ina219;
 };
 

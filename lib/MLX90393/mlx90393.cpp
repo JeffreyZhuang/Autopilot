@@ -10,7 +10,8 @@ void MLX90393::setup() {
     pinMode(_cs_pin, OUTPUT);
     digitalWrite(_cs_pin, HIGH);
 
-    exit_mode();
+    // Start with the first step. Make sure the first step works first.
+    swo.println(exit_mode());
     reset();
     set_gain(MLX90393_GAIN_1X);
     set_res(MLX90393_X, MLX90393_RES_16);
@@ -58,6 +59,8 @@ uint8_t MLX90393::start_burst_mode() {
 }
 
 void MLX90393::set_gain(mlx90393_gain_t gain) {
+    swo.println(get_gain());
+
     _gain = gain;
 
     uint16_t data;
