@@ -18,8 +18,6 @@ public:
 
     void setup();
     void poll();
-
-    float alt;
 private:
     Vehicle * _vehicle;
 

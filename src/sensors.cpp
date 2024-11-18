@@ -31,9 +31,9 @@ void Sensors::poll() {
     mag.readDataNonBlocking(&_vehicle->compass_mx, &_vehicle->compass_my, &_vehicle->compass_mz);
 
     // Barometer
-    // if (baro.read()) {}
-    baro.read();
-    _vehicle->baro_alt = (pow(1013.25/baro.getPressure(), 1.0 / 5.257) - 1.0) * (baro.getTemperature() + 273.15) / 0.0065;
+    if (baro.read()) {
+        _vehicle->baro_alt = (pow(1013.25/baro.getPressure(), 1.0 / 5.257) - 1.0) * (baro.getTemperature() + 273.15) / 0.0065;
+    }
 
     // Power monitoring
     _vehicle->batt_voltage = analogRead(PC0) * (3.3 / 1023.0);
