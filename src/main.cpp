@@ -11,6 +11,8 @@ uint32_t prev_print_time;
 
 void setup_leds() {
   pinMode(PC1, OUTPUT);
+
+  Serial.begin(115200);
 }
 
 void setup() {
@@ -34,6 +36,8 @@ void loop() {
   data_log.write();
 
   if (micros() - prev_print_time > 300000) {
+    Serial.println("test");
+    
     // Replace with USB instead of SWO
     // swo.println("Time: " + String(millis()));
     // swo.println(String(vehicle.baro_alt) + "\t" + String(vehicle.imu_ax) + "\t" + String(vehicle.imu_ay) + 
