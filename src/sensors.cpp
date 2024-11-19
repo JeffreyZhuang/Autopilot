@@ -26,6 +26,7 @@ void Sensors::poll() {
     _vehicle->imu_gy = imu.gyrY();
     _vehicle->imu_gz = imu.gyrZ();
     _vehicle->imu_temp = imu.temp();
+    // Insert code here to rotate IMU data into correct frame, maybe imu_correction() function
 
     // Compass
     mag.readDataNonBlocking(&_vehicle->compass_mx, &_vehicle->compass_my, &_vehicle->compass_mz);
