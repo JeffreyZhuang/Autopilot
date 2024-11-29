@@ -15,7 +15,6 @@ void setup_leds() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("ASLKDAJSLKDJSA");
 
   data_log.setup(); // BUG: Does not work when moved under i2c_begin. I haven't defined the SDIO pins, maybe pins override i2c?
 
@@ -34,10 +33,12 @@ void loop() {
   sensors.poll();
   ahrs.update();
   navigation.update();
-  //data_log.write();
+  data_log.write();
+
+  Serial.println((micros() - prev_loop_time) / 1000);
 
   if (micros() - prev_print_time > 300000) {
-    Serial.println("test");
+    
     
     // Replace with USB instead of SWO
     // swo.println("Time: " + String(millis()));
@@ -49,7 +50,7 @@ void loop() {
     // swo.println(vehicle.batt_voltage, 6);
     // swo.println(vehicle.batt_current, 6);
     // swo.println("dt: " + String((micros() - prev_loop_time) / 1000));
-    swo.println(String(vehicle.ahrs_roll) + "\t" + String(vehicle.ahrs_pitch) + "\t" + String(vehicle.ahrs_yaw));
+    // swo.println(String(vehicle.ahrs_roll) + "\t" + String(vehicle.ahrs_pitch) + "\t" + String(vehicle.ahrs_yaw));
     prev_print_time = micros();
   }
   
