@@ -58,7 +58,7 @@ boolean Adafruit_MLX90393::begin_SPI(uint8_t cs_pin, SPIClass *theSPI) {
   if (!spi_dev) {
     _cspin = cs_pin;
     spi_dev = new Adafruit_SPIDevice(cs_pin,
-                                     1000000,               // frequency
+                                     10000000,               // frequency
                                      SPI_BITORDER_MSBFIRST, // bit order
                                      SPI_MODE3,             // data mode
                                      theSPI);
