@@ -1,4 +1,8 @@
-#include <main.h>
+#include <sensors.h>
+#include <log.h>
+#include <ahrs.h>
+#include <navigation.h>
+#include <vehicle.h>
 
 Vehicle vehicle;
 AHRS ahrs(&vehicle);
@@ -16,7 +20,7 @@ void setup_leds() {
 void setup() {
   Serial.begin(115200);
 
-  data_log.setup(); // BUG: Does not work when moved under i2c_begin. I haven't defined the SDIO pins, maybe pins override i2c?
+  data_log.setup(); // BUG: Datalog setup does not work when moved under i2c_begin. I haven't defined the SDIO pins, maybe pins override i2c?
 
   setup_leds();
 
@@ -38,8 +42,6 @@ void loop() {
   Serial.println((micros() - prev_loop_time) / 1000);
 
   if (micros() - prev_print_time > 300000) {
-    
-    
     // Replace with USB instead of SWO
     // swo.println("Time: " + String(millis()));
     // swo.println(String(vehicle.baro_alt) + "\t" + String(vehicle.imu_ax) + "\t" + String(vehicle.imu_ay) + 
