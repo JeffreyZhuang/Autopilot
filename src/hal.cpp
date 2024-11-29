@@ -1,13 +1,13 @@
-#include <sensors.h>
+#include <hal.h>
 
 // Add print here later on
 
-Sensors::Sensors(Vehicle * vehicle): spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
+HAL::HAL(Vehicle * vehicle): spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
                                      i2c_bus(PB9, PB8), ina219(&i2c_bus, 0x40, 0.01) {
     _vehicle = vehicle;
 }
 
-void Sensors::setup() {
+void HAL::setup() {
     // Setup peripherals
     i2c_bus.begin();
     i2c_bus.setClock(100000);
@@ -18,7 +18,7 @@ void Sensors::setup() {
     mag.begin_SPI(PC13, &spi_bus);
 }
 
-void Sensors::poll() {
+void HAL::poll() {
     // IMU
     imu.getAGT();
     _vehicle->imu_ax = imu.accX();

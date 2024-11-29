@@ -1,4 +1,4 @@
-#include <sensors.h>
+#include <hal.h>
 #include <log.h>
 #include <ahrs.h>
 #include <navigation.h>
@@ -6,7 +6,7 @@
 
 Vehicle vehicle;
 AHRS ahrs(&vehicle);
-Sensors sensors(&vehicle);
+HAL hal(&vehicle);
 Navigation navigation(&vehicle);
 DataLog data_log(&vehicle);
 SWOStream swo(2000000);
@@ -25,7 +25,7 @@ void setup() {
   setup_leds();
 
   ahrs.setup();
-  sensors.setup();
+  hal.setup();
 
   digitalWrite(PC1, HIGH);
   delay(500);
@@ -34,7 +34,7 @@ void setup() {
 }
 
 void loop() {
-  sensors.poll();
+  hal.poll();
   ahrs.update();
   navigation.update();
   data_log.write();
@@ -58,3 +58,10 @@ void loop() {
   
   prev_loop_time = micros();
 }
+
+// #include <Arduino.h>
+
+// int main(void) {
+//   initVariant();
+//   return 0;
+// }

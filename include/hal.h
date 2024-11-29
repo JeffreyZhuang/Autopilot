@@ -6,15 +6,18 @@
 #include <ina219.h>
 #include <Adafruit_MLX90393.h>
 
+// Hardware abstraction layer
+// All hardware dependent code goes here
+
 extern SWOStream swo;
 
 // Navigation polls from sensors. Poll IMU data from AHRS.
 // AP_NavEKF2
 // Look at NavEKF2. DAL? Data abstraction layer? So, both AHRS and navigation read from sensor. Use DAL to handle FIFO buffer (I guess this is better because you can use one independent of the other)
 // GCS: https://github.com/blauret/pyG5
-class Sensors {
+class HAL {
 public:
-    Sensors(Vehicle * vehicle);
+    HAL(Vehicle * vehicle);
 
     void setup();
     void poll();
