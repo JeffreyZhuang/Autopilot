@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <autopilot.h>
 
 Autopilot autopilot;
