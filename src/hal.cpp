@@ -3,16 +3,43 @@
 // Add print and delay here later on
 
 HAL::HAL(Plane * plane): spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
-                                     i2c_bus(PB9, PB8), ina219(&i2c_bus, 0x40, 0.01) {
+                                     i2c_bus(PB9, PB8), ina219(&i2c_bus, 0x40, 0.01), swo(2000000) {
     _plane = plane;
 }
 
+void HAL::delay_us(uint32_t us) {
+    delayMicroseconds(us);
+}
+
+void HAL::swo_print(char * str) {
+    swo.print(str);
+}
+
+void HAL::usb_print(char * str) {
+    Serial.print(str);
+}
+
+uint32_t HAL::get_time_us() {
+    return micros();
+}
+
+void HAL::blink_led() {
+    digitalWrite(PC1, HIGH);
+    delay_us(500000);
+    digitalWrite(PC1, LOW);
+    delay_us(500000);
+}
+
 void HAL::setup() {
+    setup_sd(); // BUG: Datalog setup does not work when moved under i2c_begin. I haven't defined the SDIO pins, maybe pins override i2c?
     setup_peripherals();
     setup_sensors();
 }
 
 void HAL::setup_peripherals() {
+    Serial.begin(115200);
+    pinMode(PC1, OUTPUT);
+
     i2c_bus.begin();
     i2c_bus.setClock(100000);
 }
@@ -24,7 +51,21 @@ void HAL::setup_sensors() {
 }
 
 void HAL::setup_sd() {
+    swo.println("Initizliaing SD card...");
+    while (!SD.begin(SD_DETECT_NONE)) {
+        delay(10);
+    }
+    swo.println("Initialization done");
 
+    file = SD.open("datalog.txt", FILE_WRITE);
+    if (!file) {
+        swo.println("error opening test.txt");
+    }
+}
+
+void HAL::write_sd() {
+    file.println(String(micros()) + "," + String(_plane->baro_alt) + "," + String(_plane->imu_az));
+    file.flush();
 }
 
 void HAL::poll() {

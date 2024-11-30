@@ -5,6 +5,7 @@
 #include <plane.h>
 #include <ina219.h>
 #include <Adafruit_MLX90393.h>
+#include <STM32SD.h>
 
 // Hardware abstraction layer
 // All hardware dependent code goes here
@@ -21,6 +22,12 @@ public:
 
     void setup();
     void poll();
+    void blink_led();
+    void delay_us(uint32_t us);
+    void swo_print(char * str);
+    void usb_print(char * str);
+    void write_sd();
+    uint32_t get_time_us();
 private:
     void setup_peripherals();
     void setup_sensors();
@@ -35,12 +42,18 @@ private:
     // Peripherals
     SPIClass spi_bus;
     TwoWire i2c_bus;
+    SWOStream swo;
 
     // Sensors
     ICM42688 imu;
     MS5611_SPI baro;
     Adafruit_MLX90393 mag;
     INA219 ina219;
+
+    // Micro SD
+    Sd2Card card;
+    SdFatFs fatFs;
+    File file;
 };
 
 // The class that actually does the polling is inherited. So it makes sure it has correct properties to fit with rest of program.
