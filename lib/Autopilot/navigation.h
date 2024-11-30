@@ -1,13 +1,13 @@
-#include <vehicle.h>
+#include <plane.h>
 
 class Navigation {
 public:
-    Navigation(Vehicle * vehicle);
+    Navigation(Plane * plane);
     void update();
     void read_imu();
     void read_baro();
     void read_compass();
     void read_gps();
 private:
-    Vehicle * _vehicle;
+    Plane * _plane;
 };

@@ -1,7 +1,7 @@
 #include <log.h>
 
-DataLog::DataLog(Vehicle * vehicle) {
-    _vehicle = vehicle;
+DataLog::DataLog(Plane * plane) {
+    _plane = plane;
 }
 
 void DataLog::setup() {
@@ -18,6 +18,6 @@ void DataLog::setup() {
 }
 
 void DataLog::write() {
-    file.println(String(micros()) + "," + String(_vehicle->baro_alt) + "," + String(_vehicle->imu_az));
+    file.println(String(micros()) + "," + String(_plane->baro_alt) + "," + String(_plane->imu_az));
     file.flush();
 }

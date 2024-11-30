@@ -1,17 +1,17 @@
 #include <SWOStream.h>
 #include <STM32SD.h>
 #include <Arduino.h>
-#include <vehicle.h>
+#include <plane.h>
 
 extern SWOStream swo;
 
 class DataLog {
 public:
-    DataLog(Vehicle * vehicle);
+    DataLog(Plane * plane);
     void setup();
     void write();
 private:
-    Vehicle * _vehicle;
+    Plane * _plane;
     Sd2Card card;
     SdFatFs fatFs;
     File file;

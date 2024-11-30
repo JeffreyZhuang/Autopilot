@@ -2,7 +2,7 @@
 #include <MS5611_SPI.h>
 #include <Arduino.h>
 #include <SWOStream.h>
-#include <vehicle.h>
+#include <plane.h>
 #include <ina219.h>
 #include <Adafruit_MLX90393.h>
 
@@ -17,12 +17,20 @@ extern SWOStream swo;
 // GCS: https://github.com/blauret/pyG5
 class HAL {
 public:
-    HAL(Vehicle * vehicle);
+    HAL(Plane * plane);
 
     void setup();
     void poll();
 private:
-    Vehicle * _vehicle;
+    void setup_peripherals();
+    void setup_sensors();
+    void setup_sd();
+    void poll_imu();
+    void poll_compass();
+    void poll_barometer();
+    void poll_power_monitor();
+
+    Plane * _plane;
 
     // Peripherals
     SPIClass spi_bus;

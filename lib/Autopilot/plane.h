@@ -1,12 +1,12 @@
-#ifndef VEHICLE_PARAMETERS_H_
-#define VEHICLE_PARAMETERS_H_
+#ifndef PLANE_H_
+#define PLANE_H_
 
 enum class FlightState {
     TAKEOFF = 1,
     LAND = 2
 };
 
-struct Vehicle {
+struct Plane {
     // Constraints
     float airspeed_min;
     float airspeed_max;
@@ -48,4 +48,4 @@ struct Vehicle {
     float ahrs_yaw;
 };
 
-#endif /* VEHICLE_PARAMETERS_H_ */
+#endif /* PLANE_H_ */

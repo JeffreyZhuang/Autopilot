@@ -1,46 +1,64 @@
 #include <hal.h>
 
-// Add print here later on
+// Add print and delay here later on
 
-HAL::HAL(Vehicle * vehicle): spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
+HAL::HAL(Plane * plane): spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
                                      i2c_bus(PB9, PB8), ina219(&i2c_bus, 0x40, 0.01) {
-    _vehicle = vehicle;
+    _plane = plane;
 }
 
 void HAL::setup() {
-    // Setup peripherals
+    setup_peripherals();
+    setup_sensors();
+}
+
+void HAL::setup_peripherals() {
     i2c_bus.begin();
     i2c_bus.setClock(100000);
+}
 
-    // Setup sensors
+void HAL::setup_sensors() {
     imu.begin();
     baro.begin();
     mag.begin_SPI(PC13, &spi_bus);
 }
 
+void HAL::setup_sd() {
+
+}
+
 void HAL::poll() {
-    // IMU
+    poll_imu();
+    poll_compass();
+    poll_barometer();
+    poll_power_monitor();
+}
+
+void HAL::poll_imu() {
     imu.getAGT();
-    _vehicle->imu_ax = imu.accX();
-    _vehicle->imu_ay = imu.accY();
-    _vehicle->imu_az = imu.accZ();
-    _vehicle->imu_gx = imu.gyrX();
-    _vehicle->imu_gy = imu.gyrY();
-    _vehicle->imu_gz = imu.gyrZ();
-    _vehicle->imu_temp = imu.temp();
+    _plane->imu_ax = imu.accX();
+    _plane->imu_ay = imu.accY();
+    _plane->imu_az = imu.accZ();
+    _plane->imu_gx = imu.gyrX();
+    _plane->imu_gy = imu.gyrY();
+    _plane->imu_gz = imu.gyrZ();
+    _plane->imu_temp = imu.temp();
     // Insert code here to rotate IMU data into correct frame, maybe imu_correction() function
+}
 
-    // Compass
-    mag.readDataNonBlocking(&_vehicle->compass_mx, &_vehicle->compass_my, &_vehicle->compass_mz);
+void HAL::poll_compass() {
+    mag.readDataNonBlocking(&_plane->compass_mx, &_plane->compass_my, &_plane->compass_mz);
+}
 
-    // Barometer
+void HAL::poll_barometer() {
     if (baro.read()) {
-        _vehicle->baro_alt = (pow(1013.25/baro.getPressure(), 1.0 / 5.257) - 1.0) * (baro.getTemperature() + 273.15) / 0.0065;
+        _plane->baro_alt = (pow(1013.25/baro.getPressure(), 1.0 / 5.257) - 1.0) * (baro.getTemperature() + 273.15) / 0.0065;
     }
+}
 
-    // Power monitoring
-    _vehicle->batt_voltage = analogRead(PC0) * (3.3 / 1023.0);
-    _vehicle->batt_current = analogRead(PC2) * (3.3 / 1023.0);
-    _vehicle->autopilot_voltage = ina219.read_voltage();
-    _vehicle->autopilot_current = ina219.read_current();
+void HAL::poll_power_monitor() {
+    _plane->batt_voltage = analogRead(PC0) * (3.3 / 1023.0);
+    _plane->batt_current = analogRead(PC2) * (3.3 / 1023.0);
+    _plane->autopilot_voltage = ina219.read_voltage();
+    _plane->autopilot_current = ina219.read_current();
 }

@@ -6,8 +6,8 @@
 
 #include <navigation.h>
 
-Navigation::Navigation(Vehicle * vehicle) {
-    _vehicle = vehicle;
+Navigation::Navigation(Plane * plane) {
+    _plane = plane;
 }
 
 void Navigation::update() {
