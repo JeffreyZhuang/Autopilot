@@ -6,6 +6,7 @@
 #include <ina219.h>
 #include <Adafruit_MLX90393.h>
 #include <STM32SD.h>
+#include <hal.h>
 
 // Hardware abstraction layer
 // All hardware dependent code goes here
@@ -16,9 +17,9 @@ extern SWOStream swo;
 // AP_NavEKF2
 // Look at NavEKF2. DAL? Data abstraction layer? So, both AHRS and navigation read from sensor. Use DAL to handle FIFO buffer (I guess this is better because you can use one independent of the other)
 // GCS: https://github.com/blauret/pyG5
-class HAL {
+class Arduino_HAL : public HAL {
 public:
-    HAL(Plane * plane);
+    Arduino_HAL(Plane * plane);
 
     void setup();
     void poll();
