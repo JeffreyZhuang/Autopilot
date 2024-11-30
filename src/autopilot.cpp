@@ -1,34 +1,36 @@
 #include <autopilot.h>
 
-Autopilot::Autopilot(): hal(&plane), ahrs(&plane), navigation(&plane) {
-
-}
+Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane), navigation(plane) {
+    _hal = hal;
+    _plane = plane;
+};
 
 void Autopilot::setup() {
     ahrs.setup();
-    hal.setup();
-    hal.blink_led();
+    _hal->setup();
 }
 
 void Autopilot::loop() {
-    hal.poll();
+    _hal->poll();
 
-    uint32_t dt = hal.get_time_us() - prev_loop_time;
-    prev_loop_time = hal.get_time_us();
+    uint32_t dt = _hal->get_time_us() - prev_loop_time;
+    prev_loop_time = _hal->get_time_us();
 
     ahrs.update();
     navigation.update();
-    hal.write_sd();
+    _hal->write_sd();
 
     strcpy(txBuf, ""); 
     sprintf(txBuf, "DT: %d\n", dt);
-    hal.usb_print(txBuf);
+    _hal->usb_print(txBuf);
 
-    if (hal.get_time_us() - prev_print_time > 300000) {
+    if (_hal->get_time_us() - prev_print_time > 300000) {
         strcpy(txBuf, ""); 
-        sprintf(txBuf, "%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", plane.baro_alt, plane.imu_ax, plane.imu_ay, plane.imu_gz, plane.compass_mx, plane.compass_my, plane.compass_mz);
-        hal.swo_print(txBuf);
+        sprintf(txBuf, "%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", _plane->baro_alt, _plane->imu_ax, _plane->imu_ay, _plane->imu_gz, _plane->compass_mx, _plane->compass_my, _plane->compass_mz);
+        _hal->swo_print(txBuf);
 
-        prev_print_time = hal.get_time_us();
+        _hal->toggle_led();
+
+        prev_print_time = _hal->get_time_us();
     }
 }

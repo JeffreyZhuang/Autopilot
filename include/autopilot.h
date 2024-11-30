@@ -8,14 +8,15 @@
 
 class Autopilot {
 public:
-    Autopilot();
+    Autopilot(HAL * hal, Plane * plane);
     void setup();
     void loop();
 private:
-    Plane plane;
+    Plane * _plane;
     AHRS ahrs;
-    HAL hal;
     Navigation navigation;
+
+    HAL * _hal;
 
     uint32_t prev_loop_time;
     uint32_t prev_print_time;
