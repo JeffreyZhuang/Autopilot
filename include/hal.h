@@ -1,3 +1,6 @@
+#ifndef HAL_H
+#define HAL_H
+
 #include <ICM42688.h>
 #include <MS5611_SPI.h>
 #include <Arduino.h>
@@ -9,8 +12,6 @@
 
 // Hardware abstraction layer
 // All hardware dependent code goes here
-
-extern SWOStream swo;
 
 // Navigation polls from sensors. Poll IMU data from AHRS.
 // AP_NavEKF2
@@ -56,4 +57,4 @@ private:
     File file;
 };
 
-// The class that actually does the polling is inherited. So it makes sure it has correct properties to fit with rest of program.
+#endif
