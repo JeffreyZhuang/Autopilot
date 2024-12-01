@@ -22,8 +22,8 @@ private:
     HAL * _hal;
     Plane * _plane;
     
-    // AHRS ahrs;
-    // Navigation navigation;
+    AHRS ahrs;
+    Navigation navigation;
 
     uint32_t prev_loop_time;
     uint32_t prev_print_time;

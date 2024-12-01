@@ -3,8 +3,7 @@
 #include <hal_arduino.h>
 
 Plane plane;
-// HAL_Arduino hal_arduino(&plane);
-HAL_Arduino hal_arduino;
+HAL_Arduino hal_arduino(&plane);
 Autopilot autopilot(&hal_arduino, &plane);
 
 void setup() {

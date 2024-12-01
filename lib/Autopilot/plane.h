@@ -1,19 +1,14 @@
 #ifndef PLANE_H_
 #define PLANE_H_
 
-#include <hal.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <cstring>
-
 enum class FlightState {
     TAKEOFF = 1,
     LAND = 2
 };
 
-// /**
-//  * @brief All flight data and parameters that get passed to classes
-//  */
+/**
+ * @brief All flight data and parameters that get passed to classes
+ */
 struct Plane {
     // Constraints
     float airspeed_min;
@@ -40,24 +35,24 @@ struct Plane {
     float imu_gy;
     float imu_gz;
     float imu_temp;
-    // uint32_t imu_timestamp;
+    uint32_t imu_timestamp;
 
     // Compass
     float compass_mx;
     float compass_my;
     float compass_mz;
-    // uint32_t compass_timestamp;
+    uint32_t compass_timestamp;
 
     // Barometer
     float baro_alt;
     float baro_temp;
-    // uint32_t baro_timestamp;
+    uint32_t baro_timestamp;
     
     // AHRS
     float ahrs_roll;
     float ahrs_pitch;
     float ahrs_yaw;
-    // uint32_t ahrs_timestamp;
+    uint32_t ahrs_timestamp;
 };
 
 #endif /* PLANE_H_ */

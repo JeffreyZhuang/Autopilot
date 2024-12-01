@@ -20,7 +20,8 @@
         "utility": "cpp",
         "*.tcc": "cpp",
         "cmath": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "cstdint": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }
