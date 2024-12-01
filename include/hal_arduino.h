@@ -16,13 +16,17 @@ public:
     HAL_Arduino(Plane * plane);
 
     void setup();
+
     void poll();
-    void toggle_led();
-    void delay_us(uint32_t us);
+
+    void write_sd();
+    
     void swo_print(char * str);
     void usb_print(char * str);
-    void write_sd();
     void i2c_scan();
+    void toggle_led();
+    
+    void delay_us(uint32_t us);
     uint32_t get_time_us();
 private:
     void setup_peripherals();
