@@ -1,6 +1,6 @@
 #include <autopilot.h>
 
-Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane), navigation(plane) {
+Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane, hal), navigation(hal, plane) {
     _hal = hal;
     _plane = plane;
 };
