@@ -10,8 +10,10 @@ void AHRS::setup() {
 }
 
 void AHRS::update() {
-    // Limit loop rate to 100Hz
-    if (_hal->get_time_us() - prev_loop_time > 10000) {
+    uint32_t time = _hal->get_time_us();
+
+    // Limit loop rate
+    if (time - prev_loop_time > dt) {
         // Check and only run if there is new sensor data
         if (_plane->imu_timestamp != last_imu_timestamp) {
             // Check and only use compass if there is new compass data
@@ -22,7 +24,7 @@ void AHRS::update() {
             }
         }
 
-        prev_loop_time = _hal->get_time_us();
+        prev_loop_time = time;
     }
 }
 
