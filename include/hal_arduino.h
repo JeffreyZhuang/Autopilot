@@ -23,7 +23,7 @@ public:
     
     void swo_print(char * str);
     void usb_print(char * str);
-    // void i2c_scan();
+    void i2c_scan();
     void toggle_led();
     
     void delay_us(uint32_t us);

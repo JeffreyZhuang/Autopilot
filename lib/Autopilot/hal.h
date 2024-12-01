@@ -11,8 +11,7 @@
  */
 class HAL {
 public:
-    // HAL(Plane * plane);
-    HAL();
+    HAL(Plane * plane);
 
     virtual void setup() = 0;
 
@@ -25,7 +24,7 @@ public:
     // Debug
     virtual void swo_print(char * str) = 0;
     virtual void usb_print(char * str) = 0;
-    // virtual void i2c_scan() = 0;
+    virtual void i2c_scan() = 0;
     virtual void toggle_led() = 0;
 
     // Time

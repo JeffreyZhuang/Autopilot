@@ -1,6 +1,8 @@
 #ifndef PLANE_H_
 #define PLANE_H_
 
+#include <stdint.h>
+
 enum class FlightState {
     TAKEOFF = 1,
     LAND = 2
