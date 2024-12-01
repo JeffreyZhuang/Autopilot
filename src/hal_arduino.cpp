@@ -71,24 +71,29 @@ void HAL_Arduino::poll() {
 }
 
 void HAL_Arduino::poll_imu() {
-    imu.getAGT();
-    _plane->imu_ax = imu.accX();
-    _plane->imu_ay = imu.accY();
-    _plane->imu_az = imu.accZ();
-    _plane->imu_gx = imu.gyrX();
-    _plane->imu_gy = imu.gyrY();
-    _plane->imu_gz = imu.gyrZ();
-    _plane->imu_temp = imu.temp();
-    // Insert code here to rotate IMU data into correct frame, maybe imu_correction() function
+    if (imu.getAGT()) {
+        _plane->imu_ax = imu.accX();
+        _plane->imu_ay = imu.accY();
+        _plane->imu_az = imu.accZ();
+        _plane->imu_gx = imu.gyrX();
+        _plane->imu_gy = imu.gyrY();
+        _plane->imu_gz = imu.gyrZ();
+        _plane->imu_temp = imu.temp();
+        _plane->imu_timestamp = get_time_us();
+        // Insert code here to rotate IMU data into correct frame, maybe imu_correction() function
+    };
 }
 
 void HAL_Arduino::poll_compass() {
-    mag.readDataNonBlocking(&_plane->compass_mx, &_plane->compass_my, &_plane->compass_mz);
+    if (mag.readDataNonBlocking(&_plane->compass_mx, &_plane->compass_my, &_plane->compass_mz)) {
+        _plane->compass_timestamp = get_time_us();
+    }
 }
 
 void HAL_Arduino::poll_barometer() {
     if (baro.read()) {
         _plane->baro_alt = (pow(1013.25/baro.getPressure(), 1.0 / 5.257) - 1.0) * (baro.getTemperature() + 273.15) / 0.0065;
+        _plane->baro_timestamp = get_time_us();
     }
 }
 

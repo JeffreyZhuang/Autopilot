@@ -377,7 +377,6 @@ bool Adafruit_MLX90393::readDataNonBlocking(float *x, float *y, float *z) {
         startSingleMeasurement();
         _state = 1;
         _start_time = millis();
-        return false;
     } else if (_state == 1 && (millis() - _start_time) > _conversion_time) {
         readMeasurement(x, y, z);
         _state = 0;
