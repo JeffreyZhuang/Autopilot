@@ -46,15 +46,15 @@ void HAL_Arduino::setup_sensors() {
 }
 
 void HAL_Arduino::setup_sd() {
-    swo.println("Initizliaing SD card...");
+    swo_print("Initizliaing SD card...\n");
     while (!SD.begin(SD_DETECT_NONE)) {
         delay(10);
     }
-    swo.println("Initialization done");
+    swo_print("Initialization done\n");
 
     file = SD.open("datalog.txt", FILE_WRITE);
     if (!file) {
-        swo.println("error opening test.txt");
+        swo_print("error opening test.txt\n");
     }
 }
 
@@ -102,4 +102,8 @@ void HAL_Arduino::poll_power_monitor() {
     _plane->batt_current = analogRead(PC2) * (3.3 / 1023.0);
     _plane->autopilot_voltage = ina219.read_voltage();
     _plane->autopilot_current = ina219.read_current();
+}
+
+void HAL_Arduino::i2c_scan() {
+
 }

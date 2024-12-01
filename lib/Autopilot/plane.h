@@ -8,6 +8,9 @@ enum class FlightState {
     LAND = 2
 };
 
+/**
+ * @brief All flight data and parameters that get passed to classes
+ */
 struct Plane {
     // Constraints
     float airspeed_min;

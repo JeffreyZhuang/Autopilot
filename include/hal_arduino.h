@@ -8,6 +8,9 @@
 #include <STM32SD.h>
 #include <hal.h>
 
+/**
+ * @brief Arduino implementation of the hardware abstraction layer
+ */
 class HAL_Arduino : public HAL {
 public:
     HAL_Arduino(Plane * plane);
@@ -19,6 +22,7 @@ public:
     void swo_print(char * str);
     void usb_print(char * str);
     void write_sd();
+    void i2c_scan();
     uint32_t get_time_us();
 private:
     void setup_peripherals();

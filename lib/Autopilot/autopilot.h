@@ -6,6 +6,9 @@
 #include <ahrs.h>
 #include <navigation.h>
 
+/**
+ * @brief Autopilot
+ */
 class Autopilot {
 public:
     Autopilot(HAL * hal, Plane * plane);
