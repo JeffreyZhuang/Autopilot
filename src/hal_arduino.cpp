@@ -10,6 +10,12 @@ HAL_Arduino::HAL_Arduino(Plane * plane): HAL(plane),
     _plane = plane;
 }
 
+void HAL_Arduino::setup() {
+    setup_sd(); // BUG: Datalog setup does not work when moved under i2c_begin. I haven't defined the SDIO pins, maybe pins override i2c?
+    setup_peripherals();
+    setup_sensors();
+}
+
 void HAL_Arduino::delay_us(uint32_t us) {
     delayMicroseconds(us);
 }
@@ -28,12 +34,6 @@ uint32_t HAL_Arduino::get_time_us() {
 
 void HAL_Arduino::toggle_led() {
     digitalWrite(PC1, !digitalRead(PC1));
-}
-
-void HAL_Arduino::setup() {
-    setup_sd(); // BUG: Datalog setup does not work when moved under i2c_begin. I haven't defined the SDIO pins, maybe pins override i2c?
-    setup_peripherals();
-    setup_sensors();
 }
 
 void HAL_Arduino::setup_peripherals() {
@@ -109,6 +109,6 @@ void HAL_Arduino::poll_power_monitor() {
     _plane->autopilot_current = ina219.read_current();
 }
 
-void HAL_Arduino::i2c_scan() {
-    return;
-}
+// void HAL_Arduino::i2c_scan() {
+//     return;
+// }

@@ -1,5 +1,5 @@
-#ifndef HAL_H
-#define HAL_H
+#ifndef HAL_H_
+#define HAL_H_
 
 #include <plane.h>
 #include <stdint.h>
@@ -24,7 +24,7 @@ public:
     // Debug
     virtual void swo_print(char * str) = 0;
     virtual void usb_print(char * str) = 0;
-    virtual void i2c_scan() = 0;
+    // virtual void i2c_scan() = 0;
     virtual void toggle_led() = 0;
 
     // Time

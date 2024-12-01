@@ -1,12 +1,13 @@
 #include <autopilot.h>
 
-Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane, hal), navigation(hal, plane) {
+// Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane, hal), navigation(hal, plane) {
+Autopilot::Autopilot(HAL * hal, Plane * plane) {
     _hal = hal;
     _plane = plane;
 };
 
 void Autopilot::setup() {
-    ahrs.setup();
+    // ahrs.setup();
     _hal->setup();
 }
 
@@ -16,8 +17,8 @@ void Autopilot::loop() {
     uint32_t dt = _hal->get_time_us() - prev_loop_time;
     prev_loop_time = _hal->get_time_us();
 
-    ahrs.update();
-    navigation.update();
+    // ahrs.update();
+    // navigation.update();
     _hal->write_sd();
 
     strcpy(txBuf, ""); 
