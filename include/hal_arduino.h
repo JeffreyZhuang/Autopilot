@@ -13,7 +13,8 @@
  */
 class HAL_Arduino : public HAL {
 public:
-    HAL_Arduino(Plane * plane);
+    // HAL_Arduino(Plane * plane);
+    HAL_Arduino();
 
     void setup();
 

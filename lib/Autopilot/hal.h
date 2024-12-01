@@ -11,7 +11,8 @@
  */
 class HAL {
 public:
-    HAL(Plane * plane);
+    // HAL(Plane * plane);
+    HAL();
 
     virtual void setup() = 0;
 

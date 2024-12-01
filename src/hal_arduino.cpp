@@ -1,13 +1,21 @@
 #include <hal_arduino.h>
 
-HAL_Arduino::HAL_Arduino(Plane * plane): HAL(plane), 
+// HAL_Arduino::HAL_Arduino(Plane * plane): HAL(plane), 
+//                                          spi_bus(PB5, PB4, PA5), 
+//                                          imu(spi_bus, PC15), 
+//                                          baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
+//                                          i2c_bus(PB9, PB8), 
+//                                          ina219(&i2c_bus, 0x40, 0.01), 
+//                                          swo(2000000) {
+HAL_Arduino::HAL_Arduino(): HAL(), 
                                          spi_bus(PB5, PB4, PA5), 
                                          imu(spi_bus, PC15), 
                                          baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
                                          i2c_bus(PB9, PB8), 
                                          ina219(&i2c_bus, 0x40, 0.01), 
                                          swo(2000000) {
-    _plane = plane;
+    // _plane = plane;
+    // _plane = &plane;
 }
 
 void HAL_Arduino::setup() {
@@ -84,21 +92,21 @@ void HAL_Arduino::poll_imu() {
         _plane->imu_gy = imu.gyrY();
         _plane->imu_gz = imu.gyrZ();
         _plane->imu_temp = imu.temp();
-        _plane->imu_timestamp = get_time_us();
+        // _plane->imu_timestamp = get_time_us();
         // Insert code here to rotate IMU data into correct frame, maybe imu_correction() function
     };
 }
 
 void HAL_Arduino::poll_compass() {
     if (mag.readDataNonBlocking(&_plane->compass_mx, &_plane->compass_my, &_plane->compass_mz)) {
-        _plane->compass_timestamp = get_time_us();
+        // _plane->compass_timestamp = get_time_us();
     }
 }
 
 void HAL_Arduino::poll_barometer() {
     if (baro.read()) {
         _plane->baro_alt = (pow(1013.25/baro.getPressure(), 1.0 / 5.257) - 1.0) * (baro.getTemperature() + 273.15) / 0.0065;
-        _plane->baro_timestamp = get_time_us();
+        // _plane->baro_timestamp = get_time_us();
     }
 }
 
