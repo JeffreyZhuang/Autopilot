@@ -32,6 +32,7 @@ private:
     void setup_peripherals();
     void setup_sensors();
     void setup_sd();
+    
     void poll_imu();
     void poll_compass();
     void poll_barometer();

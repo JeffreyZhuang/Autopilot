@@ -1,7 +1,12 @@
 #include <hal_arduino.h>
 
-HAL_Arduino::HAL_Arduino(Plane * plane): HAL(plane), spi_bus(PB5, PB4, PA5), imu(spi_bus, PC15), baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
-                                         i2c_bus(PB9, PB8), ina219(&i2c_bus, 0x40, 0.01), swo(2000000) {
+HAL_Arduino::HAL_Arduino(Plane * plane): HAL(plane), 
+                                         spi_bus(PB5, PB4, PA5), 
+                                         imu(spi_bus, PC15), 
+                                         baro(PC14, &spi_bus, 20000000, OSR_ULTRA_HIGH), 
+                                         i2c_bus(PB9, PB8), 
+                                         ina219(&i2c_bus, 0x40, 0.01), 
+                                         swo(2000000) {
     _plane = plane;
 }
 
