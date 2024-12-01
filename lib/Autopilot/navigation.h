@@ -1,3 +1,6 @@
+#ifndef NAVIGATION_H
+#define NAVIGATION_H
+
 #include <plane.h>
 #include <hal.h>
 
@@ -21,3 +24,5 @@ private:
     uint32_t prev_loop_time;
     uint32_t dt = 10000;
 };
+
+#endif

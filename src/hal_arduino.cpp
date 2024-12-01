@@ -46,15 +46,15 @@ void HAL_Arduino::setup_sensors() {
 }
 
 void HAL_Arduino::setup_sd() {
-    swo_print("Initizliaing SD card...\n");
+    swo.print("Initizliaing SD card...\n");
     while (!SD.begin(SD_DETECT_NONE)) {
         delay(10);
     }
-    swo_print("Initialization done\n");
+    swo.print("Initialization done\n");
 
     file = SD.open("datalog.txt", FILE_WRITE);
     if (!file) {
-        swo_print("error opening test.txt\n");
+        swo.print("error opening test.txt\n");
     }
 }
 
@@ -105,5 +105,5 @@ void HAL_Arduino::poll_power_monitor() {
 }
 
 void HAL_Arduino::i2c_scan() {
-
+    return;
 }

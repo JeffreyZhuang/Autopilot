@@ -2,6 +2,9 @@
 #define PLANE_H_
 
 #include <hal.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <cstring>
 
 enum class FlightState {
     TAKEOFF = 1,

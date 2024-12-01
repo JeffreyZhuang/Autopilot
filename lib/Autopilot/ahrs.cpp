@@ -10,7 +10,7 @@ void AHRS::setup() {
 }
 
 void AHRS::update() {
-    uint32_t time = _hal->get_time_us();
+    time = _hal->get_time_us();
 
     // Limit loop rate
     if (time - prev_loop_time > dt) {
@@ -31,9 +31,7 @@ void AHRS::update() {
 void AHRS::update_imu() {
     filter.updateIMU(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz, 
                      _plane->imu_ax, _plane->imu_ay, _plane->imu_az);
-    _plane->ahrs_roll = filter.getRoll();
-    _plane->ahrs_pitch = filter.getPitch();
-    _plane->ahrs_yaw = filter.getYaw();
+    upload_results();
     last_imu_timestamp = _plane->imu_timestamp;
 }
 
@@ -41,8 +39,14 @@ void AHRS::update_full() {
     filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz, 
                             _plane->imu_ax, _plane->imu_ay, _plane->imu_az, 
                             _plane->compass_mx, _plane->compass_my, _plane->compass_mz);
+    upload_results();
+    last_imu_timestamp = _plane->imu_timestamp;
+    last_compass_timestamp = _plane->compass_timestamp;
+}
+
+void AHRS::upload_results() {
     _plane->ahrs_roll = filter.getRoll();
     _plane->ahrs_pitch = filter.getPitch();
     _plane->ahrs_yaw = filter.getYaw();
-    last_compass_timestamp = _plane->compass_timestamp;
+    _plane->ahrs_timestamp = time;
 }
