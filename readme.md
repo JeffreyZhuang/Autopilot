@@ -10,7 +10,7 @@
 ## Coordinate system
 
 X is in the direction opposite to the LED. Following right hand rule. Clockwise rotation when facing in the direction of the axis of rotation.
-North East Down, Pitch Yaw Roll 
+North (x), East (y), Down (z), Roll (x), Pitch(y), Yaw (z) 
 
 ![](coordinate_system.png)
 
