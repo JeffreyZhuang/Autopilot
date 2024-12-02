@@ -1,6 +1,9 @@
 # Autopilot
 
 ![](autopilot.webp)
+![](mainboard.webp)
+
+## File Structure
 
 ## Software Architecture
 
