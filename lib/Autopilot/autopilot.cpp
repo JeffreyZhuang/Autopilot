@@ -23,7 +23,7 @@ void Autopilot::loop() {
     if (_hal->get_time_us() - prev_print_time > 100000) {
         strcpy(txBuf, ""); 
         sprintf(txBuf, 
-                "%.2f\t%.2f\t%.2f\t%.2f\t%.1f\t%.1f\t%.1f\t%.2f\t%.2f\t%.2f\t%.1f\t%.1f\t%.1f\n", 
+                "%.2f\t|\t%.2f\t%.2f\t%.2f\t|\t%.1f\t%.1f\t%.1f\t|\t%.2f\t%.2f\t%.2f\t|\t%.1f\t%.1f\t%.1f\n", 
                 _plane->baro_alt, 
                 _plane->imu_ax, 
                 _plane->imu_ay, 
