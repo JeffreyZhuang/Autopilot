@@ -20,6 +20,9 @@ struct Plane {
     float pitch_limit_min;
     float roll_limit;
 
+    // Settings
+    bool use_compass = false;
+
     // Monitor
     float batt_current;
     float batt_voltage;

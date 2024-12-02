@@ -17,7 +17,7 @@ void AHRS::update() {
         // Check and only run if there is new sensor data
         if (_plane->imu_timestamp != last_imu_timestamp) {
             // Check and only use compass if there is new compass data
-            if (_plane->compass_timestamp != last_compass_timestamp) {
+            if (_plane->use_compass && (_plane->compass_timestamp != last_compass_timestamp)) {
                 update_full();
             } else {
                 update_imu();

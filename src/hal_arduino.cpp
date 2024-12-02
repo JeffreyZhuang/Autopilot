@@ -97,15 +97,15 @@ void HAL_Arduino::poll() {
 
 void HAL_Arduino::poll_imu() {
     if (imu.getAGT()) {
-        _plane->imu_ax = imu.accX();
+        // Rotate IMU to correct coordinate system
+        _plane->imu_ax = -imu.accX();
         _plane->imu_ay = imu.accY();
-        _plane->imu_az = imu.accZ();
-        _plane->imu_gx = imu.gyrX();
-        _plane->imu_gy = imu.gyrY();
+        _plane->imu_az = -imu.accZ();
+        _plane->imu_gx = -imu.gyrX();
+        _plane->imu_gy = -imu.gyrY();
         _plane->imu_gz = imu.gyrZ();
         _plane->imu_temp = imu.temp();
         _plane->imu_timestamp = get_time_us();
-        // Insert code here to rotate IMU data into correct frame, maybe imu_correction() function
     };
 }
 

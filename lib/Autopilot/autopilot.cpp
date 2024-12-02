@@ -22,13 +22,21 @@ void Autopilot::loop() {
 
     if (_hal->get_time_us() - prev_print_time > 100000) {
         strcpy(txBuf, ""); 
-        sprintf(txBuf, "%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", _plane->baro_alt, 
-                                                                     _plane->imu_ax, 
-                                                                     _plane->imu_ay, 
-                                                                     _plane->imu_gz, 
-                                                                     _plane->compass_mx, 
-                                                                     _plane->compass_my, 
-                                                                     _plane->compass_mz);
+        sprintf(txBuf, 
+                "%.2f\t%.2f\t%.2f\t%.2f\t%.1f\t%.1f\t%.1f\t%.2f\t%.2f\t%.2f\t%.1f\t%.1f\t%.1f\n", 
+                _plane->baro_alt, 
+                _plane->imu_ax, 
+                _plane->imu_ay, 
+                _plane->imu_az, 
+                _plane->imu_gx, 
+                _plane->imu_gy, 
+                _plane->imu_gz, 
+                _plane->compass_mx, 
+                _plane->compass_my, 
+                _plane->compass_mz,
+                _plane->ahrs_roll,
+                _plane->ahrs_pitch,
+                _plane->ahrs_yaw);
         _hal->usb_print(txBuf);
 
         _hal->toggle_led();
