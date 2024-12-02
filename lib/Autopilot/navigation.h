@@ -17,6 +17,8 @@ public:
     void read_compass();
     void read_gps();
 private:
+    bool check_new_imu_data();
+
     HAL * _hal;
     Plane * _plane;
     uint32_t last_imu_timestamp;

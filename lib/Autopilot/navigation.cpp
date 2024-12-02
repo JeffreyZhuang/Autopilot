@@ -10,12 +10,16 @@ void Navigation::update() {
 
     // Limit loop rate
     if (time - prev_loop_time > dt) {
-        if (last_imu_timestamp != _plane->imu_timestamp) {
+        if (check_new_imu_data()) {
             update_accelerometer();
         }
 
         prev_loop_time = time;
     }
+}
+
+bool Navigation::check_new_imu_data() {
+    return last_imu_timestamp != _plane->imu_timestamp;
 }
 
 void Navigation::update_accelerometer() {

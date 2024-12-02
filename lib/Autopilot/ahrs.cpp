@@ -6,7 +6,22 @@ AHRS::AHRS(Plane * plane, HAL * hal) {
 }
 
 void AHRS::setup() {
-    filter.begin(100);
+    float sample_frequency = 1000000.0 / dt;
+    filter.begin(sample_frequency);
+}
+
+/**
+ * @brief Check if IMU data has been updated
+ * 
+ * @return true
+ * @return false
+ */
+bool AHRS::check_new_imu_data() {
+    return _plane->imu_timestamp != last_imu_timestamp;
+}
+
+bool AHRS::check_new_compass_data() {
+    return _plane->compass_timestamp != last_compass_timestamp;
 }
 
 void AHRS::update() {
@@ -14,10 +29,8 @@ void AHRS::update() {
 
     // Limit loop rate
     if (time - prev_loop_time > dt) {
-        // Check and only run if there is new sensor data
-        if (_plane->imu_timestamp != last_imu_timestamp) {
-            // Check and only use compass if there is new compass data
-            if (_plane->use_compass && (_plane->compass_timestamp != last_compass_timestamp)) {
+        if (check_new_imu_data()) {
+            if (_plane->use_compass && check_new_compass_data()) {
                 update_full();
             } else {
                 update_imu();

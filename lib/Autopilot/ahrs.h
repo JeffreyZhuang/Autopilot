@@ -18,6 +18,8 @@ private:
     void update_imu();
     void update_full();
     void upload_results();
+    bool check_new_imu_data();
+    bool check_new_compass_data();
 
     Plane * _plane;
     HAL * _hal;

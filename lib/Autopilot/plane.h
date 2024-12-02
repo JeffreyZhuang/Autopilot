@@ -9,7 +9,7 @@ enum class FlightState {
 };
 
 /**
- * @brief All flight data and parameters that get passed to classes
+ * @brief All flight data and settings that get passed to classes
  */
 struct Plane {
     // Constraints
