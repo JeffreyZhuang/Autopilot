@@ -6,7 +6,7 @@ Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane, hal), navigation(hal
 };
 
 void Autopilot::setup() {
-    // ahrs.setup();
+    ahrs.setup();
     _hal->setup();
 }
 
@@ -16,15 +16,11 @@ void Autopilot::loop() {
     uint32_t dt = _hal->get_time_us() - prev_loop_time;
     prev_loop_time = _hal->get_time_us();
 
-    // ahrs.update();
-    // navigation.update();
-    _hal->write_sd();
+    ahrs.update();
+    navigation.update();
+    _hal->write_sd(); // This takes 4ms, and is also the cause of freezing/inconsistent dt. Without it, dt is very consistent.
 
-    strcpy(txBuf, ""); 
-    sprintf(txBuf, "DT: %d\n", dt);
-    _hal->usb_print(txBuf);
-
-    if (_hal->get_time_us() - prev_print_time > 300000) {
+    if (_hal->get_time_us() - prev_print_time > 100000) {
         strcpy(txBuf, ""); 
         sprintf(txBuf, "%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", _plane->baro_alt, 
                                                                      _plane->imu_ax, 
@@ -33,7 +29,7 @@ void Autopilot::loop() {
                                                                      _plane->compass_mx, 
                                                                      _plane->compass_my, 
                                                                      _plane->compass_mz);
-        _hal->swo_print(txBuf);
+        _hal->usb_print(txBuf);
 
         _hal->toggle_led();
 

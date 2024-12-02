@@ -45,12 +45,30 @@ void HAL_Arduino::setup_peripherals() {
 }
 
 void HAL_Arduino::setup_sensors() {
-    imu.begin();
+    setup_imu();
+    
     baro.begin();
+
     mag.begin_SPI(PC13, &spi_bus);
 }
 
+void HAL_Arduino::setup_imu() {
+    imu.setAccelODR(ICM42688::odr200);
+    imu.setAccelFS(ICM42688::gpm4);
+
+    imu.setGyroODR(ICM42688::odr200);
+    imu.setGyroFS(ICM42688::dps500);
+
+    imu.begin();
+}
+
 void HAL_Arduino::setup_sd() {
+    // Micro SD pin configuration
+    SD.setDx(PC8, PC9, PC10, PC11);
+    SD.setCMD(PD2);
+    SD.setCK(PC12);
+
+    // Initialization
     swo.print("Initizliaing SD card...\n");
     while (!SD.begin(SD_DETECT_NONE)) {
         delay(10);
@@ -64,8 +82,10 @@ void HAL_Arduino::setup_sd() {
 }
 
 void HAL_Arduino::write_sd() {
-    file.println(String(micros()) + "," + String(_plane->baro_alt) + "," + String(_plane->imu_az));
+    file.println(String(millis()) + "," + String(_plane->baro_alt, 2) + "," + String(_plane->imu_az, 1));
+    swo.println("Before flush: " + String(micros()));
     file.flush();
+    swo.println("After flush: " + String(micros()));
 }
 
 void HAL_Arduino::poll() {

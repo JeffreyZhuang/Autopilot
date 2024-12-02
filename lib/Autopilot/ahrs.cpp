@@ -6,7 +6,7 @@ AHRS::AHRS(Plane * plane, HAL * hal) {
 }
 
 void AHRS::setup() {
-    filter.begin(200);
+    filter.begin(100);
 }
 
 void AHRS::update() {

@@ -25,7 +25,7 @@ private:
     uint32_t last_imu_timestamp;
     uint32_t last_compass_timestamp;
     uint32_t prev_loop_time;
-    uint32_t dt = 10000;
+    uint32_t dt = 10000; // 100hz
     uint32_t time;
 };
 

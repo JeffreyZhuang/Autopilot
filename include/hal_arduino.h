@@ -31,6 +31,7 @@ public:
 private:
     void setup_peripherals();
     void setup_sensors();
+    void setup_imu();
     void setup_sd();
     
     void poll_imu();
@@ -52,7 +53,5 @@ private:
     INA219 ina219;
 
     // Micro SD
-    Sd2Card card;
-    SdFatFs fatFs;
     File file;
 };
