@@ -49,6 +49,6 @@ void AHRS::upload_results() {
     // Multiply values by -1 because Madgwick uses the same coordinate system except upside down
     _plane->ahrs_roll = -filter.getRoll();
     _plane->ahrs_pitch = -filter.getPitch();
-    _plane->ahrs_yaw = -filter.getYaw();
+    _plane->ahrs_yaw = 360.0 - filter.getYaw();
     _plane->ahrs_timestamp = time;
 }
