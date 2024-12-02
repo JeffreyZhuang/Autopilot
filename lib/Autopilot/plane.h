@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+/**
+ * @brief Flight state for state machine
+ * 
+ */
 enum class FlightState {
     TAKEOFF = 1,
     LAND = 2

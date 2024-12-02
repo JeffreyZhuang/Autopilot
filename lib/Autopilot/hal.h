@@ -8,6 +8,7 @@
 
 /**
  * @brief Hardware abstraction layer
+ * 
  */
 class HAL {
 public:

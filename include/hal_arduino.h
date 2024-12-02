@@ -1,3 +1,6 @@
+#ifndef ARDUINO_HAL_H_
+#define ARDUINO_HAL_H_
+
 #include <ICM42688.h>
 #include <MS5611_SPI.h>
 #include <Arduino.h>
@@ -10,6 +13,7 @@
 
 /**
  * @brief Arduino implementation of the hardware abstraction layer
+ * 
  */
 class HAL_Arduino : public HAL {
 public:
@@ -55,3 +59,5 @@ private:
     // Micro SD
     File file;
 };
+
+#endif

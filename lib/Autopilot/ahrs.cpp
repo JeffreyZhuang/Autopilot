@@ -1,17 +1,26 @@
 #include <ahrs.h>
 
+/**
+ * @brief Construct a new AHRS::AHRS object
+ * 
+ * @param plane 
+ * @param hal 
+ */
 AHRS::AHRS(Plane * plane, HAL * hal) {
     _plane = plane;
     _hal = hal;
 }
 
+/**
+ * @brief Setup AHRS
+ */
 void AHRS::setup() {
     float sample_frequency = 1000000.0 / dt;
     filter.begin(sample_frequency);
 }
 
 /**
- * @brief Check if IMU data has been updated
+ * @brief Check if new IMU data is available
  * 
  * @return true
  * @return false
@@ -20,10 +29,19 @@ bool AHRS::check_new_imu_data() {
     return _plane->imu_timestamp != last_imu_timestamp;
 }
 
+/**
+ * @brief Check if new compass data is available
+ * 
+ * @return true 
+ * @return false 
+ */
 bool AHRS::check_new_compass_data() {
     return _plane->compass_timestamp != last_compass_timestamp;
 }
 
+/**
+ * @brief Update AHRS
+ */
 void AHRS::update() {
     time = _hal->get_time_us();
 
@@ -41,14 +59,22 @@ void AHRS::update() {
     }
 }
 
+/**
+ * @brief Update filter with only IMU
+ * 
+ */
 void AHRS::update_imu() {
-    // Multiply values by -1 because Madgwick uses the same coordinate system except upside down
+    // Convert coordinate system from plane to Madgwick
     filter.updateIMU(-_plane->imu_gx, _plane->imu_gy, -_plane->imu_gz, 
                      -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az);
     upload_results();
     last_imu_timestamp = _plane->imu_timestamp;
 }
 
+/**
+ * @brief Update filter with both IMU and compass
+ * 
+ */
 void AHRS::update_full() {
     filter.update(-_plane->imu_gx, _plane->imu_gy, -_plane->imu_gz, 
                   -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az, 
@@ -58,8 +84,12 @@ void AHRS::update_full() {
     last_compass_timestamp = _plane->compass_timestamp;
 }
 
+/**
+ * @brief Retrieve orientation from filter and insert it into plane struct
+ * 
+ */
 void AHRS::upload_results() {
-    // Multiply values by -1 because Madgwick uses the same coordinate system except upside down
+    // Convert coordinate system from Madgwick to plane
     _plane->ahrs_roll = -filter.getRoll();
     _plane->ahrs_pitch = filter.getPitch();
     _plane->ahrs_yaw = 360.0 - filter.getYaw();

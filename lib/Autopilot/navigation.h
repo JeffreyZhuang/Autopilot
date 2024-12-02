@@ -6,6 +6,7 @@
 
 /**
  * @brief Calculates the position of the plane
+ * 
  */
 class Navigation {
 public:

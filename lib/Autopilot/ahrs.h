@@ -7,6 +7,7 @@
 
 /**
  * @brief Attitude Heading Reference System
+ * 
  */
 class AHRS {
 public:
