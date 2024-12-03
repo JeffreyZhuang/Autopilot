@@ -75,6 +75,7 @@ void HAL_Arduino::toggle_led() {
  */
 void HAL_Arduino::setup_peripherals() {
     Serial.begin(115200);
+    
     pinMode(PC1, OUTPUT);
 
     i2c_bus.begin();
@@ -87,10 +88,8 @@ void HAL_Arduino::setup_peripherals() {
  */
 void HAL_Arduino::setup_sensors() {
     setup_imu();
-    
-    baro.begin();
-
-    mag.begin_SPI(PC13, &spi_bus);
+    setup_barometer();
+    setup_compass();
 }
 
 /**
@@ -105,6 +104,28 @@ void HAL_Arduino::setup_imu() {
     imu.setGyroFS(ICM42688::dps500);
 
     imu.begin();
+}
+
+/**
+ * @brief Setup compass
+ * 
+ */
+void HAL_Arduino::setup_compass() {
+    mag.begin_SPI(PC13, &spi_bus);
+    mag.setGain(MLX90393_GAIN_1X);
+    mag.setResolution(MLX90393_X, MLX90393_RES_17);
+    mag.setResolution(MLX90393_Y, MLX90393_RES_17);
+    mag.setResolution(MLX90393_Z, MLX90393_RES_16);
+    mag.setOversampling(MLX90393_OSR_3);
+    mag.setFilter(MLX90393_FILTER_5);
+}
+
+/**
+ * @brief Setup barometer
+ * 
+ */
+void HAL_Arduino::setup_barometer() {
+    baro.begin();
 }
 
 /**

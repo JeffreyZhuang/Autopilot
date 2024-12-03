@@ -83,9 +83,9 @@ bool Adafruit_MLX90393::_init(void) {
   }
 
   /* Set resolution. */
-  if (!setResolution(MLX90393_X, MLX90393_RES_16))
+  if (!setResolution(MLX90393_X, MLX90393_RES_17))
     return false;
-  if (!setResolution(MLX90393_Y, MLX90393_RES_16))
+  if (!setResolution(MLX90393_Y, MLX90393_RES_17))
     return false;
   if (!setResolution(MLX90393_Z, MLX90393_RES_16))
     return false;
@@ -95,7 +95,7 @@ bool Adafruit_MLX90393::_init(void) {
     return false;
 
   /* Set digital filtering. */
-  if (!setFilter(MLX90393_FILTER_7))
+  if (!setFilter(MLX90393_FILTER_5))
     return false;
 
   /* set INT pin to output interrupt */
