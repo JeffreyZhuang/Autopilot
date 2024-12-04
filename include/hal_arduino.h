@@ -21,6 +21,8 @@ public:
 
     void setup();
 
+    void calibrate_compass();
+
     void poll();
 
     void write_sd();

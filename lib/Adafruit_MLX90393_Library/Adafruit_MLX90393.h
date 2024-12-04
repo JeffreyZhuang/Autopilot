@@ -195,10 +195,12 @@ public:
 
   bool setTrigInt(bool state);
   bool readData(float *x, float *y, float *z);
-  bool readDataNonBlocking(float *x, float *y, float *z);
+  bool readDataNonBlocking();
 
   bool getEvent(sensors_event_t *event);
   void getSensor(sensor_t *sensor);
+
+  float x, y, z;
 
 private:
   Adafruit_I2CDevice *i2c_dev = NULL;

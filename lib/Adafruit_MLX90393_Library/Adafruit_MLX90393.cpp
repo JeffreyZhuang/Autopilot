@@ -372,18 +372,20 @@ bool Adafruit_MLX90393::readData(float *x, float *y, float *z) {
   return readMeasurement(x, y, z);
 }
 
-bool Adafruit_MLX90393::readDataNonBlocking(float *x, float *y, float *z) {
-    if (_state == 0) {
-        startSingleMeasurement();
-        _state = 1;
-        _start_time = millis();
-    } else if (_state == 1 && (millis() - _start_time) > _conversion_time) {
-        readMeasurement(x, y, z);
-        _state = 0;
-        return true;
-    }
+bool Adafruit_MLX90393::readDataNonBlocking() {
+  if (_state == 0) {
+    startSingleMeasurement();
+    _state = 1;
+    _start_time = millis();
 
-    return false;
+
+  } else if (_state == 1 && (millis() - _start_time) > _conversion_time) {
+    readMeasurement(&x, &y, &z);
+    _state = 0;
+    return true;
+  }
+
+  return false;
 }
 
 bool Adafruit_MLX90393::writeRegister(uint8_t reg, uint16_t data) {

@@ -40,6 +40,14 @@ bool AHRS::check_new_compass_data() {
 }
 
 /**
+ * @brief Apply compass calibration
+ * 
+ */
+void AHRS::apply_compass_calibration() {
+
+}
+
+/**
  * @brief Update AHRS
  */
 void AHRS::update() {

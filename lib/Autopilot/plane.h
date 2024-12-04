@@ -25,7 +25,7 @@ struct Plane {
     float roll_limit;
 
     // Settings
-    bool use_compass = false;
+    bool use_compass = true;
 
     // Monitor
     float batt_current;

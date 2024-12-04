@@ -35,7 +35,10 @@ void Autopilot::loop() {
     _hal->write_sd(); // This takes 4ms, and is also the cause of freezing/inconsistent dt. Without it, dt is very consistent.
 
     if (_hal->get_time_us() - prev_print_time > 100000) {
-        float heading = (atan2(_plane->compass_my, _plane->compass_mz) * 180) / M_PI;
+        float heading = (atan2(_plane->compass_my, _plane->compass_mx) * 180) / M_PI;
+        if (heading < 0) {
+           heading += 360;
+        }
         
         strcpy(txBuf, ""); 
         sprintf(txBuf, 
