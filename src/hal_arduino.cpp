@@ -246,7 +246,7 @@ void HAL_Arduino::poll_compass() {
                                    {0.015, 0.967, -0.025},
                                    {-0.032, -0.025, 1.005}};
     
-    if (mag.readDataNonBlocking()) {
+    if (mag.readDataNonBlocking()) { // The issue with the previous nonblocking read data function is because if there is no data, value of x gets set to 0 when you pass pointer since nothing gets set
         _plane->compass_timestamp = get_time_us();
 
         float mag_data[3] = {mag.x, mag.y, mag.z};
