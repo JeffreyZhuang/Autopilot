@@ -117,7 +117,7 @@ void HAL_Arduino::setup_compass() {
     mag.setResolution(MLX90393_Y, MLX90393_RES_16);
     mag.setResolution(MLX90393_Z, MLX90393_RES_16);
     mag.setOversampling(MLX90393_OSR_3);
-    mag.setFilter(MLX90393_FILTER_7);
+    mag.setFilter(MLX90393_FILTER_2);
 }
 
 /**
@@ -263,9 +263,9 @@ void HAL_Arduino::poll_compass() {
                           (soft_iron[i][2] * hi_cal[2]);
         }
 
-        _plane->compass_mx = mag_data[0];
+        _plane->compass_mx = -mag_data[0];
         _plane->compass_my = mag_data[1];
-        _plane->compass_mz = mag_data[2];
+        _plane->compass_mz = -mag_data[2];
     }
 }
 
