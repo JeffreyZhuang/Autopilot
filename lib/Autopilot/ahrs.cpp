@@ -73,8 +73,8 @@ void AHRS::update() {
  */
 void AHRS::update_imu() {
     // Convert coordinate system from plane to Madgwick
-    filter.updateIMU(-_plane->imu_gx, _plane->imu_gy, -_plane->imu_gz, 
-                     -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az);
+    filter.updateIMU(_plane->imu_gx, -_plane->imu_gy, -_plane->imu_gz, 
+                     _plane->imu_ax, -_plane->imu_ay, -_plane->imu_az);
     upload_results();
     last_imu_timestamp = _plane->imu_timestamp;
 }
@@ -84,9 +84,9 @@ void AHRS::update_imu() {
  * 
  */
 void AHRS::update_full() {
-    filter.update(-_plane->imu_gx, _plane->imu_gy, -_plane->imu_gz, 
-                  -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az, 
-                  _plane->compass_mx, _plane->compass_my, _plane->compass_mz);
+    filter.update(_plane->imu_gx, -_plane->imu_gy,- _plane->imu_gz, 
+                  _plane->imu_ax, -_plane->imu_ay, -_plane->imu_az, 
+                  _plane->compass_mx, -_plane->compass_my, -_plane->compass_mz);
     upload_results();
     last_imu_timestamp = _plane->imu_timestamp;
     last_compass_timestamp = _plane->compass_timestamp;
@@ -98,8 +98,8 @@ void AHRS::update_full() {
  */
 void AHRS::upload_results() {
     // Convert coordinate system from Madgwick to plane
-    _plane->ahrs_roll = -filter.getRoll();
+    _plane->ahrs_roll = filter.getRoll();
     _plane->ahrs_pitch = filter.getPitch();
-    _plane->ahrs_yaw = 360.0 - filter.getYaw();
+    _plane->ahrs_yaw = filter.getYaw();
     _plane->ahrs_timestamp = time;
 }

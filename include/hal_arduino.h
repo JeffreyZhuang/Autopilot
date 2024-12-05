@@ -62,6 +62,7 @@ private:
 
     // Micro SD
     File file;
+    uint8_t num_writes = 0;
 };
 
 #endif

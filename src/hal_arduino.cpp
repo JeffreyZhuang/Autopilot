@@ -117,7 +117,7 @@ void HAL_Arduino::setup_compass() {
     mag.setResolution(MLX90393_Y, MLX90393_RES_16);
     mag.setResolution(MLX90393_Z, MLX90393_RES_16);
     mag.setOversampling(MLX90393_OSR_3);
-    mag.setFilter(MLX90393_FILTER_2);
+    mag.setFilter(MLX90393_FILTER_7);
 }
 
 /**
@@ -145,7 +145,7 @@ void HAL_Arduino::setup_sd() {
     }
     swo.print("Initialization done\n");
 
-    file = SD.open("datalog.txt", FILE_WRITE);
+    file = SD.open("datalog.txt", O_CREAT | O_WRITE);
     if (!file) {
         swo.print("error opening test.txt\n");
     }
@@ -200,10 +200,13 @@ void HAL_Arduino::calibrate_compass() {
  * 
  */
 void HAL_Arduino::write_sd() {
-    file.println(String(millis()) + "," + String(_plane->baro_alt, 2) + "," + String(_plane->imu_az, 1));
-    swo.println("Before flush: " + String(micros()));
-    file.flush();
-    swo.println("After flush: " + String(micros()));
+    file.println(String(millis()) + "," + String(_plane->baro_alt, 2) + "," + String(_plane->imu_az, 1) + "," + String(_plane->imu_gz, 1));
+    num_writes++;
+
+    if (num_writes > 10) {
+        file.flush();
+        num_writes = 0;
+    }   
 }
 
 /**
@@ -296,5 +299,5 @@ void HAL_Arduino::poll_power_monitor() {
  * 
  */
 void HAL_Arduino::i2c_scan() {
-    return;
+
 }
