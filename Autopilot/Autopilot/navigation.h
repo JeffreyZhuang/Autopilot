@@ -8,7 +8,8 @@
  * @brief Calculates the position of the plane
  *
  */
-class Navigation {
+class Navigation
+{
 public:
     Navigation(HAL * hal, Plane * plane);
     void update();

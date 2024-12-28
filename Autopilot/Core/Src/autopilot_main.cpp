@@ -11,7 +11,6 @@
 #include <ina219.h>
 #include <mlx90393.h>
 #include <gnss.h>
-#include <plane.h>
 
 extern "C"
 {
@@ -52,7 +51,6 @@ void main_loop()
 	imu.getAGT();
 	mag.readDataNonBlocking();
 
-	// Packet to append to micro-SD buffer
 	Datalogging_packet p;
 	p.time = time;
 	p.acc_z = imu.accZ();

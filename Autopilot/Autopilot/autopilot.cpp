@@ -6,7 +6,8 @@
  * @param hal
  * @param plane
  */
-Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane, hal), navigation(hal, plane) {
+Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane, hal), navigation(hal, plane)
+{
     _hal = hal;
     _plane = plane;
 };
@@ -15,7 +16,8 @@ Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane, hal), navigation(hal
  * @brief Call once in the beginning to setup Autopilot
  *
  */
-void Autopilot::setup() {
+void Autopilot::setup()
+{
     ahrs.setup();
     _hal->setup();
 }
@@ -24,7 +26,8 @@ void Autopilot::setup() {
  * @brief Call every main loop iteration to update Autopilot
  *
  */
-void Autopilot::loop() {
+void Autopilot::loop()
+{
     _hal->poll();
 
     uint32_t dt = _hal->get_time_us() - prev_loop_time;
@@ -34,9 +37,11 @@ void Autopilot::loop() {
     navigation.update();
     // _hal->write_sd(); // This takes 4ms, and is also the cause of freezing/inconsistent dt. Without it, dt is very consistent.
 
-    if (_hal->get_time_us() - prev_print_time > 100000) {
+    if (_hal->get_time_us() - prev_print_time > 100000)
+    {
         float heading = (atan2(_plane->compass_my, _plane->compass_mx) * 180) / M_PI;
-        if (heading < 0) {
+        if (heading < 0)
+        {
            heading += 360;
         }
 

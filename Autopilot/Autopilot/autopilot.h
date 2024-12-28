@@ -12,7 +12,8 @@
 /**
  * @brief Autopilot
  */
-class Autopilot {
+class Autopilot
+{
 public:
     Autopilot(HAL * hal, Plane * plane);
 

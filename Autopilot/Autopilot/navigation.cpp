@@ -6,7 +6,8 @@
  * @param hal
  * @param plane
  */
-Navigation::Navigation(HAL * hal, Plane * plane) {
+Navigation::Navigation(HAL * hal, Plane * plane)
+{
     _hal = hal;
     _plane = plane;
 }
@@ -15,7 +16,8 @@ Navigation::Navigation(HAL * hal, Plane * plane) {
  * @brief Update navigation
  *
  */
-void Navigation::update() {
+void Navigation::update()
+{
     uint32_t time = _hal->get_time_us();
 
     // Limit loop rate
@@ -34,7 +36,8 @@ void Navigation::update() {
  * @return true
  * @return false
  */
-bool Navigation::check_new_imu_data() {
+bool Navigation::check_new_imu_data()
+{
     return last_imu_timestamp != _plane->imu_timestamp;
 }
 
@@ -42,6 +45,7 @@ bool Navigation::check_new_imu_data() {
  * @brief Update filter with only accelerometer
  *
  */
-void Navigation::update_accelerometer() {
+void Navigation::update_accelerometer()
+{
     last_imu_timestamp = _plane->imu_timestamp;
 }

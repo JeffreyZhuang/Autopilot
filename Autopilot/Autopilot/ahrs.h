@@ -1,7 +1,7 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include <MadgwickAHRS.h>
+#include <madgwick.h>
 #include <plane.h>
 #include <hal.h>
 
@@ -9,7 +9,8 @@
  * @brief Attitude Heading Reference System
  *
  */
-class AHRS {
+class AHRS
+{
 public:
     AHRS(Plane * plane, HAL * hal);
 
