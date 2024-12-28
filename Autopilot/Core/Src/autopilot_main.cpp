@@ -68,7 +68,7 @@ void main_loop()
 	}
 
 	// USB
-//	char txBuf[200];
+//	 char txBuf[200];
 //	sprintf(txBuf,
 //			"%u,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\r\n",
 //			time,
