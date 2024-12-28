@@ -30,6 +30,8 @@ public:
 private:
 	FATFS fatfs;
 	FIL fil;
+
+	// Double buffering approach
 	static constexpr int buffer_len = 500;
 	Datalogging_packet back_buffer[buffer_len];
 	Datalogging_packet front_buffer[buffer_len];

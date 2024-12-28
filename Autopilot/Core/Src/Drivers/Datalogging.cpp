@@ -13,10 +13,9 @@ void Datalogging::initialize()
 	FRESULT res = f_open(&fil, "data.bin", FA_WRITE | FA_READ | FA_CREATE_ALWAYS); // Don't use txt. Write code to turn into txt at end of flight.
 	if (res != FR_OK)
 	{
-		printf("SD card NOT open\n");
+		printf("SD card failed. Make sure it is inserted.\n");
 		while (1);
 	}
-	printf("SD card open\n");
 }
 
 void Datalogging::write()
@@ -35,8 +34,6 @@ void Datalogging::write()
 		{
 //			printf("Write success\n");
 		}
-
-//		printf("bytes written: %d\n", bytes_written);
 
 		front_buff_full = false;
 
@@ -70,9 +67,10 @@ void Datalogging::read()
 		UINT bytes_read;
 		res = f_read(&fil, &p, datalogging_packet_size, &bytes_read);
 
+		// Write human readable to txt file
+
 		if (res != FR_OK || bytes_read == 0) break;
 
-//		printf("bytes read: %d\n", bytes_read);
 		printf("%ld %f %f\n", p.time, p.acc_z, p.alt);
 	}
 

@@ -10,7 +10,8 @@
  * @brief Hardware abstraction layer
  *
  */
-class HAL {
+class HAL
+{
 public:
     HAL(Plane * plane);
 

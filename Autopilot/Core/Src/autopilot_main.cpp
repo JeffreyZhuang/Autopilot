@@ -11,6 +11,7 @@
 #include <icm42688p.h>
 #include <ina219.h>
 #include <mlx90393.h>
+#include <derived_hal.h>
 
 extern "C"
 {
@@ -30,6 +31,15 @@ extern DMA_HandleTypeDef hdma_sdio_tx;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim7;
 extern UART_HandleTypeDef huart3;
+
+ICM42688 imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4);
+INA219 ina219(&hi2c1, 0.01);
+Adafruit_MLX90393 mag;
+GNSS gnss(&huart3);
+Datalogging datalogging;
+
+// Triggered by timer interrupt at 400Hz
+uint32_t prev_time;
 
 // Counter increments every 10 us
 // Resolution is 10 us
@@ -51,14 +61,20 @@ void toggle_led()
 	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5); // LED
 }
 
-ICM42688 imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4);
-INA219 ina219(&hi2c1, 0.01);
-Adafruit_MLX90393 mag;
-GNSS gnss(&huart3);
-Datalogging datalogging;
+void setup_sensors()
+{
+	printf("%d\n", imu.begin());
 
-// Triggered by timer interrupt at 400Hz
-uint32_t prev_time;
+	Barometer_init();
+	Barometer_setOSR(OSR_4096);
+
+	mag.begin_SPI(GPIOC, GPIO_PIN_13, &hspi1, SPI_BAUDRATEPRESCALER_8);
+
+	datalogging.initialize();
+
+	gnss.setup();
+}
+
 void main_loop()
 {
 	uint32_t time = HAL_GetTick();
@@ -78,45 +94,13 @@ void main_loop()
 	datalogging.append_buffer(p);
 
 	uint8_t sentence[100];
-	if (gnss.parse(sentence))
-	{
-//		char txBuf[200];
-//		sprintf(txBuf, "lat: %f lon: %f sats: %d %s", gnss.lat, gnss.lon, gnss.sats, sentence);
-//		CDC_Transmit_FS((uint8_t *)txBuf, strlen(txBuf));
-	}
-
-	// USB
-//	char txBuf[200];
-//	sprintf(txBuf,
-//			"%u,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\r\n",
-//			time,
-//			imu.gyrX(),
-//			imu.gyrY(),
-//			imu.gyrZ(),
-//			imu.accX(),
-//			imu.accY(),
-//			imu.accZ(),
-//			mag.x,
-//			mag.y,
-//			mag.z,
-//			alt,
-//			voltage,
-//			current);
-//	CDC_Transmit_FS((uint8_t *)txBuf, strlen(txBuf));
+	gnss.parse(sentence);
 }
 
+// Time-critical autopilot code in interrupt, others in main loop
 void autopilot_main()
 {
-	printf("%d\n", imu.begin());
-
-	Barometer_init();
-	Barometer_setOSR(OSR_4096);
-
-	mag.begin_SPI(GPIOC, GPIO_PIN_13, &hspi1, SPI_BAUDRATEPRESCALER_8);
-
-	datalogging.initialize();
-
-	gnss.setup();
+	setup_sensors();
 
 	if (HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
 	{
