@@ -14,10 +14,7 @@ void Datalogging::initialize()
 	if (res != FR_OK)
 	{
 		printf("SD card NOT open\n");
-		while (1)
-		{
-
-		};
+		while (1);
 	}
 	printf("SD card open\n");
 }
@@ -26,7 +23,7 @@ void Datalogging::write()
 {
 	if (front_buff_full)
 	{
-		printf("time: %d, front_buffer size: %d\n", HAL_GetTick(), sizeof(front_buffer));
+		printf("time: %ld, front_buffer size: %d\n", HAL_GetTick(), sizeof(front_buffer));
 
 		UINT bytes_written;
 		FRESULT res = f_write(&fil, front_buffer, sizeof(front_buffer), &bytes_written);
@@ -76,10 +73,10 @@ void Datalogging::read()
 		if (res != FR_OK || bytes_read == 0) break;
 
 //		printf("bytes read: %d\n", bytes_read);
-		printf("%d %f %f\n", p.time, p.acc_z, p.alt);
+		printf("%ld %f %f\n", p.time, p.acc_z, p.alt);
 	}
 
-	while (1) {};
+	while (1);
 }
 
 void Datalogging::append_buffer(Datalogging_packet p)

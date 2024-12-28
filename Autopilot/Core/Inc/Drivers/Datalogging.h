@@ -12,7 +12,7 @@ extern "C" {
 }
 
 // Beware of padding to align to 4 byte memory
-typedef struct Datalogging_packet
+struct Datalogging_packet
 {
 	uint32_t time;
 	float acc_z;

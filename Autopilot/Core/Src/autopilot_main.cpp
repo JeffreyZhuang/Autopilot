@@ -35,15 +35,20 @@ extern UART_HandleTypeDef huart3;
 // Resolution is 10 us
 // Maximum allowed time is 42949672950 us or 12 hours
 // SysTick has maximum time of 4.7 hours
-uint32_t get_time_us(void)
+uint64_t get_time_us(void)
 {
     return __HAL_TIM_GET_COUNTER(&htim5) * 10;
 }
 
-void delay_us(uint32_t us)
+void delay_us(uint64_t us)
 {
-	uint32_t start = get_time_us();
+	uint64_t start = get_time_us();
 	while (get_time_us() - start < us);
+}
+
+void toggle_led()
+{
+	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5); // LED
 }
 
 ICM42688 imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4);
@@ -54,11 +59,10 @@ Datalogging datalogging;
 
 // Triggered by timer interrupt at 400Hz
 uint32_t prev_time;
-uint32_t dt;
 void main_loop()
 {
 	uint32_t time = HAL_GetTick();
-	dt = time - prev_time;
+	uint32_t dt = time - prev_time;
 	prev_time = time;
 
 	float alt = Barometer_getAltitude(true);
@@ -76,9 +80,9 @@ void main_loop()
 	uint8_t sentence[100];
 	if (gnss.parse(sentence))
 	{
-		char txBuf[200];
-		sprintf(txBuf, "lat: %f lon: %f sats: %d %s", gnss.lat, gnss.lon, gnss.sats, sentence);
-		CDC_Transmit_FS((uint8_t *)txBuf, strlen(txBuf));
+//		char txBuf[200];
+//		sprintf(txBuf, "lat: %f lon: %f sats: %d %s", gnss.lat, gnss.lon, gnss.sats, sentence);
+//		CDC_Transmit_FS((uint8_t *)txBuf, strlen(txBuf));
 	}
 
 	// USB
@@ -103,10 +107,6 @@ void main_loop()
 
 void autopilot_main()
 {
-	printf("Start\n");
-
-	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5); // LED
-
 	printf("%d\n", imu.begin());
 
 	Barometer_init();
@@ -128,7 +128,7 @@ void autopilot_main()
 		if (HAL_GetTick() < 10000)
 		{
 			datalogging.write();
-			printf("Time: %d %d\n", HAL_GetTick(), get_time_us());
+			printf("Time: %ld %lld\n", HAL_GetTick(), get_time_us());
 		}
 		else
 		{

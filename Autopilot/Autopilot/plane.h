@@ -57,6 +57,11 @@ struct Plane {
     float baro_temp;
     uint32_t baro_timestamp;
 
+    // GNSS
+    float lat;
+    float lon;
+    int sats;
+
     // AHRS
     float ahrs_roll;
     float ahrs_pitch;
