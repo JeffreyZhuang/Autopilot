@@ -49,7 +49,8 @@ DMA_HandleTypeDef hdma_sdio_tx;
 
 SPI_HandleTypeDef hspi1;
 
-TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim5;
+TIM_HandleTypeDef htim7;
 
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart3_rx;
@@ -65,8 +66,9 @@ static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_SDIO_SD_Init(void);
 static void MX_I2C1_Init(void);
-static void MX_TIM2_Init(void);
 static void MX_USART3_UART_Init(void);
+static void MX_TIM7_Init(void);
+static void MX_TIM5_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -118,8 +120,9 @@ int main(void)
   MX_SDIO_SD_Init();
   MX_I2C1_Init();
   MX_FATFS_Init();
-  MX_TIM2_Init();
   MX_USART3_UART_Init();
+  MX_TIM7_Init();
+  MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
   autopilot_main_c();
   /* USER CODE END 2 */
@@ -281,47 +284,88 @@ static void MX_SPI1_Init(void)
 }
 
 /**
-  * @brief TIM2 Initialization Function
+  * @brief TIM5 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_TIM2_Init(void)
+static void MX_TIM5_Init(void)
 {
 
-  /* USER CODE BEGIN TIM2_Init 0 */
+  /* USER CODE BEGIN TIM5_Init 0 */
 
-  /* USER CODE END TIM2_Init 0 */
+  /* USER CODE END TIM5_Init 0 */
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
-  /* USER CODE BEGIN TIM2_Init 1 */
+  /* USER CODE BEGIN TIM5_Init 1 */
 
-  /* USER CODE END TIM2_Init 1 */
-  htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 8399;
-  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 25;
-  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  /* USER CODE END TIM5_Init 1 */
+  htim5.Instance = TIM5;
+  htim5.Init.Prescaler = 840-1;
+  htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim5.Init.Period = 0xFFFFFFFF;
+  htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
   {
     Error_Handler();
   }
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  if (HAL_TIM_ConfigClockSource(&htim5, &sClockSourceConfig) != HAL_OK)
   {
     Error_Handler();
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM2_Init 2 */
+  /* USER CODE BEGIN TIM5_Init 2 */
+  if (HAL_TIM_Base_Start(&htim5) != HAL_OK)
+  {
+	  Error_Handler();
+  }
+  /* USER CODE END TIM5_Init 2 */
 
-  /* USER CODE END TIM2_Init 2 */
+}
+
+/**
+  * @brief TIM7 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM7_Init(void)
+{
+
+  /* USER CODE BEGIN TIM7_Init 0 */
+
+  /* USER CODE END TIM7_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM7_Init 1 */
+
+  /* USER CODE END TIM7_Init 1 */
+  htim7.Instance = TIM7;
+  htim7.Init.Prescaler = 8399;
+  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim7.Init.Period = 25;
+  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM7_Init 2 */
+
+  /* USER CODE END TIM7_Init 2 */
 
 }
 

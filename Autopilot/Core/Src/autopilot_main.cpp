@@ -7,10 +7,10 @@
 
 #include <autopilot_main.h>
 #include <Datalogging.h>
+#include <gnss.h>
 #include <icm42688p.h>
 #include <ina219.h>
 #include <mlx90393.h>
-#include <gnss.h>
 
 extern "C"
 {
@@ -27,8 +27,24 @@ extern SPI_HandleTypeDef hspi1;
 extern SD_HandleTypeDef hsd;
 extern DMA_HandleTypeDef hdma_sdio_rx;
 extern DMA_HandleTypeDef hdma_sdio_tx;
-extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim5;
+extern TIM_HandleTypeDef htim7;
 extern UART_HandleTypeDef huart3;
+
+// Counter increments every 10 us
+// Resolution is 10 us
+// Maximum allowed time is 42949672950 us or 12 hours
+// SysTick has maximum time of 4.7 hours
+uint32_t get_time_us(void)
+{
+    return __HAL_TIM_GET_COUNTER(&htim5) * 10;
+}
+
+void delay_us(uint32_t us)
+{
+	uint32_t start = get_time_us();
+	while (get_time_us() - start < us);
+}
 
 ICM42688 imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4);
 INA219 ina219(&hi2c1, 0.01);
@@ -102,7 +118,7 @@ void autopilot_main()
 
 	gnss.setup();
 
-	if (HAL_TIM_Base_Start_IT(&htim2) != HAL_OK)
+	if (HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
 	{
 		Error_Handler();
 	}
@@ -112,6 +128,7 @@ void autopilot_main()
 		if (HAL_GetTick() < 10000)
 		{
 			datalogging.write();
+			printf("Time: %d %d\n", HAL_GetTick(), get_time_us());
 		}
 		else
 		{
@@ -122,7 +139,7 @@ void autopilot_main()
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if (htim == &htim2)
+	if (htim == &htim7)
 	{
 		main_loop();
 	}

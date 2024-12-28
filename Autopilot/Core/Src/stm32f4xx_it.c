@@ -59,7 +59,7 @@ extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern DMA_HandleTypeDef hdma_sdio_rx;
 extern DMA_HandleTypeDef hdma_sdio_tx;
 extern SD_HandleTypeDef hsd;
-extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim7;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 /* USER CODE BEGIN EV */
 
@@ -218,20 +218,6 @@ void DMA1_Stream1_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles TIM2 global interrupt.
-  */
-void TIM2_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM2_IRQn 0 */
-
-  /* USER CODE END TIM2_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim2);
-  /* USER CODE BEGIN TIM2_IRQn 1 */
-
-  /* USER CODE END TIM2_IRQn 1 */
-}
-
-/**
   * @brief This function handles SDIO global interrupt.
   */
 void SDIO_IRQHandler(void)
@@ -243,6 +229,20 @@ void SDIO_IRQHandler(void)
   /* USER CODE BEGIN SDIO_IRQn 1 */
 
   /* USER CODE END SDIO_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM7 global interrupt.
+  */
+void TIM7_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM7_IRQn 0 */
+
+  /* USER CODE END TIM7_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim7);
+  /* USER CODE BEGIN TIM7_IRQn 1 */
+
+  /* USER CODE END TIM7_IRQn 1 */
 }
 
 /**
