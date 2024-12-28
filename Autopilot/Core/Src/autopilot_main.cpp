@@ -67,7 +67,7 @@ void main_loop()
 		CDC_Transmit_FS((uint8_t *)txBuf, strlen(txBuf));
 	}
 
-	// US
+	// USB
 //	char txBuf[200];
 //	sprintf(txBuf,
 //			"%u,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\r\n",

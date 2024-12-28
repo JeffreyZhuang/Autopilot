@@ -1,10 +1,10 @@
-/*
- * hal.cpp
+#include <hal.h>
+
+/**
+ * @brief Construct a new HAL::HAL object
  *
- *  Created on: Dec. 27, 2024
- *      Author: jeffr
+ * @param plane
  */
-
-
-
-
+HAL::HAL(Plane * plane) {
+    _plane = plane;
+}
