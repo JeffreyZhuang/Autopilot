@@ -58,19 +58,15 @@ void AHRS::apply_compass_calibration()
 void AHRS::update()
 {
     time = _hal->get_time_us();
+    prev_loop_time = time;
 
-    // Limit loop rate
-    if (time - prev_loop_time > dt) {
-        if (check_new_imu_data()) {
-            if (_plane->use_compass && check_new_compass_data()) {
-                update_full();
-            } else {
-                update_imu();
-            }
-        }
-
-        prev_loop_time = time;
-    }
+	if (check_new_imu_data()) {
+		if (_plane->use_compass && check_new_compass_data()) {
+			update_full();
+		} else {
+			update_imu();
+		}
+	}
 }
 
 /**

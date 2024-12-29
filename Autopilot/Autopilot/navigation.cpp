@@ -18,16 +18,12 @@ Navigation::Navigation(HAL * hal, Plane * plane)
  */
 void Navigation::update()
 {
-    uint32_t time = _hal->get_time_us();
+    uint64_t time = _hal->get_time_us();
+    prev_loop_time = time;
 
-    // Limit loop rate
-    if (time - prev_loop_time > dt) {
-        if (check_new_imu_data()) {
-            update_accelerometer();
-        }
-
-        prev_loop_time = time;
-    }
+	if (check_new_imu_data()) {
+		update_accelerometer();
+	}
 }
 
 /**
