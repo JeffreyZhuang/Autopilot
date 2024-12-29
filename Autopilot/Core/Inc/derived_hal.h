@@ -31,6 +31,7 @@ public:
 	void setup();
 	void poll();
 	void write_sd();
+	void read_sd();
 	void swo_print(char * str);
 	void usb_print(char * str);
 	void i2c_scan();

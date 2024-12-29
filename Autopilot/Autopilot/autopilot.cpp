@@ -39,5 +39,12 @@ void Autopilot::loop()
 
 void Autopilot::logging_loop()
 {
-	_hal->write_sd();
+	if (_hal->get_time_us() < 10000000)
+	{
+		_hal->write_sd();
+	}
+	else
+	{
+		_hal->read_sd();
+	}
 }

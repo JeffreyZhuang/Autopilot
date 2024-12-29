@@ -22,6 +22,7 @@ public:
 
     // Datalogging
     virtual void write_sd() = 0;
+    virtual void read_sd() = 0;
 
     // Debug
     virtual void swo_print(char * str) = 0;

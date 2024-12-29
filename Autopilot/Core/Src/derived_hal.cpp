@@ -32,9 +32,24 @@ void Derived_hal::poll()
 	uint32_t time = HAL_GetTick();
 
 	float alt = Barometer_getAltitude(true);
+	_plane->baro_alt = alt;
+	_plane->baro_timestamp = get_time_us();
+
 	float voltage = ina219.read_voltage();
 	float current = ina219.read_current();
+	_plane->autopilot_voltage = voltage;
+	_plane->autopilot_current = current;
+
 	imu.getAGT();
+	_plane->imu_ax = -imu.accX();
+	_plane->imu_ay = -imu.accY();
+	_plane->imu_az = imu.accZ();
+	_plane->imu_gx = -imu.gyrX();
+	_plane->imu_gy = -imu.gyrY();
+	_plane->imu_gz = imu.gyrZ();
+	_plane->imu_temp = imu.temp();
+	_plane->imu_timestamp = get_time_us();
+
 	mag.readDataNonBlocking();
 
 	Sd_packet p;
@@ -44,12 +59,21 @@ void Derived_hal::poll()
 	sd.append_buffer(p);
 
 	uint8_t sentence[100];
-	gnss.parse(sentence);
+	if (gnss.parse(sentence))
+	{
+		_plane->lat = gnss.lat;
+		_plane->lon = gnss.lon;
+	}
 }
 
 void Derived_hal::write_sd()
 {
 	sd.write();
+}
+
+void Derived_hal::read_sd()
+{
+	sd.read();
 }
 
 void Derived_hal::swo_print(char * str)
