@@ -1,5 +1,10 @@
 #include "derived_hal.h"
 
+void Derived_hal::init_logger()
+{
+	sd.initialize();
+}
+
 void Derived_hal::write_sd()
 {
 	Sd_packet p;

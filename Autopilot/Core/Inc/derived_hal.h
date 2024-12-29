@@ -45,7 +45,12 @@ public:
 	void read_gnss();
 	void gnss_dma_complete();
 
+	// compass_hal.cpp
+	void init_compass();
+	void read_compass();
+
 	// logger_hal.cpp
+	void init_logger();
 	void write_sd();
 	void flush_sd();
 	void read_sd();
@@ -59,6 +64,9 @@ public:
 	// time_hal.cpp
 	void delay_us(uint64_t);
 	uint64_t get_time_us();
+
+	// power_monitor_hal.cpp
+	void read_power_monitor();
 
 private:
 	Plane * _plane;

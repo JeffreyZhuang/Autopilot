@@ -12,32 +12,16 @@ void Derived_hal::init()
 {
 	init_imu();
 	init_baro();
-
-	mag.begin_SPI(GPIOC, GPIO_PIN_13, &hspi1, SPI_BAUDRATEPRESCALER_8);
-
-	sd.initialize();
-
+	init_compass();
 	init_gnss();
-
-	if (HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
-	{
-		Error_Handler();
-	}
+	init_logger();
 }
 
 void Derived_hal::read_sensors()
 {
-	uint32_t time = HAL_GetTick();
-
 	read_imu();
 	read_baro();
-
-	float voltage = ina219.read_voltage();
-	float current = ina219.read_current();
-	_plane->autopilot_voltage = voltage;
-	_plane->autopilot_current = current;
-
-	mag.readDataNonBlocking();
-
+	read_compass();
 	read_gnss();
+	read_power_monitor();
 }

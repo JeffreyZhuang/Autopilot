@@ -21,6 +21,11 @@ void autopilot_main()
 {
 	autopilot.init();
 
+	if (HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
 	for (;;)
 	{
 		autopilot.logger_task();
