@@ -15,10 +15,9 @@ void Autopilot::init()
 void Autopilot::main_task()
 {
     _hal->read_sensors();
-    _hal->write_sd();
-
     _ahrs.update();
     _navigation.update();
+    _hal->write_sd();
 }
 
 void Autopilot::logger_task()
