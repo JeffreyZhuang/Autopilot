@@ -12,9 +12,11 @@ class PID
 {
 public:
     PID(float kP, float kI, float kD, float integral_limit);
+
     float get_output(float state, float setpoint, float dt);
 private:
     float clamp(float n, float min, float max);
+
     float _kP;
     float _kI;
     float _kD;
