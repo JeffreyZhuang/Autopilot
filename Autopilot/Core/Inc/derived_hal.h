@@ -56,9 +56,8 @@ public:
 	void read_sd();
 
 	// debug_hal.cpp
-	void swo_print(char * str);
+	void debug_print(char * str);
 	void usb_print(char * str);
-	void i2c_scan();
 	void toggle_led();
 
 	// time_hal.cpp

@@ -1,18 +1,13 @@
 #include "derived_hal.h"
 
-void Derived_hal::swo_print(char * str)
+void Derived_hal::debug_print(char * str)
 {
 	printf(str);
 }
 
 void Derived_hal::usb_print(char * str)
 {
-
-}
-
-void Derived_hal::i2c_scan()
-{
-
+	CDC_Transmit_FS((uint8_t*)str, strlen(str));
 }
 
 void Derived_hal::toggle_led()

@@ -8,11 +8,9 @@ void Derived_hal::init_logger()
 void Derived_hal::write_sd()
 {
 	Sd_packet p;
-
-	p.time = _plane->time;
+	p.time = get_time_us();
 	p.acc_z = _plane->imu_az;
 	p.alt = _plane->baro_alt;
-
 	_sd.append_buffer(p);
 }
 

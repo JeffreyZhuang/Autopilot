@@ -17,7 +17,6 @@ AHRS::AHRS(Plane * plane, HAL * hal)
  */
 void AHRS::setup()
 {
-    float sample_frequency = 1000000.0 / dt;
     filter.begin(sample_frequency);
 }
 

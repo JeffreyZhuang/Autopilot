@@ -11,7 +11,7 @@
 class PID
 {
 public:
-    PID(float kP, float kI, float kD, float integral_limit);
+    PID(float kP, float kI, float kD, float integral_limit, float output_limit);
 
     float get_output(float state, float setpoint, float dt);
 private:
@@ -23,6 +23,7 @@ private:
     float _integral_limit;
     float _integral = 0;
     float _prev_error = 0;
+    float _output_limit;
 };
 
 #endif /* PID_H_ */

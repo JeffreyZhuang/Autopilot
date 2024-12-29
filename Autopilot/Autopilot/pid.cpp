@@ -1,11 +1,12 @@
 #include "pid.h"
 
-PID::PID(float kP, float kI, float kD, float integral_limit)
+PID::PID(float kP, float kI, float kD, float integral_limit, float output_limit)
 {
     _kP = kP;
     _kI = kI;
     _kD = kD;
     _integral_limit = integral_limit;
+    _output_limit = output_limit;
 }
 
 float PID::get_output(float state, float setpoint, float dt)
@@ -19,6 +20,7 @@ float PID::get_output(float state, float setpoint, float dt)
     _prev_error = error;
 
     float output = _kP * error + _kI * _integral + _kD * derivative;
+    output = clamp(output, -_output_limit, _output_limit);
 
     return output;
 }

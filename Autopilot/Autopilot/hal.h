@@ -20,15 +20,14 @@ public:
     // Sensors
     virtual void read_sensors() = 0;
 
-    // Datalogging
+    // Logger
     virtual void write_sd() = 0;
     virtual void flush_sd() = 0;
     virtual void read_sd() = 0;
 
     // Debug
-    virtual void swo_print(char * str) = 0;
+    virtual void debug_print(char * str) = 0;
     virtual void usb_print(char * str) = 0;
-    virtual void i2c_scan() = 0;
     virtual void toggle_led() = 0;
 
     // Time

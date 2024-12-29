@@ -57,8 +57,7 @@ void Sd::read()
 	if (res != FR_OK)
 	{
 		printf("Error when opening file\n");
-
-		return; // Multiple exit points bad
+		while (1);
 	}
 
 	while (1)

@@ -27,9 +27,6 @@ struct Plane {
     // Settings
     bool use_compass = true;
 
-    // Time
-    uint64_t time;
-
     // Monitor
     float batt_current;
     float batt_voltage;
@@ -37,7 +34,7 @@ struct Plane {
     float autopilot_voltage;
 
     // State machine
-    FlightState state = FlightState::TAKEOFF;
+    FlightState flightState = FlightState::TAKEOFF;
 
     // IMU
     float imu_ax;

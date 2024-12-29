@@ -3,6 +3,12 @@
 void Derived_hal::init_imu()
 {
 	_imu.begin();
+
+	_imu.setAccelODR(ICM42688::odr500);
+	_imu.setAccelFS(ICM42688::gpm4);
+
+	_imu.setGyroODR(ICM42688::odr500);
+	_imu.setGyroFS(ICM42688::dps500);
 }
 
 void Derived_hal::read_imu()
