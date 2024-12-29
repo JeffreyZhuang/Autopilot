@@ -19,6 +19,7 @@ public:
 
     void setup();
     void loop();
+    void logging_loop();
 private:
     HAL * _hal;
     Plane * _plane;

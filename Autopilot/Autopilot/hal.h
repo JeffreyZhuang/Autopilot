@@ -30,8 +30,8 @@ public:
     virtual void toggle_led() = 0;
 
     // Time
-    virtual void delay_us(uint32_t us) = 0;
-    virtual uint32_t get_time_us() = 0;
+    virtual void delay_us(uint64_t us) = 0;
+    virtual uint64_t get_time_us() = 0;
 private:
     Plane * _plane;
 };

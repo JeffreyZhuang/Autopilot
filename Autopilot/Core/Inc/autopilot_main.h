@@ -8,10 +8,6 @@
 #ifndef INC_AUTOPILOT_MAIN_H_
 #define INC_AUTOPILOT_MAIN_H_
 
-void SD_init();
-void SD_write();
-
-void main_loop();
 void autopilot_main();
 
 #ifdef __cplusplus
