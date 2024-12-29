@@ -2,7 +2,7 @@
 
 void Derived_hal::swo_print(char * str)
 {
-
+	printf(str);
 }
 
 void Derived_hal::usb_print(char * str)

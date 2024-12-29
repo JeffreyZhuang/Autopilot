@@ -24,7 +24,6 @@ public:
 private:
     HAL * _hal;
     Plane * _plane;
-
     AHRS _ahrs;
     Navigation _navigation;
 };
