@@ -14,14 +14,14 @@ class Test
 
 };
 
-void autopilot_main();
+void main_cpp();
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-void autopilot_main_c();
+void main_c();
 
 #ifdef __cplusplus
 }

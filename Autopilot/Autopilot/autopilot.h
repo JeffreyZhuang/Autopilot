@@ -18,6 +18,7 @@ public:
     Autopilot(HAL * hal, Plane * plane);
 
     void init();
+
     void main_task();
     void logger_task();
 private:
@@ -26,10 +27,6 @@ private:
 
     AHRS ahrs;
     Navigation navigation;
-
-    uint32_t prev_loop_time;
-    uint32_t prev_print_time;
-    char txBuf[500];
 };
 
 #endif

@@ -1,8 +1,5 @@
-/*
- * autopilot_main.cpp
- *
- *  Created on: Dec. 6, 2024
- *      Author: jeffr
+/**
+ * Scheduler
  */
 
 #include <autopilot_main.h>
@@ -14,10 +11,7 @@ Plane plane;
 Derived_hal derived_hal(&plane);
 Autopilot autopilot(&derived_hal, &plane);
 
-/**
- * Scheduler
- */
-void autopilot_main()
+void main_cpp()
 {
 	autopilot.init();
 
@@ -50,8 +44,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 
 extern "C"
 {
-void autopilot_main_c()
+void main_c()
 {
-	autopilot_main();
+	main_cpp();
 }
 }

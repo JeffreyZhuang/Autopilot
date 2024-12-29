@@ -124,7 +124,7 @@ int main(void)
   MX_TIM7_Init();
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
-  autopilot_main_c();
+  main_c();
   /* USER CODE END 2 */
 
   /* Infinite loop */
