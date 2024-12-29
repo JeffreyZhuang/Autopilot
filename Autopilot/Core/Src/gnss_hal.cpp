@@ -12,6 +12,8 @@ void Derived_hal::read_gnss()
 	{
 		_plane->lat = _gnss.lat;
 		_plane->lon = _gnss.lon;
+		_plane->sats = _gnss.sats;
+		_plane->gnss_timestamp = get_time_us();
 	}
 }
 

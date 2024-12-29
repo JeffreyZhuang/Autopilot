@@ -64,6 +64,7 @@ struct Plane {
     float lat;
     float lon;
     int sats;
+    uint64_t gnss_timestamp;
 
     // AHRS
     float ahrs_roll;

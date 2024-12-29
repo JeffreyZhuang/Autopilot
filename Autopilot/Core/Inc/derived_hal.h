@@ -75,6 +75,11 @@ private:
 	Adafruit_MLX90393 _mag;
 	GNSS _gnss;
 	Sd _sd;
+
+	float _hard_iron[3] = {52.67, -5.27, 81.54};
+	float _soft_iron[3][3] = {{1.031, 0.015, -0.0032},
+	                         {0.015, 0.967, -0.025},
+	                         {-0.032, -0.025, 1.005}};
 };
 
 #endif /* INC_DERIVED_HAL_H_ */
