@@ -5,10 +5,6 @@
 #include <plane.h>
 #include <hal.h>
 
-/**
- * @brief Attitude Heading Reference System
- *
- */
 class AHRS
 {
 public:
