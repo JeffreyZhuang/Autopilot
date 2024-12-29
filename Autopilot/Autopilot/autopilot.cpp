@@ -2,14 +2,14 @@
 
 Autopilot::Autopilot(HAL * hal, Plane * plane): _ahrs(plane, hal), _navigation(hal, plane), _commander(hal, plane)
 {
-    _hal = hal;
-    _plane = plane;
+	_hal = hal;
+	_plane = plane;
 };
 
 void Autopilot::init()
 {
-    _ahrs.setup();
-    _hal->init();
+	_ahrs.setup();
+	_hal->init();
 }
 
 void Autopilot::main_task()
