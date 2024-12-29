@@ -32,30 +32,34 @@ public:
 	void init();
 	void read_sensors();
 
-	// imu.cpp
+	// imu_hal.cpp
 	void init_imu();
 	void read_imu();
 
-	// baro.cpp
+	// baro_hal.cpp
 	void init_baro();
 	void read_baro();
 
-	// logger.cpp
+	// gnss_hal.cpp
+	void init_gnss();
+	void read_gnss();
+	void gnss_dma_complete();
+
+	// logger_hal.cpp
 	void write_sd();
 	void flush_sd();
 	void read_sd();
 
-	// debug.cpp
+	// debug_hal.cpp
 	void swo_print(char * str);
 	void usb_print(char * str);
 	void i2c_scan();
 	void toggle_led();
 
-	// time.cpp
+	// time_hal.cpp
 	void delay_us(uint64_t);
 	uint64_t get_time_us();
 
-	void gnss_dma_complete();
 private:
 	Plane * _plane;
 	ICM42688 imu;

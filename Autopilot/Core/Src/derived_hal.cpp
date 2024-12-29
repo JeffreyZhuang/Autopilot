@@ -17,7 +17,7 @@ void Derived_hal::init()
 
 	sd.initialize();
 
-	gnss.setup();
+	init_gnss();
 
 	if (HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
 	{
@@ -39,15 +39,5 @@ void Derived_hal::read_sensors()
 
 	mag.readDataNonBlocking();
 
-	uint8_t sentence[100];
-	if (gnss.parse(sentence))
-	{
-		_plane->lat = gnss.lat;
-		_plane->lon = gnss.lon;
-	}
-}
-
-void Derived_hal::gnss_dma_complete()
-{
-	gnss.dma_complete();
+	read_gnss();
 }
