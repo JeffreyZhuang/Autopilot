@@ -5,14 +5,8 @@
  *      Author: jeffr
  */
 
-#ifndef INC_AUTOPILOT_MAIN_H_
-#define INC_AUTOPILOT_MAIN_H_
-
-// Put derived_hal into here
-class Test
-{
-
-};
+#ifndef INC_SCHEDULER_H_
+#define INC_SCHEDULER_H_
 
 void main_cpp();
 
@@ -27,4 +21,4 @@ void main_c();
 }
 #endif
 
-#endif /* INC_AUTOPILOT_MAIN_H_ */
+#endif /* INC_SCHEDULER_H_ */

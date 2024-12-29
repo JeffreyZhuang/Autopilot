@@ -1,10 +1,6 @@
-/**
- * Scheduler
- */
-
-#include <autopilot_main.h>
 #include "plane.h"
 #include <derived_hal.h>
+#include <scheduler.h>
 #include "autopilot.h"
 
 Plane plane;
