@@ -63,7 +63,7 @@ bool GNSS::parse(uint8_t sentence[])
 }
 
 // Remember to disable UBX output! It is only made for NMEA packets, not UBX.
-void GNSS::callback()
+void GNSS::dma_complete()
 {
 	// Append recieved byte to GNSS sentence
 	nmea_sentence[last_sentence_index] = rx_buffer[0];

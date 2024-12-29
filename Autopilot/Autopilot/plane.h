@@ -27,6 +27,9 @@ struct Plane {
     // Settings
     bool use_compass = true;
 
+    // Time
+    uint64_t time;
+
     // Monitor
     float batt_current;
     float batt_voltage;

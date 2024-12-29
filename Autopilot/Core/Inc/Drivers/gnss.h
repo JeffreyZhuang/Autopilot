@@ -23,7 +23,7 @@ class GNSS
 public:
 	GNSS(UART_HandleTypeDef* uart);
 	void setup();
-	void callback();
+	void dma_complete();
 	bool parse(uint8_t sentence[]);
 
 	float lat; // deg

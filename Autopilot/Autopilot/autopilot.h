@@ -17,9 +17,9 @@ class Autopilot
 public:
     Autopilot(HAL * hal, Plane * plane);
 
-    void setup();
-    void loop();
-    void logging_loop();
+    void init();
+    void main_task();
+    void logger_task();
 private:
     HAL * _hal;
     Plane * _plane;

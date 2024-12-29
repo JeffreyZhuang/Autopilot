@@ -28,17 +28,34 @@ class Derived_hal : public HAL
 {
 public:
 	Derived_hal(Plane * plane);
-	void setup();
-	void poll();
+
+	void init();
+	void read_sensors();
+
+	// imu.cpp
+	void init_imu();
+	void read_imu();
+
+	// baro.cpp
+	void init_baro();
+	void read_baro();
+
+	// logger.cpp
 	void write_sd();
+	void flush_sd();
 	void read_sd();
+
+	// debug.cpp
 	void swo_print(char * str);
 	void usb_print(char * str);
 	void i2c_scan();
 	void toggle_led();
+
+	// time.cpp
 	void delay_us(uint64_t);
 	uint64_t get_time_us();
-	void gnss_callback();
+
+	void gnss_dma_complete();
 private:
 	Plane * _plane;
 	ICM42688 imu;

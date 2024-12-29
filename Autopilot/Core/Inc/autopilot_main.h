@@ -8,6 +8,12 @@
 #ifndef INC_AUTOPILOT_MAIN_H_
 #define INC_AUTOPILOT_MAIN_H_
 
+// Put derived_hal into here
+class Test
+{
+
+};
+
 void autopilot_main();
 
 #ifdef __cplusplus

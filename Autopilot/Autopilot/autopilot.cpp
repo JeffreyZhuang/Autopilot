@@ -16,19 +16,20 @@ Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane, hal), navigation(hal
  * @brief Call once in the beginning to setup Autopilot
  *
  */
-void Autopilot::setup()
+void Autopilot::init()
 {
     ahrs.setup();
-    _hal->setup();
+    _hal->init();
 }
 
 /**
  * @brief Call every main loop iteration to update Autopilot
  *
  */
-void Autopilot::loop()
+void Autopilot::main_task()
 {
-    _hal->poll();
+    _hal->read_sensors();
+    _hal->write_sd();
 
     uint32_t dt = _hal->get_time_us() - prev_loop_time;
     prev_loop_time = _hal->get_time_us();
@@ -37,11 +38,11 @@ void Autopilot::loop()
     navigation.update();
 }
 
-void Autopilot::logging_loop()
+void Autopilot::logger_task()
 {
 	if (_hal->get_time_us() < 10000000)
 	{
-		_hal->write_sd();
+		_hal->flush_sd();
 	}
 	else
 	{

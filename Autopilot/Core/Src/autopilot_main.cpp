@@ -19,11 +19,11 @@ Autopilot autopilot(&derived_hal, &plane);
  */
 void autopilot_main()
 {
-	autopilot.setup();
+	autopilot.init();
 
 	for (;;)
 	{
-		autopilot.logging_loop();
+		autopilot.logger_task();
 	}
 }
 
@@ -31,7 +31,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim == &htim7)
 	{
-		autopilot.loop();
+		autopilot.main_task();
 	}
 }
 
@@ -39,7 +39,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	if (huart == &huart3)
 	{
-		derived_hal.gnss_callback();
+		derived_hal.gnss_dma_complete();
 	}
 }
 
