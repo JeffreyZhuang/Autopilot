@@ -14,11 +14,11 @@ void Autopilot::init()
 
 void Autopilot::main_task()
 {
-    _hal->read_sensors();
-    _ahrs.update();
-    _navigation.update();
-    _hal->write_sd();
-    _commander.update();
+	_hal->read_sensors();
+	_ahrs.update();
+	_navigation.update();
+	_hal->write_sd();
+	_commander.update();
 
 	char txBuf[200];
 	sprintf(txBuf, "%.1f\t%.1f\t%.1f\r\n", _plane->ahrs_roll, _plane->ahrs_pitch, _plane->ahrs_yaw);
