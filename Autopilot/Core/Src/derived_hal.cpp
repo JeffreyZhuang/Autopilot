@@ -17,9 +17,14 @@ void Derived_hal::setup()
 
 	mag.begin_SPI(GPIOC, GPIO_PIN_13, &hspi1, SPI_BAUDRATEPRESCALER_8);
 
-	datalogging.initialize();
+	sd.initialize();
 
 	gnss.setup();
+
+	if (HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
+	{
+		Error_Handler();
+	}
 }
 
 void Derived_hal::poll()
@@ -32,11 +37,11 @@ void Derived_hal::poll()
 	imu.getAGT();
 	mag.readDataNonBlocking();
 
-	Datalogging_packet p;
+	Sd_packet p;
 	p.time = time;
 	p.acc_z = imu.accZ();
 	p.alt = alt;
-	datalogging.append_buffer(p);
+	sd.append_buffer(p);
 
 	uint8_t sentence[100];
 	gnss.parse(sentence);
@@ -44,7 +49,7 @@ void Derived_hal::poll()
 
 void Derived_hal::write_sd()
 {
-	datalogging.write();
+	sd.write();
 }
 
 void Derived_hal::swo_print(char * str)

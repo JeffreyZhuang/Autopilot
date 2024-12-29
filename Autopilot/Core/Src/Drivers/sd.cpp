@@ -5,9 +5,9 @@
  *      Author: jeffr
  */
 
-#include <Datalogging.h>
+#include <sd.h>
 
-void Datalogging::initialize()
+void Sd::initialize()
 {
 	f_mount(&fatfs, SDPath, 1);
 	FRESULT res = f_open(&fil, "data.bin", FA_WRITE | FA_READ | FA_CREATE_ALWAYS); // Don't use txt. Write code to turn into txt at end of flight.
@@ -18,7 +18,7 @@ void Datalogging::initialize()
 	}
 }
 
-void Datalogging::write()
+void Sd::write()
 {
 	if (front_buff_full)
 	{
@@ -49,7 +49,7 @@ void Datalogging::write()
 	}
 }
 
-void Datalogging::read()
+void Sd::read()
 {
 	f_close(&fil);
 
@@ -63,9 +63,9 @@ void Datalogging::read()
 
 	while (1)
 	{
-		Datalogging_packet p;
+		Sd_packet p;
 		UINT bytes_read;
-		res = f_read(&fil, &p, datalogging_packet_size, &bytes_read);
+		res = f_read(&fil, &p, sd_packet_size, &bytes_read);
 
 		// Write human readable to txt file
 
@@ -77,7 +77,7 @@ void Datalogging::read()
 	while (1);
 }
 
-void Datalogging::append_buffer(Datalogging_packet p)
+void Sd::append_buffer(Sd_packet p)
 {
 	// If back_buffer is not full, add data to back_buffer
 	// If back_buffer is full and front_buffer is not full, swap back and front buffers add data to back_buffer

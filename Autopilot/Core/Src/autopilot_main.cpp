@@ -10,26 +10,16 @@
 #include <derived_hal.h>
 #include "autopilot.h"
 
-extern "C"
-{
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include "main.h"
-}
-
 Plane plane;
 Derived_hal derived_hal(&plane);
 Autopilot autopilot(&derived_hal, &plane);
 
+/**
+ * Scheduler
+ */
 void autopilot_main()
 {
 	autopilot.setup();
-
-	if (HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
-	{
-		Error_Handler();
-	}
 
 	for (;;)
 	{

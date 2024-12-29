@@ -3,11 +3,11 @@
 
 #include "hal.h"
 #include "plane.h"
-#include <Datalogging.h>
 #include <gnss.h>
 #include <icm42688p.h>
 #include <ina219.h>
 #include <mlx90393.h>
+#include <sd.h>
 
 extern "C"
 {
@@ -44,7 +44,7 @@ private:
 	INA219 ina219;
 	Adafruit_MLX90393 mag;
 	GNSS gnss;
-	Datalogging datalogging;
+	Sd sd;
 };
 
 #endif /* INC_DERIVED_HAL_H_ */
