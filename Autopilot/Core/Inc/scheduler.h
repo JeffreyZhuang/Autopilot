@@ -1,10 +1,3 @@
-/*
- * autopilot_main.hpp
- *
- *  Created on: Dec. 6, 2024
- *      Author: jeffr
- */
-
 #ifndef INC_SCHEDULER_H_
 #define INC_SCHEDULER_H_
 

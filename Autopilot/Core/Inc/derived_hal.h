@@ -70,11 +70,11 @@ public:
 
 private:
 	Plane * _plane;
-	ICM42688 imu;
-	INA219 ina219;
-	Adafruit_MLX90393 mag;
-	GNSS gnss;
-	Sd sd;
+	ICM42688 _imu;
+	INA219 _ina219;
+	Adafruit_MLX90393 _mag;
+	GNSS _gnss;
+	Sd _sd;
 };
 
 #endif /* INC_DERIVED_HAL_H_ */

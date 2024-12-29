@@ -2,7 +2,7 @@
 
 void Derived_hal::init_logger()
 {
-	sd.initialize();
+	_sd.initialize();
 }
 
 void Derived_hal::write_sd()
@@ -13,15 +13,15 @@ void Derived_hal::write_sd()
 	p.acc_z = _plane->imu_az;
 	p.alt = _plane->baro_alt;
 
-	sd.append_buffer(p);
+	_sd.append_buffer(p);
 }
 
 void Derived_hal::flush_sd()
 {
-	sd.write();
+	_sd.write();
 }
 
 void Derived_hal::read_sd()
 {
-	sd.read();
+	_sd.read();
 }

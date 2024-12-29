@@ -1,6 +1,6 @@
 #include <autopilot.h>
 
-Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane, hal), navigation(hal, plane)
+Autopilot::Autopilot(HAL * hal, Plane * plane): _ahrs(plane, hal), _navigation(hal, plane)
 {
     _hal = hal;
     _plane = plane;
@@ -8,7 +8,7 @@ Autopilot::Autopilot(HAL * hal, Plane * plane): ahrs(plane, hal), navigation(hal
 
 void Autopilot::init()
 {
-    ahrs.setup();
+    _ahrs.setup();
     _hal->init();
 }
 
@@ -17,8 +17,8 @@ void Autopilot::main_task()
     _hal->read_sensors();
     _hal->write_sd();
 
-    ahrs.update();
-    navigation.update();
+    _ahrs.update();
+    _navigation.update();
 }
 
 void Autopilot::logger_task()

@@ -25,8 +25,8 @@ private:
     HAL * _hal;
     Plane * _plane;
 
-    AHRS ahrs;
-    Navigation navigation;
+    AHRS _ahrs;
+    Navigation _navigation;
 };
 
 #endif

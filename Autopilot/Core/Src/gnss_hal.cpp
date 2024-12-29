@@ -2,20 +2,20 @@
 
 void Derived_hal::init_gnss()
 {
-	gnss.setup();
+	_gnss.setup();
 }
 
 void Derived_hal::read_gnss()
 {
 	uint8_t sentence[100];
-	if (gnss.parse(sentence))
+	if (_gnss.parse(sentence))
 	{
-		_plane->lat = gnss.lat;
-		_plane->lon = gnss.lon;
+		_plane->lat = _gnss.lat;
+		_plane->lon = _gnss.lon;
 	}
 }
 
 void Derived_hal::gnss_dma_complete()
 {
-	gnss.dma_complete();
+	_gnss.dma_complete();
 }

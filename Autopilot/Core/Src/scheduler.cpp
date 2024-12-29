@@ -16,7 +16,7 @@ void main_cpp()
 		Error_Handler();
 	}
 
-	for (;;)
+	while (1)
 	{
 		autopilot.logger_task();
 	}
