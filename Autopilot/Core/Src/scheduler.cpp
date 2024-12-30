@@ -1,10 +1,13 @@
 #include "plane.h"
 #include <derived_hal.h>
+// #include "pitl_hal.h"
 #include <scheduler.h>
 #include "autopilot.h"
 
 Plane plane;
+// Pitl_hal pitl_hal;
 Derived_hal derived_hal(&plane);
+//Autopilot autopilot(&pitl_hal, &plane);
 Autopilot autopilot(&derived_hal, &plane);
 
 void main_cpp()
