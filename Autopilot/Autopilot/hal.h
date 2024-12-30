@@ -21,9 +21,9 @@ public:
     virtual void read_sensors() = 0;
 
     // Logger
-    virtual void write_sd() = 0;
-    virtual void flush_sd() = 0;
-    virtual void read_sd() = 0;
+    virtual void write_storage_buffer() = 0;
+    virtual void flush_storage_buffer() = 0;
+    virtual void read_storage() = 0;
 
     // Debug
     virtual void debug_print(char * str) = 0;

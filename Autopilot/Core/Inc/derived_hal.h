@@ -51,9 +51,9 @@ public:
 
 	// logger_hal.cpp
 	void init_logger();
-	void write_sd();
-	void flush_sd();
-	void read_sd();
+	void write_storage_buffer();
+	void flush_storage_buffer();
+	void read_storage();
 
 	// debug_hal.cpp
 	void debug_print(char * str);
