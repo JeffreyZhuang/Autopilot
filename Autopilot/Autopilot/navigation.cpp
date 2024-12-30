@@ -30,7 +30,11 @@ void Navigation::execute()
 		last_imu_timestamp = _plane->imu_timestamp;
 	}
 
-	if (check_new_imu_data())
+	if (check_new_gnss_data())
+	{
+		update_step();
+		last_gnss_timestamp = _plane->gnss_timestamp;
+	}
 }
 
 void Navigation::prediction_step()
@@ -38,12 +42,7 @@ void Navigation::prediction_step()
 
 }
 
-void Navigation::read_gps()
-{
-
-}
-
-void Navigation::read_imu()
+void Navigation::update_step()
 {
 
 }
@@ -57,4 +56,9 @@ void Navigation::read_imu()
 bool Navigation::check_new_imu_data()
 {
     return last_imu_timestamp != _plane->imu_timestamp;
+}
+
+bool Navigation::check_new_gnss_data()
+{
+	return last_gnss_timestamp != _plane->gnss_timestamp;
 }

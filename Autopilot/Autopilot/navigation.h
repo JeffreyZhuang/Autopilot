@@ -10,7 +10,8 @@
 
 #include "tinyekf.h"
 
-static const float dt = 1 / 400;
+static const float predict_dt = 1 / 400;
+static const float update_dt = 1 / 10;
 
 static const float Q[EKF_N*EKF_N] =
 {
@@ -31,22 +32,22 @@ static const float R[EKF_M*EKF_M] =
 
 static const float F[EKF_N*EKF_N] =
 {
-	1, 0, 0, dt, 0,  0,
-	0, 1, 0, 0,  dt, 0,
-	0, 0, 1, 0,  0,  dt,
-	0, 0, 0, 1,  0,  0,
-	0, 0, 0, 0,  1,  0,
-	0, 0, 0, 0,  0,  1
+	1, 0, 0, update_dt, 0,  	   0,
+	0, 1, 0, 0,  	    update_dt, 0,
+	0, 0, 1, 0,  		0,  	   update_dt,
+	0, 0, 0, 1,  		0,  	   0,
+	0, 0, 0, 0,  		1,  	   0,
+	0, 0, 0, 0,  		0,  	   1
 };
 
 static const float H[EKF_M*EKF_N] =
 {
-	0.5*dt*dt, 0,         0,
-	0,         0.5*dt*dt, 0,
-	0,         0,         0.5*dt*dt,
-	dt,        0,         0,
-	0,         dt,        0,
-	0,         0,         dt
+	0.5*predict_dt*predict_dt, 0,         				  0,
+	0,         				   0.5*predict_dt*predict_dt, 0,
+	0,         				   0,         			      0.5*predict_dt*predict_dt,
+	predict_dt,     		   0,         				  0,
+	0,         				   predict_dt, 				  0,
+	0,         				   0,         				  predict_dt
 };
 
 static ekf_t ekf;
@@ -62,8 +63,6 @@ public:
     void execute();
     void prediction_step();
     void update_step();
-    void read_imu();
-    void read_gps();
 private:
     bool check_new_imu_data();
     bool check_new_gnss_data();
@@ -71,7 +70,7 @@ private:
     HAL * _hal;
     Plane * _plane;
     uint64_t last_imu_timestamp;
-    uint64_t last_baro_timestamp;
+    uint64_t last_gnss_timestamp;
     uint64_t time;
 };
 
