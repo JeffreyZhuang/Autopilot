@@ -50,24 +50,33 @@ struct Plane {
     float compass_mx;
     float compass_my;
     float compass_mz;
-    uint32_t compass_timestamp;
+    uint64_t compass_timestamp;
 
     // Barometer
     float baro_alt;
     float baro_temp;
-    uint32_t baro_timestamp;
+    uint64_t baro_timestamp;
 
     // GNSS
-    float lat;
-    float lon;
-    int sats;
+    float gnss_lat;
+    float gnss_lon;
+    int gnss_sats;
     uint64_t gnss_timestamp;
 
     // AHRS
     float ahrs_roll;
     float ahrs_pitch;
     float ahrs_yaw;
-    uint32_t ahrs_timestamp;
+    uint64_t ahrs_timestamp;
+
+    // Navigation
+    float nav_pos_north;
+    float nav_pos_east;
+    float nav_pos_down;
+    float nav_vel_north;
+    float nav_vel_east;
+    float nav_vel_down;
+    uint64_t nav_timestamp;
 };
 
 #endif /* PLANE_H_ */

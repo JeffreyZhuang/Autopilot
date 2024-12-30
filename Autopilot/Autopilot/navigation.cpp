@@ -10,20 +10,42 @@ Navigation::Navigation(HAL * hal, Plane * plane)
 {
     _hal = hal;
     _plane = plane;
+
+    // Use identity matrix as initial covariance matrix
+    const float Pdiag[EKF_N] = {1, 1, 1, 1, 1, 1};
+
+    ekf_initialize(&ekf, Pdiag);
 }
 
 /**
  * @brief Update navigation
  *
  */
-void Navigation::update()
+void Navigation::execute()
 {
-    uint64_t time = _hal->get_time_us();
-    prev_loop_time = time;
+    time = _hal->get_time_us();
 
 	if (check_new_imu_data()) {
-		update_accelerometer();
+		prediction_step();
+		last_imu_timestamp = _plane->imu_timestamp;
 	}
+
+	if (check_new_imu_data())
+}
+
+void Navigation::prediction_step()
+{
+
+}
+
+void Navigation::read_gps()
+{
+
+}
+
+void Navigation::read_imu()
+{
+
 }
 
 /**
@@ -35,13 +57,4 @@ void Navigation::update()
 bool Navigation::check_new_imu_data()
 {
     return last_imu_timestamp != _plane->imu_timestamp;
-}
-
-/**
- * @brief Update filter with only accelerometer
- *
- */
-void Navigation::update_accelerometer()
-{
-    last_imu_timestamp = _plane->imu_timestamp;
 }
