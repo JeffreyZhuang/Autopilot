@@ -3,6 +3,7 @@
 
 #include <plane.h>
 #include <hal.h>
+#include "tinyekf.h"
 
 /**
  * @brief Calculates the position of the plane
