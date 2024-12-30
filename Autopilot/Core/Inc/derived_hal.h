@@ -8,6 +8,7 @@
 #include <ina219.h>
 #include <mlx90393.h>
 #include <sd.h>
+#include "servos.h"
 
 extern "C"
 {
