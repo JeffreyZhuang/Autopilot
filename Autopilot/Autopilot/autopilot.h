@@ -4,11 +4,11 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <cstring>
-#include <plane.h>
 #include <hal.h>
 #include <ahrs.h>
 #include <navigation.h>
 #include "commander.h"
+#include "control.h"
 
 /**
  * @brief Autopilot
@@ -28,6 +28,7 @@ private:
     AHRS _ahrs;
     Navigation _navigation;
     Commander _commander;
+    Control _control;
 };
 
 #endif

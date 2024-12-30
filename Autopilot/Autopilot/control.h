@@ -4,10 +4,13 @@
 #include "hal.h"
 #include "pid.h"
 
+// Calculates and sends commands to servos
 class Control
 {
 public:
 	Control(HAL* hal, Plane* plane);
+
+	void update();
 private:
 	HAL* _hal;
 	Plane* _plane;

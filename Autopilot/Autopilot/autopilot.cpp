@@ -2,7 +2,8 @@
 
 Autopilot::Autopilot(HAL * hal, Plane * plane): _ahrs(plane, hal),
 												_navigation(hal, plane),
-												_commander(hal, plane)
+												_commander(hal, plane),
+												_control(hal, plane)
 {
 	_hal = hal;
 	_plane = plane;
@@ -19,6 +20,7 @@ void Autopilot::main_task()
 	_hal->read_sensors();
 	_ahrs.update();
 	_navigation.execute();
+	_control.update();
 	_hal->write_storage_buffer();
 	_commander.update();
 
