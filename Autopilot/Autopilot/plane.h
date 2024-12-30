@@ -60,6 +60,7 @@ struct Plane {
     // GNSS
     float gnss_lat;
     float gnss_lon;
+    float gnss_asl;
     int gnss_sats;
     uint64_t gnss_timestamp;
 

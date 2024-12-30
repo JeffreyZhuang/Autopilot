@@ -27,24 +27,42 @@ void Navigation::execute()
 
 	if (check_new_imu_data()) {
 		prediction_step();
-		last_imu_timestamp = _plane->imu_timestamp;
 	}
 
 	if (check_new_gnss_data())
 	{
 		update_step();
-		last_gnss_timestamp = _plane->gnss_timestamp;
 	}
+}
+
+// Rotate inertial frame to ECF
+void Navigation::read_imu()
+{
+	acc_n = _plane->imu_ax;
+	acc_e = _plane->imu_ay;
+	acc_d = _plane->imu_az;
+	last_imu_timestamp = _plane->imu_timestamp;
+}
+
+void Navigation::read_gnss()
+{
+	gnss_n = _plane->gnss_lat;
+	gnss_e = _plane->gnss_lon;
+	gnss_d = _plane->gnss_asl;
+	last_gnss_timestamp = _plane->gnss_timestamp;
 }
 
 void Navigation::prediction_step()
 {
+	read_imu();
 
+	// Observation vector
+	const float z[EKF_M] = {};
 }
 
 void Navigation::update_step()
 {
-
+	read_gnss();
 }
 
 /**
