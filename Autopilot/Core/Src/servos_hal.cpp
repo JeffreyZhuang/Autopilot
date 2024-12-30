@@ -5,4 +5,15 @@
  *      Author: jeffr
  */
 
+#include "derived_hal.h"
 #include "servos.h"
+
+void Derived_hal::set_elevator(float deg)
+{
+
+}
+
+void Derived_hal::set_rudder(float deg)
+{
+
+}

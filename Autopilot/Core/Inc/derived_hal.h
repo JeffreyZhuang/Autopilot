@@ -64,6 +64,10 @@ public:
 	void delay_us(uint64_t);
 	uint64_t get_time_us();
 
+	// servos_hal.cpp
+	void set_elevator(float deg);
+	void set_rudder(float deg);
+
 	// power_monitor_hal.cpp
 	void read_power_monitor();
 
