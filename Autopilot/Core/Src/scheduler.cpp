@@ -4,7 +4,7 @@
 #include <scheduler.h>
 #include "autopilot.h"
 
-#define PITL_ENABLE false;
+#define PITL_ENABLE false
 
 Plane plane;
 
