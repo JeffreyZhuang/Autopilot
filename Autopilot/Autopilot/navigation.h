@@ -1,8 +1,7 @@
 #ifndef NAVIGATION_H
 #define NAVIGATION_H
 
-#include <plane.h>
-#include <hal.h>
+#include "hal.h"
 
 // For now, only GNSS and accelerometer. No baro yet for simplicity.
 #define EKF_N 6 // Size of state space (pos_n, pos_e, pos_d, vel_n, vel_e, vel_d)
