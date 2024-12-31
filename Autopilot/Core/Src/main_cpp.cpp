@@ -1,7 +1,7 @@
 #include <flight_hal.h>
+#include <main_cpp.h>
 #include "plane.h"
 #include "pitl_hal.h"
-#include <scheduler.h>
 #include "autopilot.h"
 
 // HAL needs to include scheduler since scheduler changes depending on flight or PITL HAL
@@ -11,7 +11,7 @@
 Plane plane;
 
 #if PITL_ENABLE
-Pitl_hal hal;
+Pitl_hal hal(&plane);
 #else
 Flight_hal hal(&plane);
 #endif

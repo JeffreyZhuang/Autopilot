@@ -1,5 +1,5 @@
-#ifndef INC_SCHEDULER_H_
-#define INC_SCHEDULER_H_
+#ifndef INC_MAIN_CPP_H_
+#define INC_MAIN_CPP_H_
 
 void main_cpp();
 
@@ -14,4 +14,4 @@ void main_c();
 }
 #endif
 
-#endif /* INC_SCHEDULER_H_ */
+#endif /* INC_MAIN_CPP_H_ */

@@ -14,7 +14,9 @@
 class Pitl_hal : public HAL
 {
 public:
-	Pitl_hal();
+	Pitl_hal(Plane* plane);
+private:
+	Plane* _plane;
 };
 
 
