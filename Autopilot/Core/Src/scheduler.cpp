@@ -4,6 +4,8 @@
 #include <scheduler.h>
 #include "autopilot.h"
 
+// HAL needs to include scheduler since scheduler changes depending on flight or PITL HAL
+
 #define PITL_ENABLE false
 
 Plane plane;
