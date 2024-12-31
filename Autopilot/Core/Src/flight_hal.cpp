@@ -1,4 +1,4 @@
-#include "derived_hal.h"
+#include <flight_hal.h>
 
 Derived_hal::Derived_hal(Plane * plane) : HAL(plane),
 										  _imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),

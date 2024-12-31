@@ -1,5 +1,5 @@
+#include <flight_hal.h>
 #include "plane.h"
-#include <derived_hal.h>
 #include "pitl_hal.h"
 #include <scheduler.h>
 #include "autopilot.h"
@@ -9,15 +9,11 @@
 Plane plane;
 
 #if PITL_ENABLE
-
 Pitl_hal pitl_hal;
 Autopilot autopilot(&pitl_hal, &plane);
-
 #else
-
 Derived_hal derived_hal(&plane);
 Autopilot autopilot(&derived_hal, &plane);
-
 #endif
 
 void main_cpp()

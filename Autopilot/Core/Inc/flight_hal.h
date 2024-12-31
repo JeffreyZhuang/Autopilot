@@ -1,5 +1,5 @@
-#ifndef INC_DERIVED_HAL_H_
-#define INC_DERIVED_HAL_H_
+#ifndef INC_FLIGHT_HAL_H_
+#define INC_FLIGHT_HAL_H_
 
 #include "hal.h"
 #include "plane.h"
@@ -86,4 +86,4 @@ private:
 	                         {-0.032, -0.025, 1.005}};
 };
 
-#endif /* INC_DERIVED_HAL_H_ */
+#endif /* INC_FLIGHT_HAL_H_ */

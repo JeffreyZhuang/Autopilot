@@ -1,4 +1,4 @@
-#include "derived_hal.h"
+#include <flight_hal.h>
 
 void Derived_hal::read_power_monitor()
 {

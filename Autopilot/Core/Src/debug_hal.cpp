@@ -1,4 +1,4 @@
-#include "derived_hal.h"
+#include <flight_hal.h>
 
 void Derived_hal::debug_print(char * str)
 {
