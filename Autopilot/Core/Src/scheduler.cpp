@@ -9,12 +9,12 @@
 Plane plane;
 
 #if PITL_ENABLE
-Pitl_hal pitl_hal;
-Autopilot autopilot(&pitl_hal, &plane);
+Pitl_hal hal;
 #else
-Derived_hal derived_hal(&plane);
-Autopilot autopilot(&derived_hal, &plane);
+Flight_hal hal(&plane);
 #endif
+
+Autopilot autopilot(&hal, &plane);
 
 void main_cpp()
 {
@@ -43,7 +43,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	if (huart == &huart3)
 	{
-		derived_hal.gnss_dma_complete();
+		hal.gnss_dma_complete();
 	}
 }
 

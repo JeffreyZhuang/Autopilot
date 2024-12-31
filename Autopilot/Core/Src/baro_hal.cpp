@@ -1,12 +1,12 @@
 #include <flight_hal.h>
 
-void Derived_hal::init_baro()
+void Flight_hal::init_baro()
 {
 	Barometer_init();
 	Barometer_setOSR(OSR_4096);
 }
 
-void Derived_hal::read_baro()
+void Flight_hal::read_baro()
 {
 	float alt = Barometer_getAltitude(true);
 	_plane->baro_alt = alt;

@@ -25,10 +25,10 @@ extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim7;
 extern UART_HandleTypeDef huart3;
 
-class Derived_hal : public HAL
+class Flight_hal : public HAL
 {
 public:
-	Derived_hal(Plane * plane);
+	Flight_hal(Plane * plane);
 
 	void init();
 	void read_sensors();

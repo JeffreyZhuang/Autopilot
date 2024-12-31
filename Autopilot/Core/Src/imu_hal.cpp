@@ -1,6 +1,6 @@
 #include <flight_hal.h>
 
-void Derived_hal::init_imu()
+void Flight_hal::init_imu()
 {
 	_imu.begin();
 
@@ -11,7 +11,7 @@ void Derived_hal::init_imu()
 	_imu.setGyroFS(ICM42688::dps500);
 }
 
-void Derived_hal::read_imu()
+void Flight_hal::read_imu()
 {
 	_imu.getAGT();
 	_plane->imu_ax = -_imu.accX();

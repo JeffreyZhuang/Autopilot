@@ -8,12 +8,12 @@
 #include <flight_hal.h>
 #include "servos.h"
 
-void Derived_hal::set_elevator(float deg)
+void Flight_hal::set_elevator(float deg)
 {
 
 }
 
-void Derived_hal::set_rudder(float deg)
+void Flight_hal::set_rudder(float deg)
 {
 
 }

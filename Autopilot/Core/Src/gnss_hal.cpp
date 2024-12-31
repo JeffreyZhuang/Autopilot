@@ -1,11 +1,11 @@
 #include <flight_hal.h>
 
-void Derived_hal::init_gnss()
+void Flight_hal::init_gnss()
 {
 	_gnss.setup();
 }
 
-void Derived_hal::read_gnss()
+void Flight_hal::read_gnss()
 {
 	uint8_t sentence[100];
 	if (_gnss.parse(sentence))
@@ -17,7 +17,7 @@ void Derived_hal::read_gnss()
 	}
 }
 
-void Derived_hal::gnss_dma_complete()
+void Flight_hal::gnss_dma_complete()
 {
 	_gnss.dma_complete();
 }

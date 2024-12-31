@@ -1,11 +1,11 @@
 #include <flight_hal.h>
 
-void Derived_hal::init_compass()
+void Flight_hal::init_compass()
 {
 	_mag.begin_SPI(GPIOC, GPIO_PIN_13, &hspi1, SPI_BAUDRATEPRESCALER_8);
 }
 
-void Derived_hal::read_compass()
+void Flight_hal::read_compass()
 {
 	if (_mag.readDataNonBlocking())
 	{

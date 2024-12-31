@@ -1,6 +1,6 @@
 #include <flight_hal.h>
 
-Derived_hal::Derived_hal(Plane * plane) : HAL(plane),
+Flight_hal::Flight_hal(Plane * plane) : HAL(plane),
 										  _imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),
 										  _ina219(&hi2c1, 0.01),
 										  _gnss(&huart3)
@@ -8,7 +8,7 @@ Derived_hal::Derived_hal(Plane * plane) : HAL(plane),
 	_plane = plane;
 }
 
-void Derived_hal::init()
+void Flight_hal::init()
 {
 	init_imu();
 	init_baro();
@@ -17,7 +17,7 @@ void Derived_hal::init()
 	init_logger();
 }
 
-void Derived_hal::read_sensors()
+void Flight_hal::read_sensors()
 {
 	read_imu();
 	read_baro();
