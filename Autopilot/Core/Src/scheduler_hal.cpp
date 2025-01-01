@@ -1,5 +1,7 @@
 #include "flight_hal.h"
 
+Flight_hal* Flight_hal::_instance = nullptr;
+
 void Flight_hal::set_main_task(void (*task)())
 {
 	main_task = task;
@@ -19,8 +21,6 @@ void Flight_hal::set_background_task(void (*task)())
 		background_task();
 	}
 }
-
-Flight_hal* Flight_hal::_instance = nullptr;
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
