@@ -1,6 +1,5 @@
-#include <flight_hal.h>
-#include <main_cpp.h>
-#include "plane.h"
+#include "main_cpp.h"
+#include "flight_hal.h"
 #include "pitl_hal.h"
 #include "autopilot.h"
 
