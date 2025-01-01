@@ -7,5 +7,3 @@ void Pitl_hal::set_main_task(void (*task)())
 		task();
 	}
 }
-
-void Pitl_hal::set_background_task(void (*task)()) {};

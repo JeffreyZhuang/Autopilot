@@ -46,7 +46,7 @@ public:
 
 	// Scheduler
 	void set_main_task(void (*task)());
-	void set_background_task(void (*task)());
+	void set_background_task(void (*task)()) {};
 
 private:
 	Plane* _plane;

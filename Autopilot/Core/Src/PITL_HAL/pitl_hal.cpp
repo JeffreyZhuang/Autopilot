@@ -2,7 +2,7 @@
 
 Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane)
 {
-
+	_plane = plane;
 }
 
 void Pitl_hal::init()
