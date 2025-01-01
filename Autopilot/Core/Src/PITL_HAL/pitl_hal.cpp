@@ -5,12 +5,9 @@ Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane)
 	_plane = plane;
 }
 
-void Pitl_hal::init()
-{
-
-}
-
+// Read AHRS and Navigation data from USB and add to plane struct
 void Pitl_hal::read_sensors()
 {
-	// Instead of setting sensor values of plane struct, set AHRS and navigation values from USB
+	uint8_t rxBuf[100];
+//	USBD_CDC_SetRxBuffer();
 }

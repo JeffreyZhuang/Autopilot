@@ -37,7 +37,7 @@ void Autopilot::main_task()
 			_plane->compass_mz,
 			_plane->gnss_lat,
 			_plane->gnss_lon);
-	_hal->usb_print(txBuf);
+	_hal->debug_print(txBuf);
 }
 
 void Autopilot::logger_task()

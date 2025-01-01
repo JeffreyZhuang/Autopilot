@@ -23,7 +23,7 @@ class Pitl_hal : public HAL
 {
 public:
 	Pitl_hal(Plane* plane);
-	void init();
+	void init() {};
 	void read_sensors();
 
 	// Logger
@@ -33,7 +33,7 @@ public:
 
 	// Debug
 	void debug_print(char * str);
-	void usb_print(char * str);
+	void usb_print(char * str) {}; // Removed because USB reserved for PITL
 	void toggle_led();
 
 	// Servos
