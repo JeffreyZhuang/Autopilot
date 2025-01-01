@@ -1,8 +1,6 @@
 #ifndef INC_MAIN_CPP_H_
 #define INC_MAIN_CPP_H_
 
-void main_cpp();
-
 #ifdef __cplusplus
 extern "C"
 {
