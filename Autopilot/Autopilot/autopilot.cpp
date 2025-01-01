@@ -5,8 +5,9 @@ Autopilot* Autopilot::_instance = nullptr;
 void Autopilot::init()
 {
 	_hal->init();
-	_hal->set_main_task(Autopilot::static_main_task);
 	_ahrs.setup();
+
+	_hal->set_main_task(Autopilot::static_main_task);
 }
 
 void Autopilot::main_task()

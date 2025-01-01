@@ -22,11 +22,6 @@ void main_cpp()
 {
 	autopilot.init();
 
-	if (HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
-	{
-		Error_Handler();
-	}
-
 	while (1)
 	{
 		autopilot.logger_task();

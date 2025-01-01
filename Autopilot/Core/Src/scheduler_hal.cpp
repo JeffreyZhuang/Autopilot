@@ -3,6 +3,11 @@
 void Flight_hal::set_main_task(void (*task)())
 {
 	main_task = task;
+
+	if (HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
+	{
+		Error_Handler();
+	}
 }
 
 void Flight_hal::set_background_task()
