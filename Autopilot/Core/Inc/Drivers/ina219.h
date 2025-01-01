@@ -14,7 +14,7 @@
 class INA219
 {
 public:
-	INA219(I2C_HandleTypeDef * hi2c, float shunt_resistance);
+	INA219(I2C_HandleTypeDef* hi2c, float shunt_resistance);
 
 	float read_voltage();
 	float read_current();
@@ -22,7 +22,7 @@ private:
 	uint16_t read_16(uint8_t register);
 
 	float _shunt_resistance;
-	I2C_HandleTypeDef * _hi2c;
+	I2C_HandleTypeDef* _hi2c;
 };
 
 #endif /* INC_INA219_H_ */

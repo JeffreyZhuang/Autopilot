@@ -14,7 +14,6 @@ class HAL
 {
 public:
     HAL(Plane * plane);
-
     virtual void init() = 0;
 
     // Sensors
@@ -37,6 +36,11 @@ public:
     // Time
     virtual void delay_us(uint64_t us) = 0;
     virtual uint64_t get_time_us() = 0;
+
+    // Scheduler
+    virtual void set_main_task(void (*task)()) = 0;
+    virtual void set_background_task() = 0;
+
 private:
     Plane * _plane;
 };

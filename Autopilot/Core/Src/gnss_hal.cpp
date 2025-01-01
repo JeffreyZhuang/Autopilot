@@ -16,8 +16,3 @@ void Flight_hal::read_gnss()
 		_plane->gnss_timestamp = get_time_us();
 	}
 }
-
-void Flight_hal::gnss_dma_complete()
-{
-	_gnss.dma_complete();
-}

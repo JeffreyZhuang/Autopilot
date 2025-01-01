@@ -26,9 +26,9 @@ public:
 	void dma_complete();
 	bool parse(uint8_t sentence[]);
 
-	float lat; // deg
-	float lon;
-	int sats;
+	float lat = 0; // deg
+	float lon = 0;
+	int sats = 0;
 private:
 	UART_HandleTypeDef* _uart;
 	uint8_t rx_buffer[1];

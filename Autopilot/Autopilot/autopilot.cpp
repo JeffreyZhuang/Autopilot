@@ -1,18 +1,10 @@
 #include <autopilot.h>
 
-Autopilot::Autopilot(HAL * hal, Plane * plane): _ahrs(plane, hal),
-												_navigation(hal, plane),
-												_commander(hal, plane),
-												_control(hal, plane)
-{
-	_hal = hal;
-	_plane = plane;
-};
-
 void Autopilot::init()
 {
-	_ahrs.setup();
 	_hal->init();
+	_hal->set_main_task(static_main_task);
+	_ahrs.setup();
 }
 
 void Autopilot::main_task()
@@ -26,7 +18,7 @@ void Autopilot::main_task()
 
 	char txBuf[200];
 	sprintf(txBuf,
-			"%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\r\n",
+			"%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%f\t%f\r\n",
 			_plane->ahrs_roll,
 			_plane->ahrs_pitch,
 			_plane->ahrs_yaw,
@@ -38,7 +30,9 @@ void Autopilot::main_task()
 			_plane->imu_az,
 			_plane->compass_mx,
 			_plane->compass_my,
-			_plane->compass_mz);
+			_plane->compass_mz,
+			_plane->gnss_lat,
+			_plane->gnss_lon);
 	_hal->usb_print(txBuf);
 }
 

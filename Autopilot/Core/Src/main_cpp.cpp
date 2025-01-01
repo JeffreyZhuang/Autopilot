@@ -33,22 +33,6 @@ void main_cpp()
 	}
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	if (htim == &htim7)
-	{
-		autopilot.main_task();
-	}
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
-{
-	if (huart == &huart3)
-	{
-		hal.gnss_dma_complete();
-	}
-}
-
 extern "C"
 {
 void main_c()
