@@ -38,6 +38,13 @@ public:
     }
 
     void logger_task();
+    static void static_logger_task()
+	{
+		if (_instance)
+		{
+			_instance->logger_task();
+		}
+	}
 
 private:
     HAL* _hal;

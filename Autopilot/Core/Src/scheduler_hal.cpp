@@ -10,9 +10,14 @@ void Flight_hal::set_main_task(void (*task)())
 	}
 }
 
-void Flight_hal::set_background_task()
+void Flight_hal::set_background_task(void (*task)())
 {
+	background_task = task;
 
+	while (1)
+	{
+		background_task();
+	}
 }
 
 Flight_hal* Flight_hal::_instance = nullptr;

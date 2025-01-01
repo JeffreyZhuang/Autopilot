@@ -19,11 +19,6 @@ Autopilot autopilot(&hal, &plane);
 void main_cpp()
 {
 	autopilot.init();
-
-	while (1)
-	{
-		autopilot.logger_task();
-	}
 }
 
 extern "C"
