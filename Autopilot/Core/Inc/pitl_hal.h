@@ -17,6 +17,29 @@ public:
 	Pitl_hal(Plane* plane);
 	void init();
 	void read_sensors();
+
+	// Logger
+	void write_storage_buffer();
+	void flush_storage_buffer();
+	void read_storage();
+
+	// Debug
+	void debug_print(char * str);
+	void usb_print(char * str);
+	void toggle_led();
+
+	// Servos
+	void set_elevator(float deg) {};
+	void set_rudder(float deg) {};
+
+	// Time
+	void delay_us(uint64_t us);
+	uint64_t get_time_us();
+
+	// Scheduler
+	void set_main_task(void (*task)());
+	void set_background_task(void (*task)());
+
 private:
 	Plane* _plane;
 };
