@@ -17,9 +17,9 @@ class Autopilot
 {
 public:
 	Autopilot(HAL * hal, Plane * plane): _ahrs(plane, hal),
-													_navigation(hal, plane),
-													_commander(hal, plane),
-													_control(hal, plane)
+										 _navigation(hal, plane),
+										 _commander(hal, plane),
+										 _control(hal, plane)
 	{
 		_hal = hal;
 		_plane = plane;

@@ -88,13 +88,7 @@ public:
 	// scheduler_hal.cpp
 	void set_main_task(void (*task)());
 	void set_background_task(void (*task)());
-	void execute_main_task()
-	{
-		if (main_task)
-		{
-			main_task();
-		}
-	}
+	void execute_main_task();
 	static void main_task_callback()
 	{
 		if (_instance != nullptr)

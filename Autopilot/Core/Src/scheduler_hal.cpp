@@ -12,6 +12,14 @@ void Flight_hal::set_main_task(void (*task)())
 	}
 }
 
+void Flight_hal::execute_main_task()
+{
+	if (main_task)
+	{
+		main_task();
+	}
+}
+
 void Flight_hal::set_background_task(void (*task)())
 {
 	background_task = task;
