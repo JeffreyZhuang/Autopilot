@@ -10,6 +10,14 @@
 
 #include "hal.h"
 
+extern "C"
+{
+#include "usbd_cdc_if.h"
+#include "main.h"
+}
+
+extern TIM_HandleTypeDef htim5;
+
 // Processor in the loop using USB
 class Pitl_hal : public HAL
 {
@@ -19,9 +27,9 @@ public:
 	void read_sensors();
 
 	// Logger
-	void write_storage_buffer();
-	void flush_storage_buffer();
-	void read_storage();
+	void write_storage_buffer() {};
+	void flush_storage_buffer() {};
+	void read_storage() {};
 
 	// Debug
 	void debug_print(char * str);

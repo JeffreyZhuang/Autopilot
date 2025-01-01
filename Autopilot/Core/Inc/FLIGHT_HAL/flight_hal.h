@@ -12,6 +12,7 @@
 
 extern "C"
 {
+#include "usbd_cdc_if.h"
 #include "barometer.h"
 #include "main.h"
 }
@@ -29,9 +30,9 @@ class Flight_hal : public HAL
 {
 public:
 	Flight_hal(Plane * plane) : HAL(plane),
-											  _imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),
-											  _ina219(&hi2c1, 0.01),
-											  _gnss(&huart3)
+								_imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),
+								_ina219(&hi2c1, 0.01),
+								_gnss(&huart3)
 	{
 		_instance = this;
 		_plane = plane;
