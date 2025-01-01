@@ -29,7 +29,7 @@ public:
     void init();
 
     void main_task();
-    static void statics_main_task()
+    static void static_main_task()
     {
     	if (_instance)
     	{
