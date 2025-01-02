@@ -1,34 +1,44 @@
 #include "kalman.h"
 
-Kalman::Kalman(Eigen::MatrixXd A, Eigen::MatrixXd B, Eigen::MatrixXd Q, Eigen::MatrixXd R)
+Kalman::Kalman(int n, int m)
 {
-    this->A = A;
-    this->B = B;
-    this->Q = Q;
-    this->R = R;
-    this->x = Eigen::VectorXd::Zero(A.rows());
-    P = Eigen::MatrixXd::Zero(A.rows(), A.rows());
+	_n = n;
+	_m = m;
 }
 
-void Kalman::predict(Eigen::VectorXd u)
+void Kalman::set_matrices(Eigen::MatrixXf A, Eigen::MatrixXf B, Eigen::MatrixXf Q, Eigen::MatrixXf R)
 {
-    x = A * x + B * u;
-    P = A * P * A.transpose() + Q;
+	_A = A;
+	_B_mat = B;
+	_Q = Q;
+	_R = R;
+	_x = Eigen::MatrixXf::Zero(_n, 1);
+	_P_mat = Eigen::MatrixXf::Zero(_n, _n);
 }
 
-void Kalman::update(Eigen::MatrixXd H, Eigen::VectorXd y)
+void Kalman::predict(Eigen::MatrixXf u)
 {
-    Eigen::MatrixXd K = P * H.transpose() * (H * P * H.transpose() + R).inverse();
-    x = x + K * (y - H * x);
-    P = P - K * H * P;
+    _x = _A * _x + _B_mat * u;
+    _P_mat = _A * _P_mat * _A.transpose() + _Q;
 }
 
-Eigen::VectorXd Kalman::getEstimate()
+void Kalman::update(Eigen::MatrixXf H, Eigen::MatrixXf y)
 {
-    return x;
+	printf("4\n");
+    Eigen::MatrixXf K = _P_mat * H.transpose() * (H * _P_mat * H.transpose() + _R).inverse();
+    printf("5\n");
+    _x = _x + K * (y - H * _x);
+    printf("6\n");
+    _P_mat = _P_mat - K * H * _P_mat;
+    printf("7\n");
 }
 
-Eigen::VectorXd Kalman::getCovariance()
+Eigen::MatrixXf Kalman::get_estimate()
 {
-    return P;
+    return _x;
+}
+
+Eigen::MatrixXf Kalman::get_covariance()
+{
+    return _P_mat;
 }

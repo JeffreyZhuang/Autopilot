@@ -21,22 +21,29 @@ void Autopilot::main_task()
 	_commander.update();
 
 	char txBuf[200];
+//	sprintf(txBuf,
+//			"%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%f\t%f\r\n",
+//			_plane->ahrs_roll,
+//			_plane->ahrs_pitch,
+//			_plane->ahrs_yaw,
+//			_plane->imu_gx,
+//			_plane->imu_gy,
+//			_plane->imu_gz,
+//			_plane->imu_ax,
+//			_plane->imu_ay,
+//			_plane->imu_az,
+//			_plane->compass_mx,
+//			_plane->compass_my,
+//			_plane->compass_mz,
+//			_plane->gnss_lat,
+//			_plane->gnss_lon);
 	sprintf(txBuf,
-			"%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%f\t%f\r\n",
+			"%.1f\t%.1f\t%.1f\t%.1f\t%.1f\r\n",
 			_plane->ahrs_roll,
 			_plane->ahrs_pitch,
 			_plane->ahrs_yaw,
-			_plane->imu_gx,
-			_plane->imu_gy,
-			_plane->imu_gz,
-			_plane->imu_ax,
-			_plane->imu_ay,
-			_plane->imu_az,
-			_plane->compass_mx,
-			_plane->compass_my,
-			_plane->compass_mz,
-			_plane->gnss_lat,
-			_plane->gnss_lon);
+			_plane->nav_pos_north,
+			_plane->nav_pos_east);
 	_hal->debug_print(txBuf);
 }
 
