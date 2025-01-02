@@ -59,7 +59,9 @@ void AHRS::update()
     time = _hal->get_time_us();
 
 	if (check_new_imu_data()) {
-		if (_plane->use_compass && check_new_compass_data()) {
+		// Compass not calibrated yet so for testing purposes
+		if (0) {
+//		if (_plane->use_compass && check_new_compass_data()) {
 			update_full();
 		} else {
 			update_imu();
@@ -87,7 +89,7 @@ void AHRS::update_imu()
 void AHRS::update_full()
 {
     filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
-                  _plane->imu_ax, _plane->imu_ay, _plane->imu_az,
+                  -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az,
                   -_plane->compass_mx, -_plane->compass_my, -_plane->compass_mz);
     last_imu_timestamp = _plane->imu_timestamp;
     last_compass_timestamp = _plane->compass_timestamp;
@@ -105,5 +107,9 @@ void AHRS::upload_results()
     _plane->ahrs_roll = filter.getRoll();
     _plane->ahrs_pitch = filter.getPitch();
     _plane->ahrs_yaw = filter.getYaw();
+    _plane->ahrs_q0 = filter.get_q0();
+    _plane->ahrs_q1 = filter.get_q1();
+    _plane->ahrs_q2 = filter.get_q2();
+    _plane->ahrs_q3 = filter.get_q3();
     _plane->ahrs_timestamp = time;
 }

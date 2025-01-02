@@ -23,6 +23,7 @@ private:
 
     uint64_t last_imu_timestamp;
     uint64_t last_gnss_timestamp;
+    uint64_t last_ahrs_timestamp;
 
     float acc_n; // Rotated to the world frame
     float acc_e;
@@ -40,8 +41,10 @@ private:
 
     void read_imu();
 	void read_gnss();
+	void read_ahrs();
 	bool check_new_imu_data();
 	bool check_new_gnss_data();
+	bool check_new_ahrs_data();
 };
 
 #endif

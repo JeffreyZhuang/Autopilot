@@ -68,6 +68,10 @@ struct Plane {
     float ahrs_roll;
     float ahrs_pitch;
     float ahrs_yaw;
+    float ahrs_q0;
+    float ahrs_q1;
+    float ahrs_q2;
+    float ahrs_q3;
     uint64_t ahrs_timestamp;
 
     // Navigation
