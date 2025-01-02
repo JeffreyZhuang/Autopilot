@@ -338,7 +338,7 @@ bool Adafruit_MLX90393::readMeasurement(float *x, float *y, float *z) {
 //}
 
 bool Adafruit_MLX90393::readDataNonBlocking() {
-	int conversion_time = mlx90393_tconv[_dig_filt][_osr] + 10;
+	int conversion_time = mlx90393_tconv[_dig_filt][_osr];
 
   if (_state == 0) {
     startSingleMeasurement();
