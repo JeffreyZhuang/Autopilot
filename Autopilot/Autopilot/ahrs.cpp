@@ -60,8 +60,7 @@ void AHRS::update()
 
 	if (check_new_imu_data()) {
 		// Compass not calibrated yet so for testing purposes
-		if (0) {
-//		if (_plane->use_compass && check_new_compass_data()) {
+		if (_plane->use_compass && check_new_compass_data()) {
 			update_full();
 		} else {
 			update_imu();

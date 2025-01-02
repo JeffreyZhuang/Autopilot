@@ -16,6 +16,10 @@ public:
     void prediction_step();
     void update_step();
 
+    float acc_n; // Rotated to the world frame
+	float acc_e;
+	float acc_d;
+
 private:
     HAL * _hal;
     Plane * _plane;
@@ -25,9 +29,6 @@ private:
     uint64_t last_gnss_timestamp;
     uint64_t last_ahrs_timestamp;
 
-    float acc_n; // Rotated to the world frame
-    float acc_e;
-    float acc_d;
     float gnss_n; // meters
     float gnss_e;
     float gnss_d;

@@ -67,19 +67,18 @@ void rotateToWorldFrame(Eigen::Vector3f& accel_inertial,
 // Rotate inertial frame to ECF
 void Navigation::read_imu()
 {
-	Eigen::Vector3f acc_inertial(_plane->imu_ax * g, _plane->imu_ay * g, _plane->imu_az * g);
+//	Eigen::Vector3f acc_inertial(_plane->imu_ax * g, _plane->imu_ay * g, _plane->imu_az * g);
+	acc_n = _plane->imu_ax * g;
+	acc_e = _plane->imu_ay * g;
 	last_imu_timestamp = _plane->imu_timestamp;
-
-	// q0 is w
-	Eigen::Quaternionf ori(_plane->ahrs_q0, _plane->ahrs_q1, _plane->ahrs_q2, _plane->ahrs_q3);
-	Eigen::Vector3f acc_world;
-	rotateToWorldFrame(acc_inertial, ori, acc_world);
-
-	acc_n = acc_world(0);
-	acc_e = acc_world(1);
-	acc_d = acc_world(2) - g;
-
-//	printf("%.0f\t%.0f\t%.0f\t%.2f\t%.2f\t%.2f\n", _plane->ahrs_roll, _plane->ahrs_pitch, _plane->ahrs_yaw, acc_n, acc_e, acc_d);
+//
+//	Eigen::Quaternionf ori(_plane->ahrs_q0, _plane->ahrs_q1, _plane->ahrs_q2, _plane->ahrs_q3); // w, x, y, z
+//	Eigen::Vector3f acc_world;
+//	rotateToWorldFrame(acc_inertial, ori, acc_world);
+//
+//	acc_n = acc_world(0);
+//	acc_e = acc_world(1);
+//	acc_d = acc_world(2) + g;
 }
 
 void Navigation::read_gnss()
