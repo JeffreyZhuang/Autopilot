@@ -2,7 +2,7 @@
 #define NAVIGATION_H
 
 #include "hal.h"
-#include "Eigen"
+#include "kalman.h"
 
 /**
  * @brief Calculates the position of the plane
