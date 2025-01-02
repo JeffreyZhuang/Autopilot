@@ -10,11 +10,6 @@ Navigation::Navigation(HAL * hal, Plane * plane)
 {
     _hal = hal;
     _plane = plane;
-
-    // Use identity matrix as initial covariance matrix
-    const float Pdiag[EKF_N] = {1, 1, 1, 1, 1, 1};
-
-    ekf_initialize(&ekf, Pdiag);
 }
 
 /**
@@ -56,17 +51,14 @@ void Navigation::prediction_step()
 {
 	read_imu();
 
-	// Observation vector
-	const float z[EKF_M] = {acc_n, acc_e, acc_d};
-
-	ekf_predict(&ekf, ekf.x, F, Q);
+	// Prediction
 }
 
 void Navigation::update_step()
 {
 	read_gnss();
 
-	const float hx[EKF_M] = {};
+	// Update
 }
 
 /**
