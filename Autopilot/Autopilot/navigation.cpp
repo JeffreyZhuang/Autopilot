@@ -59,10 +59,7 @@ void Navigation::prediction_step()
 	// Observation vector
 	const float z[EKF_M] = {acc_n, acc_e, acc_d};
 
-	// Process model
-	const float fx[EKF_N] = {ekf.x[0], ekf.x[1], ekf.x[2], ekf.x[3], ekf.x[4], ekf.x[5]};
-
-	ekf_predict(&ekf, fx, F, Q);
+	ekf_predict(&ekf, ekf.x, F, Q);
 }
 
 void Navigation::update_step()

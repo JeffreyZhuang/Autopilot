@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <cstring>
 
+// Switch auto gen into classs like this: https://github.com/loveuav/Eigen-STM32-Demo/blob/main/Src/board.hpp
+
 /**
  * @brief Hardware abstraction layer
  *
