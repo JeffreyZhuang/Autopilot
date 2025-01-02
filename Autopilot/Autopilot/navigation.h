@@ -23,8 +23,6 @@ private:
 
     uint64_t last_imu_timestamp;
     uint64_t last_gnss_timestamp;
-    float predict_dt = 1 / 400;
-    float update_dt = 1 / 10;
 
     float acc_n; // Rotated to the world frame
     float acc_e;
@@ -33,13 +31,9 @@ private:
     float gnss_e;
     float gnss_d;
 
+    float g = 9.80665;
+
     // Kalman
-    static constexpr int n = 4; // State vector length
-    static constexpr int m = 2; // Input vector length
-    Eigen::Matrix<float, n, n> A;
-    Eigen::Matrix<float, n, m> B;
-    Eigen::DiagonalMatrix<float, n> Q;
-    Eigen::DiagonalMatrix<float, m> R;
     Eigen::Matrix <float, m, 1> u;
     Eigen::DiagonalMatrix<float, n> H;
     Eigen::Matrix <float, n, 1> y;

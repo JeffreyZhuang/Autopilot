@@ -6,27 +6,10 @@
  * @param hal
  * @param plane
  */
-Navigation::Navigation(HAL * hal, Plane * plane) : kalman(n, m),
-												   Q(1, 1, 1, 1),
-												   R(1, 1),
-												   H(1, 1, 0, 0)
+Navigation::Navigation(HAL * hal, Plane * plane)
 {
 	hal = hal;
 	_plane = plane;
-
-	// State vector: pos_n, pos_e, vel_n, vel_e
-	// Input vector: acc_n, acc_e
-	A << 1, 0, update_dt, 0,
-		 0, 1, 0, 		  update_dt,
-		 0, 0, 1, 		  0,
-		 0, 0, 0, 	  	  1;
-
-	B << 0.5*pow(predict_dt, 2), 0,
-		 0, 					 0.5*pow(predict_dt, 2),
-		 predict_dt, 			 0,
-		 0, 					 predict_dt;
-
-	kalman.set_matrices(A, B, Q, R);
 }
 
 /**
@@ -48,9 +31,9 @@ void Navigation::execute()
 // Rotate inertial frame to ECF
 void Navigation::read_imu()
 {
-	acc_n = _plane->imu_ax;
-	acc_e = _plane->imu_ay;
-	acc_d = _plane->imu_az;
+	acc_n = _plane->imu_ax * g;
+	acc_e = _plane->imu_ay * g;
+	acc_d = _plane->imu_az * g;
 	last_imu_timestamp = _plane->imu_timestamp;
 }
 
@@ -71,6 +54,8 @@ void Navigation::prediction_step()
 	Eigen::MatrixXf est = kalman.get_estimate();
 	_plane->nav_pos_north = est(0, 0);
 	_plane->nav_pos_east = est(1, 0);
+	_plane->nav_vel_north = est(2, 0);
+	_plane->nav_vel_east = est(3, 0);
 }
 
 void Navigation::update_step()
@@ -79,8 +64,11 @@ void Navigation::update_step()
 	y << gnss_n, gnss_e, 0, 0;
 	kalman.update(H, y);
 
-	_plane->nav_pos_north = kalman.get_estimate()(0, 1);
-	_plane->nav_pos_east = kalman.get_estimate()(1, 1);
+	Eigen::MatrixXf est = kalman.get_estimate();
+	_plane->nav_pos_north = est(0, 0);
+	_plane->nav_pos_east = est(1, 0);
+	_plane->nav_vel_north = est(2, 0);
+	_plane->nav_vel_east = est(3, 0);
 }
 
 /**
