@@ -3,6 +3,7 @@
 void Flight_hal::init_compass()
 {
 	_mag.begin_SPI(GPIOC, GPIO_PIN_13, &hspi1, SPI_BAUDRATEPRESCALER_8);
+	_mag.setFilter(MLX90393_FILTER_3);
 }
 
 void Flight_hal::read_compass()

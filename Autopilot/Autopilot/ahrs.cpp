@@ -74,7 +74,7 @@ void AHRS::update()
 void AHRS::update_imu()
 {
     filter.updateIMU(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
-                     _plane->imu_ax, _plane->imu_ay, _plane->imu_az);
+                     -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az);
     last_imu_timestamp = _plane->imu_timestamp;
 
     upload_results();
@@ -88,7 +88,7 @@ void AHRS::update_full()
 {
     filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
                   _plane->imu_ax, _plane->imu_ay, _plane->imu_az,
-                  _plane->compass_mx, _plane->compass_my, _plane->compass_mz);
+                  -_plane->compass_mx, -_plane->compass_my, -_plane->compass_mz);
     last_imu_timestamp = _plane->imu_timestamp;
     last_compass_timestamp = _plane->compass_timestamp;
 
@@ -101,6 +101,7 @@ void AHRS::update_full()
  */
 void AHRS::upload_results()
 {
+	// Madgwick library coordinate system is inverted, so rotate it back to the correct system
     _plane->ahrs_roll = filter.getRoll();
     _plane->ahrs_pitch = filter.getPitch();
     _plane->ahrs_yaw = filter.getYaw();

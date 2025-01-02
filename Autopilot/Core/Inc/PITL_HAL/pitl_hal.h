@@ -37,8 +37,8 @@ public:
 	void toggle_led();
 
 	// Servos
-	void set_elevator(float deg) {};
-	void set_rudder(float deg) {};
+	void set_elevator(float deg);
+	void set_rudder(float deg);
 
 	// Time
 	void delay_us(uint64_t us);
