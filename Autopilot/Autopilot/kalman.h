@@ -12,8 +12,8 @@
 
 // State vector: pos_n, pos_e, pos_d, vel_n, vel_e, vel_d
 // Input vector: acc_n, acc_e, acc_d
-static constexpr int n = 4; // Length of state vector
-static constexpr int m = 2; // Length of input vector
+static constexpr int n = 6; // Length of state vector
+static constexpr int m = 3; // Length of input vector
 
 class Kalman
 {

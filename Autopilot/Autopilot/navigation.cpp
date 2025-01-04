@@ -19,7 +19,7 @@ Navigation::Navigation(HAL * hal, Plane * plane)
 void Navigation::execute()
 {
 	if (check_new_imu_data()) {
-		prediction_step();
+		predict_imu();
 	}
 
 	if (check_new_gnss_data())
@@ -28,7 +28,7 @@ void Navigation::execute()
 	}
 }
 
-void Navigation::prediction_step()
+void Navigation::predict_imu()
 {
 	read_imu();
 
