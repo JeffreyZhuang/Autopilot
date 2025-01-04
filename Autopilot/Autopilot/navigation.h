@@ -26,7 +26,7 @@ private:
     uint64_t last_imu_timestamp;
     uint64_t last_gnss_timestamp;
     uint64_t last_ahrs_timestamp;
-    uint64_t l
+    uint64_t last_baro_timestamp;
 
     float gnss_n; // meters
     float gnss_e;
@@ -37,15 +37,17 @@ private:
     void read_imu();
 	void read_gnss();
 	void read_ahrs();
+
 	bool check_new_imu_data();
 	bool check_new_gnss_data();
 	bool check_new_ahrs_data();
-	void update_plane();
 
 	void predict_imu();
 
 	void update_gps();
 	void update_baro();
+
+	void update_plane();
 };
 
 #endif
