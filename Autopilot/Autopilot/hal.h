@@ -2,11 +2,6 @@
 #define HAL_H_
 
 #include <plane.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <cstring>
-
-// Switch auto gen into classs like this: https://github.com/loveuav/Eigen-STM32-Demo/blob/main/Src/board.hpp
 
 /**
  * @brief Hardware abstraction layer
@@ -15,7 +10,7 @@
 class HAL
 {
 public:
-    HAL(Plane * plane);
+    HAL(Plane* plane);
     virtual void init() = 0;
 
     // Sensors
@@ -27,8 +22,8 @@ public:
     virtual void read_storage() = 0;
 
     // Debug
-    virtual void debug_print(char * str) = 0;
-    virtual void usb_print(char * str) = 0;
+    virtual void debug_print(char* str) = 0;
+    virtual void usb_print(char* str) = 0;
     virtual void toggle_led() = 0;
 
     // Servos
@@ -44,7 +39,7 @@ public:
     virtual void set_background_task(void (*task)()) = 0;
 
 private:
-    Plane * _plane;
+    Plane* _plane;
 };
 
 #endif

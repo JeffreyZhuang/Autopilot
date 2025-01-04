@@ -1,5 +1,7 @@
 #include <flight_hal.h>
 
+// Switch auto gen into classs like this: https://github.com/loveuav/Eigen-STM32-Demo/blob/main/Src/board.hpp
+
 Flight_hal* Flight_hal::_instance = nullptr;
 
 void Flight_hal::set_main_task(void (*task)())
