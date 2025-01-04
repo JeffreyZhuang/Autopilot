@@ -38,16 +38,15 @@ void Autopilot::main_task()
 //			_plane->gnss_lat,
 //			_plane->gnss_lon);
 	sprintf(txBuf,
-			"%f,%f,%f,%f,%f,%f,%f,%f,%f\r\n",
+			"%f,%f,%f,%f,%f,%f,%f,%f\r\n",
 			_plane->ahrs_roll,
 			_plane->ahrs_pitch,
 			_plane->ahrs_yaw,
 			_navigation.acc_n,
 			_navigation.acc_e,
-			_plane->nav_vel_north,
-			_plane->nav_vel_east,
-			_plane->nav_pos_north,
-			_plane->nav_pos_east);
+			_navigation.acc_d,
+			_plane->nav_vel_down,
+			_plane->nav_pos_down);
 	_hal->usb_print(txBuf);
 }
 

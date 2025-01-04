@@ -8,7 +8,7 @@
  */
 Navigation::Navigation(HAL * hal, Plane * plane)
 {
-	hal = hal;
+	_hal = hal;
 	_plane = plane;
 }
 
@@ -31,54 +31,102 @@ void Navigation::execute()
 void Navigation::prediction_step()
 {
 	read_imu();
-	u << acc_n, acc_e;
+
+	Eigen::MatrixXf u(3, 1);
+	u << acc_n, acc_e, acc_d;
+
 	kalman.predict(u);
 
-	Eigen::MatrixXf est = kalman.get_estimate();
-	_plane->nav_pos_north = est(0, 0);
-	_plane->nav_pos_east = est(1, 0);
-	_plane->nav_vel_north = est(2, 0);
-	_plane->nav_vel_east = est(3, 0);
+	update_plane();
+
+//	if (fabs(_plane->nav_pos_north) > 0.5)
+//	{
+//		kalman.reset();
+//	}
 }
 
-void Navigation::update_step()
+void Navigation::update_gps()
 {
 	read_gnss();
-	y << gnss_n, gnss_e, 0, 0;
-	kalman.update(H, y);
 
+	Eigen::MatrixXf y(6, 1);
+	y << gnss_n, gnss_e, 0, 0, 0, 0;
+
+	Eigen::MatrixXf H(6, 6);
+	H << 1, 0, 0, 0, 0, 0,
+		 0, 1, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0;
+
+	kalman.update(H, y);
+	update_plane();
+}
+
+void Navigation::update_baro()
+{
+
+}
+
+void Navigation::update_plane()
+{
 	Eigen::MatrixXf est = kalman.get_estimate();
 	_plane->nav_pos_north = est(0, 0);
 	_plane->nav_pos_east = est(1, 0);
-	_plane->nav_vel_north = est(2, 0);
-	_plane->nav_vel_east = est(3, 0);
+	_plane->nav_pos_down = est(2, 0);
+	_plane->nav_vel_north = est(3, 0);
+	_plane->nav_vel_east = est(4, 0);
+	_plane->nav_vel_down = est(5, 0);
 }
 
-void rotateToWorldFrame(Eigen::Vector3f& accel_inertial,
-                        Eigen::Quaternionf& imu_orientation,
-                        Eigen::Vector3f& accel_world) {
-    // Convert quaternion to rotation matrix
-    Eigen::Matrix3f rotation_matrix = imu_orientation.toRotationMatrix();
+Eigen::Vector3f rotateInertialToWorld(const Eigen::Vector3f& v_inertial, float phi, float theta, float psi) {
+    // Compute trigonometric values
+    float c_phi = cos(phi), s_phi = sin(phi);
+    float c_theta = cos(theta), s_theta = sin(theta);
+    float c_psi = cos(psi), s_psi = sin(psi);
 
-    // Rotate accelerometer measurement
-    accel_world = rotation_matrix * accel_inertial;
+    // Roll rotation matrix (R_x)
+    Eigen::Matrix3f R_x;
+    R_x << 1, 0, 0,
+           0, c_phi, -s_phi,
+           0, s_phi, c_phi;
+
+    // Pitch rotation matrix (R_y)
+    Eigen::Matrix3f R_y;
+    R_y << c_theta, 0, s_theta,
+           0, 1, 0,
+           -s_theta, 0, c_theta;
+
+    // Yaw rotation matrix (R_z)
+    Eigen::Matrix3f R_z;
+    R_z << c_psi, -s_psi, 0,
+           s_psi, c_psi, 0,
+           0, 0, 1;
+
+    // Composite rotation matrix
+    Eigen::Matrix3f R_world_inertial = R_z * R_y * R_x;
+
+    // Transform the vector
+    Eigen::Vector3f v_world = R_world_inertial * v_inertial;
+
+    return v_world;
 }
 
 // Rotate inertial frame to ECF
 void Navigation::read_imu()
 {
-//	Eigen::Vector3f acc_inertial(_plane->imu_ax * g, _plane->imu_ay * g, _plane->imu_az * g);
-	acc_n = _plane->imu_ax * g;
-	acc_e = _plane->imu_ay * g;
+	Eigen::Vector3f acc_inertial(_plane->imu_ax * g, _plane->imu_ay * g, _plane->imu_az * g);
 	last_imu_timestamp = _plane->imu_timestamp;
-//
-//	Eigen::Quaternionf ori(_plane->ahrs_q0, _plane->ahrs_q1, _plane->ahrs_q2, _plane->ahrs_q3); // w, x, y, z
-//	Eigen::Vector3f acc_world;
-//	rotateToWorldFrame(acc_inertial, ori, acc_world);
-//
-//	acc_n = acc_world(0);
-//	acc_e = acc_world(1);
-//	acc_d = acc_world(2) + g;
+
+	Eigen::Vector3f acc_world = rotateInertialToWorld(acc_inertial,
+													  _plane->ahrs_roll * M_PI / 180,
+													  _plane->ahrs_pitch * M_PI / 180,
+													  (_plane->ahrs_yaw - 180.0f) * M_PI / 180);
+
+	acc_n = acc_world(0);
+	acc_e = acc_world(1);
+	acc_d = acc_world(2) + g;
 }
 
 void Navigation::read_gnss()

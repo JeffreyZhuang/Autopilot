@@ -15,15 +15,10 @@ Flight_hal hal(&plane);
 
 Autopilot autopilot(&hal, &plane);
 
-void main_cpp()
-{
-	autopilot.init();
-}
-
 extern "C"
 {
 void main_c()
 {
-	main_cpp();
+	autopilot.init();
 }
 }

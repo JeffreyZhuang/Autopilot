@@ -32,7 +32,7 @@ private:
 	FIL fil;
 
 	// Double buffering approach
-	static constexpr int buffer_len = 500;
+	static constexpr int buffer_len = 100;
 	Sd_packet back_buffer[buffer_len];
 	Sd_packet front_buffer[buffer_len];
 	Sd_packet new_buffer[buffer_len];

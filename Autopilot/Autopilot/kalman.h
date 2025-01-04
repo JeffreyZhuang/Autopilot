@@ -10,8 +10,8 @@
 
 #include "Eigen"
 
-// State vector: pos_n, pos_e, vel_n, vel_e
-// Input vector: acc_n, acc_e
+// State vector: pos_n, pos_e, pos_d, vel_n, vel_e, vel_d
+// Input vector: acc_n, acc_e, acc_d
 static constexpr int n = 4; // Length of state vector
 static constexpr int m = 2; // Length of input vector
 
@@ -21,6 +21,7 @@ public:
     Kalman();
     void predict(Eigen::MatrixXf u);
     void update(Eigen::MatrixXf H, Eigen::MatrixXf y);
+    void reset();
     Eigen::MatrixXf get_estimate();
     Eigen::MatrixXf get_covariance();
 
@@ -31,8 +32,9 @@ private:
     Eigen::MatrixXf _B_mat;
     Eigen::MatrixXf _Q_mat;
     Eigen::MatrixXf _R_mat;
+    Eigen::MatrixXf K;
 
-    float predict_dt = 0.0025;
+    float predict_dt = 0.01;
     float update_dt = 0.1;
 };
 

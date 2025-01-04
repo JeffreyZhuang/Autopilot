@@ -28,10 +28,11 @@ private:
     HAL * _hal;
 
     Madgwick filter;
-    float sample_frequency = 400;
+    float sample_frequency = 100;
     uint32_t last_imu_timestamp;
     uint32_t last_compass_timestamp;
     uint64_t time;
+    uint64_t prev_time;
 };
 
 #endif

@@ -57,10 +57,12 @@ void AHRS::apply_compass_calibration()
 void AHRS::update()
 {
     time = _hal->get_time_us();
+    prev_time = time;
 
 	if (check_new_imu_data()) {
 		// Compass not calibrated yet so for testing purposes
-		if (_plane->use_compass && check_new_compass_data()) {
+//		if (_plane->use_compass && check_new_compass_data()) {
+		if (0) {
 			update_full();
 		} else {
 			update_imu();
