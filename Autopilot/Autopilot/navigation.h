@@ -11,7 +11,7 @@
 class Navigation
 {
 public:
-    Navigation(HAL * hal, Plane * plane);
+    Navigation(HAL* hal, Plane* plane);
     void execute();
 
     float acc_n; // Rotated to the world frame
@@ -19,8 +19,8 @@ public:
 	float acc_d;
 
 private:
-    HAL * _hal;
-    Plane * _plane;
+    HAL* _hal;
+    Plane* _plane;
     Kalman kalman;
 
     uint64_t last_imu_timestamp;

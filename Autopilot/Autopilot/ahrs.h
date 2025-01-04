@@ -12,7 +12,7 @@
 class AHRS
 {
 public:
-    AHRS(Plane * plane, HAL * hal);
+    AHRS(Plane* plane, HAL* hal);
 
     void setup();
     void update();
@@ -24,8 +24,8 @@ private:
     bool check_new_compass_data();
     void apply_compass_calibration();
 
-    Plane * _plane;
-    HAL * _hal;
+    Plane* _plane;
+    HAL* _hal;
 
     Madgwick filter;
     float sample_frequency = 100;

@@ -5,6 +5,6 @@
  *
  * @param plane
  */
-HAL::HAL(Plane * plane) {
+HAL::HAL(Plane* plane) {
     _plane = plane;
 }

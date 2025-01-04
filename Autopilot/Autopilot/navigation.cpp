@@ -6,7 +6,7 @@
  * @param hal
  * @param plane
  */
-Navigation::Navigation(HAL * hal, Plane * plane)
+Navigation::Navigation(HAL* hal, Plane* plane)
 {
 	_hal = hal;
 	_plane = plane;
