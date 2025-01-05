@@ -15,7 +15,7 @@ Navigation::Navigation(HAL* hal, Plane* plane) : kalman(n, m, get_a(), get_b(), 
 Eigen::MatrixXf Navigation::get_a()
 {
 	float predict_dt = 0.01;
-	Eigen::MatrixXf A = Eigen::MatrixXf::Zero(n, n);
+	Eigen::MatrixXf A(n, n);
 	A << 1, 0, 0, predict_dt, 0, 0,
 		 0, 1, 0, 0, predict_dt, 0,
 		 0, 0, 1, 0, 0, predict_dt,
@@ -28,7 +28,7 @@ Eigen::MatrixXf Navigation::get_a()
 Eigen::MatrixXf Navigation::get_b()
 {
 	float predict_dt = 0.01;
-	Eigen::MatrixXf B = Eigen::MatrixXf::Zero(n, m);
+	Eigen::MatrixXf B(n, m);
 	B << 0.5*predict_dt*predict_dt, 0, 0,
 			  0, 0.5*predict_dt*predict_dt, 0,
 			  0, 0, 0.5*predict_dt*predict_dt,
@@ -40,22 +40,13 @@ Eigen::MatrixXf Navigation::get_b()
 
 Eigen::MatrixXf Navigation::get_q()
 {
-	Eigen::MatrixXf Q = Eigen::MatrixXf::Zero(n, n);
-	Q << 1, 0, 0, 0, 0, 0,
-			  0, 1, 0, 0, 0, 0,
-			  0, 0, 1, 0, 0, 0,
-			  0, 0, 0, 1, 0, 0,
-			  0, 0, 0, 0, 1, 0,
-			  0, 0, 0, 0, 0, 1;
+	Eigen::DiagonalMatrix<float, n> Q(1, 1, 1, 1, 1, 1);
 	return Q;
 }
 
 Eigen::MatrixXf Navigation::get_r()
 {
-	Eigen::MatrixXf R = Eigen::MatrixXf::Zero(m, m);
-	R << 1, 0, 0,
-		 0, 1, 0,
-		 0, 0, 1;
+	Eigen::DiagonalMatrix<float, m> R(1, 1, 1);
 	return R;
 }
 
@@ -84,8 +75,10 @@ void Navigation::predict_imu()
 {
 	read_imu();
 
-	Eigen::MatrixXf u(3, 1);
-	u << acc_n, acc_e, acc_d;
+	Eigen::VectorXf u(m);
+	u << acc_n,
+		 acc_e,
+		 acc_d;
 
 	kalman.predict(u);
 
@@ -101,16 +94,15 @@ void Navigation::update_gps()
 {
 	read_gnss();
 
-	Eigen::MatrixXf y(6, 1);
-	y << gnss_n, gnss_e, 0, 0, 0, 0;
+	Eigen::VectorXf y(n);
+	y << gnss_n,
+		 gnss_e,
+		 0,
+		 0,
+		 0,
+		 0;
 
-	Eigen::MatrixXf H(6, 6);
-	H << 1, 0, 0, 0, 0, 0,
-		 0, 1, 0, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0;
+	Eigen::DiagonalMatrix<float, n> H(1, 1, 0, 0, 0, 0);
 
 	kalman.update(H, y);
 	update_plane();
@@ -120,16 +112,10 @@ void Navigation::update_baro()
 {
 	float baro = 0;
 
-	Eigen::MatrixXf y(6, 1);
+	Eigen::VectorXf y(n);
 	y << 0, 0, baro, 0, 0, 0;
 
-	Eigen::MatrixXf H(6, 6);
-	H << 0, 0, 0, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0,
-		 0, 0, 1, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0,
-		 0, 0, 0, 0, 0, 0;
+	Eigen::DiagonalMatrix<float, n> H(0, 0, 1, 0, 0, 0);
 
 	kalman.update(H, y);
 	update_plane();
@@ -146,53 +132,18 @@ void Navigation::update_plane()
 	_plane->nav_vel_down = est(5, 0);
 }
 
-Eigen::Vector3f rotateInertialToWorld(const Eigen::Vector3f& v_inertial, float phi, float theta, float psi) {
-    // Compute trigonometric values
-    float c_phi = cos(phi), s_phi = sin(phi);
-    float c_theta = cos(theta), s_theta = sin(theta);
-    float c_psi = cos(psi), s_psi = sin(psi);
-
-    // Roll rotation matrix (R_x)
-    Eigen::Matrix3f R_x;
-    R_x << 1, 0, 0,
-           0, c_phi, -s_phi,
-           0, s_phi, c_phi;
-
-    // Pitch rotation matrix (R_y)
-    Eigen::Matrix3f R_y;
-    R_y << c_theta, 0, s_theta,
-           0, 1, 0,
-           -s_theta, 0, c_theta;
-
-    // Yaw rotation matrix (R_z)
-    Eigen::Matrix3f R_z;
-    R_z << c_psi, -s_psi, 0,
-           s_psi, c_psi, 0,
-           0, 0, 1;
-
-    // Composite rotation matrix
-    Eigen::Matrix3f R_world_inertial = R_z * R_y * R_x;
-
-    // Transform the vector
-    Eigen::Vector3f v_world = R_world_inertial * v_inertial;
-
-    return v_world;
-}
-
 // Rotate inertial frame to ECF
 void Navigation::read_imu()
 {
-	Eigen::Vector3f acc_inertial(_plane->imu_ax * g, _plane->imu_ay * g, _plane->imu_az * g);
+	Eigen::Vector3f acc_inertial(_plane->imu_ax, _plane->imu_ay, _plane->imu_az);
 	last_imu_timestamp = _plane->imu_timestamp;
 
-	Eigen::Vector3f acc_world = rotateInertialToWorld(acc_inertial,
-													  _plane->ahrs_roll * M_PI / 180,
-													  _plane->ahrs_pitch * M_PI / 180,
-													  (_plane->ahrs_yaw - 180.0f) * M_PI / 180);
+	Eigen::Quaternionf q(_plane->ahrs_q0, _plane->ahrs_q1, _plane->ahrs_q2, _plane->ahrs_q3);
+	Eigen::Vector3f acc_world = q * acc_inertial;
 
-	acc_n = acc_world(0);
-	acc_e = acc_world(1);
-	acc_d = acc_world(2) + g;
+	acc_n = acc_world(0) * g;
+	acc_e = acc_world(1) * g;
+	acc_d = (acc_world(2) + 1) * g;
 }
 
 void Navigation::read_gnss()
