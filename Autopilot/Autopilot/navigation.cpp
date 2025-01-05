@@ -6,10 +6,57 @@
  * @param hal
  * @param plane
  */
-Navigation::Navigation(HAL* hal, Plane* plane)
+Navigation::Navigation(HAL* hal, Plane* plane) : kalman(n, m, get_a(), get_b(), get_q(), get_r())
 {
 	_hal = hal;
 	_plane = plane;
+}
+
+Eigen::MatrixXf Navigation::get_a()
+{
+	float predict_dt = 0.01;
+	Eigen::MatrixXf A = Eigen::MatrixXf::Zero(n, n);
+	A << 1, 0, 0, predict_dt, 0, 0,
+		 0, 1, 0, 0, predict_dt, 0,
+		 0, 0, 1, 0, 0, predict_dt,
+		 0, 0, 0, 1, 0, 0,
+		 0, 0, 0, 0, 1, 0,
+		 0, 0, 0, 0, 0, 1;
+	return A;
+}
+
+Eigen::MatrixXf Navigation::get_b()
+{
+	float predict_dt = 0.01;
+	Eigen::MatrixXf B = Eigen::MatrixXf::Zero(n, m);
+	B << 0.5*predict_dt*predict_dt, 0, 0,
+			  0, 0.5*predict_dt*predict_dt, 0,
+			  0, 0, 0.5*predict_dt*predict_dt,
+			  predict_dt, 0, 0,
+			  0, predict_dt, 0,
+			  0, 0, predict_dt;
+	return B;
+}
+
+Eigen::MatrixXf Navigation::get_q()
+{
+	Eigen::MatrixXf Q = Eigen::MatrixXf::Zero(n, n);
+	Q << 1, 0, 0, 0, 0, 0,
+			  0, 1, 0, 0, 0, 0,
+			  0, 0, 1, 0, 0, 0,
+			  0, 0, 0, 1, 0, 0,
+			  0, 0, 0, 0, 1, 0,
+			  0, 0, 0, 0, 0, 1;
+	return Q;
+}
+
+Eigen::MatrixXf Navigation::get_r()
+{
+	Eigen::MatrixXf R = Eigen::MatrixXf::Zero(m, m);
+	R << 1, 0, 0,
+		 0, 1, 0,
+		 0, 0, 1;
+	return R;
 }
 
 /**
@@ -26,6 +73,11 @@ void Navigation::execute()
 	{
 //		update_step();
 	}
+
+//	if (check_new_baro_data())
+//	{
+//		update_baro();
+//	}
 }
 
 void Navigation::predict_imu()
@@ -66,7 +118,21 @@ void Navigation::update_gps()
 
 void Navigation::update_baro()
 {
+	float baro = 0;
 
+	Eigen::MatrixXf y(6, 1);
+	y << 0, 0, baro, 0, 0, 0;
+
+	Eigen::MatrixXf H(6, 6);
+	H << 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0,
+		 0, 0, 1, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0;
+
+	kalman.update(H, y);
+	update_plane();
 }
 
 void Navigation::update_plane()

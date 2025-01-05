@@ -1,44 +1,21 @@
 #include "kalman.h"
 
-Kalman::Kalman()
+Kalman::Kalman(int n, int m, Eigen::MatrixXf A, Eigen::MatrixXf B, Eigen::MatrixXf Q, Eigen::MatrixXf R)
 {
-	_A_mat = Eigen::MatrixXf::Zero(n, n);
-	_A_mat << 1, 0, 0, predict_dt, 0, 0,
-			  0, 1, 0, 0, predict_dt, 0,
-			  0, 0, 1, 0, 0, predict_dt,
-			  0, 0, 0, 1, 0, 0,
-			  0, 0, 0, 0, 1, 0,
-			  0, 0, 0, 0, 0, 1;
-
-	_B_mat = Eigen::MatrixXf::Zero(n, m);
-	_B_mat << 0.5*predict_dt*predict_dt, 0, 0,
-			  0, 0.5*predict_dt*predict_dt, 0,
-			  0, 0, 0.5*predict_dt*predict_dt,
-			  predict_dt, 0, 0,
-			  0, predict_dt, 0,
-			  0, 0, predict_dt;
-
-	_Q_mat = Eigen::MatrixXf::Zero(n, n);
-	_Q_mat << 1, 0, 0, 0, 0, 0,
-			  0, 1, 0, 0, 0, 0,
-			  0, 0, 1, 0, 0, 0,
-			  0, 0, 0, 1, 0, 0,
-			  0, 0, 0, 0, 1, 0,
-			  0, 0, 0, 0, 0, 1;
-
-	_R_mat = Eigen::MatrixXf::Zero(m, m);
-	_R_mat << 1, 0, 0,
-			  0, 1, 0,
-			  0, 0, 1;
+	_n = n;
+	_m = m;
+	_A_mat = A;
+	_B_mat = B;
+	_Q_mat = Q;
+	_R_mat = R;
 
 	_P_mat = Eigen::MatrixXf::Zero(n, n);
-
 	_x = Eigen::MatrixXf::Zero(n, 1);
 }
 
 void Kalman::reset()
 {
-	_x = Eigen::MatrixXf::Zero(n, 1);
+	_x = Eigen::MatrixXf::Zero(_n, 1);
 }
 
 void Kalman::predict(Eigen::MatrixXf u)

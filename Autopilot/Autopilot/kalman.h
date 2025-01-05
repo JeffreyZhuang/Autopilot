@@ -10,15 +10,10 @@
 
 #include "Eigen"
 
-// State vector: pos_n, pos_e, pos_d, vel_n, vel_e, vel_d
-// Input vector: acc_n, acc_e, acc_d
-static constexpr int n = 6; // Length of state vector
-static constexpr int m = 3; // Length of input vector
-
 class Kalman
 {
 public:
-    Kalman();
+    Kalman(int n, int m, Eigen::MatrixXf A, Eigen::MatrixXf B, Eigen::MatrixXf Q, Eigen::MatrixXf R);
     void predict(Eigen::MatrixXf u);
     void update(Eigen::MatrixXf H, Eigen::MatrixXf y);
     void reset();
@@ -33,6 +28,11 @@ private:
     Eigen::MatrixXf _Q_mat;
     Eigen::MatrixXf _R_mat;
     Eigen::MatrixXf K;
+
+    // State vector: pos_n, pos_e, pos_d, vel_n, vel_e, vel_d
+    // Input vector: acc_n, acc_e, acc_d
+    int _n = 6; // Length of state vector
+    int _m = 3; // Length of input vector
 
     float predict_dt = 0.01;
     float update_dt = 0.1;

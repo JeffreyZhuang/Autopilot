@@ -4,6 +4,9 @@
 #include "hal.h"
 #include "kalman.h"
 
+static constexpr int n = 6;
+static constexpr int m = 3;
+
 /**
  * @brief Calculates the position of the plane
  *
@@ -33,6 +36,12 @@ private:
     float gnss_d;
 
     float g = 9.80665;
+
+    // Kalman
+    Eigen::MatrixXf get_a();
+    Eigen::MatrixXf get_b();
+    Eigen::MatrixXf get_q();
+    Eigen::MatrixXf get_r();
 
     void read_imu();
 	void read_gnss();
