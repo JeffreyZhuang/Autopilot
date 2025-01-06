@@ -5,7 +5,7 @@
  *      Author: jeffr
  */
 
-#include <flight_hal.h>
+#include "Flight_HAL/flight_hal.h"
 #include "servos.h"
 
 void Flight_hal::set_elevator(float deg)

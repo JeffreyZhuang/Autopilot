@@ -1,6 +1,4 @@
-#include <flight_hal.h>
 #include "main_cpp.h"
-#include "pitl_hal.h"
 #include "autopilot.h"
 
 #define PITL_ENABLE true
@@ -8,8 +6,10 @@
 Plane plane;
 
 #if PITL_ENABLE
+#include "pitl_hal.h"
 Pitl_hal hal(&plane);
 #else
+#include "flight_hal.h"
 Flight_hal hal(&plane);
 #endif
 

@@ -3,7 +3,7 @@
 void Pitl_hal::set_main_task(void (*task)())
 {
 	uint64_t prev_time = get_time_us();
-	uint64_t dt = 1000000 / 400;
+	uint64_t dt = 1000000 / 100;
 
 	while (1)
 	{

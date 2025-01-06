@@ -14,7 +14,6 @@ extern "C"
 {
 #include "usbd_cdc_if.h"
 #include "barometer.h"
-#include "main.h"
 }
 
 extern I2C_HandleTypeDef hi2c1;

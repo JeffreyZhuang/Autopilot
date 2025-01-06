@@ -1,4 +1,4 @@
-#include <flight_hal.h>
+#include "Flight_HAL/flight_hal.h"
 
 // Switch auto gen into classs like this: https://github.com/loveuav/Eigen-STM32-Demo/blob/main/Src/board.hpp
 
