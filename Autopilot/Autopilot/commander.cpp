@@ -6,6 +6,7 @@ Commander::Commander(HAL* hal, Plane* plane)
 	_plane = plane;
 }
 
+// Detects state transitions and changes state
 void Commander::update()
 {
 	switch (_plane->flightState)

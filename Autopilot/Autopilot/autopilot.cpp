@@ -34,6 +34,9 @@ void Autopilot::main_task()
 			_plane->nav_vel_down,
 			_plane->nav_pos_down);
 	_hal->usb_print(txBuf);
+
+	_plane->loop_execution_time = _hal->get_time_us() - _plane->time;
+	printf("%ld ", (uint32_t)_plane->loop_execution_time);
 }
 
 void Autopilot::logger_task()

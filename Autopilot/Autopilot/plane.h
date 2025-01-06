@@ -41,6 +41,7 @@ struct Plane {
 
     // Time
     uint64_t time;
+    uint64_t loop_execution_time;
 
     // IMU
     float imu_ax;
