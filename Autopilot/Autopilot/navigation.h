@@ -11,6 +11,7 @@ enum class NavigationState {
 
 static constexpr int n = 6;
 static constexpr int m = 3;
+static constexpr float predict_dt = 0.01;
 
 /**
  * @brief Calculates the position of the plane
@@ -42,8 +43,6 @@ private:
     float gnss_d;
 
     float g = 9.80665;
-
-    float predict_dt = 0.01;
 
     // Kalman
     Eigen::MatrixXf get_a(float dt);

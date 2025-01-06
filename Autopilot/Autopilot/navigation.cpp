@@ -184,6 +184,9 @@ void Navigation::read_imu()
 void Navigation::read_gnss()
 {
 	// Convert from lat/lon to meters
+	// Use double instead of float because float not enough...
+
+
 	gnss_n = _plane->gnss_lat;
 	gnss_e = _plane->gnss_lon;
 	gnss_d = _plane->gnss_asl;
