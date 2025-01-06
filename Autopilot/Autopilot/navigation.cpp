@@ -126,7 +126,7 @@ void Navigation::update_plane()
 	_plane->nav_vel_north = est(3, 0);
 	_plane->nav_vel_east = est(4, 0);
 	_plane->nav_vel_down = est(5, 0);
-	_plane->nav_timestamp = _plane->time;
+	_plane->nav_timestamp = _hal->get_time_us();
 }
 
 // Rotate inertial frame to ECF

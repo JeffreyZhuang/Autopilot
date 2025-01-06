@@ -109,5 +109,5 @@ void AHRS::upload_results()
     _plane->ahrs_q1 = filter.get_q1();
     _plane->ahrs_q2 = filter.get_q2();
     _plane->ahrs_q3 = filter.get_q3();
-    _plane->ahrs_timestamp = _plane->time;
+    _plane->ahrs_timestamp = _hal->get_time_us();
 }

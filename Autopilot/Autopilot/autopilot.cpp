@@ -46,8 +46,15 @@ void Autopilot::logger_task()
 	case FlightState::TAKEOFF:
 		_hal->flush_storage_buffer();
 		break;
+	case FlightState::CRUISE:
+		break;
 	case FlightState::LAND:
 		_hal->read_storage();
 		break;
+	case FlightState::STABALIZE:
+		break;
+	case FlightState::MANUAL:
+		break;
+
 	}
 }
