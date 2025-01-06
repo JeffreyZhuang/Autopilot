@@ -39,6 +39,9 @@ struct Plane {
     // State machine
     FlightState flightState = FlightState::TAKEOFF;
 
+    // Time
+    uint64_t time;
+
     // IMU
     float imu_ax;
     float imu_ay;
@@ -57,6 +60,7 @@ struct Plane {
 
     // Barometer
     float baro_alt;
+    float baro_offset = -177.2;
     float baro_temp;
     uint64_t baro_timestamp;
 

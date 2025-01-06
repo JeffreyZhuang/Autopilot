@@ -50,11 +50,9 @@ Eigen::MatrixXf Navigation::get_q()
  */
 void Navigation::execute()
 {
-	printf("a");
 	if (check_new_imu_data()) {
 		predict_imu();
 	}
-	printf("b");
 
 	if (check_new_gnss_data())
 	{
@@ -63,11 +61,8 @@ void Navigation::execute()
 
 	if (check_new_baro_data())
 	{
-		printf("allahu");
 		update_baro();
 	}
-
-	printf("c");
 
 	update_plane();
 }
@@ -109,13 +104,13 @@ void Navigation::update_gps()
 void Navigation::update_baro()
 {
 	Eigen::VectorXf y(1);
-	y << _plane->baro_alt;
+	y << -(_plane->baro_alt + _plane->baro_offset); // Multiply by -1 to put in correct coordinate system
 	last_baro_timestamp = _plane->baro_timestamp;
 
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 1> R(1);
+	Eigen::DiagonalMatrix<float, 1> R(10000);
 
 	kalman.update(R, H, y);
 }

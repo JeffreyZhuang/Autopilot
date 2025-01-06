@@ -13,6 +13,8 @@ void Autopilot::init()
 
 void Autopilot::main_task()
 {
+	_plane->time = _hal->get_time_us();
+
 	_hal->read_sensors();
 	_ahrs.update();
 	_navigation.execute();
