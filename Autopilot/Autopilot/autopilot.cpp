@@ -23,6 +23,7 @@ void Autopilot::main_task()
 	_hal->write_storage_buffer();
 	_commander.update();
 
+	// Send struct instead and then decode struct in Python
 	char txBuf[200];
 	sprintf(txBuf,
 			"%f,%f,%f,%f,%f,%f,%f,%f\r\n",

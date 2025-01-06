@@ -8,7 +8,6 @@ Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane)
 // Read sensor data from USB and add to plane struct
 void Pitl_hal::read_sensors()
 {
-
 	uint8_t rxBuf[100];
 	// USBD_CDC_SetRxBuffer();
 
@@ -21,14 +20,13 @@ void Pitl_hal::read_sensors()
 	_plane->imu_timestamp = get_time_us();
 
 	// ardupilot/libraries/SITL/SITL.h
-	// The only thing you have to simulate is the IMU, nothing else is hard.
-	// Chatgpt: Write a function in python to convert accelerations in the world reference frame to IMU values
 }
 
 // Transmit USB
 void Pitl_hal::set_elevator(float deg)
 {
-
+//	char txBuf[100];
+//	CDC_Transmit_FS((uint8_t*)txBuf, strlen(txBuf));
 }
 
 // Transmit USB

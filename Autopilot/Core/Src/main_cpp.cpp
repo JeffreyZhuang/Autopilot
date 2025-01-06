@@ -3,7 +3,7 @@
 #include "pitl_hal.h"
 #include "autopilot.h"
 
-#define PITL_ENABLE false
+#define PITL_ENABLE true
 
 Plane plane;
 

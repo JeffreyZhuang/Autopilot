@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "fatfs.h"
+#include "usbd_cdc_if.h"
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
