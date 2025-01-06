@@ -84,6 +84,9 @@ struct Plane {
     float nav_vel_north;
     float nav_vel_east;
     float nav_vel_down;
+    float nav_acc_north;
+    float nav_acc_east;
+    float nav_acc_down;
     uint64_t nav_timestamp;
 };
 

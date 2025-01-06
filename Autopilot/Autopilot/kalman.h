@@ -13,9 +13,9 @@
 class Kalman
 {
 public:
-    Kalman(int n, int m, Eigen::MatrixXf A, Eigen::MatrixXf B, Eigen::MatrixXf Q, Eigen::MatrixXf R);
+    Kalman(int n, int m, Eigen::MatrixXf A, Eigen::MatrixXf B, Eigen::MatrixXf Q);
     void predict(Eigen::MatrixXf u);
-    void update(Eigen::MatrixXf H, Eigen::MatrixXf y);
+    void update(Eigen::MatrixXf R, Eigen::MatrixXf H, Eigen::MatrixXf y);
     void reset();
     Eigen::MatrixXf get_estimate();
     Eigen::MatrixXf get_covariance();
@@ -26,7 +26,6 @@ private:
     Eigen::MatrixXf _A_mat;
     Eigen::MatrixXf _B_mat;
     Eigen::MatrixXf _Q_mat;
-    Eigen::MatrixXf _R_mat;
     Eigen::MatrixXf K;
 
     // State vector: pos_n, pos_e, pos_d, vel_n, vel_e, vel_d

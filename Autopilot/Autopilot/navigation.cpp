@@ -6,7 +6,7 @@
  * @param hal
  * @param plane
  */
-Navigation::Navigation(HAL* hal, Plane* plane) : kalman(n, m, get_a(), get_b(), get_q(), get_r())
+Navigation::Navigation(HAL* hal, Plane* plane) : kalman(n, m, get_a(), get_b(), get_q())
 {
 	_hal = hal;
 	_plane = plane;
@@ -44,31 +44,32 @@ Eigen::MatrixXf Navigation::get_q()
 	return Q;
 }
 
-Eigen::MatrixXf Navigation::get_r()
-{
-	Eigen::DiagonalMatrix<float, m> R(1, 1, 1);
-	return R;
-}
-
 /**
  * @brief Update navigation
  *
  */
 void Navigation::execute()
 {
+	printf("a");
 	if (check_new_imu_data()) {
 		predict_imu();
 	}
+	printf("b");
 
 	if (check_new_gnss_data())
 	{
-//		update_step();
+//		update_gps();
 	}
 
-//	if (check_new_baro_data())
-//	{
-//		update_baro();
-//	}
+	if (check_new_baro_data())
+	{
+		printf("allahu");
+		update_baro();
+	}
+
+	printf("c");
+
+	update_plane();
 }
 
 void Navigation::predict_imu()
@@ -76,13 +77,11 @@ void Navigation::predict_imu()
 	read_imu();
 
 	Eigen::VectorXf u(m);
-	u << acc_n,
-		 acc_e,
-		 acc_d;
+	u << _plane->nav_acc_north,
+		 _plane->nav_acc_east,
+		 _plane->nav_acc_down;
 
 	kalman.predict(u);
-
-	update_plane();
 
 //	if (fabs(_plane->nav_pos_north) > 0.5)
 //	{
@@ -94,31 +93,31 @@ void Navigation::update_gps()
 {
 	read_gnss();
 
-	Eigen::VectorXf y(n);
+	Eigen::VectorXf y(2);
 	y << gnss_n,
-		 gnss_e,
-		 0,
-		 0,
-		 0,
-		 0;
+		 gnss_e;
 
-	Eigen::DiagonalMatrix<float, n> H(1, 1, 0, 0, 0, 0);
+	Eigen::MatrixXf H(2, n);
+	H << 1, 0, 0, 0, 0, 0,
+		 0, 1, 0, 0, 0, 0;
 
-	kalman.update(H, y);
-	update_plane();
+	Eigen::DiagonalMatrix<float, 2> R(1, 1);
+
+	kalman.update(R, H, y);
 }
 
 void Navigation::update_baro()
 {
-	float baro = 0;
+	Eigen::VectorXf y(1);
+	y << _plane->baro_alt;
+	last_baro_timestamp = _plane->baro_timestamp;
 
-	Eigen::VectorXf y(n);
-	y << 0, 0, baro, 0, 0, 0;
+	Eigen::MatrixXf H(1, n);
+	H << 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, n> H(0, 0, 1, 0, 0, 0);
+	Eigen::DiagonalMatrix<float, 1> R(1);
 
-	kalman.update(H, y);
-	update_plane();
+	kalman.update(R, H, y);
 }
 
 void Navigation::update_plane()
@@ -135,36 +134,31 @@ void Navigation::update_plane()
 // Rotate inertial frame to ECF
 void Navigation::read_imu()
 {
+	// Get IMU data
 	Eigen::Vector3f acc_inertial(_plane->imu_ax, _plane->imu_ay, _plane->imu_az);
 	last_imu_timestamp = _plane->imu_timestamp;
 
+	// Get quaternion from AHRS
 	Eigen::Quaternionf q(_plane->ahrs_q0, _plane->ahrs_q1, _plane->ahrs_q2, _plane->ahrs_q3);
-	Eigen::Vector3f acc_world = q * acc_inertial;
 
-	acc_n = acc_world(0) * g;
-	acc_e = acc_world(1) * g;
-	acc_d = (acc_world(2) + 1) * g;
+	// Convert from inertial frame to ECF
+	Eigen::Vector3f acc_world = q * acc_inertial * g;
+	acc_world(2) += g; // Gravity correction
+
+	_plane->nav_acc_north = acc_world(0);
+	_plane->nav_acc_east = acc_world(1);
+	_plane->nav_acc_down = acc_world(2);
 }
 
 void Navigation::read_gnss()
 {
+	// Convert from lat/lon to meters
 	gnss_n = _plane->gnss_lat;
 	gnss_e = _plane->gnss_lon;
 	gnss_d = _plane->gnss_asl;
 	last_gnss_timestamp = _plane->gnss_timestamp;
 }
 
-void Navigation:: read_ahrs()
-{
-
-}
-
-/**
- * @brief Check if new IMU data is available
- *
- * @return true
- * @return false
- */
 bool Navigation::check_new_imu_data()
 {
     return last_imu_timestamp != _plane->imu_timestamp;
@@ -175,7 +169,8 @@ bool Navigation::check_new_gnss_data()
 	return last_gnss_timestamp != _plane->gnss_timestamp;
 }
 
-bool Navigation::check_new_ahrs_data()
+bool Navigation::check_new_baro_data()
 {
-	return last_ahrs_timestamp != _plane->ahrs_timestamp;
+	return last_baro_timestamp != _plane->baro_timestamp;
 }
+

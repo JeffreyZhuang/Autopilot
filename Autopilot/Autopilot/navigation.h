@@ -17,10 +17,6 @@ public:
     Navigation(HAL* hal, Plane* plane);
     void execute();
 
-    float acc_n; // Rotated to the world frame
-	float acc_e;
-	float acc_d;
-
 private:
     HAL* _hal;
     Plane* _plane;
@@ -28,7 +24,6 @@ private:
 
     uint64_t last_imu_timestamp;
     uint64_t last_gnss_timestamp;
-    uint64_t last_ahrs_timestamp;
     uint64_t last_baro_timestamp;
 
     float gnss_n; // meters
@@ -41,15 +36,13 @@ private:
     Eigen::MatrixXf get_a();
     Eigen::MatrixXf get_b();
     Eigen::MatrixXf get_q();
-    Eigen::MatrixXf get_r();
 
     void read_imu();
 	void read_gnss();
-	void read_ahrs();
 
 	bool check_new_imu_data();
+	bool check_new_baro_data();
 	bool check_new_gnss_data();
-	bool check_new_ahrs_data();
 
 	void predict_imu();
 
