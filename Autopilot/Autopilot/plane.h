@@ -98,6 +98,9 @@ struct Plane {
     float nav_acc_east;
     float nav_acc_down;
     uint64_t nav_timestamp;
+
+    // Guidance
+    float guidance_roll_setpoint;
 };
 
 #endif /* PLANE_H_ */

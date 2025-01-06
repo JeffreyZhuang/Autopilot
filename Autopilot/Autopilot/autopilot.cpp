@@ -18,6 +18,7 @@ void Autopilot::main_task()
 	_hal->read_sensors();
 	_ahrs.update();
 	_navigation.execute();
+	_guidance.update();
 	_control.update();
 	_hal->write_storage_buffer();
 	_commander.update();

@@ -9,6 +9,7 @@
 #include <navigation.h>
 #include "commander.h"
 #include "control.h"
+#include "guidance.h"
 
 /**
  * @brief Autopilot
@@ -53,6 +54,7 @@ private:
     Navigation _navigation;
     Commander _commander;
     Control _control;
+    Guidance _guidance;
 
     static Autopilot* _instance;
 };

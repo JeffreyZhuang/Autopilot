@@ -15,6 +15,8 @@ private:
 	HAL* _hal;
 	Plane* _plane;
 
+	float dt = 0.01;
+
 	PID roll_controller;
 	PID pitch_controller;
 	PID yaw_controller;

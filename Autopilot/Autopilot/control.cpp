@@ -12,5 +12,10 @@ Control::Control(HAL * hal, Plane * plane) : roll_controller(0, 0, 0, 0, 0),
 
 void Control::update()
 {
+	roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, dt);
+	pitch_controller.get_output();
+	yaw_controller.get_output();
 
+	_hal->set_elevator(0);
+	_hal->set_rudder(0);
 }
