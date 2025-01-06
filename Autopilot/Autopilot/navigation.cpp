@@ -1,5 +1,7 @@
 #include <navigation.h>
 
+// Probably kalman filter blacking out because GNSS returns NaN and that gets fed into kalman
+
 /**
  * @brief Construct a new Navigation:: Navigation object
  *
@@ -59,7 +61,8 @@ void Navigation::execute()
 }
 
 // Calibrate sensors
-// Easier if I move this to the drivers...
+// Easier if I move this to the drivers... or maybe not because waiting for converging
+// Wait for converging especially AHRS heading
 void Navigation::execute_initialization()
 {
 	if (check_new_baro_data())
@@ -90,14 +93,12 @@ void Navigation::execute_live()
 
 	if (check_new_gnss_data())
 	{
-//		update_gps();
+		update_gps();
 	}
 
 	if (check_new_baro_data())
 	{
-//		uint64_t start = _hal->get_time_us();
 		update_baro();
-//		printf("%ld ", (uint32_t)(_hal->get_time_us() - start));
 	}
 }
 
@@ -119,6 +120,8 @@ void Navigation::update_gps()
 {
 	read_gnss();
 
+	printf("%.2f %.2f\n", gnss_n, gnss_e);
+
 	Eigen::VectorXf y(2);
 	y << gnss_n,
 		 gnss_e;
@@ -127,7 +130,7 @@ void Navigation::update_gps()
 	H << 1, 0, 0, 0, 0, 0,
 		 0, 1, 0, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 2> R(1, 1);
+	Eigen::DiagonalMatrix<float, 2> R(10000, 10000);
 
 	kalman.update(R, H, y);
 
@@ -183,13 +186,28 @@ void Navigation::read_imu()
 
 void Navigation::read_gnss()
 {
-	// Convert from lat/lon to meters
 	// Use double instead of float because float not enough...
+	// Tie down the modules together on wood
 
+	// Convert from lat/lon to meters
+	double earth_radius = 6371000;
+	double lat1 = _plane->gnss_center_lat;
+	double lon1 = _plane->gnss_center_lon;
+	double lat2 = _plane->gnss_lat;
+	double lon2 = _plane->gnss_lon;
 
-	gnss_n = _plane->gnss_lat;
-	gnss_e = _plane->gnss_lon;
+	lat1 *= M_PI / 180.0;
+	lon1 *= M_PI / 180.0;
+	lat2 *= M_PI / 180.0;
+	lon2 *= M_PI / 180.0;
+
+	double dLat = lat2 - lat1;
+	double dLon = lon2 - lon1;
+
+	gnss_e = dLon * earth_radius * cos((lat1 + lat2) / 2);
+	gnss_n = dLat * earth_radius;
 	gnss_d = _plane->gnss_asl;
+
 	last_gnss_timestamp = _plane->gnss_timestamp;
 }
 
