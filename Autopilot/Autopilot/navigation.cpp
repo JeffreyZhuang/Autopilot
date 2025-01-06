@@ -197,11 +197,8 @@ void Navigation::read_gnss()
 	double lon2 = _plane->gnss_lon * M_PI / 180.0;
 	last_gnss_timestamp = _plane->gnss_timestamp;
 
-	double dLat = lat2 - lat1;
-	double dLon = lon2 - lon1;
-
-	gnss_e = dLon * earth_radius * cos((lat1 + lat2) / 2);
-	gnss_n = dLat * earth_radius;
+	gnss_e = (lon2 - lon1) * earth_radius * cos((lat1 + lat2) / 2);
+	gnss_n = (lat2 - lat1) * earth_radius;
 	gnss_d = _plane->gnss_asl;
 }
 
