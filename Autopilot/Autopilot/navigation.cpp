@@ -70,19 +70,24 @@ void Navigation::execute_initialization()
 		_plane->baro_offset = _plane->baro_alt;
 	}
 
-	printf("Sats: %d\n", _plane->gnss_sats);
-
-	// Check if GNSS is locked
-	if (check_new_gnss_data() && _plane->gnss_sats > 5 && _plane->gnss_lat > 0)
+	if (check_new_gnss_data())
 	{
-		// Set center GPS coordinates
-		_plane->gnss_center_lat = _plane->gnss_lat;
-		_plane->gnss_center_lon = _plane->gnss_lon;
+		printf("Sats: %d\n", _plane->gnss_sats);
 
-		printf("Center: %f %f\n", _plane->gnss_center_lat, _plane->gnss_center_lon);
+		// Check if GNSS is locked
+		if (_plane->gnss_sats > 5 && _plane->gnss_lat > 0)
+		{
+			// Set center GPS coordinates
+			_plane->gnss_center_lat = _plane->gnss_lat;
+			_plane->gnss_center_lon = _plane->gnss_lon;
 
-		navigationState = NavigationState::LIVE;
+			printf("Center: %f %f\n", _plane->gnss_center_lat, _plane->gnss_center_lon);
+
+			navigationState = NavigationState::LIVE;
+		}
 	}
+
+
 }
 
 void Navigation::execute_live()
