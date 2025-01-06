@@ -3,6 +3,7 @@
 
 #include "hal.h"
 #include "pid.h"
+#include "math.h"
 
 // Calculates and sends commands to servos
 class Control

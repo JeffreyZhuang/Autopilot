@@ -10,6 +10,12 @@
 
 #include "hal.h"
 
+struct Setpoint {
+	float n;
+	float e;
+	float d;
+};
+
 class Guidance
 {
 public:
@@ -19,6 +25,8 @@ public:
 private:
 	HAL* _hal;
 	Plane*_plane;
+
+	Setpoint setpoints[10];
 };
 
 #endif /* GUIDANCE_H_ */
