@@ -29,10 +29,8 @@ private:
 
     Madgwick filter;
     float sample_frequency = 100;
-    uint32_t last_imu_timestamp;
-    uint32_t last_compass_timestamp;
-    uint64_t time;
-    uint64_t prev_time;
+    uint64_t last_imu_timestamp;
+    uint64_t last_compass_timestamp;
 };
 
 #endif

@@ -14,7 +14,7 @@ extern "C" {
 // Beware of padding to align to 4 byte memory
 struct Sd_packet
 {
-	uint32_t time; // uint64_t doens't work for some reason
+	uint64_t time;
 	float acc_z;
 	float alt;
 };

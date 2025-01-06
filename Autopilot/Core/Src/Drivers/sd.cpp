@@ -70,7 +70,7 @@ void Sd::read()
 
 		if (res != FR_OK || bytes_read == 0) break;
 
-		printf("%ld %f %f\n", p.time, p.acc_z, p.alt);
+		printf("%ld %f %f\n", (uint32_t)p.time, p.acc_z, p.alt);
 	}
 
 	while (1);

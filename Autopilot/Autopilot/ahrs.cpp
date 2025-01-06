@@ -56,9 +56,6 @@ void AHRS::apply_compass_calibration()
  */
 void AHRS::update()
 {
-    time = _hal->get_time_us();
-    prev_time = time;
-
 	if (check_new_imu_data()) {
 		// Compass not calibrated yet so for testing purposes
 //		if (_plane->use_compass && check_new_compass_data()) {
@@ -112,5 +109,5 @@ void AHRS::upload_results()
     _plane->ahrs_q1 = filter.get_q1();
     _plane->ahrs_q2 = filter.get_q2();
     _plane->ahrs_q3 = filter.get_q3();
-    _plane->ahrs_timestamp = time;
+    _plane->ahrs_timestamp = _plane->time;
 }

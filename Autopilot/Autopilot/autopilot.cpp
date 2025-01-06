@@ -47,7 +47,7 @@ void Autopilot::logger_task()
 		_hal->flush_storage_buffer();
 		break;
 	case FlightState::LAND:
-//		_hal->read_storage();
+		_hal->read_storage();
 		break;
 	}
 }
