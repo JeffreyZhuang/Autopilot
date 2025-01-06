@@ -14,3 +14,8 @@ void Pitl_hal::set_main_task(void (*task)())
 		}
 	}
 }
+
+void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
+{
+	CDC_Transmit_FS(Buf, Len);
+}
