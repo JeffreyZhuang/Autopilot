@@ -8,11 +8,13 @@
  *
  */
 enum class FlightState {
-    TAKEOFF = 1,
-    CRUISE = 2,
-    LAND = 3,
-	STABALIZE = 4,
-	MANUAL = 5
+	STARTUP = 1,
+	TAKEOFF_DETECT = 2,
+    TAKEOFF = 3,
+    CRUISE = 4,
+    LAND = 5,
+	STABALIZE = 6,
+	MANUAL = 7
 };
 
 /**
