@@ -24,7 +24,7 @@ class Pitl_hal : public HAL
 public:
 	Pitl_hal(Plane* plane);
 	void init() {};
-	void read_sensors();
+	void read_sensors() {};
 
 	// Logger
 	void write_storage_buffer() {};
@@ -50,6 +50,9 @@ public:
 
 private:
 	Plane* _plane;
+
+	float _elevator;
+	float _rudder;
 };
 
 

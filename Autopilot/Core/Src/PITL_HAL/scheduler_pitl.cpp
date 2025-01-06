@@ -17,5 +17,11 @@ void Pitl_hal::set_main_task(void (*task)())
 
 void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
-	CDC_Transmit_FS(Buf, Len);
+	// Read sensor data from USB and add to plane struct
+	printf("Received: %s\n", Buf);
+
+	// Transmit control commands
+	char txBuf[100];
+	sprintf(txBuf, "%d\n", HAL_GetTick());
+	CDC_Transmit_FS((uint8_t*)txBuf, strlen(txBuf));
 }

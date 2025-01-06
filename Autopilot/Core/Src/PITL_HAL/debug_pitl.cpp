@@ -1,6 +1,6 @@
 #include "pitl_hal.h"
 
-void Pitl_hal::debug_print(char * str)
+void Pitl_hal::debug_print(char* str)
 {
 	printf(str);
 }
