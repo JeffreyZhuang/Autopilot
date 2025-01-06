@@ -191,15 +191,11 @@ void Navigation::read_gnss()
 
 	// Convert from lat/lon to meters
 	double earth_radius = 6371000;
-	double lat1 = _plane->gnss_center_lat;
-	double lon1 = _plane->gnss_center_lon;
-	double lat2 = _plane->gnss_lat;
-	double lon2 = _plane->gnss_lon;
-
-	lat1 *= M_PI / 180.0;
-	lon1 *= M_PI / 180.0;
-	lat2 *= M_PI / 180.0;
-	lon2 *= M_PI / 180.0;
+	double lat1 = _plane->gnss_center_lat * M_PI / 180.0;
+	double lon1 = _plane->gnss_center_lon * M_PI / 180.0;
+	double lat2 = _plane->gnss_lat * M_PI / 180.0;
+	double lon2 = _plane->gnss_lon * M_PI / 180.0;
+	last_gnss_timestamp = _plane->gnss_timestamp;
 
 	double dLat = lat2 - lat1;
 	double dLon = lon2 - lon1;
@@ -207,8 +203,6 @@ void Navigation::read_gnss()
 	gnss_e = dLon * earth_radius * cos((lat1 + lat2) / 2);
 	gnss_n = dLat * earth_radius;
 	gnss_d = _plane->gnss_asl;
-
-	last_gnss_timestamp = _plane->gnss_timestamp;
 }
 
 bool Navigation::check_new_imu_data()
