@@ -100,7 +100,9 @@ struct Plane {
     uint64_t nav_timestamp;
 
     // Guidance
-    float guidance_roll_setpoint;
+    float guidance_n_setpoint;
+    float guidance_e_setpoint;
+    float guidance_d_setpoint;
 };
 
 #endif /* PLANE_H_ */
