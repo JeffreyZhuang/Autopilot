@@ -36,7 +36,7 @@ void Autopilot::main_task()
 	_hal->usb_print(txBuf);
 
 	_plane->loop_execution_time = _hal->get_time_us() - _plane->time;
-	printf("%ld ", (uint32_t)_plane->loop_execution_time);
+//	printf("%ld ", (uint32_t)_plane->loop_execution_time);
 }
 
 void Autopilot::logger_task()
@@ -49,7 +49,7 @@ void Autopilot::logger_task()
 	case FlightState::CRUISE:
 		break;
 	case FlightState::LAND:
-		_hal->read_storage();
+//		_hal->read_storage();
 		break;
 	case FlightState::STABALIZE:
 		break;

@@ -61,7 +61,7 @@ struct Plane {
 
     // Barometer
     float baro_alt;
-    float baro_offset = -177.2;
+    float baro_offset;
     float baro_temp;
     uint64_t baro_timestamp;
 
@@ -70,6 +70,9 @@ struct Plane {
     float gnss_lon;
     float gnss_asl;
     int gnss_sats;
+    float gnss_center_lat;
+    float gnss_center_lon;
+    bool gnss_lock = false;
     uint64_t gnss_timestamp;
 
     // AHRS

@@ -12,11 +12,6 @@ Kalman::Kalman(int n, int m, Eigen::MatrixXf A, Eigen::MatrixXf B, Eigen::Matrix
 	_x = Eigen::MatrixXf::Zero(n, 1);
 }
 
-void Kalman::reset()
-{
-	_x = Eigen::MatrixXf::Zero(_n, 1);
-}
-
 void Kalman::predict(Eigen::MatrixXf u)
 {
     _x = _A_mat * _x + _B_mat * u;

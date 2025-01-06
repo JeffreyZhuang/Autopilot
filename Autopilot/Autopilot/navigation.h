@@ -4,6 +4,11 @@
 #include "hal.h"
 #include "kalman.h"
 
+enum class NavigationState {
+    INITIALIZATION = 1,
+    LIVE = 2
+};
+
 static constexpr int n = 6;
 static constexpr int m = 3;
 
@@ -15,12 +20,18 @@ class Navigation
 {
 public:
     Navigation(HAL* hal, Plane* plane);
+
     void execute();
 
 private:
     HAL* _hal;
     Plane* _plane;
     Kalman kalman;
+
+    NavigationState navigationState = NavigationState::INITIALIZATION;
+
+    void execute_initialization();
+    void execute_live();
 
     uint64_t last_imu_timestamp;
     uint64_t last_gnss_timestamp;
@@ -32,9 +43,11 @@ private:
 
     float g = 9.80665;
 
+    float predict_dt = 0.01;
+
     // Kalman
-    Eigen::MatrixXf get_a();
-    Eigen::MatrixXf get_b();
+    Eigen::MatrixXf get_a(float dt);
+    Eigen::MatrixXf get_b(float dt);
     Eigen::MatrixXf get_q();
 
     void read_imu();

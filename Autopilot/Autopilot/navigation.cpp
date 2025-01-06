@@ -6,35 +6,33 @@
  * @param hal
  * @param plane
  */
-Navigation::Navigation(HAL* hal, Plane* plane) : kalman(n, m, get_a(), get_b(), get_q())
+Navigation::Navigation(HAL* hal, Plane* plane) : kalman(n, m, get_a(predict_dt), get_b(predict_dt), get_q())
 {
 	_hal = hal;
 	_plane = plane;
 }
 
-Eigen::MatrixXf Navigation::get_a()
+Eigen::MatrixXf Navigation::get_a(float dt)
 {
-	float predict_dt = 0.01;
 	Eigen::MatrixXf A(n, n);
-	A << 1, 0, 0, predict_dt, 0, 0,
-		 0, 1, 0, 0, predict_dt, 0,
-		 0, 0, 1, 0, 0, predict_dt,
+	A << 1, 0, 0, dt, 0, 0,
+		 0, 1, 0, 0, dt, 0,
+		 0, 0, 1, 0, 0, dt,
 		 0, 0, 0, 1, 0, 0,
 		 0, 0, 0, 0, 1, 0,
 		 0, 0, 0, 0, 0, 1;
 	return A;
 }
 
-Eigen::MatrixXf Navigation::get_b()
+Eigen::MatrixXf Navigation::get_b(float dt)
 {
-	float predict_dt = 0.01;
 	Eigen::MatrixXf B(n, m);
-	B << 0.5*predict_dt*predict_dt, 0, 0,
-			  0, 0.5*predict_dt*predict_dt, 0,
-			  0, 0, 0.5*predict_dt*predict_dt,
-			  predict_dt, 0, 0,
-			  0, predict_dt, 0,
-			  0, 0, predict_dt;
+	B << 0.5*dt*dt, 0, 0,
+			  0, 0.5*dt*dt, 0,
+			  0, 0, 0.5*dt*dt,
+			  dt, 0, 0,
+			  0, dt, 0,
+			  0, 0, dt;
 	return B;
 }
 
@@ -49,6 +47,42 @@ Eigen::MatrixXf Navigation::get_q()
  *
  */
 void Navigation::execute()
+{
+	if (navigationState == NavigationState::INITIALIZATION)
+	{
+		execute_initialization();
+	}
+	else if (navigationState == NavigationState::LIVE)
+	{
+		execute_live();
+	}
+}
+
+// Calibrate sensors
+// Easier if I move this to the drivers...
+void Navigation::execute_initialization()
+{
+	if (check_new_baro_data())
+	{
+		_plane->baro_offset = _plane->baro_alt;
+	}
+
+	printf("Sats: %d\n", _plane->gnss_sats);
+
+	// Check if GNSS is locked
+	if (check_new_gnss_data() && _plane->gnss_sats > 5 && _plane->gnss_lat > 0)
+	{
+		// Set center GPS coordinates
+		_plane->gnss_center_lat = _plane->gnss_lat;
+		_plane->gnss_center_lon = _plane->gnss_lon;
+
+		printf("Center: %f %f\n", _plane->gnss_center_lat, _plane->gnss_center_lon);
+
+		navigationState = NavigationState::LIVE;
+	}
+}
+
+void Navigation::execute_live()
 {
 	if (check_new_imu_data()) {
 		predict_imu();
@@ -65,8 +99,6 @@ void Navigation::execute()
 		update_baro();
 //		printf("%ld ", (uint32_t)(_hal->get_time_us() - start));
 	}
-
-	update_plane();
 }
 
 void Navigation::predict_imu()
@@ -80,10 +112,7 @@ void Navigation::predict_imu()
 
 	kalman.predict(u);
 
-//	if (fabs(_plane->nav_pos_north) > 0.5)
-//	{
-//		kalman.reset();
-//	}
+	update_plane();
 }
 
 void Navigation::update_gps()
@@ -101,12 +130,14 @@ void Navigation::update_gps()
 	Eigen::DiagonalMatrix<float, 2> R(1, 1);
 
 	kalman.update(R, H, y);
+
+	update_plane();
 }
 
 void Navigation::update_baro()
 {
 	Eigen::VectorXf y(1);
-	y << -(_plane->baro_alt + _plane->baro_offset); // Multiply by -1 to put in correct coordinate system
+	y << -(_plane->baro_alt - _plane->baro_offset); // Multiply by -1 to put in correct coordinate system
 	last_baro_timestamp = _plane->baro_timestamp;
 
 	Eigen::MatrixXf H(1, n);
@@ -115,6 +146,8 @@ void Navigation::update_baro()
 	Eigen::DiagonalMatrix<float, 1> R(10000);
 
 	kalman.update(R, H, y);
+
+	update_plane();
 }
 
 void Navigation::update_plane()
