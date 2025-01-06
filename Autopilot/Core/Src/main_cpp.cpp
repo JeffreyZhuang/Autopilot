@@ -1,6 +1,7 @@
 #include "main_cpp.h"
 #include "autopilot.h"
 
+// Exclude Flight_HAL source folder from build if PITL is enabled
 #define PITL_ENABLE true
 
 Plane plane;
