@@ -8,7 +8,7 @@ void Flight_hal::init_logger()
 void Flight_hal::write_storage_buffer()
 {
 	Sd_packet p;
-	p.time = HAL_GetTick();
+	p.time = _plane->time;
 	p.acc_z = _plane->imu_az;
 	p.alt = _plane->baro_alt;
 	_sd.append_buffer(p);

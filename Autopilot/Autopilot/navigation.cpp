@@ -61,7 +61,9 @@ void Navigation::execute()
 
 	if (check_new_baro_data())
 	{
+//		uint64_t start = _hal->get_time_us();
 		update_baro();
+//		printf("%ld ", (uint32_t)(_hal->get_time_us() - start));
 	}
 
 	update_plane();
