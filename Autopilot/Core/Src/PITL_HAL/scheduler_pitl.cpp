@@ -20,6 +20,27 @@ void Pitl_hal::usb_rx_callback(uint8_t* Buf, uint32_t Len)
 {
 	printf("Received: %s\n", Buf);
 
+	float data[10];
+	int i = 0;
+	char *token = (char*)Buf;
+	while (token != NULL) {
+		// Convert token to float and store in the array
+		data[i] = strtof(token, NULL);
+		i++;
+
+		// Get the next token
+		token = strtok(NULL, ",");
+	}
+
+	printf("%f\n", data[0]);
+
+	// Parse
+	uint64_t time = get_time_us();
+	_plane->imu_timestamp = time;
+	_plane->gnss_timestamp = time;
+	_plane->compass_timestamp = time;
+	_plane->baro_timestamp = time;
+
 	// Transmit control commands
 	char txBuf[100];
 	sprintf(txBuf, "%f,%f\n", _elevator, _rudder);
