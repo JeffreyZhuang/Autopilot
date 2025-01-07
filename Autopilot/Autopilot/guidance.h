@@ -10,7 +10,7 @@
 
 #include "hal.h"
 
-struct Setpoint {
+struct Waypoint {
 	float n;
 	float e;
 	float d;
@@ -26,7 +26,8 @@ private:
 	HAL* _hal;
 	Plane*_plane;
 
-	Setpoint setpoints[10];
+	Waypoint waypoints[10];
+	int waypoint_idx = 0;
 };
 
 #endif /* GUIDANCE_H_ */

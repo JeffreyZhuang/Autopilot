@@ -18,17 +18,18 @@ void Pitl_hal::set_main_task(void (*task)())
 // Read sensor data from USB and add to plane struct
 void Pitl_hal::usb_rx_callback(uint8_t* Buf, uint32_t Len)
 {
+	// acc x, acc y, acc z, lat, lon,
+
 	printf("Received: %s\n", Buf);
 
 	float data[10];
-	int i = 0;
-	char *token = (char*)Buf;
-	while (token != NULL) {
-		// Convert token to float and store in the array
-		data[i] = strtof(token, NULL);
-		i++;
-
-		// Get the next token
+	int count = 0;
+	char* token;
+	token = strtok((char*)Buf, ",");
+	while (token != NULL)
+	{
+		data[count] = atof(token);
+		count++;
 		token = strtok(NULL, ",");
 	}
 
@@ -37,7 +38,12 @@ void Pitl_hal::usb_rx_callback(uint8_t* Buf, uint32_t Len)
 	// Parse
 	uint64_t time = get_time_us();
 	_plane->imu_timestamp = time;
+
+	_plane->gnss_lat = 50;
+	_plane->gnss_lon = 50;
+	_plane->gnss_sats = 10;
 	_plane->gnss_timestamp = time;
+
 	_plane->compass_timestamp = time;
 	_plane->baro_timestamp = time;
 

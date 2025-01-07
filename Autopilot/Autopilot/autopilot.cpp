@@ -2,6 +2,17 @@
 
 Autopilot* Autopilot::_instance = nullptr;
 
+Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(plane, hal),
+									   _navigation(hal, plane),
+									   _commander(hal, plane),
+									   _control(hal, plane),
+									   _guidance(hal, plane)
+{
+	_hal = hal;
+	_plane = plane;
+	_instance = this;
+}
+
 void Autopilot::init()
 {
 	_hal->init();
@@ -26,7 +37,7 @@ void Autopilot::main_task()
 	// Send struct instead and then decode struct in Python
 	char txBuf[200];
 	sprintf(txBuf,
-			"%f,%f,%f,%f,%f,%f,%f,%f\r\n",
+			"%f,%f,%f,%f,%f,%f,%f,%f,%f\r\n",
 			_plane->ahrs_roll,
 			_plane->ahrs_pitch,
 			_plane->ahrs_yaw,
@@ -34,7 +45,8 @@ void Autopilot::main_task()
 			_plane->nav_acc_east,
 			_plane->nav_acc_down,
 			_plane->nav_vel_down,
-			_plane->nav_pos_down);
+			_plane->nav_pos_down,
+			_plane->nav_pos_east);
 	_hal->usb_print(txBuf);
 
 	_plane->loop_execution_time = _hal->get_time_us() - _plane->time;

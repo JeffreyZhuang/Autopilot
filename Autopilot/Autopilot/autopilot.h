@@ -17,16 +17,7 @@
 class Autopilot
 {
 public:
-	Autopilot(HAL* hal, Plane* plane): _ahrs(plane, hal),
-									   _navigation(hal, plane),
-									   _commander(hal, plane),
-									   _control(hal, plane),
-									   _guidance(hal, plane)
-	{
-		_hal = hal;
-		_plane = plane;
-		_instance = this;
-	}
+	Autopilot(HAL* hal, Plane* plane);
 
     void init();
 
@@ -47,6 +38,8 @@ public:
 			_instance->logger_task();
 		}
 	}
+
+    static Autopilot *get_instance() { return _instance; };
 
 private:
     HAL* _hal;
