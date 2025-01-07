@@ -14,7 +14,8 @@ Control::Control(HAL * hal, Plane * plane) : roll_controller(0, 0, 0, 0, 0),
 void Control::update()
 {
 	// Direction to nearest setpoint
-	float heading_setpoint = atan(_plane->guidance_n_setpoint / _plane->guidance_e_setpoint);
+//	float heading_setpoint = atan(_plane->guidance_n_setpoint / _plane->guidance_e_setpoint);
+	float heading_setpoint = 0;
 
 	float roll_setpoint = yaw_controller.get_output(_plane->ahrs_yaw, heading_setpoint, dt);
 	float pitch_setpoint = alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, dt);

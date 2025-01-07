@@ -1,7 +1,5 @@
 #include "pitl_hal.h"
 
-Pitl_hal* Pitl_hal::_instance = nullptr;
-
 void Pitl_hal::set_main_task(void (*task)())
 {
 	uint64_t prev_time = get_time_us();
@@ -17,8 +15,20 @@ void Pitl_hal::set_main_task(void (*task)())
 	}
 }
 
+// Read sensor data from USB and add to plane struct
+void Pitl_hal::usb_rx_callback(uint8_t* Buf, uint32_t Len)
+{
+	printf("Received: %s\n", Buf);
+
+	// Transmit control commands
+	char txBuf[100];
+	sprintf(txBuf, "%f,%f\n", _elevator, _rudder);
+	CDC_Transmit_FS((uint8_t*)txBuf, strlen(txBuf));
+}
+
 void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
-	// Read sensor data from USB and add to plane struct
-	printf("Received: %s\n", Buf);
+	Pitl_hal::get_instance()->usb_rx_callback(Buf, Len);
 }
+
+

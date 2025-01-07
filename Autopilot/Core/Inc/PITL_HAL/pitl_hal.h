@@ -24,7 +24,7 @@ class Pitl_hal : public HAL
 public:
 	Pitl_hal(Plane* plane);
 	void init() {};
-	void read_sensors();
+	void read_sensors() {};
 
 	// Logger
 	void write_storage_buffer() {};
@@ -35,7 +35,6 @@ public:
 	void debug_print(char * str);
 	void usb_print(char * str) {}; // Removed because USB reserved for PITL
 	void toggle_led();
-	static void usb_rx_callback();
 
 	// Servos
 	void set_elevator(float deg);
@@ -48,6 +47,9 @@ public:
 	// Scheduler
 	void set_main_task(void (*task)());
 	void set_background_task(void (*task)()) {};
+	void usb_rx_callback(uint8_t* Buf, uint32_t Len);
+
+	static Pitl_hal *get_instance() { return _instance; };
 
 private:
 	Plane* _plane;
