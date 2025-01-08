@@ -5,6 +5,11 @@
 #include <plane.h>
 #include <hal.h>
 
+enum class AHRS_state {
+    INIT = 1,
+    LIVE = 2
+};
+
 /**
  * @brief Attitude Heading Reference System
  *
@@ -17,6 +22,8 @@ public:
     void setup();
     void update();
 private:
+    AHRS_state ahrs_state = AHRS_state::INIT;
+
     void update_imu();
     void update_full();
     void upload_results();

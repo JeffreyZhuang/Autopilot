@@ -45,6 +45,11 @@ Madgwick::Madgwick() {
 	anglesComputed = 0;
 }
 
+void Madgwick::set_gain(float b)
+{
+	beta = b;
+}
+
 void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) {
 	float recipNorm;
 	float s0, s1, s2, s3;

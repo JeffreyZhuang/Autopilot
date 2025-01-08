@@ -6,6 +6,21 @@ Guidance::Guidance(HAL* hal, Plane* plane)
 	_plane = plane;
 }
 
+void Guidance::init()
+{
+	Waypoint wp1;
+	wp1.n = 0;
+	wp1.e = 0;
+	wp1.d = 0;
+	waypoints[0] = wp1;
+
+	Waypoint wp2;
+	wp2.n = 0;
+	wp2.e = 0;
+	wp2.d = 0;
+	waypoints[1] = wp2;
+}
+
 // Generate position and altitude setpoint
 void Guidance::update()
 {

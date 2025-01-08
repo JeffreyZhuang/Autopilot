@@ -21,6 +21,7 @@ class Guidance
 public:
 	Guidance(HAL* hal, Plane* plane);
 
+	void init();
 	void update();
 private:
 	HAL* _hal;

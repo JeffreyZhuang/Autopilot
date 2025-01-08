@@ -18,6 +18,7 @@ AHRS::AHRS(Plane * plane, HAL * hal)
 void AHRS::setup()
 {
     filter.begin(sample_frequency);
+    filter.set_gain(5.0);
 }
 
 /**
@@ -62,6 +63,16 @@ void AHRS::update()
 			update_full();
 		} else {
 			update_imu();
+		}
+	}
+
+	if (ahrs_state == AHRS_state::INIT)
+	{
+		if (_hal->get_time_us() > 10000000)
+		{
+			filter.set_gain(0.1);
+
+			ahrs_state = AHRS_state::LIVE;
 		}
 	}
 }
