@@ -18,7 +18,7 @@ AHRS::AHRS(Plane * plane, HAL * hal)
 void AHRS::setup()
 {
     filter.begin(sample_frequency);
-    filter.set_gain(5.0);
+    filter.set_gain(4.0); // Converge faster
 }
 
 /**
