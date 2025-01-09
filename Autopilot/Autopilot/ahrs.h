@@ -1,6 +1,7 @@
 #ifndef AHRS_H
 #define AHRS_H
 
+#include "q_mekf.h"
 #include "madgwick.h"
 #include "plane.h"
 #include "hal.h"

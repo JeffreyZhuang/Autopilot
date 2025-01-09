@@ -11,6 +11,12 @@ void Commander::update()
 {
 	switch (_plane->flightState)
 	{
+	case FlightState::STARTUP:
+		break;
+	case FlightState::TAKEOFF_DETECT:
+		break;
+	case FlightState::CRUISE:
+		break;
 	case FlightState::TAKEOFF:
 		if (_hal->get_time_us() > 10000000)
 		{
@@ -19,6 +25,10 @@ void Commander::update()
 
 		break;
 	case FlightState::LAND:
+		break;
+	case FlightState::MANUAL:
+		break;
+	case FlightState::STABALIZE:
 		break;
 	}
 }

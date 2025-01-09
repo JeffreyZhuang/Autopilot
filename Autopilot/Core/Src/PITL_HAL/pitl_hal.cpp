@@ -50,10 +50,6 @@ void Pitl_hal::read_sensors()
 
 	uint64_t time = get_time_us();
 
-	data[2] = -1;
-	data[0] = 0.5;
-	data[1] = 0;
-
 	_plane->imu_ax = data[0];
 	_plane->imu_ay = data[1];
 	_plane->imu_az = data[2];
