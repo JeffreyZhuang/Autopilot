@@ -125,7 +125,7 @@ void Navigation::update_gps()
 {
 	read_gnss();
 
-	printf("%.2f %.2f\n", gnss_n, gnss_e);
+//	printf("%.2f %.2f\n", gnss_n, gnss_e);
 
 	Eigen::VectorXf y(2);
 	y << gnss_n,

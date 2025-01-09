@@ -24,7 +24,7 @@ class Pitl_hal : public HAL
 public:
 	Pitl_hal(Plane* plane);
 	void init() {};
-	void read_sensors() {};
+	void read_sensors();
 
 	// Logger
 	void write_storage_buffer() {};
@@ -56,6 +56,14 @@ private:
 
 	float _elevator;
 	float _rudder;
+
+	// USB
+	static constexpr int usb_buff_len = 200;
+	uint8_t usb_buff1[usb_buff_len];
+	uint8_t usb_buff2[usb_buff_len];
+	bool buff1_active = true;
+	bool buff1_ready = false;
+	bool buff2_ready = false;
 
 	static Pitl_hal* _instance;
 };

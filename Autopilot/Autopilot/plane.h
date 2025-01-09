@@ -86,6 +86,7 @@ struct Plane {
     float ahrs_q1;
     float ahrs_q2;
     float ahrs_q3;
+    float ahrs_gain = 10;
     uint64_t ahrs_timestamp;
 
     // Navigation

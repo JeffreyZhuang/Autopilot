@@ -70,7 +70,7 @@ void AHRS::update()
 	{
 		if (_hal->get_time_us() > 10000000)
 		{
-			filter.set_gain(0.1);
+			filter.set_gain(_plane->ahrs_gain);
 
 			ahrs_state = AHRS_state::LIVE;
 		}
