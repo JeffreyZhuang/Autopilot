@@ -3,10 +3,10 @@
 Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(plane, hal),
-									   _navigation(hal, plane),
-									   _commander(hal, plane),
-									   _control(hal, plane),
-									   _guidance(hal, plane)
+									   	   	  _navigation(hal, plane),
+											  _commander(hal, plane),
+											  _control(hal, plane),
+											  _guidance(hal, plane)
 {
 	_hal = hal;
 	_plane = plane;
@@ -29,8 +29,14 @@ void Autopilot::main_task()
 	_hal->read_sensors();
 	_ahrs.update();
 	_navigation.execute();
-	_guidance.update();
-	_control.update();
+
+	// 50hz
+	if (_plane->loop_iteration % 2 == 0)
+	{
+		_guidance.update();
+		_control.update();
+	}
+
 	_hal->write_storage_buffer();
 	_commander.update();
 
@@ -51,6 +57,8 @@ void Autopilot::main_task()
 
 	_plane->loop_execution_time = _hal->get_time_us() - _plane->time;
 //	printf("%ld ", (uint32_t)_plane->loop_execution_time);
+
+	_plane->loop_iteration++;
 }
 
 void Autopilot::logger_task()

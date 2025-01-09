@@ -4,9 +4,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <cstring>
-#include <hal.h>
-#include <ahrs.h>
-#include <navigation.h>
+#include "hal.h"
+#include "ahrs.h"
+#include "navigation.h"
 #include "commander.h"
 #include "control.h"
 #include "guidance.h"

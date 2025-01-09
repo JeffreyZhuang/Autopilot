@@ -9,7 +9,7 @@
 // Different beta for mag and imu
 
 // Exclude Flight_HAL source folder from build if PITL is enabled
-#define PITL_ENABLE false
+#define PITL_ENABLE true
 
 Plane plane;
 

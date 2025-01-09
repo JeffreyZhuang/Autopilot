@@ -1,9 +1,9 @@
 #ifndef CONTROL_H_
 #define CONTROL_H_
 
+#include <math.h>
 #include "hal.h"
 #include "pid.h"
-#include "math.h"
 
 // Calculates and sends commands to servos
 class Control
@@ -16,7 +16,7 @@ private:
 	HAL* _hal;
 	Plane* _plane;
 
-	float dt = 0.01;
+	float dt = 0.02;
 
 	PID roll_controller;
 	PID pitch_controller;
