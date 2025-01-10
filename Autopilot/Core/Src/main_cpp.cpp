@@ -1,6 +1,11 @@
 #include "main_cpp.h"
 #include "autopilot.h"
 
+// Use abstract AHRS class in Autopilot folder
+// Put different types of AHRS in Library folder (e.g. madwick_ahrs, mahony_ahrs, kalman_ahrs)
+// Flight_hal or PITL_hal chooses which AHRS to use
+// Therefore HAL can run PITL instead of Flight
+
 // TODO:
 // How to generate trajectory? Don't need trajectory generation, just go straight to nearest waypoint or selected waypoint?
 // How to store waypoints? Sd or radio?
@@ -9,7 +14,7 @@
 // Different beta for mag and imu
 
 // Exclude Flight_HAL source folder from build if PITL is enabled
-#define PITL_ENABLE false
+#define PITL_ENABLE true
 
 Plane plane;
 
