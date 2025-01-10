@@ -1,7 +1,6 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include "q_mekf.h"
 #include "madgwick.h"
 #include "plane.h"
 #include "hal.h"
@@ -23,7 +22,7 @@ public:
     void update();
 private:
     void update_imu();
-    void update_full();
+    void update_imu_mag();
     void upload_results();
     bool check_new_imu_data();
     bool check_new_compass_data();

@@ -97,6 +97,8 @@ public:
 		}
 	}
 
+	void xitl_run() {}; // Disable XITL for flight
+
 private:
 	Plane* _plane;
 	ICM42688 _imu;

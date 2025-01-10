@@ -17,8 +17,8 @@ AHRS::AHRS(Plane * plane, HAL * hal)
  */
 void AHRS::setup()
 {
-    filter.begin(sample_frequency);
-    filter.set_gain(4.0); // Converge faster
+	filter.begin(sample_frequency);
+	filter.set_gain(4.0); // Converge faster
 }
 
 /**
@@ -57,11 +57,14 @@ void AHRS::apply_compass_calibration()
  */
 void AHRS::update()
 {
-	if (check_new_imu_data()) {
-		// Compass not calibrated yet so for testing purposes
-		if (_plane->use_compass && check_new_compass_data()) {
-			update_full();
-		} else {
+	if (check_new_imu_data())
+	{
+		if (check_new_compass_data())
+		{
+			update_imu_mag();
+		}
+		else
+		{
 			update_imu();
 		}
 	}
@@ -70,7 +73,7 @@ void AHRS::update()
 	{
 		if (_hal->get_time_us() > 10000000)
 		{
-			filter.set_gain(_plane->ahrs_gain);
+			filter.set_gain(0.1);
 
 			ahrs_state = AHRS_state::LIVE;
 		}
@@ -83,9 +86,9 @@ void AHRS::update()
  */
 void AHRS::update_imu()
 {
-    filter.updateIMU(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
-                     -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az);
-    last_imu_timestamp = _plane->imu_timestamp;
+	filter.updateIMU(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
+	                 -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az);
+	last_imu_timestamp = _plane->imu_timestamp;
 
     upload_results();
 }
@@ -94,13 +97,13 @@ void AHRS::update_imu()
  * @brief Update filter with both IMU and compass
  *
  */
-void AHRS::update_full()
+void AHRS::update_imu_mag()
 {
-    filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
-                  -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az,
-                  -_plane->compass_mx, -_plane->compass_my, -_plane->compass_mz);
-    last_imu_timestamp = _plane->imu_timestamp;
-    last_compass_timestamp = _plane->compass_timestamp;
+	filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
+				  -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az,
+				  -_plane->compass_mx, -_plane->compass_my, -_plane->compass_mz);
+	last_imu_timestamp = _plane->imu_timestamp;
+	last_compass_timestamp = _plane->compass_timestamp;
 
     upload_results();
 }
@@ -111,13 +114,12 @@ void AHRS::update_full()
  */
 void AHRS::upload_results()
 {
-	// Madgwick library coordinate system is inverted, so rotate it back to the correct system
-    _plane->ahrs_roll = filter.getRoll();
-    _plane->ahrs_pitch = filter.getPitch();
-    _plane->ahrs_yaw = filter.getYaw();
-    _plane->ahrs_q0 = filter.get_q0();
-    _plane->ahrs_q1 = filter.get_q1();
-    _plane->ahrs_q2 = filter.get_q2();
-    _plane->ahrs_q3 = filter.get_q3();
-    _plane->ahrs_timestamp = _hal->get_time_us();
+	_plane->ahrs_roll = filter.getRoll();
+	_plane->ahrs_pitch = filter.getPitch();
+	_plane->ahrs_yaw = filter.getYaw();
+	_plane->ahrs_q0 = filter.get_q0();
+	_plane->ahrs_q1 = filter.get_q1();
+	_plane->ahrs_q2 = filter.get_q2();
+	_plane->ahrs_q3 = filter.get_q3();
+	_plane->ahrs_timestamp = _hal->get_time_us();
 }
