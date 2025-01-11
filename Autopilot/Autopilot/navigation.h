@@ -11,7 +11,6 @@ enum class NavigationState {
 
 static constexpr int n = 6;
 static constexpr int m = 3;
-static constexpr float predict_dt = 0.01;
 
 /**
  * @brief Calculates the position of the plane
@@ -20,7 +19,7 @@ static constexpr float predict_dt = 0.01;
 class Navigation
 {
 public:
-    Navigation(HAL* hal, Plane* plane);
+    Navigation(HAL* hal, Plane* plane, float predict_dt);
 
     void execute();
 

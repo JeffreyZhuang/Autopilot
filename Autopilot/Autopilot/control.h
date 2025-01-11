@@ -9,20 +9,19 @@
 class Control
 {
 public:
-	Control(HAL* hal, Plane* plane);
+	Control(HAL* hal, Plane* plane, float dt);
 
 	void update();
 private:
 	HAL* _hal;
 	Plane* _plane;
-
-	float dt = 0.02;
-
 	PID roll_controller;
 	PID pitch_controller;
 	PID yaw_controller;
 	PID alt_controller;
 	PID hdg_controller;
+
+	float _dt;
 };
 
 #endif /* CONTROL_H_ */

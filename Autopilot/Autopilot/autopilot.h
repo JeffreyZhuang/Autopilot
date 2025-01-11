@@ -50,6 +50,8 @@ private:
     Control _control;
     Guidance _guidance;
 
+    uint64_t prev_control_time;
+
     static Autopilot* _instance;
 };
 

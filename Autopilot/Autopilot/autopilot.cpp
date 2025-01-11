@@ -2,10 +2,10 @@
 
 Autopilot* Autopilot::_instance = nullptr;
 
-Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(plane, hal, 0.01),
-									   	   	  _navigation(hal, plane),
+Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(plane, hal, hal->main_dt),
+									   	   	  _navigation(hal, plane, _hal->main_dt),
 											  _commander(hal, plane),
-											  _control(hal, plane),
+											  _control(hal, plane, _hal->control_dt),
 											  _guidance(hal, plane)
 {
 	_hal = hal;
@@ -31,7 +31,7 @@ void Autopilot::main_task()
 	_navigation.execute();
 
 	// 50hz
-	if (_plane->loop_iteration % 2 == 0)
+	if (_plane->time - prev_control_time >= _hal->control_dt * 1000000)
 	{
 		_guidance.update();
 		_control.update();
@@ -65,6 +65,10 @@ void Autopilot::logger_task()
 {
 	switch (_plane->flightState)
 	{
+	case FlightState::STARTUP:
+		break;
+	case FlightState::TAKEOFF_DETECT:
+		break;
 	case FlightState::TAKEOFF:
 		_hal->flush_storage_buffer();
 		break;

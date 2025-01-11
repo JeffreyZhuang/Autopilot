@@ -1,13 +1,14 @@
 #include "control.h"
 
-Control::Control(HAL * hal, Plane * plane) : roll_controller(0.01, 0, 0, 0, 1),
-											 pitch_controller(0.01, 0, 0, 0, 1),
-											 yaw_controller(1, 0, 0, 0, 0),
-											 alt_controller(1, 0, 0, 0, 0),
-											 hdg_controller(1, 0, 0, 0, 0)
+Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.01, 0, 0, 0, 1),
+											 	 	   pitch_controller(0.01, 0, 0, 0, 1),
+													   yaw_controller(1, 0, 0, 0, 0),
+													   alt_controller(1, 0, 0, 0, 0),
+													   hdg_controller(1, 0, 0, 0, 0)
 {
 	_hal = hal;
 	_plane = plane;
+	_dt = dt;
 }
 
 // Use guidance altitude and position setpoint to calculate control commands
@@ -23,10 +24,10 @@ void Control::update()
 	// Calculate control outputs
 	float rudder = roll_controller.get_output(_plane->ahrs_roll,
 											  roll_setpoint,
-											  dt);
+											  _dt);
 	float elevator = pitch_controller.get_output(_plane->ahrs_pitch,
 												 pitch_setpoint,
-												 dt);
+												 _dt);
 
 	// Set control surfaces
 	_hal->set_elevator(elevator);

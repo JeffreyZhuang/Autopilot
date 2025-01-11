@@ -54,8 +54,6 @@ public:
 private:
 	Plane* _plane;
 
-	float main_task_dt = 0.01;
-
 	float _elevator;
 	float _rudder;
 

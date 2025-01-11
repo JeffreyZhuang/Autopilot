@@ -96,8 +96,8 @@ public:
 			_instance->execute_main_task();
 		}
 	}
-
-	void xitl_run() {}; // Disable XITL for flight
+	float main_dt = 0.01;
+	float control_dt = 0.02;
 
 private:
 	Plane* _plane;

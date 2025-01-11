@@ -7,6 +7,8 @@ Pitl_hal* Pitl_hal::_instance = nullptr;
 Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane)
 {
 	_plane = plane;
+	main_dt = 0.018;
+	control_dt = 0.02;
 	_instance = this;
 }
 
@@ -82,7 +84,7 @@ void Pitl_hal::usb_rx_callback(uint8_t* Buf, uint32_t Len)
 {
 	if (buff1_active)
 	{
-		for (int i = 0; i < Len; i++)
+		for (uint32_t i = 0; i < Len; i++)
 		{
 			usb_buff1[i] = Buf[i];
 		}
@@ -91,7 +93,7 @@ void Pitl_hal::usb_rx_callback(uint8_t* Buf, uint32_t Len)
 	}
 	else
 	{
-		for (int i = 0; i < Len; i++)
+		for (uint32_t i = 0; i < Len; i++)
 		{
 			usb_buff2[i] = Buf[i];
 		}

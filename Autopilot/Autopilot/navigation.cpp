@@ -8,7 +8,7 @@
  * @param hal
  * @param plane
  */
-Navigation::Navigation(HAL* hal, Plane* plane) : kalman(n, m, get_a(predict_dt), get_b(predict_dt), get_q())
+Navigation::Navigation(HAL* hal, Plane* plane, float predict_dt) : kalman(n, m, get_a(predict_dt), get_b(predict_dt), get_q())
 {
 	_hal = hal;
 	_plane = plane;
@@ -30,11 +30,11 @@ Eigen::MatrixXf Navigation::get_b(float dt)
 {
 	Eigen::MatrixXf B(n, m);
 	B << 0.5*dt*dt, 0, 0,
-			  0, 0.5*dt*dt, 0,
-			  0, 0, 0.5*dt*dt,
-			  dt, 0, 0,
-			  0, dt, 0,
-			  0, 0, dt;
+		 0, 0.5*dt*dt, 0,
+		 0, 0, 0.5*dt*dt,
+	     dt, 0, 0,
+		 0, dt, 0,
+		 0, 0, dt;
 	return B;
 }
 

@@ -4,6 +4,7 @@
 #include "madgwick.h"
 #include "plane.h"
 #include "hal.h"
+#include <stdio.h>
 
 enum class AHRS_state {
     INIT = 1,
@@ -34,7 +35,7 @@ private:
     AHRS_state ahrs_state = AHRS_state::INIT;
 
     Madgwick filter;
-    float _dt = 0.01;
+    float _dt;
     uint64_t last_imu_timestamp;
     uint64_t last_compass_timestamp;
 };
