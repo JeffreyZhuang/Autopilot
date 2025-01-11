@@ -10,7 +10,7 @@ Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane)
 	_instance = this;
 }
 
-void Pitl_hal::xitl_run()
+void Pitl_hal::read_sensors()
 {
 	float data[10];
 
@@ -45,17 +45,31 @@ void Pitl_hal::xitl_run()
 		return;
 	}
 
+	printf("R:%.1f %.1f %.1f\n", _plane->ahrs_roll, _plane->ahrs_pitch, _plane->ahrs_yaw);
+
 	uint64_t time = get_time_us();
 
-	_plane->ahrs_roll = data[0];
-	_plane->ahrs_pitch = data[1];
-	_plane->ahrs_yaw = data[2];
-	_plane->ahrs_timestamp = time;
+	_plane->imu_gx = data[0];
+	_plane->imu_gy = data[1];
+	_plane->imu_gz = data[2];
+	_plane->imu_ax = data[3];
+	_plane->imu_ay = data[4];
+	_plane->imu_az = data[5];
+	_plane->imu_timestamp = time;
 
-	// How to put into nav?
-	_plane->nav_timestamp = time;
-
-	printf("R:%.1f %.1f %.1f\n", _plane->ahrs_roll, _plane->ahrs_pitch, _plane->ahrs_yaw);
+//	_plane->compass_mx = data[6];
+//	_plane->compass_my = data[7];
+//	_plane->compass_mz = data[8];
+//	_plane->compass_timestamp = time;
+//
+//	_plane->baro_alt = data[9];
+//	_plane->baro_timestamp = time;
+//
+//	_plane->gnss_lat = data[10];
+//	_plane->gnss_lon = data[11];
+//	_plane->gnss_asl = data[12];
+//	_plane->gnss_sats = 10;
+//	_plane->gnss_timestamp = time;
 
 	// Transmit control commands
 	char txBuf[100];

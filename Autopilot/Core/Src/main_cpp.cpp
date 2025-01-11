@@ -13,6 +13,9 @@
 // Just write structs. Each line on file is a waypoint struct.
 // Different beta for mag and imu
 
+// Set flightgear to 15fps and FDM to 60hz to see if it works
+// Or in python measure time and print output. See if output changes or stays constant across multiple prints.
+
 // Exclude Flight_HAL source folder from build if PITL is enabled
 #define PITL_ENABLE true
 

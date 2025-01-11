@@ -30,8 +30,6 @@ void Autopilot::main_task()
 	_ahrs.update();
 	_navigation.execute();
 
-	_hal->xitl_run();
-
 	// 50hz
 	if (_plane->loop_iteration % 2 == 0)
 	{

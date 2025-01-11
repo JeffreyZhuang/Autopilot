@@ -38,8 +38,6 @@ public:
     virtual void set_main_task(void (*task)()) = 0;
     virtual void set_background_task(void (*task)()) = 0;
 
-    virtual void xitl_run() = 0;
-
 private:
     Plane* _plane;
 };

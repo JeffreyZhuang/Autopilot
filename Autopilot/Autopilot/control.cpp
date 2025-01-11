@@ -1,7 +1,7 @@
 #include "control.h"
 
-Control::Control(HAL * hal, Plane * plane) : roll_controller(1, 0, 0, 0, 0),
-											 pitch_controller(1, 0, 0, 0, 0),
+Control::Control(HAL * hal, Plane * plane) : roll_controller(1, 0, 0, 0, 1),
+											 pitch_controller(1, 0, 0, 0, 1),
 											 yaw_controller(1, 0, 0, 0, 0),
 											 alt_controller(1, 0, 0, 0, 0),
 											 hdg_controller(1, 0, 0, 0, 0)
