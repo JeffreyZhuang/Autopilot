@@ -17,7 +17,7 @@ enum class AHRS_state {
 class AHRS
 {
 public:
-    AHRS(Plane* plane, HAL* hal);
+    AHRS(Plane* plane, HAL* hal, float dt);
     void setup();
     void update();
 private:
@@ -34,7 +34,7 @@ private:
     AHRS_state ahrs_state = AHRS_state::INIT;
 
     Madgwick filter;
-    float sample_frequency = 100;
+    float _dt = 0.01;
     uint64_t last_imu_timestamp;
     uint64_t last_compass_timestamp;
 };

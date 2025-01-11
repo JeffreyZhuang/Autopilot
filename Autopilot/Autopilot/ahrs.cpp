@@ -6,10 +6,11 @@
  * @param plane
  * @param hal
  */
-AHRS::AHRS(Plane * plane, HAL * hal)
+AHRS::AHRS(Plane* plane, HAL* hal, float dt)
 {
     _plane = plane;
     _hal = hal;
+    _dt = dt;
 }
 
 /**
@@ -17,7 +18,7 @@ AHRS::AHRS(Plane * plane, HAL * hal)
  */
 void AHRS::setup()
 {
-	filter.begin(sample_frequency);
+	filter.begin(1.0f / _dt);
 	filter.set_gain(4.0); // Converge faster
 }
 

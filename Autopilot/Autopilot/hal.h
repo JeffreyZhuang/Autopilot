@@ -40,6 +40,8 @@ public:
 
 private:
     Plane* _plane;
+
+    float main_task_dt;
 };
 
 #endif

@@ -2,7 +2,7 @@
 
 Autopilot* Autopilot::_instance = nullptr;
 
-Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(plane, hal),
+Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(plane, hal, 0.01),
 									   	   	  _navigation(hal, plane),
 											  _commander(hal, plane),
 											  _control(hal, plane),

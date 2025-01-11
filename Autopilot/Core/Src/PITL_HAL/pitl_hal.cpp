@@ -73,7 +73,7 @@ void Pitl_hal::read_sensors()
 
 	// Transmit control commands
 	char txBuf[100];
-	sprintf(txBuf, "%f,%f\n", _elevator, _rudder);
+	sprintf(txBuf, "%f,%f\n", _rudder, _elevator);
 	CDC_Transmit_FS((uint8_t*)txBuf, strlen(txBuf));
 }
 
