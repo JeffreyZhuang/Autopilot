@@ -18,6 +18,19 @@ extern "C"
 
 extern TIM_HandleTypeDef htim5;
 
+struct Pitl_packet
+{
+	float ax;
+	float ay;
+	float az;
+	float gx;
+	float gy;
+	float gz;
+	float mx;
+	float my;
+	float mz;
+};
+
 // Processor in the loop using USB
 class Pitl_hal : public HAL
 {
@@ -58,9 +71,8 @@ private:
 	float _rudder;
 
 	// USB
-	static constexpr int usb_buff_len = 200;
-	uint8_t usb_buff1[usb_buff_len];
-	uint8_t usb_buff2[usb_buff_len];
+	Pitl_packet* usb_buff1;
+	Pitl_packet* usb_buff2;
 	bool buff1_active = true;
 	bool buff1_ready = false;
 	bool buff2_ready = false;

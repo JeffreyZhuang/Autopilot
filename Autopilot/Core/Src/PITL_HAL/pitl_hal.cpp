@@ -14,32 +14,17 @@ Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane)
 
 void Pitl_hal::read_sensors()
 {
-	float data[10];
+	Pitl_packet* data;
 
 	if (buff1_ready)
 	{
-		int count = 0;
-		char* token = strtok((char*)usb_buff1, ",");
-		while (token != NULL)
-		{
-			data[count] = atof(token);
-			count++;
-			token = strtok(NULL, ",");
-		}
-
+		data = usb_buff1;
 		buff1_ready = false;
 	}
 	else if (buff2_ready)
 	{
-		int count = 0;
-		char* token = strtok((char*)usb_buff2, ",");
-		while (token != NULL)
-		{
-			data[count] = atof(token);
-			count++;
-			token = strtok(NULL, ",");
-		}
 
+		data = usb_buff2;
 		buff2_ready = false;
 	}
 	else
@@ -51,19 +36,19 @@ void Pitl_hal::read_sensors()
 
 	uint64_t time = get_time_us();
 
-	_plane->imu_gx = data[0];
-	_plane->imu_gy = data[1];
-	_plane->imu_gz = data[2];
-	_plane->imu_ax = data[3];
-	_plane->imu_ay = data[4];
-	_plane->imu_az = data[5];
+	_plane->imu_gx = data->gx;
+	_plane->imu_gy = data->gy;
+	_plane->imu_gz = data->gz;
+	_plane->imu_ax = data->ax;
+	_plane->imu_ay = data->ay;
+	_plane->imu_az = data->az;
 	_plane->imu_timestamp = time;
 
-//	_plane->compass_mx = data[6];
-//	_plane->compass_my = data[7];
-//	_plane->compass_mz = data[8];
-//	_plane->compass_timestamp = time;
-//
+	_plane->compass_mx = data->mx;
+	_plane->compass_my = data->my;
+	_plane->compass_mz = data->mz;
+	_plane->compass_timestamp = time;
+
 //	_plane->baro_alt = data[9];
 //	_plane->baro_timestamp = time;
 //
@@ -82,22 +67,16 @@ void Pitl_hal::read_sensors()
 // Read sensor data from USB and add to plane struct
 void Pitl_hal::usb_rx_callback(uint8_t* Buf, uint32_t Len)
 {
+	Pitl_packet* p = (Pitl_packet*)Buf;
+
 	if (buff1_active)
 	{
-		for (uint32_t i = 0; i < Len; i++)
-		{
-			usb_buff1[i] = Buf[i];
-		}
-
+		usb_buff1 = p;
 		buff1_ready = true;
 	}
 	else
 	{
-		for (uint32_t i = 0; i < Len; i++)
-		{
-			usb_buff2[i] = Buf[i];
-		}
-
+		usb_buff2 = p;
 		buff2_ready = true;
 	}
 

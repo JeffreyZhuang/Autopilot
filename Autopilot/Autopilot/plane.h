@@ -7,7 +7,8 @@
  * @brief Flight state for state machine
  *
  */
-enum class FlightState {
+enum class FlightState
+{
 	STARTUP = 1,
 	TAKEOFF_DETECT = 2,
     TAKEOFF = 3,
@@ -20,7 +21,8 @@ enum class FlightState {
 /**
  * @brief All flight data and settings that get passed to classes
  */
-struct Plane {
+struct Plane
+{
     // Constraints
     float airspeed_min;
     float airspeed_max;

@@ -17,7 +17,6 @@ private:
 	Plane* _plane;
 	PID roll_controller;
 	PID pitch_controller;
-	PID yaw_controller;
 	PID alt_controller;
 	PID hdg_controller;
 
