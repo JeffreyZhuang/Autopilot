@@ -2,6 +2,9 @@
 
 void Flight_hal::init()
 {
+	main_dt = 0.01;
+	control_dt = 0.02;
+
 	init_imu();
 	init_baro();
 	init_compass();

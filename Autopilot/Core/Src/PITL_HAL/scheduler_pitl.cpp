@@ -6,7 +6,6 @@ void Pitl_hal::set_main_task(void (*task)())
 
 	while (1)
 	{
-		// Limit loop rate to 400Hz
 		if (get_time_us() - prev_time >= main_dt * 1000000)
 		{
 			task();

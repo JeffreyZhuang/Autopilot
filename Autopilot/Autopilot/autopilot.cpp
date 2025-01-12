@@ -30,7 +30,6 @@ void Autopilot::main_task()
 	_ahrs.update();
 	_navigation.execute();
 
-	// 50hz
 	if (_plane->time - prev_control_time >= _hal->control_dt * 1000000)
 	{
 		_guidance.update();
@@ -40,19 +39,29 @@ void Autopilot::main_task()
 	_hal->write_storage_buffer();
 	_commander.update();
 
-	// Send struct instead and then decode struct in Python
 	char txBuf[200];
+//	sprintf(txBuf,
+//			"%f,%f,%f,%f,%f,%f,%f,%f,%f\r\n",
+//			_plane->ahrs_roll,
+//			_plane->ahrs_pitch,
+//			_plane->ahrs_yaw,
+//			_plane->nav_acc_north,
+//			_plane->nav_acc_east,
+//			_plane->nav_acc_down,
+//			_plane->nav_vel_down,
+//			_plane->nav_pos_down,
+//			_plane->nav_pos_east);
 	sprintf(txBuf,
-			"%f,%f,%f,%f,%f,%f,%f,%f,%f\r\n",
-			_plane->ahrs_roll,
-			_plane->ahrs_pitch,
-			_plane->ahrs_yaw,
-			_plane->nav_acc_north,
-			_plane->nav_acc_east,
-			_plane->nav_acc_down,
-			_plane->nav_vel_down,
-			_plane->nav_pos_down,
-			_plane->nav_pos_east);
+			"%.0f\t%.0f\t%.0f\t%.1f\t%.1f\t%.1f\t%.0f\t%.0f\t%.0f\r\n",
+			_plane->imu_gx,
+			_plane->imu_gy,
+			_plane->imu_gz,
+			_plane->imu_ax,
+			_plane->imu_ay,
+			_plane->imu_az,
+			_plane->compass_mx,
+			_plane->compass_my,
+			_plane->compass_mz);
 	_hal->usb_print(txBuf);
 
 	_plane->loop_execution_time = _hal->get_time_us() - _plane->time;

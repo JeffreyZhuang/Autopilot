@@ -7,8 +7,8 @@ Pitl_hal* Pitl_hal::_instance = nullptr;
 Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane)
 {
 	_plane = plane;
-	main_dt = 0.018;
-	control_dt = 0.02;
+	main_dt = 0.02;
+	control_dt = 0.04;
 	_instance = this;
 }
 

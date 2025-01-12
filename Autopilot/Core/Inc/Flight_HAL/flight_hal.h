@@ -96,8 +96,6 @@ public:
 			_instance->execute_main_task();
 		}
 	}
-	float main_dt = 0.01;
-	float control_dt = 0.02;
 
 private:
 	Plane* _plane;
