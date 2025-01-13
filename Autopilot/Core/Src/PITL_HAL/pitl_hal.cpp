@@ -32,7 +32,7 @@ void Pitl_hal::read_sensors()
 		return;
 	}
 
-	printf("R:%.0f %.0f %.0f %.1f %.1f %.1f\n",
+	printf("%.0f %.0f %.0f %.1f %.1f %.1f\n",
 		   _plane->ahrs_roll,
 		   _plane->ahrs_pitch,
 		   _plane->ahrs_yaw,
@@ -60,7 +60,7 @@ void Pitl_hal::read_sensors()
 
 	_plane->gnss_lat = data->lat;
 	_plane->gnss_lon = data->lon;
-//	_plane->gnss_asl = data[12];
+	_plane->gnss_asl = data->asl;
 	_plane->gnss_sats = 10;
 	_plane->gnss_timestamp = time;
 
