@@ -29,6 +29,9 @@ struct Pitl_packet
 	float mx;
 	float my;
 	float mz;
+	float asl;
+	float lat;
+	float lon;
 };
 
 // Processor in the loop using USB

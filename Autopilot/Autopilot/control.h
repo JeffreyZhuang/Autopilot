@@ -17,8 +17,8 @@ private:
 	Plane* _plane;
 	PID roll_controller;
 	PID pitch_controller;
-	PID alt_controller;
 	PID hdg_controller;
+	PID alt_controller;
 
 	float _dt;
 };

@@ -32,7 +32,13 @@ void Pitl_hal::read_sensors()
 		return;
 	}
 
-	printf("R:%.1f %.1f %.1f\n", _plane->ahrs_roll, _plane->ahrs_pitch, _plane->ahrs_yaw);
+	printf("R:%.0f %.0f %.0f %.1f %.1f %.1f\n",
+		   _plane->ahrs_roll,
+		   _plane->ahrs_pitch,
+		   _plane->ahrs_yaw,
+		   _plane->nav_pos_north,
+		   _plane->nav_pos_east,
+		   _plane->nav_pos_down);
 
 	uint64_t time = get_time_us();
 
@@ -49,14 +55,14 @@ void Pitl_hal::read_sensors()
 	_plane->compass_mz = data->mz;
 	_plane->compass_timestamp = time;
 
-//	_plane->baro_alt = data[9];
-//	_plane->baro_timestamp = time;
-//
-//	_plane->gnss_lat = data[10];
-//	_plane->gnss_lon = data[11];
+	_plane->baro_alt = data->asl;
+	_plane->baro_timestamp = time;
+
+	_plane->gnss_lat = data->lat;
+	_plane->gnss_lon = data->lon;
 //	_plane->gnss_asl = data[12];
-//	_plane->gnss_sats = 10;
-//	_plane->gnss_timestamp = time;
+	_plane->gnss_sats = 10;
+	_plane->gnss_timestamp = time;
 
 	// Transmit control commands
 	char txBuf[100];

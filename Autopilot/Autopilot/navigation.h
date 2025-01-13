@@ -29,6 +29,7 @@ private:
     Kalman kalman;
 
     NavigationState navigationState = NavigationState::INITIALIZATION;
+//    NavigationState navigationState = NavigationState::LIVE;
 
     void execute_initialization();
     void execute_live();
