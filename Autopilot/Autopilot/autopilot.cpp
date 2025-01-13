@@ -3,9 +3,9 @@
 Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(plane, hal, hal->main_dt),
-									   	   	  _navigation(hal, plane, _hal->main_dt),
+									   	   	  _navigation(hal, plane, hal->main_dt),
 											  _commander(hal, plane),
-											  _control(hal, plane, _hal->control_dt),
+											  _control(hal, plane, hal->control_dt),
 											  _guidance(hal, plane)
 {
 	_hal = hal;
