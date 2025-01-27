@@ -41,8 +41,16 @@ class Pitl_hal : public HAL
 {
 public:
 	Pitl_hal(Plane* plane);
-	void init() {};
+	void init();
 	void read_sensors();
+
+	static void telemetry_dma_complete()
+	{
+		if (_instance != nullptr)
+		{
+			_instance->mlrs.dma_complete();
+		}
+	}
 
 	// Logger
 	void write_storage_buffer() {};

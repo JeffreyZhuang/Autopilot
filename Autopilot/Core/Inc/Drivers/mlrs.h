@@ -10,6 +10,7 @@
 
 #include "stm32f4xx_hal.h"
 #include <cstdio>
+#include "sbus.h"
 
 class MLRS
 {
@@ -20,6 +21,8 @@ public:
 private:
 	UART_HandleTypeDef* _uart;
 	uint8_t rx_buffer[1];
+	uint8_t frame[25];
+	int frame_idx = 0;
 };
 
 #endif /* INC_DRIVERS_MLRS_H_ */

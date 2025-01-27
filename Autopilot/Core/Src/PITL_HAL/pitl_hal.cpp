@@ -11,13 +11,19 @@ Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane), mlrs(&huart4)
 	main_dt = 0.02;
 	control_dt = 0.04;
 
-	mlrs.setup();
-
 	_instance = this;
+}
+
+void Pitl_hal::init()
+{
+	printf("Start\n");
+	mlrs.setup();
 }
 
 void Pitl_hal::read_sensors()
 {
+//	printf("Hello\n");
+
 	Pitl_packet* data;
 
 	if (buff1_ready)
