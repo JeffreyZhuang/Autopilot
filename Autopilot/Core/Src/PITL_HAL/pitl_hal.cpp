@@ -4,11 +4,15 @@
 
 Pitl_hal* Pitl_hal::_instance = nullptr;
 
-Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane)
+Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane), mlrs(&huart4)
 {
 	_plane = plane;
+
 	main_dt = 0.02;
 	control_dt = 0.04;
+
+	mlrs.setup();
+
 	_instance = this;
 }
 

@@ -9,6 +9,7 @@
 #define INC_PITL_HAL_H_
 
 #include "hal.h"
+#include "mlrs.h"
 
 extern "C"
 {
@@ -17,6 +18,7 @@ extern "C"
 }
 
 extern TIM_HandleTypeDef htim5;
+extern UART_HandleTypeDef huart4;
 
 struct Pitl_packet
 {
@@ -69,6 +71,8 @@ public:
 
 private:
 	Plane* _plane;
+
+	MLRS mlrs;
 
 	float _elevator;
 	float _rudder;
