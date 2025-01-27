@@ -18,10 +18,15 @@ public:
 	MLRS(UART_HandleTypeDef* uart);
 	void setup();
 	void dma_complete();
+
+	static constexpr int num_channels = 6;
+	uint16_t rc_data[num_channels];
 private:
 	UART_HandleTypeDef* _uart;
 	uint8_t rx_buffer[1];
-	uint8_t frame[25];
+
+	static constexpr int frame_len = 25;
+	uint8_t frame[frame_len];
 	int frame_idx = 0;
 };
 

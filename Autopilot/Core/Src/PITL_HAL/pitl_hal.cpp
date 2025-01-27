@@ -17,12 +17,13 @@ Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane), mlrs(&huart4)
 void Pitl_hal::init()
 {
 	printf("Start\n");
+
 	mlrs.setup();
 }
 
 void Pitl_hal::read_sensors()
 {
-//	printf("Hello\n");
+	printf("%d\n", mlrs.rc_data[0]);
 
 	Pitl_packet* data;
 

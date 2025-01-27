@@ -26,21 +26,22 @@ void MLRS::dma_complete()
 
 	frame[frame_idx++] = rx_buffer[0];
 
-	if (frame_idx == 25)
+	if (frame_idx == frame_len)
 	{
-		for (int i = 0; i < 25; i++)
+		for (int i = 0; i < frame_len; i++)
 		{
 			SBus_ParseByte(frame[i]);
 		}
 
 		SBus_DecodeFrame();
 
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < num_channels; i++)
 		{
-			printf("%d ", SBus_GetChannel(i));
+			rc_data[i] = SBus_GetChannel(i);
+//			printf("%d ", rc_data[i]);
 		}
 
-		printf("\n");
+//		printf("\n");
 
 		frame_idx = 0;
 	}

@@ -104,6 +104,10 @@ struct Plane
     float guidance_n_setpoint;
     float guidance_e_setpoint;
     float guidance_d_setpoint;
+
+    // RC
+    static constexpr int num_channels = 6;
+    uint16_t rc_data[num_channels];
 };
 
 #endif /* PLANE_H_ */
