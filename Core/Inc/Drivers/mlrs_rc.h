@@ -5,8 +5,8 @@
  *      Author: jeffr
  */
 
-#ifndef INC_DRIVERS_MLRS_H_
-#define INC_DRIVERS_MLRS_H_
+#ifndef INC_DRIVERS_MLRS_RC_H_
+#define INC_DRIVERS_MLRS_RC_H_
 
 #include "stm32f4xx_hal.h"
 #include <cstdio>
@@ -30,4 +30,4 @@ private:
 	int frame_idx = 0;
 };
 
-#endif /* INC_DRIVERS_MLRS_H_ */
+#endif /* INC_DRIVERS_MLRS_RC_H_ */

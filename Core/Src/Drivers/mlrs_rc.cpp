@@ -1,4 +1,4 @@
-#include "mlrs.h"
+#include <mlrs_rc.h>
 
 #define BYTE_TO_BINARY(byte)  \
   ((byte) & 0x80 ? '1' : '0'), \
