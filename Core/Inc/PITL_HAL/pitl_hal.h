@@ -45,6 +45,7 @@ struct Pitl_tx_packet
 	float aileron;
 	float elevator;
 	float throttle;
+	uint8_t footer = '\n';
 };
 
 // Processor in the loop using USB
