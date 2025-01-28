@@ -1,5 +1,6 @@
 #include "control.h"
 
+// Use PI controller for pitch and roll, then your integral term is the servo misalignment
 Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 0, 0, 1),
 											 	 	   pitch_controller(0.04, 0, 0, 0, 1),
 													   hdg_controller(1, 0, 0, 0, 20),
