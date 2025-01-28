@@ -12,7 +12,6 @@
 // What format on micro sd?
 // Just write structs. Each line on file is a waypoint struct.
 // Different beta for mag and imu
-//
 
 // Exclude Flight_HAL source folder from build if PITL is enabled
 #define PITL_ENABLE true
