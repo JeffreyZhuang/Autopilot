@@ -19,6 +19,7 @@ extern "C"
 
 extern TIM_HandleTypeDef htim5;
 extern UART_HandleTypeDef huart4;
+extern UART_HandleTypeDef huart6;
 
 struct Pitl_packet
 {
