@@ -1,10 +1,11 @@
 #include "control.h"
 
 // Use PI controller for pitch and roll, then your integral term is the servo misalignment
-Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 0, 0, 1),
-											 	 	   pitch_controller(0.04, 0, 0, 0, 1),
-													   hdg_controller(1, 0, 0, 0, 20),
-													   alt_controller(1, 0, 0, 0, 15)
+Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 0, 0, -1, 1),
+											 	 	   pitch_controller(0.04, 0, 0, 0, -1, 1),
+													   hdg_controller(1, 0, 0, 0, -10, 10),
+													   alt_controller(1, 0, 0, 0, -10, 10),
+													   speed_controller(0.01, 0.01, 0, 0.5, 0, 1)
 {
 	_hal = hal;
 	_plane = plane;
@@ -78,10 +79,14 @@ void Control::cruise()
 	float elevator = pitch_controller.get_output(_plane->ahrs_pitch,
 												 pitch_setpoint,
 												 _dt);
+	float throttle = speed_controller.get_output(_plane->nav_airspeed,
+												 _plane->airspeed_cruise,
+												 _dt);
 
 	// Set control surfaces
 	_hal->set_elevator(elevator);
 	_hal->set_rudder(rudder);
+	_hal->set_throttle(throttle);
 }
 
 void Control::land()

@@ -23,10 +23,10 @@ enum class FlightState
  */
 struct Plane
 {
-    // Constraints
+    // Constraints and parameters
     float airspeed_min;
     float airspeed_max;
-    float airspeed_cruise;
+    float airspeed_cruise = 40;
     float pitch_limit_max;
     float pitch_limit_min;
     float roll_limit;
@@ -98,6 +98,7 @@ struct Plane
     float nav_acc_north;
     float nav_acc_east;
     float nav_acc_down;
+    float nav_airspeed;
     uint64_t nav_timestamp;
 
     // Guidance

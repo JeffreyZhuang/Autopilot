@@ -16,11 +16,14 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
+
+	float _dt;
+
 	PID roll_controller;
 	PID pitch_controller;
 	PID hdg_controller;
 	PID alt_controller;
-	float _dt;
+	PID speed_controller;
 
 	void manual();
 	void takeoff();
