@@ -12,8 +12,10 @@ void Mlrs_telem::setup()
 
 void Mlrs_telem::transmit()
 {
-	uint8_t tx_buff[] = {69};
-	HAL_UART_Transmit(_uart, tx_buff,  sizeof(tx_buff), 1000);
+	char tx_buff[] = "Hello\n";
+	HAL_UART_Transmit(_uart, (uint8_t*)tx_buff, strlen(tx_buff), 1000);
+
+	printf("Uart transmit\n");
 }
 
 void Mlrs_telem::dma_complete()

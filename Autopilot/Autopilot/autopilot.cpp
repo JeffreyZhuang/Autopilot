@@ -24,7 +24,7 @@ void Autopilot::init()
 
 void Autopilot::main_task()
 {
-	printf("%d\n", _plane->rc_switch);
+//	printf("%d\n", _plane->rc_switch);
 
 	_plane->time = _hal->get_time_us();
 
@@ -40,6 +40,8 @@ void Autopilot::main_task()
 
 	_hal->write_storage_buffer();
 	_commander.update();
+
+	_hal->transmit_telem();
 
 	char txBuf[200];
 //	sprintf(txBuf,

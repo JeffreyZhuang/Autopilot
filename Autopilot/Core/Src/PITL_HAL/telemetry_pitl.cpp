@@ -15,5 +15,5 @@ void Pitl_hal::read_rc()
 
 void Pitl_hal::transmit_telem()
 {
-
+	mlrs_telem.transmit();
 }
