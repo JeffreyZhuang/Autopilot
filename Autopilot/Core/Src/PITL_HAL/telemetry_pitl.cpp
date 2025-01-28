@@ -12,3 +12,8 @@ void Pitl_hal::read_rc()
 
 	_plane->rc_switch = mlrs.rc_data[5] > 1500;
 }
+
+void Pitl_hal::transmit_telem()
+{
+
+}

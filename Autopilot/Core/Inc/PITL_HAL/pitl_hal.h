@@ -10,6 +10,7 @@
 
 #include "hal.h"
 #include "mlrs.h"
+#include "mlrs_telem.h"
 
 extern "C"
 {
@@ -55,6 +56,8 @@ public:
 		}
 	}
 
+	void transmit_telem();
+
 	// Logger
 	void write_storage_buffer() {};
 	void flush_storage_buffer() {};
@@ -84,6 +87,7 @@ private:
 	Plane* _plane;
 
 	MLRS mlrs;
+	Mlrs_telem mlrs_telem;
 
 	float _elevator;
 	float _rudder;

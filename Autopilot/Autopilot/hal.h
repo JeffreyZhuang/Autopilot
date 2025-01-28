@@ -16,6 +16,9 @@ public:
     // Sensors
     virtual void read_sensors() = 0;
 
+    // Telemetry
+    virtual void transmit_telem() = 0;
+
     // Logger
     virtual void write_storage_buffer() = 0;
     virtual void flush_storage_buffer() = 0;

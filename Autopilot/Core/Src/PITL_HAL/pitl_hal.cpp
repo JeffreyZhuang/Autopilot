@@ -4,7 +4,7 @@
 
 Pitl_hal* Pitl_hal::_instance = nullptr;
 
-Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane), mlrs(&huart4)
+Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane), mlrs(&huart4), mlrs_telem(&huart6)
 {
 	_plane = plane;
 
