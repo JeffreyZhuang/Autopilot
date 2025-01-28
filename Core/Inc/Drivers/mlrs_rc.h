@@ -12,10 +12,10 @@
 #include <cstdio>
 #include "sbus.h"
 
-class MLRS
+class Mlrs_rc
 {
 public:
-	MLRS(UART_HandleTypeDef* uart);
+	Mlrs_rc(UART_HandleTypeDef* uart);
 	void setup();
 	void dma_complete();
 

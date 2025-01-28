@@ -41,7 +41,8 @@ void Autopilot::main_task()
 	_hal->write_storage_buffer();
 	_commander.update();
 
-	_hal->transmit_telem();
+	char tx_buff[] = "Hello testing";
+	_hal->transmit_telem((uint8_t*)tx_buff, strlen(tx_buff));
 
 	char txBuf[200];
 //	sprintf(txBuf,

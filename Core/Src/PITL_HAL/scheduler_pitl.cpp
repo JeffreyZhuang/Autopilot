@@ -22,6 +22,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	if (huart == &huart4)
 	{
+		Pitl_hal::rc_dma_complete();
+	}
+	else if (huart == &huart6)
+	{
 		Pitl_hal::telemetry_dma_complete();
 	}
 }

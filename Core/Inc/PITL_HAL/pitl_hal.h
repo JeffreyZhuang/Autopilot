@@ -44,19 +44,27 @@ class Pitl_hal : public HAL
 public:
 	Pitl_hal(Plane* plane);
 	void init();
+
 	void read_sensors();
 	void read_rc();
 	void read_pitl();
 
+	// Telemetry
+	static void rc_dma_complete()
+	{
+		if (_instance != nullptr)
+		{
+			_instance->mlrs_rc.dma_complete();
+		}
+	}
 	static void telemetry_dma_complete()
 	{
 		if (_instance != nullptr)
 		{
-			_instance->mlrs.dma_complete();
+			_instance->mlrs_telem.dma_complete();
 		}
 	}
-
-	void transmit_telem();
+	void transmit_telem(uint8_t tx_buff[], int len);
 
 	// Logger
 	void write_storage_buffer() {};
@@ -86,7 +94,7 @@ public:
 private:
 	Plane* _plane;
 
-	MLRS mlrs;
+	Mlrs_rc mlrs_rc;
 	Mlrs_telem mlrs_telem;
 
 	float _elevator;

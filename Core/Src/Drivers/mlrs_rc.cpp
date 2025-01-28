@@ -10,17 +10,17 @@
   ((byte) & 0x02 ? '1' : '0'), \
   ((byte) & 0x01 ? '1' : '0')
 
-MLRS::MLRS(UART_HandleTypeDef* uart)
+Mlrs_rc::Mlrs_rc(UART_HandleTypeDef* uart)
 {
 	_uart = uart;
 }
 
-void MLRS::setup()
+void Mlrs_rc::setup()
 {
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
 }
 
-void MLRS::dma_complete()
+void Mlrs_rc::dma_complete()
 {
 //	printf("%c%c%c%c%c%c%c%c ", BYTE_TO_BINARY(rx_buffer[0]));
 

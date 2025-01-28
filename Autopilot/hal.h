@@ -17,7 +17,7 @@ public:
     virtual void read_sensors() = 0;
 
     // Telemetry
-    virtual void transmit_telem() = 0;
+    virtual void transmit_telem(uint8_t tx_buff[], int len) = 0;
 
     // Logger
     virtual void write_storage_buffer() = 0;

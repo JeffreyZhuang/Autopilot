@@ -7,18 +7,17 @@ Mlrs_telem::Mlrs_telem(UART_HandleTypeDef* uart)
 
 void Mlrs_telem::setup()
 {
-
+	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
 }
 
-void Mlrs_telem::transmit()
+void Mlrs_telem::transmit(uint8_t tx_buff[], int len)
 {
-	char tx_buff[] = "Hello\n";
-	HAL_UART_Transmit(_uart, (uint8_t*)tx_buff, strlen(tx_buff), 1000);
-
-	printf("Uart transmit\n");
+	HAL_UART_Transmit(_uart, tx_buff, len, 1000);
 }
 
 void Mlrs_telem::dma_complete()
 {
+	printf("%c", rx_buffer[0]);
 
+	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
 }

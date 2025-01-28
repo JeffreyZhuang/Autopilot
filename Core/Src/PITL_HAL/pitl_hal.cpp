@@ -4,7 +4,7 @@
 
 Pitl_hal* Pitl_hal::_instance = nullptr;
 
-Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane), mlrs(&huart4), mlrs_telem(&huart6)
+Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane), mlrs_rc(&huart4), mlrs_telem(&huart6)
 {
 	_plane = plane;
 
@@ -18,7 +18,8 @@ void Pitl_hal::init()
 {
 	printf("Start\n");
 
-	mlrs.setup();
+	mlrs_rc.setup();
+	mlrs_telem.setup();
 }
 
 void Pitl_hal::read_sensors()
