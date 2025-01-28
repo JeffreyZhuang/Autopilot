@@ -6,7 +6,7 @@
  * @param plane
  * @param hal
  */
-AHRS::AHRS(Plane* plane, HAL* hal, float dt)
+AHRS::AHRS(HAL* hal, Plane* plane, float dt)
 {
     _plane = plane;
     _hal = hal;

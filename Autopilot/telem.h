@@ -8,17 +8,20 @@
 #ifndef TELEM_H_
 #define TELEM_H_
 
+#include <cstring>
 #include "hal.h"
 
-struct telem_packet
+struct Telem_packet
 {
-	float alt;
+	uint8_t header = 'h';
+	bool sw;
+	uint8_t footer = '\n';
 };
 
 class Telem
 {
 public:
-	Telem(Plane* plane, HAL* hal);
+	Telem(HAL* hal, Plane* plane);
 	void transmit();
 private:
 	HAL* _hal;

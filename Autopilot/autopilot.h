@@ -10,6 +10,7 @@
 #include "commander.h"
 #include "control.h"
 #include "guidance.h"
+#include "telem.h"
 
 /**
  * @brief Autopilot
@@ -49,6 +50,7 @@ private:
     Commander _commander;
     Control _control;
     Guidance _guidance;
+    Telem _telem;
 
     uint64_t prev_control_time;
 

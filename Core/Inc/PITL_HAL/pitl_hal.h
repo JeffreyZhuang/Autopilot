@@ -22,7 +22,7 @@ extern TIM_HandleTypeDef htim5;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart6;
 
-struct Pitl_packet
+struct Pitl_rx_packet
 {
 	float ax;
 	float ay;
@@ -36,6 +36,15 @@ struct Pitl_packet
 	float asl;
 	float lat;
 	float lon;
+};
+
+// Use aileron instead of rudder. Afterwards I just set aileron command directly to rudder.
+// The mixer is in charge of choosing between rudder and aileron
+struct Pitl_tx_packet
+{
+	float aileron;
+	float elevator;
+	float throttle;
 };
 
 // Processor in the loop using USB
@@ -79,6 +88,7 @@ public:
 	// Servos
 	void set_elevator(float deg);
 	void set_rudder(float deg);
+	void set_throttle(float throttle);
 
 	// Time
 	void delay_us(uint64_t us);
@@ -94,15 +104,14 @@ public:
 private:
 	Plane* _plane;
 
+	// Telemetry
 	Mlrs_rc mlrs_rc;
 	Mlrs_telem mlrs_telem;
 
-	float _elevator;
-	float _rudder;
-
 	// USB
-	Pitl_packet* usb_buff1;
-	Pitl_packet* usb_buff2;
+	Pitl_tx_packet pitl_tx_packet;
+	Pitl_rx_packet* usb_buff1;
+	Pitl_rx_packet* usb_buff2;
 	bool buff1_active = true;
 	bool buff1_ready = false;
 	bool buff2_ready = false;

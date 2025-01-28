@@ -30,7 +30,7 @@ void Pitl_hal::read_sensors()
 
 void Pitl_hal::read_pitl()
 {
-	Pitl_packet* data;
+	Pitl_rx_packet* data;
 
 	if (buff1_ready)
 	{
@@ -81,15 +81,15 @@ void Pitl_hal::read_pitl()
 	_plane->gnss_timestamp = time;
 
 	// Transmit control commands
-	char txBuf[100];
-	sprintf(txBuf, "%f,%f\n", _rudder, _elevator);
-	CDC_Transmit_FS((uint8_t*)txBuf, strlen(txBuf));
+	uint8_t txBuf[sizeof(Pitl_tx_packet)];
+	memcpy(txBuf, &pitl_tx_packet, sizeof(Pitl_tx_packet));
+	CDC_Transmit_FS(txBuf, sizeof(txBuf));
 }
 
 // Read sensor data from USB and add to plane struct
 void Pitl_hal::usb_rx_callback(uint8_t* Buf, uint32_t Len)
 {
-	Pitl_packet* p = (Pitl_packet*)Buf;
+	Pitl_rx_packet* p = (Pitl_rx_packet*)Buf;
 
 	if (buff1_active)
 	{

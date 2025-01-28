@@ -18,7 +18,7 @@ enum class AHRS_state {
 class AHRS
 {
 public:
-    AHRS(Plane* plane, HAL* hal, float dt);
+    AHRS(HAL* hal, Plane* plane, float dt);
     void setup();
     void update();
 private:

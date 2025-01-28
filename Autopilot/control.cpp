@@ -40,9 +40,11 @@ void Control::manual()
 	// Read from radio and direct to servos
 	float rudder = _plane->rc_rudder;
 	float elevator = _plane->rc_elevator;
+	float throttle = _plane->rc_throttle;
 
 	_hal->set_elevator(elevator);
 	_hal->set_rudder(rudder);
+	_hal->set_throttle(throttle);
 }
 
 void Control::takeoff()

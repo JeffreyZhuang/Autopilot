@@ -2,11 +2,12 @@
 
 Autopilot* Autopilot::_instance = nullptr;
 
-Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(plane, hal, hal->main_dt),
+Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->main_dt),
 									   	   	  _navigation(hal, plane, hal->main_dt),
 											  _commander(hal, plane),
 											  _control(hal, plane, hal->control_dt),
-											  _guidance(hal, plane)
+											  _guidance(hal, plane),
+											  _telem(hal, plane)
 {
 	_hal = hal;
 	_plane = plane;
@@ -41,8 +42,7 @@ void Autopilot::main_task()
 	_hal->write_storage_buffer();
 	_commander.update();
 
-	char tx_buff[] = "Hello testing";
-	_hal->transmit_telem((uint8_t*)tx_buff, strlen(tx_buff));
+	_telem.transmit();
 
 	char txBuf[200];
 //	sprintf(txBuf,
