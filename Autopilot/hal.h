@@ -32,7 +32,7 @@ public:
     // Control surfaces
     virtual void set_elevator(float deg) = 0;
     virtual void set_rudder(float deg) = 0;
-    virtual void set_throttle(float deg) = 0;
+    virtual void set_throttle(float throttle) = 0;
 
     // Time
     virtual void delay_us(uint64_t us) = 0;
