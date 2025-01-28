@@ -7,7 +7,7 @@ Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 
 											 	 	   pitch_controller(0.04, 0, 0, 0, -1, 1),
 													   hdg_controller(1, 0, 0, 0, -10, 10),
 													   alt_controller(1, 0, 0, 0, -10, 10),
-													   speed_controller(0.01, 0.01, 0, 0.5, 0, 1)
+													   speed_controller(0.1, 0.1, 0, 0.5, 0, 1)
 {
 	_hal = hal;
 	_plane = plane;
@@ -84,12 +84,11 @@ void Control::cruise()
 	float throttle = speed_controller.get_output(_plane->nav_airspeed,
 												 _plane->airspeed_cruise,
 												 _dt);
-	printf("%f\n", throttle);
 
 	// Set control surfaces
 	_hal->set_elevator(elevator);
 	_hal->set_rudder(rudder);
-	_hal->set_throttle(0.5f);
+	_hal->set_throttle(throttle);
 }
 
 void Control::land()
