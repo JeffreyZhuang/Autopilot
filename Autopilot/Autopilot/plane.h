@@ -109,7 +109,7 @@ struct Plane
     float rc_rudder;
     float rc_elevator;
     float rc_throttle;
-    bool rc_switch;
+    bool rc_switch = false;
 };
 
 #endif /* PLANE_H_ */

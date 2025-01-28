@@ -18,10 +18,10 @@ void Commander::update()
 	case FlightState::CRUISE:
 		break;
 	case FlightState::TAKEOFF:
-		if (_hal->get_time_us() > 10000000)
-		{
-			_plane->flightState = FlightState::LAND;
-		}
+//		if (_hal->get_time_us() > 10000000)
+//		{
+//			_plane->flightState = FlightState::LAND;
+//		}
 
 		break;
 	case FlightState::LAND:
@@ -30,5 +30,14 @@ void Commander::update()
 		break;
 	case FlightState::STABALIZE:
 		break;
+	}
+
+	if (_plane->rc_switch)
+	{
+		_plane->flightState = FlightState::TAKEOFF;
+	}
+	else
+	{
+		_plane->flightState = FlightState::MANUAL;
 	}
 }

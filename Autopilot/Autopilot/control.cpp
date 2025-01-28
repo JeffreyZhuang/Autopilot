@@ -14,8 +14,6 @@ Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 
 
 void Control::update()
 {
-	cruise();
-
 	switch (_plane->flightState)
 	{
 	case FlightState::STARTUP:
@@ -23,10 +21,12 @@ void Control::update()
 	case FlightState::TAKEOFF_DETECT:
 		break;
 	case FlightState::MANUAL:
+		manual();
 		break;
 	case FlightState::CRUISE:
 		break;
 	case FlightState::TAKEOFF:
+		cruise();
 		break;
 	case FlightState::LAND:
 		break;

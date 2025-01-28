@@ -24,6 +24,8 @@ void Autopilot::init()
 
 void Autopilot::main_task()
 {
+	printf("%d\n", _plane->rc_switch);
+
 	_plane->time = _hal->get_time_us();
 
 	_hal->read_sensors();
