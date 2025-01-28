@@ -106,8 +106,10 @@ struct Plane
     float guidance_d_setpoint;
 
     // RC
-    static constexpr int num_channels = 6;
-    uint16_t rc_data[num_channels];
+    float rc_rudder;
+    float rc_elevator;
+    float rc_throttle;
+    bool rc_switch;
 };
 
 #endif /* PLANE_H_ */

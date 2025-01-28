@@ -21,10 +21,23 @@ void Pitl_hal::init()
 	mlrs.setup();
 }
 
+void Pitl_hal::read_rc()
+{
+	// Need to add some mixer
+	// Convert from 1000-2000 to 0-1 range
+	_plane->rc_rudder = (mlrs.rc_data[0] - 1000) / 1000.0f;
+	_plane->rc_elevator = (mlrs.rc_data[1] - 1000) / 1000.0f;
+	_plane->rc_throttle = (mlrs.rc_data[2] - 1000) / 1000.0f;
+}
+
 void Pitl_hal::read_sensors()
 {
-	printf("%d\n", mlrs.rc_data[0]);
+	read_rc();
+	read_pitl();
+}
 
+void Pitl_hal::read_pitl()
+{
 	Pitl_packet* data;
 
 	if (buff1_ready)

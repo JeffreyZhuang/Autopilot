@@ -43,6 +43,8 @@ public:
 	Pitl_hal(Plane* plane);
 	void init();
 	void read_sensors();
+	void read_rc();
+	void read_pitl();
 
 	static void telemetry_dma_complete()
 	{

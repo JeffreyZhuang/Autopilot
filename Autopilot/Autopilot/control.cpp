@@ -37,8 +37,8 @@ void Control::update()
 void Control::manual()
 {
 	// Read from radio and direct to servos
-	float rudder = 0;
-	float elevator = 0;
+	float rudder = _plane->rc_rudder;
+	float elevator = _plane->rc_elevator;
 
 	_hal->set_elevator(elevator);
 	_hal->set_rudder(rudder);
