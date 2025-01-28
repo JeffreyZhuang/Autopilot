@@ -2,7 +2,7 @@
 
 void Pitl_hal::set_elevator(float deg)
 {
-	pitl_tx_packet.elevator = deg;
+	pitl_tx_packet.elevator = -deg;
 }
 
 void Pitl_hal::set_rudder(float deg)
