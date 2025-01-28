@@ -14,6 +14,7 @@ public:
     PID(float kP, float kI, float kD, float integral_limit, float output_min, float output_max);
 
     float get_output(float state, float setpoint, float dt);
+    float get_integral();
 private:
     float clamp(float n, float min, float max);
 

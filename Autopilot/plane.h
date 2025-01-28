@@ -27,6 +27,7 @@ struct Plane
     float airspeed_min;
     float airspeed_max;
     float airspeed_cruise = 40;
+    float cruise_throttle = 0.3;
     float pitch_limit_max;
     float pitch_limit_min;
     float roll_limit;

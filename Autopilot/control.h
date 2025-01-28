@@ -30,6 +30,8 @@ private:
 	void cruise();
 	void land();
 	void stabalize();
+
+	float clamp(float n, float min, float max);
 };
 
 #endif /* CONTROL_H_ */

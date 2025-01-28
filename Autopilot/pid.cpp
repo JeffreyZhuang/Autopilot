@@ -15,10 +15,7 @@ float PID::get_output(float state, float setpoint, float dt)
     float error = setpoint - state;
 
     _integral += error * dt;
-    if (_kI > 0) // Prevent division by 0
-    {
-    	_integral = clamp(_kI * _integral, -_integral_limit, _integral_limit) / _kI;
-    }
+    _integral = clamp(_integral, -_integral_limit, _integral_limit);
 
     float derivative = (error - _prev_error) / dt;
     _prev_error = error;
@@ -27,6 +24,11 @@ float PID::get_output(float state, float setpoint, float dt)
     output = clamp(output, _output_min, _output_max);
 
     return output;
+}
+
+float PID::get_integral()
+{
+	return _integral;
 }
 
 float PID::clamp(float n, float min, float max)
