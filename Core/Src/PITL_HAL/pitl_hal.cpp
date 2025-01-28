@@ -48,13 +48,8 @@ void Pitl_hal::read_pitl()
 		return;
 	}
 
-	printf("%.0f %.0f %.0f %.1f %.1f %.1f\n",
-		   _plane->ahrs_roll,
-		   _plane->ahrs_pitch,
-		   _plane->ahrs_yaw,
-		   _plane->nav_pos_north,
-		   _plane->nav_pos_east,
-		   _plane->nav_pos_down);
+	printf("%.1f\n",
+		   _plane->nav_airspeed);
 
 	uint64_t time = get_time_us();
 

@@ -26,7 +26,7 @@ struct Plane
     // Constraints and parameters
     float airspeed_min;
     float airspeed_max;
-    float airspeed_cruise = 40;
+    float airspeed_cruise = 20.5778; // Meters per second, not knots!
     float cruise_throttle = 0.3;
     float pitch_limit_max;
     float pitch_limit_min;

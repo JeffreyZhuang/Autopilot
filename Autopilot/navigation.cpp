@@ -167,7 +167,7 @@ void Navigation::update_plane()
 	_plane->nav_vel_north = est(3, 0);
 	_plane->nav_vel_east = est(4, 0);
 	_plane->nav_vel_down = est(5, 0);
-	_plane->nav_airspeed = sqrtf(powf(_plane->nav_vel_north, 2) + powf(_plane->nav_vel_east, 2) + powf(_plane->nav_vel_down, 2));
+	_plane->nav_airspeed = sqrtf(powf(_plane->nav_vel_north, 2) + powf(_plane->nav_vel_east, 2));
 	_plane->nav_timestamp = _hal->get_time_us();
 }
 

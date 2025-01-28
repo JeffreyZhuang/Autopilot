@@ -7,7 +7,7 @@ Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 
 											 	 	   pitch_controller(0.04, 0, 0, 0, -1, 1),
 													   hdg_controller(1, 0, 0, 0, -10, 10),
 													   alt_controller(1, 0, 0, 0, -10, 10),
-													   speed_controller(0.1, 0.1, 0, 0.5 / 0.1, -1, 1)
+													   speed_controller(0.05, 0.01, 0, 0.3 / 0.01, -1, 1)
 {
 	_hal = hal;
 	_plane = plane;

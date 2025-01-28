@@ -33,6 +33,7 @@ void Autopilot::main_task()
 	_ahrs.update();
 	_navigation.execute();
 
+	// Don't mix and match. Use microseconds for everything. Change later.
 	if (_plane->time - prev_control_time >= _hal->control_dt * 1000000)
 	{
 		_guidance.update();
@@ -56,17 +57,6 @@ void Autopilot::main_task()
 //			_plane->nav_vel_down,
 //			_plane->nav_pos_down,
 //			_plane->nav_pos_east);
-	sprintf(txBuf,
-			"%.0f\t%.0f\t%.0f\t%.1f\t%.1f\t%.1f\t%.0f\t%.0f\t%.0f\r\n",
-			_plane->imu_gx,
-			_plane->imu_gy,
-			_plane->imu_gz,
-			_plane->imu_ax,
-			_plane->imu_ay,
-			_plane->imu_az,
-			_plane->compass_mx,
-			_plane->compass_my,
-			_plane->compass_mz);
 	_hal->usb_print(txBuf);
 
 	_plane->loop_execution_time = _hal->get_time_us() - _plane->time;
