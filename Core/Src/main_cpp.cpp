@@ -3,23 +3,26 @@
 
 // Exclude Flight_HAL source folder from build if PITL is enabled
 #define PITL_ENABLE true
-
-Plane plane;
-
 #if PITL_ENABLE
-#include "pitl_hal.h"
-Pitl_hal hal(&plane);
+	#include "pitl_hal.h"
+	using Hal = Pitl_hal;
 #else
-#include "Flight_HAL/flight_hal.h"
-Flight_hal hal(&plane);
+	#include "Flight_HAL/flight_hal.h"
+	using Hal = Flight_hal;
 #endif
 
-Autopilot autopilot(&hal, &plane);
+void main_cpp()
+{
+	Plane plane;
+	Hal hal(&plane);
+	Autopilot autopilot(&hal, &plane);
+	autopilot.run();
+}
 
 extern "C"
 {
-void main_c()
-{
-	autopilot.run();
-}
+	void main_c()
+	{
+		main_cpp();
+	}
 }
