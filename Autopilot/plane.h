@@ -35,7 +35,7 @@ struct Plane
     // Time
     uint64_t time;
     uint64_t loop_execution_time;
-    uint32_t loop_iteration = 0;
+    uint32_t loop_iteration;
 
     // IMU
     float imu_ax;
@@ -66,7 +66,7 @@ struct Plane
     int gnss_sats;
     float gnss_center_lat;
     float gnss_center_lon;
-    bool gnss_lock = false;
+    bool gnss_lock;
     uint64_t gnss_timestamp;
 
     // AHRS
@@ -77,7 +77,6 @@ struct Plane
     float ahrs_q1;
     float ahrs_q2;
     float ahrs_q3;
-    float ahrs_gain = 10;
     uint64_t ahrs_timestamp;
 
     // Navigation
@@ -102,7 +101,7 @@ struct Plane
     float rc_rudder;
     float rc_elevator;
     float rc_throttle;
-    bool rc_switch = false; // Change to manual_sw
+    bool rc_switch; // Change to manual_sw
 };
 
 #endif /* PLANE_H_ */
