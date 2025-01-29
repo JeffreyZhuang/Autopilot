@@ -2,6 +2,7 @@
 #define PLANE_H_
 
 #include <stdint.h>
+#include "parameters.h"
 
 enum class ManualMode
 {
@@ -21,15 +22,6 @@ enum class AutoMode
  */
 struct Plane
 {
-    // Constraints and parameters
-    float airspeed_min;
-    float airspeed_max;
-    float airspeed_cruise = 20.5778; // Meters per second, not knots!
-    float cruise_throttle = 0.3;
-    float pitch_limit_max;
-    float pitch_limit_min;
-    float roll_limit;
-
     // Monitor
     float batt_current;
     float batt_voltage;
@@ -37,8 +29,8 @@ struct Plane
     float autopilot_voltage;
 
     // State machine
-    ManualMode manualMode = ManualMode::MANUAL;
-    AutoMode autoMode = AutoMode::MISSION;
+    ManualMode manualMode;
+    AutoMode autoMode;
 
     // Time
     uint64_t time;

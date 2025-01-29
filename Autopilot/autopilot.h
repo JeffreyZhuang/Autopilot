@@ -23,7 +23,7 @@ public:
     void main_task();
     void logger_task();
 
-    static Autopilot *get_instance() { return _instance; };
+    static Autopilot *get_instance() { return _instance; }
 
 private:
     HAL* _hal;
@@ -39,15 +39,10 @@ private:
     void evaluate_auto_mode();
     void evaluate_manual_mode();
     void update_time();
+    void init_state();
 
-    static void static_main_task()
-	{
-		_instance->main_task();
-	}
-    static void static_logger_task()
-	{
-		_instance->logger_task();
-	}
+    static void static_main_task() { _instance->main_task(); }
+    static void static_logger_task() { _instance->logger_task(); }
 
     static Autopilot* _instance;
 };

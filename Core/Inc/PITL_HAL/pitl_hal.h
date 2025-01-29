@@ -59,14 +59,8 @@ public:
 	void read_pitl();
 
 	// Telemetry
-	static void rc_dma_complete()
-	{
-		_instance->mlrs_rc.dma_complete();
-	}
-	static void telemetry_dma_complete()
-	{
-		_instance->mlrs_telem.dma_complete();
-	}
+	static void rc_dma_complete() { _instance->mlrs_rc.dma_complete(); }
+	static void telemetry_dma_complete() { _instance->mlrs_telem.dma_complete(); }
 	void transmit_telem(uint8_t tx_buff[], int len);
 
 	// Logger
@@ -91,6 +85,7 @@ public:
 	// Scheduler
 	void set_main_task(void (*task)());
 	void set_background_task(void (*task)()) {};
+
 	void usb_rx_callback(uint8_t* Buf, uint32_t Len);
 
 	static Pitl_hal *get_instance() { return _instance; };

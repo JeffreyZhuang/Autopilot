@@ -16,8 +16,8 @@ Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->main_dt),
 void Autopilot::init()
 {
 	_hal->init();
+	init_state();
 	_ahrs.setup();
-
 	_hal->set_main_task(&Autopilot::static_main_task);
 	_hal->set_background_task(&Autopilot::static_logger_task);
 }
@@ -79,6 +79,12 @@ void Autopilot::evaluate_manual_mode()
 		_control.update_stabilized();
 		break;
 	}
+}
+
+void Autopilot::init_state()
+{
+	_plane->manualMode = ManualMode::MANUAL;
+	_plane->autoMode = AutoMode::MISSION;
 }
 
 void Autopilot::update_time()

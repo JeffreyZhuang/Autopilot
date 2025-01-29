@@ -5,8 +5,8 @@
 // Use PI controller for pitch and roll, then your integral term is the servo misalignment
 Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 0, 0, -1, 1),
 											 	 	   pitch_controller(0.04, 0, 0, 0, -1, 1),
-													   hdg_controller(1, 0, 0, 0, -10, 10),
-													   alt_controller(1, 0, 0, 0, -10, 10),
+													   hdg_controller(1, 0, 0, 0, -ROLL_LIM_DEG, ROLL_LIM_DEG),
+													   alt_controller(1, 0, 0, 0, PTCH_LIM_MIN_DEG, PTCH_LIM_MAX_DEG),
 													   speed_controller(0.05, 0.01, 0, 0.3 / 0.01, -1, 1)
 {
 	_hal = hal;
@@ -74,8 +74,8 @@ void Control::update_mission()
 	float elevator = pitch_controller.get_output(_plane->ahrs_pitch,
 												 pitch_setpoint,
 												 _dt / 1000000);
-	float throttle = _plane->cruise_throttle + speed_controller.get_output(_plane->nav_airspeed,
-												 _plane->airspeed_cruise,
+	float throttle = TRIM_THROTTLE + speed_controller.get_output(_plane->nav_airspeed,
+												 AIRSPEED_CRUISE,
 												 _dt / 1000000);
 	throttle = clamp(throttle, 0, 1);
 
