@@ -5,8 +5,8 @@
 #include "kalman.h"
 
 enum class NavigationState {
-    INITIALIZATION = 1,
-    LIVE = 2
+    INITIALIZATION,
+    LIVE
 };
 
 static constexpr int n = 6;

@@ -14,7 +14,6 @@ Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 
 	_dt = dt;
 }
 
-
 void Control::update_manual()
 {
 	// Read from radio and direct to servos

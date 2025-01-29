@@ -1,4 +1,4 @@
-#include <autopilot_main.h>
+#include "autopilot_main.h"
 #include "autopilot.h"
 
 // Exclude Flight_HAL source folder from build if PITL is enabled
@@ -16,7 +16,6 @@ void autopilot_main()
 	Plane plane;
 	Hal hal(&plane);
 	Autopilot autopilot(&hal, &plane);
-
 	autopilot.run();
 }
 

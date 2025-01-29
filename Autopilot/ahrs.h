@@ -7,8 +7,8 @@
 #include <stdio.h>
 
 enum class AHRS_state {
-    INIT = 1,
-    LIVE = 2
+    INIT,
+    LIVE
 };
 
 /**
