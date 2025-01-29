@@ -32,6 +32,6 @@ extern "C"
 {
 void main_c()
 {
-	autopilot.init();
+	autopilot.run();
 }
 }

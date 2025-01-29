@@ -13,7 +13,7 @@ Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->main_dt),
 	_instance = this;
 }
 
-void Autopilot::init()
+void Autopilot::run()
 {
 	_hal->init();
 	init_state();

@@ -19,9 +19,7 @@ class Autopilot
 public:
 	Autopilot(HAL* hal, Plane* plane);
 
-    void init();
-    void main_task();
-    void logger_task();
+    void run();
 
     static Autopilot *get_instance() { return _instance; }
 
@@ -41,6 +39,8 @@ private:
     void update_time();
     void init_state();
 
+    void main_task();
+	void logger_task();
     static void static_main_task() { _instance->main_task(); }
     static void static_logger_task() { _instance->logger_task(); }
 
