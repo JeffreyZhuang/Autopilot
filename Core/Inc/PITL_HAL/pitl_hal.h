@@ -61,17 +61,11 @@ public:
 	// Telemetry
 	static void rc_dma_complete()
 	{
-		if (_instance != nullptr)
-		{
-			_instance->mlrs_rc.dma_complete();
-		}
+		_instance->mlrs_rc.dma_complete();
 	}
 	static void telemetry_dma_complete()
 	{
-		if (_instance != nullptr)
-		{
-			_instance->mlrs_telem.dma_complete();
-		}
+		_instance->mlrs_telem.dma_complete();
 	}
 	void transmit_telem(uint8_t tx_buff[], int len);
 

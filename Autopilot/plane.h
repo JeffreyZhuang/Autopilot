@@ -38,7 +38,7 @@ struct Plane
 
     // State machine
     ManualMode manualMode = ManualMode::MANUAL;
-    AutoMode autoMode = AutoMode::TAKEOFF;
+    AutoMode autoMode = AutoMode::MISSION;
 
     // Time
     uint64_t time;

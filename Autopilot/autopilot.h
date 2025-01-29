@@ -20,24 +20,8 @@ public:
 	Autopilot(HAL* hal, Plane* plane);
 
     void init();
-
     void main_task();
-    static void static_main_task()
-    {
-    	if (_instance)
-    	{
-    		_instance->main_task();
-    	}
-    }
-
     void logger_task();
-    static void static_logger_task()
-	{
-		if (_instance)
-		{
-			_instance->logger_task();
-		}
-	}
 
     static Autopilot *get_instance() { return _instance; };
 
@@ -55,6 +39,15 @@ private:
     void evaluate_auto_mode();
     void evaluate_manual_mode();
     void update_time();
+
+    static void static_main_task()
+	{
+		_instance->main_task();
+	}
+    static void static_logger_task()
+	{
+		_instance->logger_task();
+	}
 
     static Autopilot* _instance;
 };
