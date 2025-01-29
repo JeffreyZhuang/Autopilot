@@ -18,5 +18,5 @@ void Guidance::update()
 {
 	_plane->guidance_n_setpoint = 0;
 	_plane->guidance_e_setpoint = 0;
-	_plane->guidance_d_setpoint = -100;
+	_plane->guidance_d_setpoint = -50;
 }
