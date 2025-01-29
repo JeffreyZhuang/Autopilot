@@ -1,6 +1,8 @@
 #ifndef INC_MAIN_CPP_H_
 #define INC_MAIN_CPP_H_
 
+#define PITL_ENABLE true
+
 #ifdef __cplusplus
 extern "C"
 {

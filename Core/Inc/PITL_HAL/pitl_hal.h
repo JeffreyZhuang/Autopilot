@@ -8,14 +8,13 @@
 #ifndef INC_PITL_HAL_H_
 #define INC_PITL_HAL_H_
 
-#include <mlrs_rc.h>
 #include "hal.h"
+#include "mlrs_rc.h"
 #include "mlrs_telem.h"
 
 extern "C"
 {
 #include "usbd_cdc_if.h"
-#include "main.h"
 }
 
 extern TIM_HandleTypeDef htim5;
