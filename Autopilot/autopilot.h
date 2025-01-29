@@ -7,7 +7,6 @@
 #include "hal.h"
 #include "ahrs.h"
 #include "navigation.h"
-#include "commander.h"
 #include "control.h"
 #include "guidance.h"
 #include "telem.h"
@@ -47,12 +46,14 @@ private:
     Plane* _plane;
     AHRS _ahrs;
     Navigation _navigation;
-    Commander _commander;
     Control _control;
     Guidance _guidance;
     Telem _telem;
 
     uint64_t prev_control_time;
+
+    void evaluate_auto_mode();
+    void evaluate_manual_mode();
 
     static Autopilot* _instance;
 };

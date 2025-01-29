@@ -3,19 +3,17 @@
 
 #include <stdint.h>
 
-/**
- * @brief Flight state for state machine
- *
- */
-enum class FlightState
+enum class ManualMode
 {
-	STARTUP = 1,
-	TAKEOFF_DETECT = 2,
-    TAKEOFF = 3,
-    CRUISE = 4,
-    LAND = 5,
-	STABALIZE = 6,
-	MANUAL = 7
+	MANUAL,
+	STABILIZED
+};
+
+enum class AutoMode
+{
+	TAKEOFF,
+	MISSION,
+	LAND
 };
 
 /**
@@ -39,7 +37,8 @@ struct Plane
     float autopilot_voltage;
 
     // State machine
-    FlightState flightState = FlightState::TAKEOFF;
+    ManualMode manualMode = ManualMode::MANUAL;
+    AutoMode autoMode = AutoMode::TAKEOFF;
 
     // Time
     uint64_t time;
@@ -111,7 +110,7 @@ struct Plane
     float rc_rudder;
     float rc_elevator;
     float rc_throttle;
-    bool rc_switch = false;
+    bool rc_switch = false; // Change to manual_sw
 };
 
 #endif /* PLANE_H_ */

@@ -15,30 +15,7 @@ Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 
 }
 
 
-void Control::update()
-{
-	switch (_plane->flightState)
-	{
-	case FlightState::STARTUP:
-		break;
-	case FlightState::TAKEOFF_DETECT:
-		break;
-	case FlightState::MANUAL:
-		manual();
-		break;
-	case FlightState::CRUISE:
-		break;
-	case FlightState::TAKEOFF:
-		cruise();
-		break;
-	case FlightState::LAND:
-		break;
-	case FlightState::STABALIZE:
-		break;
-	}
-}
-
-void Control::manual()
+void Control::update_manual()
 {
 	// Read from radio and direct to servos
 	float rudder = _plane->rc_rudder;
@@ -50,7 +27,23 @@ void Control::manual()
 	_hal->set_throttle(throttle);
 }
 
-void Control::takeoff()
+// Hold roll and pitch at 0
+void Control::update_stabilize()
+{
+	// Calculate control outputs
+	float rudder = roll_controller.get_output(_plane->ahrs_roll,
+											  0,
+											  _dt / 1000000);
+	float elevator = pitch_controller.get_output(_plane->ahrs_pitch,
+												 0,
+												 _dt / 1000000);
+
+	// Set control surfaces
+	_hal->set_elevator(elevator);
+	_hal->set_rudder(rudder);
+}
+
+void Control::update_takeoff()
 {
 	float roll_setpoint = 0;
 	float pitch_setpoint = 10;
@@ -66,7 +59,7 @@ void Control::takeoff()
 }
 
 // Use guidance altitude and position setpoint to calculate control commands
-void Control::cruise()
+void Control::update_mission()
 {
 	// Direction to nearest setpoint
 	//	float heading_setpoint = atan(_plane->guidance_n_setpoint / _plane->guidance_e_setpoint);
@@ -92,7 +85,7 @@ void Control::cruise()
 	_hal->set_throttle(throttle);
 }
 
-void Control::land()
+void Control::update_land()
 {
 	float roll_setpoint = 0;
 	float pitch_setpoint = 10;
@@ -103,22 +96,6 @@ void Control::land()
 	float elevator = pitch_controller.get_output(_plane->ahrs_pitch,
 												 pitch_setpoint,
 												 _dt / 1000000);
-	_hal->set_elevator(elevator);
-	_hal->set_rudder(rudder);
-}
-
-// Hold roll and pitch at 0
-void Control::stabalize()
-{
-	// Calculate control outputs
-	float rudder = roll_controller.get_output(_plane->ahrs_roll,
-											  0,
-											  _dt / 1000000);
-	float elevator = pitch_controller.get_output(_plane->ahrs_pitch,
-												 0,
-												 _dt / 1000000);
-
-	// Set control surfaces
 	_hal->set_elevator(elevator);
 	_hal->set_rudder(rudder);
 }

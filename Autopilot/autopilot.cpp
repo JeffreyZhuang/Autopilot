@@ -4,8 +4,7 @@ Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->main_dt),
 									   	   	  _navigation(hal, plane, hal->main_dt),
-											  _commander(hal, plane),
-											  _control(hal, plane, hal->control_dt),
+											  _control(hal, plane, hal->main_dt),
 											  _guidance(hal, plane),
 											  _telem(hal, plane)
 {
@@ -25,66 +24,59 @@ void Autopilot::init()
 
 void Autopilot::main_task()
 {
-//	printf("%d\n", _plane->rc_switch);
-
 	_plane->time = _hal->get_time_us();
 
 	_hal->read_sensors();
+
 	_ahrs.update();
 	_navigation.execute();
+	_guidance.update();
 
-	// Don't mix and match. Use microseconds for everything. Change later.
-	if (_plane->time - prev_control_time >= _hal->control_dt * 1000000)
+	if (_plane->rc_switch)
 	{
-		_guidance.update();
-		_control.update();
+		evaluate_auto_mode();
+	}
+	else
+	{
+		evaluate_manual_mode();
 	}
 
 	_hal->write_storage_buffer();
-	_commander.update();
-
 	_telem.transmit();
-
-	char txBuf[200];
-//	sprintf(txBuf,
-//			"%f,%f,%f,%f,%f,%f,%f,%f,%f\r\n",
-//			_plane->ahrs_roll,
-//			_plane->ahrs_pitch,
-//			_plane->ahrs_yaw,
-//			_plane->nav_acc_north,
-//			_plane->nav_acc_east,
-//			_plane->nav_acc_down,
-//			_plane->nav_vel_down,
-//			_plane->nav_pos_down,
-//			_plane->nav_pos_east);
-	_hal->usb_print(txBuf);
-
 	_plane->loop_execution_time = _hal->get_time_us() - _plane->time;
-//	printf("%ld ", (uint32_t)_plane->loop_execution_time);
-
 	_plane->loop_iteration++;
 }
 
 void Autopilot::logger_task()
 {
-	switch (_plane->flightState)
-	{
-	case FlightState::STARTUP:
-		break;
-	case FlightState::TAKEOFF_DETECT:
-		break;
-	case FlightState::TAKEOFF:
-		_hal->flush_storage_buffer();
-		break;
-	case FlightState::CRUISE:
-		break;
-	case FlightState::LAND:
-//		_hal->read_storage();
-		break;
-	case FlightState::STABALIZE:
-		break;
-	case FlightState::MANUAL:
-		break;
+	_hal->flush_storage_buffer();
+}
 
+void Autopilot::evaluate_auto_mode()
+{
+	switch (_plane->autoMode)
+	{
+	case AutoMode::TAKEOFF:
+		_control.update_takeoff();
+		break;
+	case AutoMode::MISSION:
+		_control.update_mission();
+		break;
+	case AutoMode::LAND:
+		_control.update_land();
+		break;
+	}
+}
+
+void Autopilot::evaluate_manual_mode()
+{
+	switch (_plane->manualMode)
+	{
+	case ManualMode::MANUAL:
+		_control.update_manual();
+		break;
+	case ManualMode::STABILIZED:
+		_control.update_stabalized();
+		break;
 	}
 }

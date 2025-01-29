@@ -11,7 +11,11 @@ class Control
 public:
 	Control(HAL* hal, Plane* plane, float dt);
 
-	void update();
+	void update_manual();
+	void update_takeoff();
+	void update_mission();
+	void update_land();
+	void update_stabalize();
 
 private:
 	HAL* _hal;
@@ -24,12 +28,6 @@ private:
 	PID hdg_controller;
 	PID alt_controller;
 	PID speed_controller;
-
-	void manual();
-	void takeoff();
-	void cruise();
-	void land();
-	void stabalize();
 
 	float clamp(float n, float min, float max);
 };
