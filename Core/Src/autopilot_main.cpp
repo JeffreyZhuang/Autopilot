@@ -1,4 +1,4 @@
-#include "main_cpp.h"
+#include <autopilot_main.h>
 #include "autopilot.h"
 
 // Exclude Flight_HAL source folder from build if PITL is enabled

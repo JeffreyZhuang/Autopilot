@@ -1,5 +1,5 @@
-#ifndef INC_MAIN_CPP_H_
-#define INC_MAIN_CPP_H_
+#ifndef INC_AUTOPILOT_MAIN_H_
+#define INC_AUTOPILOT_MAIN_H_
 
 #define PITL_ENABLE true
 
@@ -14,4 +14,4 @@ void main_c();
 }
 #endif
 
-#endif /* INC_MAIN_CPP_H_ */
+#endif /* INC_AUTOPILOT_MAIN_H_ */
