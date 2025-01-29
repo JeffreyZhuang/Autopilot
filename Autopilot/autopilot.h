@@ -54,6 +54,7 @@ private:
 
     void evaluate_auto_mode();
     void evaluate_manual_mode();
+    void update_time();
 
     static Autopilot* _instance;
 };

@@ -24,7 +24,7 @@ void Autopilot::init()
 
 void Autopilot::main_task()
 {
-	_plane->time = _hal->get_time_us();
+	update_time();
 
 	_hal->read_sensors();
 
@@ -45,9 +45,6 @@ void Autopilot::main_task()
 	_hal->write_storage_buffer();
 
 	_telem.transmit();
-
-	_plane->loop_execution_time = _hal->get_time_us() - _plane->time;
-	_plane->loop_iteration++;
 }
 
 void Autopilot::logger_task()
@@ -82,4 +79,12 @@ void Autopilot::evaluate_manual_mode()
 		_control.update_stabilized();
 		break;
 	}
+}
+
+void Autopilot::update_time()
+{
+	uint64_t time = _hal->get_time_us();
+	_plane->loop_execution_time = time - _plane->time;
+	_plane->time = time;
+	_plane->loop_iteration++;
 }
