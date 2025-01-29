@@ -25,5 +25,6 @@ constexpr bool RUDDER_ONLY = true;
 // Takeoff
 constexpr float TAKEOFF_ALT = 10; // Altitude that the plane will climb to during takeoff meters per second
 constexpr float TAKEOFF_THR = 1; // Throttle set during takeoff between 0 and 1
+constexpr float TAKEOFF_AIRSPD = 10; // Rotation speed meters per second during takeoff, ignored during hand launch
 
 #endif /* PARAMETERS_H_ */
