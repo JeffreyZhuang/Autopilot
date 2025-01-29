@@ -48,11 +48,9 @@ void Pitl_hal::read_pitl()
 		return;
 	}
 
-	printf("%.1f\n",
-		   _plane->nav_airspeed);
+	printf("%d %f\n", _plane->autoMode, _plane->nav_pos_down);
 
 	uint64_t time = get_time_us();
-
 	_plane->imu_gx = data->gx;
 	_plane->imu_gy = data->gy;
 	_plane->imu_gz = data->gz;
@@ -60,15 +58,12 @@ void Pitl_hal::read_pitl()
 	_plane->imu_ay = data->ay;
 	_plane->imu_az = data->az;
 	_plane->imu_timestamp = time;
-
 	_plane->compass_mx = data->mx;
 	_plane->compass_my = data->my;
 	_plane->compass_mz = data->mz;
 	_plane->compass_timestamp = time;
-
 	_plane->baro_alt = data->asl;
 	_plane->baro_timestamp = time;
-
 	_plane->gnss_lat = data->lat;
 	_plane->gnss_lon = data->lon;
 	_plane->gnss_asl = data->asl;

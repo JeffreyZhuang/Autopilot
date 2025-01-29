@@ -14,9 +14,9 @@ Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 
 	_dt = dt;
 }
 
+// Read from radio and direct to servos
 void Control::update_manual()
 {
-	// Read from radio and direct to servos
 	float rudder = _plane->rc_rudder;
 	float elevator = _plane->rc_elevator;
 	float throttle = _plane->rc_throttle;
@@ -26,35 +26,31 @@ void Control::update_manual()
 	_hal->set_throttle(throttle);
 }
 
-// Hold roll and pitch at 0
+// Pilot commands roll and pitch angles. Throttle is manual
 void Control::update_stabilized()
 {
+	float roll_setpoint = _plane->rc_rudder * ROLL_LIM_DEG;
+	float pitch_setpoint = _plane->rc_elevator * PTCH_LIM_MAX_DEG;
+
 	// Calculate control outputs
-	float rudder = roll_controller.get_output(_plane->ahrs_roll,
-											  0,
-											  _dt / 1000000);
-	float elevator = pitch_controller.get_output(_plane->ahrs_pitch,
-												 0,
-												 _dt / 1000000);
+	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt / 1000000);
+	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, pitch_setpoint, _dt / 1000000);
+	float throttle = _plane->rc_throttle;
 
 	// Set control surfaces
 	_hal->set_elevator(elevator);
 	_hal->set_rudder(rudder);
+	_hal->set_throttle(throttle);
 }
 
 void Control::update_takeoff()
 {
-	float roll_setpoint = 0;
-	float pitch_setpoint = 10;
+	float rudder = roll_controller.get_output(_plane->ahrs_roll,0, _dt / 1000000);
+	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, TAKEOFF_PTCH, _dt / 1000000);
 
-	float rudder = roll_controller.get_output(_plane->ahrs_roll,
-											  roll_setpoint,
-											  _dt / 1000000);
-	float elevator = pitch_controller.get_output(_plane->ahrs_pitch,
-												 pitch_setpoint,
-												 _dt / 1000000);
 	_hal->set_elevator(elevator);
 	_hal->set_rudder(rudder);
+	_hal->set_throttle(TAKEOFF_THR);
 }
 
 // Use guidance altitude and position setpoint to calculate control commands
@@ -67,15 +63,9 @@ void Control::update_mission()
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt / 1000000);
 
 	// Calculate control outputs
-	float rudder = roll_controller.get_output(_plane->ahrs_roll,
-											  roll_setpoint,
-											  _dt / 1000000);
-	float elevator = pitch_controller.get_output(_plane->ahrs_pitch,
-												 pitch_setpoint,
-												 _dt / 1000000);
-	float throttle = TRIM_THROTTLE + speed_controller.get_output(_plane->nav_airspeed,
-												 AIRSPEED_CRUISE,
-												 _dt / 1000000);
+	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt / 1000000);
+	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, pitch_setpoint, _dt / 1000000);
+	float throttle = TRIM_THROTTLE + speed_controller.get_output(_plane->nav_airspeed, AIRSPEED_CRUISE, _dt / 1000000);
 	throttle = clamp(throttle, 0, 1);
 
 	// Set control surfaces
@@ -89,14 +79,12 @@ void Control::update_land()
 	float roll_setpoint = 0;
 	float pitch_setpoint = 10;
 
-	float rudder = roll_controller.get_output(_plane->ahrs_roll,
-											  roll_setpoint,
-											  _dt / 1000000);
-	float elevator = pitch_controller.get_output(_plane->ahrs_pitch,
-												 pitch_setpoint,
-												 _dt / 1000000);
+	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt / 1000000);
+	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, pitch_setpoint, _dt / 1000000);
+
 	_hal->set_elevator(elevator);
 	_hal->set_rudder(rudder);
+	_hal->set_throttle(0);
 }
 
 float Control::clamp(float n, float min, float max)

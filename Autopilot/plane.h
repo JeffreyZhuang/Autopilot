@@ -12,6 +12,7 @@ enum class ManualMode
 
 enum class AutoMode
 {
+	TAKEOFF_DETECT, // Change to ARMED
 	TAKEOFF,
 	MISSION,
 	LAND
@@ -63,7 +64,7 @@ struct Plane
     float gnss_lat;
     float gnss_lon;
     float gnss_asl;
-    int gnss_sats;
+    uint8_t gnss_sats = 0;
     float gnss_center_lat;
     float gnss_center_lon;
     bool gnss_lock;

@@ -32,7 +32,8 @@ private:
     Guidance _guidance;
     Telem _telem;
 
-    uint64_t prev_control_time;
+    // States
+    void takeoff();
 
     void evaluate_auto_mode();
     void evaluate_manual_mode();

@@ -52,12 +52,22 @@ void Autopilot::logger_task()
 	_hal->flush_storage_buffer();
 }
 
+void Autopilot::takeoff()
+{
+	_control.update_takeoff();
+
+	if (-_plane->nav_pos_down > TAKEOFF_ALT)
+	{
+		_plane->autoMode = AutoMode::MISSION;
+	}
+}
+
 void Autopilot::evaluate_auto_mode()
 {
 	switch (_plane->autoMode)
 	{
 	case AutoMode::TAKEOFF:
-		_control.update_takeoff();
+		takeoff();
 		break;
 	case AutoMode::MISSION:
 		_control.update_mission();
@@ -84,7 +94,7 @@ void Autopilot::evaluate_manual_mode()
 void Autopilot::init_state()
 {
 	_plane->manualMode = ManualMode::MANUAL;
-	_plane->autoMode = AutoMode::MISSION;
+	_plane->autoMode = AutoMode::TAKEOFF;
 }
 
 void Autopilot::update_time()
