@@ -132,7 +132,7 @@ int main(void)
   MX_UART4_Init();
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
-  main_c();
+  autopilot_main_c();
   /* USER CODE END 2 */
 
   /* Infinite loop */

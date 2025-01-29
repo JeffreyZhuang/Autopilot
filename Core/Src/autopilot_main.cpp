@@ -11,7 +11,7 @@
 	using Hal = Flight_hal;
 #endif
 
-void main_cpp()
+void autopilot_main()
 {
 	Plane plane;
 	Hal hal(&plane);
@@ -22,8 +22,8 @@ void main_cpp()
 
 extern "C"
 {
-	void main_c()
+	void autopilot_main_c()
 	{
-		main_cpp();
+		autopilot_main();
 	}
 }
