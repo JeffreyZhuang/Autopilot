@@ -27,7 +27,9 @@ private:
 	HAL* _hal;
 	Plane*_plane;
 
-	Waypoint waypoints[10];
+	Waypoint waypoints[3] = {{0, 0, -100},
+							{100, 0, -50},
+							{150, 10, -50}};
 	int waypoint_idx = 0;
 };
 
