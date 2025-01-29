@@ -16,6 +16,7 @@ void main_cpp()
 	Plane plane;
 	Hal hal(&plane);
 	Autopilot autopilot(&hal, &plane);
+
 	autopilot.run();
 }
 
