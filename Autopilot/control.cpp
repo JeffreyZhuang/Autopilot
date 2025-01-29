@@ -28,7 +28,7 @@ void Control::update_manual()
 }
 
 // Hold roll and pitch at 0
-void Control::update_stabilize()
+void Control::update_stabilized()
 {
 	// Calculate control outputs
 	float rudder = roll_controller.get_output(_plane->ahrs_roll,

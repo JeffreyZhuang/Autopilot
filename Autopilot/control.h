@@ -15,7 +15,7 @@ public:
 	void update_takeoff();
 	void update_mission();
 	void update_land();
-	void update_stabalize();
+	void update_stabilized();
 
 private:
 	HAL* _hal;

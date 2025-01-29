@@ -30,6 +30,7 @@ void Autopilot::main_task()
 
 	_ahrs.update();
 	_navigation.execute();
+
 	_guidance.update();
 
 	if (_plane->rc_switch)
@@ -42,7 +43,9 @@ void Autopilot::main_task()
 	}
 
 	_hal->write_storage_buffer();
+
 	_telem.transmit();
+
 	_plane->loop_execution_time = _hal->get_time_us() - _plane->time;
 	_plane->loop_iteration++;
 }
@@ -76,7 +79,7 @@ void Autopilot::evaluate_manual_mode()
 		_control.update_manual();
 		break;
 	case ManualMode::STABILIZED:
-		_control.update_stabalized();
+		_control.update_stabilized();
 		break;
 	}
 }
