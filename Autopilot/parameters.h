@@ -34,6 +34,6 @@ constexpr float LAUN_ACC_TIME = 0.1; // Trigger time (acceleration must be above
 constexpr float LAUN_MOT_DEL = 2; // Delay from launch detection to motor spin up
 
 // Guidance
-constexpr float MIN_DIST_WP = 10; // Meters from waypoint until switching to next
+constexpr float MIN_DIST_WP = 100; // Meters from waypoint until switching to next
 
 #endif /* PARAMETERS_H_ */

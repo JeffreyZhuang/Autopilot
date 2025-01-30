@@ -28,7 +28,7 @@ private:
 	HAL* _hal;
 	Plane*_plane;
 
-	static constexpr int num_waypoints = 1;
+	static constexpr int num_waypoints = 3;
 	Waypoint waypoints[num_waypoints];
 };
 
