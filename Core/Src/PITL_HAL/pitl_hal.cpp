@@ -48,8 +48,6 @@ void Pitl_hal::read_pitl()
 		return;
 	}
 
-	printf("%d %f\n", _plane->autoMode, _plane->nav_pos_down);
-
 	uint64_t time = get_time_us();
 	_plane->imu_gx = data->gx;
 	_plane->imu_gy = data->gy;

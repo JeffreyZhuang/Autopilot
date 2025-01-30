@@ -33,4 +33,7 @@ constexpr float LAUN_ACC_THLD = 10; // Acceleration in body-forward direction to
 constexpr float LAUN_ACC_TIME = 0.1; // Trigger time (acceleration must be above threshold for this amount of seconds to detect takeoff)
 constexpr float LAUN_MOT_DEL = 2; // Delay from launch detection to motor spin up
 
+// Guidance
+constexpr float MIN_DIST_WP = 10; // Meters from waypoint until switching to next
+
 #endif /* PARAMETERS_H_ */

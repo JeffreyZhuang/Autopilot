@@ -97,6 +97,7 @@ struct Plane
     float guidance_n_setpoint = 0;
     float guidance_e_setpoint = 0;
     float guidance_d_setpoint = 0;
+    uint8_t waypoint_index = 0;
 
     // RC
     float rc_rudder = 0;
