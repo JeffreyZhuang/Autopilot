@@ -59,7 +59,11 @@ void Control::update_mission()
 	// Calculate direction to waypoint
 	float err_north = _plane->guidance_n_setpoint - _plane->nav_pos_north;
 	float err_east = _plane->guidance_e_setpoint - _plane->nav_pos_east;
-	float heading_setpoint = atan2f(err_east, err_north) * 180.0f / M_PI + 180.0f; // Convert to degrees and convert the range from (-180, 180) to (0, 360)
+	float heading_setpoint = atan2f(err_east, err_north) * 180.0f / M_PI;
+	if (heading_setpoint < 0)
+	{
+		heading_setpoint += 360.0f;
+	}
 
 	// Calculate roll and pitch setpoints to reach waypoint
 	float roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw - 180.0f, heading_setpoint - 180.0f, _dt / 1000000); // Convert range from (0, 360) to (-180, 180)
