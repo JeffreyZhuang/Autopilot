@@ -18,6 +18,7 @@ void Autopilot::run()
 	_hal->init();
 	init_state();
 	_ahrs.setup();
+	_guidance.init();
 	_hal->set_main_task(&Autopilot::static_main_task);
 	_hal->set_background_task(&Autopilot::static_logger_task);
 }
