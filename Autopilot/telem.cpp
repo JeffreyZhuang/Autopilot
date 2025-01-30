@@ -11,6 +11,13 @@ Telem::Telem(HAL* hal, Plane* plane)
 void Telem::transmit()
 {
 	Telem_packet packet;
+	packet.roll = _plane->ahrs_roll;
+	packet.pitch = _plane->ahrs_pitch;
+	packet.yaw = _plane->ahrs_yaw;
+	packet.alt = -_plane->nav_pos_down;
+	packet.spd = _plane->nav_airspeed;
+	packet.lat = _plane->gnss_lat;
+	packet.lon = _plane->gnss_lon;
 	packet.sw = _plane->rc_switch;
 
 	uint8_t tx_buff[sizeof(Telem_packet)];

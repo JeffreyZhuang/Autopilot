@@ -13,7 +13,13 @@
 
 struct Telem_packet
 {
-	uint8_t header = 'h';
+	float roll;
+	float pitch;
+	float yaw;
+	float alt;
+	float spd;
+	float lat;
+	float lon;
 	bool sw;
 	uint8_t footer = '\n';
 };
