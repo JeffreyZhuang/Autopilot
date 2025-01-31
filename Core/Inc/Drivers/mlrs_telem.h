@@ -6,12 +6,13 @@
 #include <cstdio>
 #include <cstring>
 
-struct Waypoint_packet
+struct __attribute__((packed))Waypoint_packet
 {
 	uint8_t payload_type;
 	uint8_t waypoint_index;
 	float waypoint[3];
 	uint8_t empty[24];
+//	uint8_t padding[2]; // 4 byte padding
 };
 
 class Mlrs_telem

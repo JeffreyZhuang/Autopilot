@@ -55,6 +55,7 @@ bool Mlrs_telem::read()
 
 		Waypoint_packet waypoint_packet;
 		memcpy(&waypoint_packet, payload, sizeof(Waypoint_packet));
+//		printf("%d\n", waypoint_packet.payload_type);
 		printf("%f %f %f\n", waypoint_packet.waypoint[0], waypoint_packet.waypoint[1], waypoint_packet.waypoint[2]);
 
 		return true;
