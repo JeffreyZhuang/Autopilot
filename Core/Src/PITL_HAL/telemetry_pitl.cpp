@@ -17,3 +17,8 @@ void Pitl_hal::transmit_telem(uint8_t tx_buff[], int len)
 {
 	mlrs_telem.transmit(tx_buff, len);
 }
+
+bool Pitl_hal::read_telem()
+{
+	mlrs_telem.read();
+}

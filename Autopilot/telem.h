@@ -36,6 +36,7 @@ class Telem
 public:
 	Telem(HAL* hal, Plane* plane);
 	void transmit();
+	void read();
 private:
 	HAL* _hal;
 	Plane* _plane;

@@ -11,7 +11,7 @@ void Guidance::init()
 {
 	num_waypoints = 3;
 	waypoints[0] = (Waypoint){300, 500, -80};
-	waypoints[1] = (Waypoint){-100, 800, -80};
+	waypoints[1] = (Waypoint){-100, 800, -100};
 	waypoints[2] = (Waypoint){-600, 800, -80};
 }
 

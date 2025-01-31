@@ -25,12 +25,40 @@ void Mlrs_telem::transmit(uint8_t tx_buff[], int len)
 	HAL_UART_Transmit(_uart, tx_buff, len, 1000);
 }
 
+void Mlrs_telem::read()
+{
+	if (new_packet)
+	{
+		new_packet = false;
+
+		for (int i = 0; i < 40; i++)
+		{
+			printf("%c%c%c%c%c%c%c%c ", BYTE_TO_BINARY(complete_packet[i]));
+		}
+
+		printf("\n");
+	}
+}
+
 void Mlrs_telem::dma_complete()
 {
-	printf("%c%c%c%c%c%c%c%c\n", BYTE_TO_BINARY(rx_buffer[0]));
+	working_packet[packet_index] = rx_buffer[0];
+	packet_index++;
 
-	packet[packet_index] = rx_buffer[0];
-	packet_index = 0;
+	if (packet_index == 40)
+	{
+		if (!new_packet)
+		{
+			for (int i = 0; i < 40; i++)
+			{
+				complete_packet[i] = working_packet[i];
+			}
+
+			new_packet = true;
+		}
+
+		packet_index = 0;
+	}
 
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
 }

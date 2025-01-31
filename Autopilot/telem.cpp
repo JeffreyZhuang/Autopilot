@@ -24,3 +24,8 @@ void Telem::transmit()
 	memcpy(tx_buff, &packet, sizeof(Telem_packet));
 	_hal->transmit_telem(tx_buff, sizeof(tx_buff));
 }
+
+void Telem::read()
+{
+	_hal->read_telem();
+}

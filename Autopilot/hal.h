@@ -18,6 +18,7 @@ public:
 
     // Telemetry
     virtual void transmit_telem(uint8_t tx_buff[], int len) = 0;
+    virtual bool read_telem() = 0;
 
     // Logger
     virtual void write_storage_buffer() = 0;
