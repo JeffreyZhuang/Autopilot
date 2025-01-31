@@ -2,8 +2,17 @@
 #define INC_DRIVERS_MLRS_TELEM_H_
 
 #include "stm32f4xx_hal.h"
+#include "cobs.h"
 #include <cstdio>
 #include <cstring>
+
+struct Waypoint_packet
+{
+	uint8_t payload_type;
+	uint8_t waypoint_index;
+	float waypoint[3];
+	uint8_t empty[24];
+};
 
 class Mlrs_telem
 {
@@ -16,8 +25,9 @@ public:
 private:
 	UART_HandleTypeDef* _uart;
 	uint8_t rx_buffer[1];
-	uint8_t complete_packet[40];
-	uint8_t working_packet[40];
+	static constexpr uint8_t packet_len = 40;
+	uint8_t complete_packet[packet_len];
+	uint8_t working_packet[packet_len];
 	uint8_t packet_index = 0;
 	bool new_packet = false;
 };

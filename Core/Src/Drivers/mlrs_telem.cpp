@@ -31,12 +31,31 @@ bool Mlrs_telem::read()
 	{
 		new_packet = false;
 
-		for (int i = 0; i < 40; i++)
+//		for (int i = 0; i < 40; i++)
+//		{
+//			printf("%c%c%c%c%c%c%c%c ", BYTE_TO_BINARY(complete_packet[i]));
+//		}
+//		printf("\n");
+
+		// Remove start byte
+		uint8_t packet_no_start_byte[packet_len - 1];
+		for (int i = 0; i < packet_len - 1; i++)
 		{
-			printf("%c%c%c%c%c%c%c%c ", BYTE_TO_BINARY(complete_packet[i]));
+			packet_no_start_byte[i] = complete_packet[i + 1];
 		}
 
+		uint8_t payload[packet_len - 2]; // Subtract two since removed start byte and COBS byte
+		cobs_decode_result decode_result = cobs_decode(payload, packet_len - 2, packet_no_start_byte, packet_len - 1);
+
+		for (int i = 0; i < packet_len - 2; i++)
+		{
+			printf("%c%c%c%c%c%c%c%c ", BYTE_TO_BINARY(payload[i]));
+		}
 		printf("\n");
+
+		Waypoint_packet waypoint_packet;
+		memcpy(&waypoint_packet, payload, sizeof(Waypoint_packet));
+		printf("%f %f %f\n", waypoint_packet.waypoint[0], waypoint_packet.waypoint[1], waypoint_packet.waypoint[2]);
 
 		return true;
 	}
