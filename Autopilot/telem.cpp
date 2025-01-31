@@ -18,7 +18,7 @@ void Telem::transmit()
 	packet.spd = _plane->nav_airspeed;
 	packet.lat = _plane->gnss_lat;
 	packet.lon = _plane->gnss_lon;
-	packet.sw = _plane->rc_switch;
+	packet.sw = _plane->manual_sw;
 
 	uint8_t tx_buff[sizeof(Telem_packet)];
 	memcpy(tx_buff, &packet, sizeof(Telem_packet));

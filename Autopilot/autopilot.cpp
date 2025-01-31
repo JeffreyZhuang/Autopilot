@@ -34,7 +34,7 @@ void Autopilot::main_task()
 
 	_guidance.update();
 
-	if (_plane->rc_switch)
+	if (_plane->manual_sw)
 	{
 		evaluate_auto_mode();
 	}
