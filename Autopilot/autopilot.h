@@ -35,6 +35,7 @@ private:
     // States
     void takeoff();
     void mission();
+    void land();
 
     void evaluate_auto_mode();
     void evaluate_manual_mode();
