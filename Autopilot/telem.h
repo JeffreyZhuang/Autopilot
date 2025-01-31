@@ -11,6 +11,13 @@
 #include <cstring>
 #include "hal.h"
 
+struct Transport_protocol_layer
+{
+	uint8_t start_byte = 0x00;
+	uint8_t cobs;
+	uint8_t payload[38];
+};
+
 struct Telem_packet
 {
 	float roll;

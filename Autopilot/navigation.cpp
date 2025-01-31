@@ -72,8 +72,6 @@ void Navigation::execute_initialization()
 
 	if (check_new_gnss_data())
 	{
-		printf("Sats: %d\n", _plane->gnss_sats);
-
 		// Check if GNSS is locked
 		if (_plane->gnss_sats > 5 && _plane->gnss_lat > 0)
 		{
@@ -81,13 +79,9 @@ void Navigation::execute_initialization()
 			_plane->gnss_center_lat = _plane->gnss_lat;
 			_plane->gnss_center_lon = _plane->gnss_lon;
 
-			printf("Center: %f %f\n", _plane->gnss_center_lat, _plane->gnss_center_lon);
-
 			navigationState = NavigationState::LIVE;
 		}
 	}
-
-
 }
 
 void Navigation::execute_live()
