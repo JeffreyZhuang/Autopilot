@@ -15,6 +15,8 @@ public:
 private:
 	UART_HandleTypeDef* _uart;
 	uint8_t rx_buffer[1];
+	uint8_t packet[40];
+	uint8_t packet_index = 0;
 };
 
 #endif /* INC_DRIVERS_MLRS_TELEM_H_ */

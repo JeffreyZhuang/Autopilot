@@ -28,8 +28,8 @@ private:
 	HAL* _hal;
 	Plane*_plane;
 
-	static constexpr int num_waypoints = 3;
-	Waypoint waypoints[num_waypoints];
+	uint8_t num_waypoints;
+	Waypoint waypoints[MAX_NUM_WPTS];
 };
 
 #endif /* GUIDANCE_H_ */

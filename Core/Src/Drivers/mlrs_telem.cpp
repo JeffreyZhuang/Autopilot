@@ -29,5 +29,8 @@ void Mlrs_telem::dma_complete()
 {
 	printf("%c%c%c%c%c%c%c%c\n", BYTE_TO_BINARY(rx_buffer[0]));
 
+	packet[packet_index] = rx_buffer[0];
+	packet_index = 0;
+
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
 }
