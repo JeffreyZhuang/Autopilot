@@ -18,6 +18,12 @@ enum class AutoMode
 	LAND
 };
 
+struct Waypoint {
+	float n;
+	float e;
+	float d;
+};
+
 /**
  * @brief All flight data and settings that get passed to classes
  */
@@ -94,6 +100,8 @@ struct Plane
     uint64_t nav_timestamp;
 
     // Guidance
+    uint8_t num_waypoints;
+	Waypoint waypoints[MAX_NUM_WPTS];
     float guidance_n_setpoint = 0;
     float guidance_e_setpoint = 0;
     float guidance_d_setpoint = 0;

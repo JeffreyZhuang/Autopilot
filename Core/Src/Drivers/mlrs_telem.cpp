@@ -25,7 +25,7 @@ void Mlrs_telem::transmit(uint8_t tx_buff[], int len)
 	HAL_UART_Transmit(_uart, tx_buff, len, 1000);
 }
 
-void Mlrs_telem::read()
+bool Mlrs_telem::read()
 {
 	if (new_packet)
 	{
@@ -37,7 +37,11 @@ void Mlrs_telem::read()
 		}
 
 		printf("\n");
+
+		return true;
 	}
+
+	return false;
 }
 
 void Mlrs_telem::dma_complete()

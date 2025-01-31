@@ -27,5 +27,8 @@ void Telem::transmit()
 
 void Telem::read()
 {
-	_hal->read_telem();
+	if (_hal->read_telem())
+	{
+
+	}
 }

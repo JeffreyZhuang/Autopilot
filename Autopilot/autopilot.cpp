@@ -28,6 +28,7 @@ void Autopilot::main_task()
 	update_time();
 
 	_hal->read_sensors();
+	_telem.read();
 
 	_ahrs.update();
 	_navigation.execute();

@@ -11,12 +11,6 @@
 #include "hal.h"
 #include <math.h>
 
-struct Waypoint {
-	float n;
-	float e;
-	float d;
-};
-
 class Guidance
 {
 public:
@@ -27,9 +21,6 @@ public:
 private:
 	HAL* _hal;
 	Plane*_plane;
-
-	uint8_t num_waypoints;
-	Waypoint waypoints[MAX_NUM_WPTS];
 };
 
 #endif /* GUIDANCE_H_ */

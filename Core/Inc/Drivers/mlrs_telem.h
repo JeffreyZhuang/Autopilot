@@ -12,7 +12,7 @@ public:
 	void setup();
 	void transmit(uint8_t tx_buff[], int len);
 	void dma_complete();
-	void read();
+	bool read();
 private:
 	UART_HandleTypeDef* _uart;
 	uint8_t rx_buffer[1];

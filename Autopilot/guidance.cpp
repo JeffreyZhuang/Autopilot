@@ -9,17 +9,17 @@ Guidance::Guidance(HAL* hal, Plane* plane)
 // Load waypoints
 void Guidance::init()
 {
-	num_waypoints = 3;
-	waypoints[0] = (Waypoint){300, 500, -80};
-	waypoints[1] = (Waypoint){-100, 800, -100};
-	waypoints[2] = (Waypoint){-600, 800, -80};
+	_plane->num_waypoints = 3;
+	_plane->waypoints[0] = (Waypoint){300, 500, -80};
+	_plane->waypoints[1] = (Waypoint){-100, 800, -100};
+	_plane->waypoints[2] = (Waypoint){-600, 800, -80};
 }
 
 // Generate position and altitude setpoint
 // Detect when setpoint reached and switch to next setpoint
 void Guidance::update()
 {
-	Waypoint current_wp = waypoints[_plane->waypoint_index];
+	Waypoint current_wp = _plane->waypoints[_plane->waypoint_index];
 	_plane->guidance_n_setpoint = current_wp.n;
 	_plane->guidance_e_setpoint = current_wp.e;
 	_plane->guidance_d_setpoint = current_wp.d;
@@ -33,7 +33,7 @@ void Guidance::update()
 		_plane->waypoint_index++;
 	}
 
-	if (_plane->waypoint_index == num_waypoints)
+	if (_plane->waypoint_index == _plane->num_waypoints)
 	{
 		_plane->waypoint_index = 0;
 	}
