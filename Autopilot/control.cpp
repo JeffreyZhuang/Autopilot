@@ -60,10 +60,16 @@ void Control::update_mission()
 	float err_north = _plane->guidance_n_setpoint - _plane->nav_pos_north;
 	float err_east = _plane->guidance_e_setpoint - _plane->nav_pos_east;
 	float heading_setpoint = atan2f(err_east, err_north) * 180.0f / M_PI;
-//	if (heading_setpoint < 0)
-//	{
-//		heading_setpoint += 360.0f;
-//	}
+
+	// Normalize the heading to the range 0-180 degrees
+	if (heading_setpoint < 0)
+	{
+		heading_setpoint += 360.0f; // Ensure positive heading
+	}
+	if (heading_setpoint > 180.0f)
+	{
+		heading_setpoint -= 360.0; // Ensure the heading is in the 0-180 degree range
+	}
 
 	// Calculate roll and pitch setpoints to reach waypoint
 	float yaw = _plane->ahrs_yaw;
@@ -71,6 +77,7 @@ void Control::update_mission()
 	{
 		yaw -= 360.0f; // Convert heading from 0-360 to -180-180
 	}
+	printf("Yaw, Hdg Setpoint: %.0f %.0f\n", yaw, heading_setpoint);
 	float roll_setpoint = hdg_controller.get_output(yaw, heading_setpoint, _dt / 1000000); // Convert range from (0, 360) to (-180, 180)
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt / 1000000);
 
