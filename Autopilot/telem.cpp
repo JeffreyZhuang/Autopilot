@@ -27,12 +27,14 @@ void Telem::transmit()
 
 	// Add start byte to packet
 	uint8_t packet[packet_len];
-	packet[0] = 0x00; // Start byte
+	packet[0] = 0; // Start byte
 	for (int i = 1; i < packet_len; i++)
 	{
 		packet[i] = packet_no_start_byte[i - 1];
 	}
 
+//	uint8_t test[] = {0};
+//	_hal->transmit_telem(test, 1);
 	_hal->transmit_telem(packet, packet_len);
 }
 
