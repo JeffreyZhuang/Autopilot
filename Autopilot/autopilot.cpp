@@ -28,7 +28,6 @@ void Autopilot::main_task()
 	update_time();
 
 	_hal->read_sensors();
-	_telem.read();
 
 	_ahrs.update();
 	_navigation.execute();
@@ -46,7 +45,7 @@ void Autopilot::main_task()
 
 	_hal->write_storage_buffer();
 
-	_telem.transmit();
+	_telem.update();
 }
 
 void Autopilot::logger_task()

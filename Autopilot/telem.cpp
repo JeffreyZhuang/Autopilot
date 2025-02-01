@@ -33,15 +33,24 @@ void Telem::transmit()
 		packet[i] = packet_no_start_byte[i - 1];
 	}
 
-//	uint8_t test[] = {0};
-//	_hal->transmit_telem(test, 1);
 	_hal->transmit_telem(packet, packet_len);
 }
 
-void Telem::read()
+void Telem::acknowledgement()
 {
+
+}
+
+void Telem::update()
+{
+	// If new recieved packet, send acknowledgement
+	// Else send telemetry packet
 	if (_hal->read_telem())
 	{
-
+		acknowledgement();
+	}
+	else
+	{
+		transmit();
 	}
 }

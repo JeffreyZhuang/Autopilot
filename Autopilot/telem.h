@@ -29,12 +29,13 @@ class Telem
 {
 public:
 	Telem(HAL* hal, Plane* plane);
-	void transmit();
-	void read();
+	void update();
 private:
 	HAL* _hal;
 	Plane* _plane;
 	static constexpr uint8_t packet_len = 40;
+	void transmit();
+	void acknowledgement();
 };
 
 #endif /* TELEM_H_ */
