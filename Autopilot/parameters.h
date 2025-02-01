@@ -37,4 +37,7 @@ constexpr float LAUN_MOT_DEL = 2; // Delay from launch detection to motor spin u
 constexpr float MIN_DIST_WP = 100; // Distance in meters from waypoint until switching to next, "radius of acceptance"
 constexpr uint8_t MAX_NUM_WPTS = 100; // Maximum number of waypoints
 
+// Radio
+constexpr uint8_t TELEM_PKT_LEN = 40;
+
 #endif /* PARAMETERS_H_ */

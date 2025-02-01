@@ -112,6 +112,9 @@ struct Plane
     float rc_elevator = 0;
     float rc_throttle = 0;
     bool manual_sw;
+
+    // Telemetry
+    uint8_t latest_packet[TELEM_PKT_LEN];
 };
 
 #endif /* PLANE_H_ */

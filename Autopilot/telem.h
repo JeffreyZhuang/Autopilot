@@ -25,6 +25,22 @@ struct __attribute__((packed))Telem_payload
 	uint8_t empty[9];
 };
 
+// 28 bytes, but padding will align to nearest 4 bytes so it will be 30 bytes, so you have to remove padding
+struct __attribute__((packed))Waypoint_payload
+{
+	uint8_t payload_type;
+	uint8_t waypoint_index;
+	float waypoint[3];
+	uint8_t empty[24];
+};
+
+struct __attribute__((packed))Command_payload
+{
+	uint8_t payload_type;
+	uint8_t command;
+	uint8_t empty[36];
+};
+
 class Telem
 {
 public:
@@ -33,8 +49,8 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
-	static constexpr uint8_t packet_len = 40;
 	void transmit();
+	void parse_telemetry();
 	void acknowledgement();
 };
 
