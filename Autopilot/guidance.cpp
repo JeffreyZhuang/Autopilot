@@ -6,13 +6,9 @@ Guidance::Guidance(HAL* hal, Plane* plane)
 	_plane = plane;
 }
 
-// Load waypoints
 void Guidance::init()
 {
-	_plane->num_waypoints = 3;
-	_plane->waypoints[0] = (Waypoint){300, 500, -80};
-	_plane->waypoints[1] = (Waypoint){-100, 800, -100};
-	_plane->waypoints[2] = (Waypoint){-600, 800, -80};
+
 }
 
 // Generate position and altitude setpoint
