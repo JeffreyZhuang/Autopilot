@@ -51,7 +51,7 @@ float PID::clamp(float n, float min, float max)
     return n;
 }
 
-float normalize_angle(float angle) {
+float PID::normalize_angle(float angle) {
     while (angle >= 180.0) {
         angle -= 360.0f;
     }
