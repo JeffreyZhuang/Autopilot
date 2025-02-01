@@ -11,12 +11,14 @@
 class PID
 {
 public:
-    PID(float kP, float kI, float kD, float integral_limit, float output_min, float output_max);
+	// normalize_180 is special for heading PID where it finds nearest path by normalizing angle to [-180, 180) degrees
+    PID(float kP, float kI, float kD, float integral_limit, float output_min, float output_max, bool normalize_180);
 
     float get_output(float state, float setpoint, float dt);
     float get_integral();
 private:
     float clamp(float n, float min, float max);
+    float normalize_angle(float angle);
 
     float _kP;
     float _kI;
@@ -26,6 +28,7 @@ private:
     float _prev_error = 0;
     float _output_max;
     float _output_min;
+    bool _normalize_180;
 };
 
 #endif /* PID_H_ */

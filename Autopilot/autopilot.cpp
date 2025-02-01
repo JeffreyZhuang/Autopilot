@@ -32,7 +32,7 @@ void Autopilot::main_task()
 	_ahrs.update();
 	_navigation.execute();
 
-	_guidance.update();
+	_guidance.update(); // Should I only have guidance for auto mode? Its nice to fly manually with flight director though, also fly some of it manually and the rest auto
 
 	if (_plane->manual_sw)
 	{

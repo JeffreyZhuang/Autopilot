@@ -3,11 +3,11 @@
 #include <cstdio> // For testing, remove later
 
 // Use PI controller for pitch and roll, then your integral term is the servo misalignment
-Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 0, 0, -1, 1),
-											 	 	   pitch_controller(0.04, 0, 0, 0, -1, 1),
-													   hdg_controller(1, 0, 0, 0, -ROLL_LIM_DEG, ROLL_LIM_DEG),
-													   alt_controller(1, 0, 0, 0, PTCH_LIM_MIN_DEG, PTCH_LIM_MAX_DEG),
-													   speed_controller(0.05, 0.01, 0, 0.3 / 0.01, -1, 1)
+Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 0, 0, -1, 1, false),
+											 	 	   pitch_controller(0.04, 0, 0, 0, -1, 1, false),
+													   hdg_controller(1, 0, 0, 0, -ROLL_LIM_DEG, ROLL_LIM_DEG, true),
+													   alt_controller(1, 0, 0, 0, PTCH_LIM_MIN_DEG, PTCH_LIM_MAX_DEG, false),
+													   speed_controller(0.05, 0.01, 0, 0.3 / 0.01, -1, 1, false)
 {
 	_hal = hal;
 	_plane = plane;
@@ -60,25 +60,14 @@ void Control::update_mission()
 	float err_north = _plane->guidance_n_setpoint - _plane->nav_pos_north;
 	float err_east = _plane->guidance_e_setpoint - _plane->nav_pos_east;
 	float heading_setpoint = atan2f(err_east, err_north) * 180.0f / M_PI;
-
-	// Normalize the heading to the range 0-180 degrees
-	if (heading_setpoint < 0)
-	{
-		heading_setpoint += 360.0f; // Ensure positive heading
-	}
-	if (heading_setpoint > 180.0f)
-	{
-		heading_setpoint -= 360.0; // Ensure the heading is in the 0-180 degree range
+	// Normalize heading setpoint to [0, 360)
+	if (heading_setpoint < 0) {
+	    heading_setpoint += 360.0;
 	}
 
 	// Calculate roll and pitch setpoints to reach waypoint
-	float yaw = _plane->ahrs_yaw;
-	if (yaw > 180.0f)
-	{
-		yaw -= 360.0f; // Convert heading from 0-360 to -180-180
-	}
-	printf("Yaw, Hdg Setpoint: %.0f %.0f\n", yaw, heading_setpoint);
-	float roll_setpoint = hdg_controller.get_output(yaw, heading_setpoint, _dt / 1000000); // Convert range from (0, 360) to (-180, 180)
+	printf("Hdg Setpoint: %.0f\n", heading_setpoint);
+	float roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, heading_setpoint, _dt / 1000000); // Convert range from (0, 360) to (-180, 180)
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt / 1000000);
 
 	// Calculate control outputs to track roll and pitch setpoints
