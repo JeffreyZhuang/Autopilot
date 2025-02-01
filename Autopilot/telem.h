@@ -10,16 +10,11 @@
 
 #include <cstring>
 #include "hal.h"
+#include "cobs.h"
 
-struct Transport_protocol_layer
+struct __attribute__((packed))Telem_payload
 {
-	uint8_t start_byte = 0x00;
-	uint8_t cobs;
-	uint8_t payload[38];
-};
-
-struct Telem_packet
-{
+	uint8_t payload_type = 0;
 	float roll;
 	float pitch;
 	float yaw;
@@ -27,8 +22,7 @@ struct Telem_packet
 	float spd;
 	float lat;
 	float lon;
-	bool sw;
-	uint8_t footer = '\n';
+	uint8_t empty[9];
 };
 
 class Telem
@@ -40,6 +34,7 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
+	static constexpr uint8_t packet_len = 40;
 };
 
 #endif /* TELEM_H_ */

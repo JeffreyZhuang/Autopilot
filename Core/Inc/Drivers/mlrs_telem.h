@@ -6,13 +6,13 @@
 #include <cstdio>
 #include <cstring>
 
+// 28 bytes, but padding will align to nearest 4 bytes so it will be 30 bytes, so you have to remove padding
 struct __attribute__((packed))Waypoint_packet
 {
 	uint8_t payload_type;
 	uint8_t waypoint_index;
 	float waypoint[3];
 	uint8_t empty[24];
-//	uint8_t padding[2]; // 4 byte padding
 };
 
 class Mlrs_telem

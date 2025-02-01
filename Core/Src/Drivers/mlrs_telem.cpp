@@ -27,6 +27,12 @@ void Mlrs_telem::transmit(uint8_t tx_buff[], int len)
 
 bool Mlrs_telem::read()
 {
+	// If new recieved packet, send acknowledgement
+	// Else send telemetry packet
+
+
+	// First finish code to send COBS so GCS has code to recv
+
 	if (new_packet)
 	{
 		new_packet = false;
