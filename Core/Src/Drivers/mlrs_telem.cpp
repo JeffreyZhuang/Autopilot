@@ -53,7 +53,11 @@ bool Mlrs_telem::read()
 		}
 		printf("\n");
 
-		if (payload[0] == 2)
+		if (payload[0] == 1) // Command payload
+		{
+
+		}
+		else if (payload[0] == 2) // Waypoint payload
 		{
 			Waypoint_packet waypoint_packet;
 			memcpy(&waypoint_packet, payload, sizeof(Waypoint_packet));

@@ -15,6 +15,13 @@ struct __attribute__((packed))Waypoint_packet
 	uint8_t empty[24];
 };
 
+struct __attribute__((packed))Command_payload
+{
+	uint8_t payload_type;
+	uint8_t command;
+	uint8_t empty[36];
+};
+
 class Mlrs_telem
 {
 public:
