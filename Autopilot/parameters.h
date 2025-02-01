@@ -9,7 +9,7 @@
 #define PARAMETERS_H_
 
 // Airspeed
-constexpr float AIRSPEED_CRUISE = 18; // Meters per second
+constexpr float AIRSPEED_CRUISE = 15; // Meters per second
 
 // Throttle
 constexpr float TRIM_THROTTLE = 0.3; // Steady-state cruise throttle
@@ -19,7 +19,7 @@ constexpr float THR_MAX = 1; // Minimum throttle between 0 and 1
 // Attitude
 constexpr float PTCH_LIM_MAX_DEG = 10;
 constexpr float PTCH_LIM_MIN_DEG = -10;
-constexpr float ROLL_LIM_DEG = 15; // Maximum roll angle in either direction
+constexpr float ROLL_LIM_DEG = 20; // Maximum roll angle in either direction
 constexpr bool RUDDER_ONLY = true;
 
 // Takeoff
