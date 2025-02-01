@@ -6,11 +6,6 @@
 #include "hal.h"
 #include <stdio.h>
 
-enum class AHRS_state {
-    INIT,
-    LIVE
-};
-
 /**
  * @brief Attitude Heading Reference System
  *
@@ -20,21 +15,20 @@ class AHRS
 public:
     AHRS(HAL* hal, Plane* plane, float dt);
     void setup();
+    void set_state();
     void update();
 private:
     void update_imu();
     void update_imu_mag();
-    void upload_results();
+    void publish_ahrs();
     bool check_new_imu_data();
     bool check_new_compass_data();
     void apply_compass_calibration();
 
     Plane* _plane;
     HAL* _hal;
-
-    AHRS_state ahrs_state = AHRS_state::INIT;
-
     Madgwick filter;
+
     float _dt;
     uint64_t last_imu_timestamp;
     uint64_t last_compass_timestamp;

@@ -1,11 +1,5 @@
 #include <ahrs.h>
 
-/**
- * @brief Construct a new AHRS::AHRS object
- *
- * @param plane
- * @param hal
- */
 AHRS::AHRS(HAL* hal, Plane* plane, float dt)
 {
     _plane = plane;
@@ -13,49 +7,32 @@ AHRS::AHRS(HAL* hal, Plane* plane, float dt)
     _dt = dt;
 }
 
-/**
- * @brief Setup AHRS
- */
 void AHRS::setup()
 {
 	filter.begin(1.0f / _dt);
-	filter.set_gain(4.0); // Converge faster
+	filter.set_gain(0.1);
 }
 
-/**
- * @brief Check if new IMU data is available
- *
- * @return true
- * @return false
- */
+void AHRS::set_state()
+{
+
+}
+
 bool AHRS::check_new_imu_data()
 {
     return _plane->imu_timestamp != last_imu_timestamp;
 }
 
-/**
- * @brief Check if new compass data is available
- *
- * @return true
- * @return false
- */
 bool AHRS::check_new_compass_data()
 {
     return _plane->compass_timestamp != last_compass_timestamp;
 }
 
-/**
- * @brief Apply compass calibration
- *
- */
 void AHRS::apply_compass_calibration()
 {
 
 }
 
-/**
- * @brief Update AHRS
- */
 void AHRS::update()
 {
 	if (check_new_imu_data())
@@ -68,36 +45,18 @@ void AHRS::update()
 		{
 			update_imu();
 		}
-	}
 
-	if (ahrs_state == AHRS_state::INIT)
-	{
-		if (_hal->get_time_us() > 10000000)
-		{
-			filter.set_gain(0.1);
-
-			ahrs_state = AHRS_state::LIVE;
-		}
+		publish_ahrs();
 	}
 }
 
-/**
- * @brief Update filter with only IMU
- *
- */
 void AHRS::update_imu()
 {
 	filter.updateIMU(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
 	                 -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az);
 	last_imu_timestamp = _plane->imu_timestamp;
-
-    upload_results();
 }
 
-/**
- * @brief Update filter with both IMU and compass
- *
- */
 void AHRS::update_imu_mag()
 {
 	filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
@@ -105,15 +64,9 @@ void AHRS::update_imu_mag()
 				  -_plane->compass_mx, -_plane->compass_my, -_plane->compass_mz);
 	last_imu_timestamp = _plane->imu_timestamp;
 	last_compass_timestamp = _plane->compass_timestamp;
-
-    upload_results();
 }
 
-/**
- * @brief Retrieve orientation from filter and insert it into plane struct
- *
- */
-void AHRS::upload_results()
+void AHRS::publish_ahrs()
 {
 	_plane->ahrs_roll = filter.getRoll();
 	_plane->ahrs_pitch = filter.getPitch();
