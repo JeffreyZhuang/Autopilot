@@ -54,7 +54,6 @@ private:
     // Helper functions
     void update_time();
     void init_state();
-    void set_ahrs_initial();
 
     // Scheduler
     void main_task();

@@ -15,7 +15,7 @@ class AHRS
 public:
     AHRS(HAL* hal, Plane* plane, float dt);
     void setup();
-    void set_state(float q0, float q1, float q2, float q3);
+    void set_initial_state();
     void update();
 private:
     void update_imu();

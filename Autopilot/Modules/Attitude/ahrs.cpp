@@ -13,9 +13,53 @@ void AHRS::setup()
 	filter.set_gain(0.1);
 }
 
-void AHRS::set_state(float q0, float q1, float q2, float q3)
+void AHRS::set_initial_state()
 {
-	filter.set_state(q0, q1, q2, q3);
+	// Get heading from mag and roll, pitch from accel, convert to quaternion and put in here
+	float q0, q1, q2, q3;
+	float ax = -_plane->imu_ax;
+	float ay = -_plane->imu_ay;
+	float az = -_plane->imu_az;
+	float mx = -_plane->compass_mx;
+	float my = -_plane->compass_my;
+	float mz = -_plane->compass_mz;
+
+	float roll_initial = atan2f(ay, az);
+	float pitch_initial = atan2f(-ax, sqrtf(powf(ay, 2) + powf(az, 2)));
+	float yaw_initial = 0;
+	float norm = sqrtf(powf(mx, 2) + powf(my, 2) + powf(mz, 2));
+	if (norm == 0)
+	{
+		q0 = 1.0f;
+		q1 = 0.0f;
+		q2 = 0.0f;
+		q3 = 0.0f;
+	}
+	else
+	{
+		mx /= norm;
+		my /= norm;
+		mz /= norm;
+
+		mx = mx * cosf(pitch_initial) + mz * sinf(pitch_initial);
+		my = mx * sinf(roll_initial) * sin(pitch_initial) + my * cos(roll_initial) - mz * sinf(roll_initial) * cosf(pitch_initial);
+		yaw_initial = atan2f(-my, mx);
+
+		float cy = cosf(yaw_initial * 0.5f);
+		float sy = sinf(yaw_initial * 0.5f);
+		float cp = cosf(pitch_initial * 0.5f);
+		float sp = sinf(pitch_initial * 0.5f);
+		float cr = cosf(roll_initial * 0.5f);
+		float sr = sinf(roll_initial * 0.5f);
+
+		q0 = cr * cp * cy + sr * sp * sy;
+		q1 = sr * cp * cy - cr * sp * sy;
+		q2 = cr * sp * cy + sr * cp * sy;
+		q3 = cr * cp * sy - sr * sp * cy;
+	}
+
+	_ahrs.set_state(q0, q1, q2, q3); // Set initial state
+	_ahrs.update();
 }
 
 bool AHRS::check_new_imu_data()
