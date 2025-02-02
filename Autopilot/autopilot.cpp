@@ -48,6 +48,8 @@ void Autopilot::logger_task()
  */
 void Autopilot::evaluate_system_mode()
 {
+	_plane->mode_id = static_cast<uint8_t>(_plane->systemMode);
+
 	switch (_plane->systemMode)
 	{
 	case SystemMode::BOOT:
@@ -57,8 +59,6 @@ void Autopilot::evaluate_system_mode()
 		flight();
 		break;
 	}
-
-	_plane->mode_id = static_cast<uint8_t>(_plane->systemMode);
 }
 
 void Autopilot::boot()
@@ -105,6 +105,8 @@ void Autopilot::flight()
  */
 void Autopilot::evaluate_auto_mode()
 {
+	_plane->mode_id = static_cast<uint8_t>(_plane->autoMode);
+
 	switch (_plane->autoMode)
 	{
 	case AutoMode::READY:
@@ -126,8 +128,6 @@ void Autopilot::evaluate_auto_mode()
 		safe();
 		break;
 	}
-
-	_plane->mode_id = static_cast<uint8_t>(_plane->autoMode);
 }
 
 void Autopilot::ready()
@@ -188,6 +188,8 @@ void Autopilot::safe()
  */
 void Autopilot::evaluate_manual_mode()
 {
+	_plane->mode_id = static_cast<uint8_t>(_plane->manualMode);
+
 	switch (_plane->manualMode)
 	{
 	case ManualMode::MANUAL:
@@ -197,8 +199,6 @@ void Autopilot::evaluate_manual_mode()
 		_control.update_stabilized();
 		break;
 	}
-
-	_plane->mode_id = static_cast<uint8_t>(_plane->manualMode);
 }
 
 /**
