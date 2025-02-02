@@ -27,9 +27,9 @@ private:
     uint64_t last_gnss_timestamp;
     uint64_t last_baro_timestamp;
 
-    float gnss_n; // meters
-    float gnss_e;
-    float gnss_d;
+    float gnss_n = 0; // meters
+    float gnss_e = 0;
+    float gnss_d = 0;
 
     float g = 9.80665;
 

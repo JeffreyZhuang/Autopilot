@@ -60,6 +60,7 @@ void Autopilot::evaluate_system_mode()
 void Autopilot::boot()
 {
 	set_ahrs_initial();
+	_navigation.execute();
 
 	// Calibrate barometer
 	_plane->baro_offset = _plane->baro_alt;
@@ -104,6 +105,9 @@ void Autopilot::evaluate_auto_mode()
 {
 	switch (_plane->autoMode)
 	{
+	case AutoMode::READY:
+		_plane->autoMode = AutoMode::TAKEOFF;
+		break;
 	case AutoMode::TAKEOFF:
 		takeoff();
 		break;
@@ -112,6 +116,10 @@ void Autopilot::evaluate_auto_mode()
 		break;
 	case AutoMode::LAND:
 		land();
+		break;
+	case AutoMode::FLARE:
+		break;
+	case AutoMode::SAFE:
 		break;
 	}
 }
@@ -159,7 +167,7 @@ void Autopilot::init_state()
 {
 	_plane->systemMode = SystemMode::BOOT;
 	_plane->manualMode = ManualMode::MANUAL;
-	_plane->autoMode = AutoMode::TAKEOFF;
+	_plane->autoMode = AutoMode::READY;
 }
 
 void Autopilot::update_time()
@@ -174,10 +182,17 @@ void Autopilot::set_ahrs_initial()
 {
 	// Get heading from mag and roll, pitch from accel, convert to quaternion and put in here
 	float q0, q1, q2, q3;
-	float roll_initial = atan2f(_plane->imu_ay, _plane->imu_az);
-	float pitch_initial = atan2f(-_plane->imu_ax, sqrtf(powf(_plane->imu_ay, 2) + powf(_plane->imu_az, 2)));
+	float ax = -_plane->imu_ax;
+	float ay = -_plane->imu_ay;
+	float az = -_plane->imu_az;
+	float mx = -_plane->compass_mx;
+	float my = -_plane->compass_my;
+	float mz = -_plane->compass_mz;
+
+	float roll_initial = atan2f(ay, az);
+	float pitch_initial = atan2f(-ax, sqrtf(powf(ay, 2) + powf(az, 2)));
 	float yaw_initial = 0;
-	float norm = sqrtf(powf(_plane->compass_mx, 2) + powf(_plane->compass_my, 2) + powf(_plane->compass_mz, 2));
+	float norm = sqrtf(powf(mx, 2) + powf(my, 2) + powf(mz, 2));
 	if (norm == 0)
 	{
 		q0 = 1.0f;
@@ -187,18 +202,21 @@ void Autopilot::set_ahrs_initial()
 	}
 	else
 	{
-		float mx = _plane->compass_mx / norm;
-		float my = _plane->compass_my / norm;
-		float mz = _plane->compass_mz / norm;
+		mx /= norm;
+		my /= norm;
+		mz /= norm;
+
 		mx = mx * cosf(pitch_initial) + mz * sinf(pitch_initial);
 		my = mx * sinf(roll_initial) * sin(pitch_initial) + my * cos(roll_initial) - mz * sinf(roll_initial) * cosf(pitch_initial);
 		yaw_initial = atan2f(-my, mx);
+
 		float cy = cosf(yaw_initial * 0.5f);
 		float sy = sinf(yaw_initial * 0.5f);
 		float cp = cosf(pitch_initial * 0.5f);
 		float sp = sinf(pitch_initial * 0.5f);
 		float cr = cosf(roll_initial * 0.5f);
 		float sr = sinf(roll_initial * 0.5f);
+
 		q0 = cr * cp * cy + sr * sp * sy;
 		q1 = sr * cp * cy - cr * sp * sy;
 		q2 = cr * sp * cy + sr * cp * sy;
@@ -206,6 +224,5 @@ void Autopilot::set_ahrs_initial()
 	}
 
 	_ahrs.set_state(q0, q1, q2, q3); // Set initial state
-
-	printf("%.1f %.1f %.1f\n", roll_initial, pitch_initial, yaw_initial);
+	_ahrs.update();
 }

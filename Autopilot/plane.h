@@ -70,9 +70,9 @@ struct Plane
     uint64_t compass_timestamp;
 
     // Barometer
-    float baro_alt;
-    float baro_offset;
-    float baro_temp;
+    float baro_alt = 0;
+    float baro_offset = 0;
+    float baro_temp = 0;
     uint64_t baro_timestamp;
 
     // GNSS
