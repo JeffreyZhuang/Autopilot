@@ -39,8 +39,8 @@ void Guidance::update_mission()
 	// Calculate heading setpoint
 	_plane->guidance_hdg_setpoint = (trk_hdg + kP * xte) * 180.0f / M_PI;
 	if (_plane->guidance_hdg_setpoint < 0) {
-			_plane->guidance_hdg_setpoint += 360.0;
-		}
+		_plane->guidance_hdg_setpoint += 360.0;
+	}
 
 	float err_n = target_wp.n - _plane->nav_pos_north;
 	float err_e = target_wp.e - _plane->nav_pos_east;
