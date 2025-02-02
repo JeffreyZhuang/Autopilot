@@ -65,7 +65,7 @@ void Autopilot::boot()
 {
 	_ahrs.set_initial_state();
 
-	// Calibrate barometer
+	// Zero barometer
 	_plane->baro_offset = _plane->baro_alt;
 
 	// Set home position to first GPS fix
@@ -74,8 +74,9 @@ void Autopilot::boot()
 	{
 		_plane->gnss_center_lat = _plane->gnss_lat;
 		_plane->gnss_center_lon = _plane->gnss_lon;
+
+		_navigation.execute();
 	}
-	_navigation.execute();
 
 	bool transmitter_safe = (_plane->rc_throttle < THR_DEADZONE) && (_plane->manual_sw == false);
 
