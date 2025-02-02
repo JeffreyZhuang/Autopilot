@@ -9,6 +9,7 @@
 #define GUIDANCE_H_
 
 #include "hal.h"
+#include "utils.h"
 #include <math.h>
 
 class Guidance
