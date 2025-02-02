@@ -22,6 +22,7 @@ void Autopilot::setup()
 	_ahrs.setup();
 	_guidance.init();
 
+	// Start tasks
 	_hal->set_main_task(&Autopilot::static_main_task);
 	_hal->set_background_task(&Autopilot::static_logger_task);
 }
