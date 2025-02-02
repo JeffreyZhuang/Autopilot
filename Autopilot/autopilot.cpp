@@ -61,15 +61,16 @@ void Autopilot::boot()
 	_plane->baro_offset = _plane->baro_alt;
 
 	// Set home position to first GPS fix
-	bool check_gnss_lock = (_plane->gnss_sats > 5) && (fabs(_plane->gnss_lat) > 0) && (fabs(_plane->gnss_lat) > 0);
-	if (check_gnss_lock)
+	bool gnss_locked = (_plane->gnss_sats > 5) && (fabs(_plane->gnss_lat) > 0) && (fabs(_plane->gnss_lat) > 0);
+	if (gnss_locked)
 	{
-		// Use the first GPS fix as the center
 		_plane->gnss_center_lat = _plane->gnss_lat;
 		_plane->gnss_center_lon = _plane->gnss_lon;
 	}
 
-	if (false)
+	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == true);
+
+	if (gnss_locked && transmitter_safe)
 	{
 		_plane->systemMode = SystemMode::FLIGHT;
 	}
