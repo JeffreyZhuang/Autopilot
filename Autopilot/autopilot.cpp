@@ -83,7 +83,8 @@ void Autopilot::boot()
 		_navigation.execute();
 	}
 
-	bool transmitter_safe = (_plane->rc_throttle < THR_DEADZONE) && (_plane->manual_sw == false);
+//	bool transmitter_safe = (_plane->rc_throttle < THR_DEADZONE) && (_plane->manual_sw == false);
+	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false);
 
 	if (gnss_locked && transmitter_safe)
 	{

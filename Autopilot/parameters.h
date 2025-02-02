@@ -15,12 +15,12 @@ constexpr float AIRSPEED_CRUISE = 15; // Meters per second
 constexpr float TRIM_THROTTLE = 0.3; // Steady-state cruise throttle
 constexpr float THR_MIN = 0; // Maximum throttle between 0 and 1
 constexpr float THR_MAX = 1; // Minimum throttle between 0 and 1
-constexpr float THR_DEADZONE = 0.1; // When throttle is set below this value, it is set to 0. This is mandatory for transitioning from boot to flight.
+constexpr float THR_DEADZONE = 0; // When throttle is set below this value, it is set to 0. This is mandatory for transitioning from boot to flight.
 
 // Attitude
 constexpr float PTCH_LIM_MAX_DEG = 10;
 constexpr float PTCH_LIM_MIN_DEG = -10;
-constexpr float ROLL_LIM_DEG = 40; // Maximum roll angle in either direction
+constexpr float ROLL_LIM_DEG = 30; // Maximum roll angle in either direction
 constexpr bool RUDDER_ONLY = false;
 
 // Autoland
