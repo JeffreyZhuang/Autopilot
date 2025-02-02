@@ -132,6 +132,9 @@ void Autopilot::evaluate_auto_mode()
 
 void Autopilot::ready()
 {
+	// BUT THIS RUNS ON STARTUP, NOT ON SWITCH
+	// HAVE SINGLE ENUM. STILL THREE INSTANCES, EXCEPT YOU HAVE ONE MASTER INSTANCE THAT CHOOSES WHICH OF THE THREE TO RUN
+	// THEN YOU ONLY NEED SWITCH STATEMENT
 	_plane->autoMode = AutoMode::TAKEOFF;
 	takeoff_time = _plane->time;
 }
