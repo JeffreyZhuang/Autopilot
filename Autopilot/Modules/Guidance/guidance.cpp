@@ -24,14 +24,9 @@ void Guidance::update_mission()
 	float err_e = _plane->guidance_e_setpoint - _plane->nav_pos_east;
 	float dist_to_wp = sqrtf(powf(err_n, 2) + powf(err_e, 2));
 
-	if ((dist_to_wp < MIN_DIST_WP))
+	if ((dist_to_wp < MIN_DIST_WP) && (_plane->waypoint_index < _plane->num_waypoints - 1))
 	{
 		_plane->waypoint_index++;
-	}
-
-	if (_plane->waypoint_index == _plane->num_waypoints)
-	{
-		_plane->waypoint_index = 0;
 	}
 }
 

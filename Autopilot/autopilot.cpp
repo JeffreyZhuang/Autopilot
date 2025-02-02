@@ -57,6 +57,8 @@ void Autopilot::evaluate_system_mode()
 		flight();
 		break;
 	}
+
+	_plane->mode_id = static_cast<uint8_t>(_plane->systemMode);
 }
 
 void Autopilot::boot()
@@ -124,6 +126,8 @@ void Autopilot::evaluate_auto_mode()
 		safe();
 		break;
 	}
+
+	_plane->mode_id = static_cast<uint8_t>(_plane->autoMode);
 }
 
 void Autopilot::ready()
@@ -159,6 +163,8 @@ void Autopilot::mission()
 
 void Autopilot::land()
 {
+	_guidance.update_landing();
+
 	_control.update_land();
 
 	if (-_plane->nav_pos_down < LAND_FLARE_ALT)
@@ -191,6 +197,8 @@ void Autopilot::evaluate_manual_mode()
 		_control.update_stabilized();
 		break;
 	}
+
+	_plane->mode_id = static_cast<uint8_t>(_plane->manualMode);
 }
 
 /**

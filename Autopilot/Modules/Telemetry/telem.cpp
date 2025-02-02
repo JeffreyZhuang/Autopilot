@@ -18,6 +18,7 @@ void Telem::transmit()
 	payload.spd = _plane->nav_airspeed;
 	payload.lat = _plane->gnss_lat;
 	payload.lon = _plane->gnss_lon;
+	payload.mode_id = _plane->mode_id;
 
 	uint8_t payload_arr[sizeof(Telem_payload)];
 	memcpy(payload_arr, &payload, sizeof(Telem_payload));

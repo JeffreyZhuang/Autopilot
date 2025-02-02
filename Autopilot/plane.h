@@ -4,26 +4,31 @@
 #include <stdint.h>
 #include "parameters.h"
 
+/**
+ * The numbers indicate the Mode ID sent to GCS
+ * Make sure elements from all enums have different values
+ * Cross reference with documentation
+ */
 enum class SystemMode
 {
-	BOOT,
-	FLIGHT
+	BOOT = 0,
+	FLIGHT = 1,
 };
 
 enum class ManualMode
 {
-	MANUAL,
-	STABILIZED
+	MANUAL = 2,
+	STABILIZED = 3,
 };
 
 enum class AutoMode
 {
-	READY,
-	TAKEOFF,
-	MISSION,
-	LAND,
-	FLARE,
-	SAFE
+	READY = 4,
+	TAKEOFF = 5,
+	MISSION = 6,
+	LAND = 7,
+	FLARE = 8,
+	SAFE = 9
 };
 
 struct Waypoint {
@@ -124,6 +129,7 @@ struct Plane
 
     // Telemetry
     uint8_t latest_packet[TELEM_PKT_LEN];
+    uint8_t mode_id;
 };
 
 #endif /* PLANE_H_ */
