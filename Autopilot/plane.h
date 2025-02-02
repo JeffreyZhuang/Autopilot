@@ -76,12 +76,12 @@ struct Plane
     uint64_t baro_timestamp;
 
     // GNSS
-    float gnss_lat = 0;
-    float gnss_lon = 0;
+    double gnss_lat = 0;
+    double gnss_lon = 0;
     float gnss_asl = 0;
     uint8_t gnss_sats = 0;
-    float gnss_center_lat = 0;
-    float gnss_center_lon = 0;
+    double gnss_center_lat = 0;
+    double gnss_center_lon = 0;
     bool gnss_lock = false;
     uint64_t gnss_timestamp;
 

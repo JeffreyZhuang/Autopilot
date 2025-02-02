@@ -26,16 +26,19 @@ public:
 	void dma_complete();
 	bool parse(uint8_t sentence[]);
 
-	float lat = 0; // deg
-	float lon = 0;
-	int sats = 0;
+	double lat = 0; // deg
+	double lon = 0;
+	uint8_t sats = 0;
 private:
 	UART_HandleTypeDef* _uart;
+
 	uint8_t rx_buffer[1];
-	static constexpr int nmea_sentence_len = 100;
+
+	static constexpr uint8_t nmea_sentence_len = 100;
 	uint8_t nmea_sentence[nmea_sentence_len];
 	uint8_t complete_nmea_sentence[nmea_sentence_len];
-	int last_sentence_index = 0;
+	uint8_t last_sentence_index = 0;
+
 	bool new_data = false;
 };
 
