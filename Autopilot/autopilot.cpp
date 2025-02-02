@@ -72,7 +72,7 @@ void Autopilot::boot()
 		_plane->gnss_center_lon = _plane->gnss_lon;
 	}
 
-	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == true);
+	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false);
 
 	if (gnss_locked && transmitter_safe)
 	{
@@ -176,6 +176,7 @@ void Autopilot::set_ahrs_initial()
 	float q0, q1, q2, q3;
 	float roll_initial = atan2f(_plane->imu_ay, _plane->imu_az);
 	float pitch_initial = atan2f(-_plane->imu_ax, sqrtf(powf(_plane->imu_ay, 2) + powf(_plane->imu_az, 2)));
+	float yaw_initial = 0;
 	float norm = sqrtf(powf(_plane->compass_mx, 2) + powf(_plane->compass_my, 2) + powf(_plane->compass_mz, 2));
 	if (norm == 0)
 	{
@@ -184,21 +185,27 @@ void Autopilot::set_ahrs_initial()
 		q2 = 0.0f;
 		q3 = 0.0f;
 	}
-	float mx = _plane->compass_mx / norm;
-	float my = _plane->compass_my / norm;
-	float mz = _plane->compass_mz / norm;
-	mx = mx * cosf(pitch_initial) + mz * sinf(pitch_initial);
-	my = mx * sinf(roll_initial) * sin(pitch_initial) + my * cos(roll_initial) - mz * sinf(roll_initial) * cosf(pitch_initial);
-	float yaw_initial = atan2f(-my, mx);
-	float cy = cosf(yaw_initial * 0.5f);
-	float sy = sinf(yaw_initial * 0.5f);
-	float cp = cosf(pitch_initial * 0.5f);
-	float sp = sinf(pitch_initial * 0.5f);
-	float cr = cosf(roll_initial * 0.5f);
-	float sr = sinf(roll_initial * 0.5f);
-	q0 = cr * cp * cy + sr * sp * sy;
-	q1 = sr * cp * cy - cr * sp * sy;
-	q2 = cr * sp * cy + sr * cp * sy;
-	q3 = cr * cp * sy - sr * sp * cy;
+	else
+	{
+		float mx = _plane->compass_mx / norm;
+		float my = _plane->compass_my / norm;
+		float mz = _plane->compass_mz / norm;
+		mx = mx * cosf(pitch_initial) + mz * sinf(pitch_initial);
+		my = mx * sinf(roll_initial) * sin(pitch_initial) + my * cos(roll_initial) - mz * sinf(roll_initial) * cosf(pitch_initial);
+		yaw_initial = atan2f(-my, mx);
+		float cy = cosf(yaw_initial * 0.5f);
+		float sy = sinf(yaw_initial * 0.5f);
+		float cp = cosf(pitch_initial * 0.5f);
+		float sp = sinf(pitch_initial * 0.5f);
+		float cr = cosf(roll_initial * 0.5f);
+		float sr = sinf(roll_initial * 0.5f);
+		q0 = cr * cp * cy + sr * sp * sy;
+		q1 = sr * cp * cy - cr * sp * sy;
+		q2 = cr * sp * cy + sr * cp * sy;
+		q3 = cr * cp * sy - sr * sp * cy;
+	}
+
 	_ahrs.set_state(q0, q1, q2, q3); // Set initial state
+
+	printf("%.1f %.1f %.1f\n", roll_initial, pitch_initial, yaw_initial);
 }

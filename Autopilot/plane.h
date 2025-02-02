@@ -21,7 +21,9 @@ enum class AutoMode
 	READY,
 	TAKEOFF,
 	MISSION,
-	LAND
+	LAND,
+	FLARE,
+	SAFE
 };
 
 struct Waypoint {
