@@ -1,4 +1,4 @@
-#include <Modules/AHRS/ahrs.h>
+#include <Modules/Attitude/ahrs.h>
 
 AHRS::AHRS(HAL* hal, Plane* plane, float dt)
 {
