@@ -55,6 +55,20 @@ void Autopilot::evaluate_system_mode()
 
 void Autopilot::boot()
 {
+	_ahrs.set_state(); // Set initial state
+
+	// Calibrate barometer
+	_plane->baro_offset = _plane->baro_alt;
+
+	// Set home position to first GPS fix
+	bool check_gnss_lock = (_plane->gnss_sats > 5) && (fabs(_plane->gnss_lat) > 0) && (fabs(_plane->gnss_lat) > 0);
+	if (check_gnss_lock)
+	{
+		// Use the first GPS fix as the center
+		_plane->gnss_center_lat = _plane->gnss_lat;
+		_plane->gnss_center_lon = _plane->gnss_lon;
+	}
+
 	if (false)
 	{
 		_plane->systemMode = SystemMode::FLIGHT;

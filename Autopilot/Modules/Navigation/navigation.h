@@ -4,11 +4,6 @@
 #include "hal.h"
 #include "kalman.h"
 
-enum class NavigationState {
-    INITIALIZATION,
-    LIVE
-};
-
 static constexpr int n = 6;
 static constexpr int m = 3;
 
@@ -27,12 +22,6 @@ private:
     HAL* _hal;
     Plane* _plane;
     Kalman kalman;
-
-    NavigationState navigationState = NavigationState::INITIALIZATION;
-//    NavigationState navigationState = NavigationState::LIVE;
-
-    void execute_initialization();
-    void execute_live();
 
     uint64_t last_imu_timestamp;
     uint64_t last_gnss_timestamp;
@@ -55,8 +44,6 @@ private:
 	bool check_new_imu_data();
 	bool check_new_baro_data();
 	bool check_new_gnss_data();
-
-	bool check_gnss_lock();
 
 	void predict_imu();
 

@@ -15,7 +15,7 @@ void AHRS::setup()
 
 void AHRS::set_state()
 {
-
+	filter.set_state();
 }
 
 bool AHRS::check_new_imu_data()

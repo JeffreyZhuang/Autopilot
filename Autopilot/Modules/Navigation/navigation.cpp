@@ -50,47 +50,6 @@ Eigen::MatrixXf Navigation::get_q()
  */
 void Navigation::execute()
 {
-	if (navigationState == NavigationState::INITIALIZATION)
-	{
-		execute_initialization();
-	}
-	else if (navigationState == NavigationState::LIVE)
-	{
-		execute_live();
-	}
-}
-
-bool Navigation::check_gnss_lock()
-{
-	return (_plane->gnss_sats > 5) && (fabs(_plane->gnss_lat) > 0) && (fabs(_plane->gnss_lat) > 0);
-}
-
-// Calibrate sensors
-// Easier if I move this to the drivers... or maybe not because waiting for converging
-// Wait for converging especially AHRS heading
-void Navigation::execute_initialization()
-{
-	// Do this in autopilot instead of navigation?
-	if (check_new_baro_data())
-	{
-		_plane->baro_offset = _plane->baro_alt;
-	}
-
-	if (check_new_gnss_data())
-	{
-		if (check_gnss_lock())
-		{
-			// Use the first GPS fix as the center
-			_plane->gnss_center_lat = _plane->gnss_lat;
-			_plane->gnss_center_lon = _plane->gnss_lon;
-
-			navigationState = NavigationState::LIVE;
-		}
-	}
-}
-
-void Navigation::execute_live()
-{
 	if (check_new_imu_data()) {
 		predict_imu();
 	}
