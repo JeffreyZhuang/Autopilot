@@ -21,6 +21,11 @@ void Control::update_manual()
 	float elevator = _plane->rc_elevator;
 	float throttle = _plane->rc_throttle;
 
+	if (throttle < THR_DEADZONE)
+	{
+		throttle = 0;
+	}
+
 	_hal->set_elevator(elevator);
 	_hal->set_rudder(rudder);
 	_hal->set_throttle(throttle);

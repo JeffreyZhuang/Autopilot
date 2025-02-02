@@ -15,6 +15,7 @@ constexpr float AIRSPEED_CRUISE = 15; // Meters per second
 constexpr float TRIM_THROTTLE = 0.3; // Steady-state cruise throttle
 constexpr float THR_MIN = 0; // Maximum throttle between 0 and 1
 constexpr float THR_MAX = 1; // Minimum throttle between 0 and 1
+constexpr float THR_DEADZONE = 0.1;
 
 // Attitude
 constexpr float PTCH_LIM_MAX_DEG = 10;

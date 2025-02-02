@@ -98,7 +98,7 @@ private:
 	Mlrs_telem mlrs_telem;
 
 	// USB
-	Pitl_tx_packet pitl_tx_packet;
+	Pitl_tx_packet pitl_tx_packet{0, 0, 0};
 	Pitl_rx_packet* usb_buff1;
 	Pitl_rx_packet* usb_buff2;
 	bool buff1_active = true;
