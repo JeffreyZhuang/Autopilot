@@ -135,6 +135,8 @@ void Autopilot::ready()
 	// BUT THIS RUNS ON STARTUP, NOT ON SWITCH
 	// HAVE SINGLE ENUM. STILL THREE INSTANCES, EXCEPT YOU HAVE ONE MASTER INSTANCE THAT CHOOSES WHICH OF THE THREE TO RUN
 	// THEN YOU ONLY NEED ONE SWITCH STATEMENT
+	// Nevermind this is fine because ready never gets called
+	// What happens if you switch to manual, auto, manual, and then auto again? The motor will start accendentally>
 	_plane->autoMode = AutoMode::TAKEOFF;
 	takeoff_time = _plane->time;
 }

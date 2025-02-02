@@ -61,14 +61,7 @@ void Control::update_takeoff()
 // Use guidance altitude and position setpoint to calculate control commands
 void Control::update_mission()
 {
-	// Calculate direction to waypoint
-	float err_north = _plane->guidance_n_setpoint - _plane->nav_pos_north;
-	float err_east = _plane->guidance_e_setpoint - _plane->nav_pos_east;
-	float heading_setpoint = atan2f(err_east, err_north) * 180.0f / M_PI;
-	// Normalize heading setpoint to [0, 360)
-	if (heading_setpoint < 0) {
-	    heading_setpoint += 360.0;
-	}
+	float heading_setpoint = _plane->guidance_hdg_setpoint;
 
 	// Calculate roll and pitch setpoints to reach waypoint
 	printf("Hdg Setpoint: %.0f\n", heading_setpoint);
