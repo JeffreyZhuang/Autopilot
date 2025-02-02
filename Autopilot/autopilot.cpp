@@ -59,7 +59,7 @@ void Autopilot::evaluate_system_mode()
 
 void Autopilot::boot()
 {
-	_ahrs.set_state(); // Set initial state
+	set_ahrs_initial();
 
 	// Calibrate barometer
 	_plane->baro_offset = _plane->baro_alt;
@@ -168,4 +168,37 @@ void Autopilot::update_time()
 	_plane->loop_execution_time = time - _plane->time;
 	_plane->time = time;
 	_plane->loop_iteration++;
+}
+
+void Autopilot::set_ahrs_initial()
+{
+	// Get heading from mag and roll, pitch from accel, convert to quaternion and put in here
+	float q0, q1, q2, q3;
+	float roll_initial = atan2f(_plane->imu_ay, _plane->imu_az);
+	float pitch_initial = atan2f(-_plane->imu_ax, sqrtf(powf(_plane->imu_ay, 2) + powf(_plane->imu_az, 2)));
+	float norm = sqrtf(powf(_plane->compass_mx, 2) + powf(_plane->compass_my, 2) + powf(_plane->compass_mz, 2));
+	if (norm == 0)
+	{
+		q0 = 1.0f;
+		q1 = 0.0f;
+		q2 = 0.0f;
+		q3 = 0.0f;
+	}
+	float mx = _plane->compass_mx / norm;
+	float my = _plane->compass_my / norm;
+	float mz = _plane->compass_mz / norm;
+	mx = mx * cosf(pitch_initial) + mz * sinf(pitch_initial);
+	my = mx * sinf(roll_initial) * sin(pitch_initial) + my * cos(roll_initial) - mz * sinf(roll_initial) * cosf(pitch_initial);
+	float yaw_initial = atan2f(-my, mx);
+	float cy = cosf(yaw_initial * 0.5f);
+	float sy = sinf(yaw_initial * 0.5f);
+	float cp = cosf(pitch_initial * 0.5f);
+	float sp = sinf(pitch_initial * 0.5f);
+	float cr = cosf(roll_initial * 0.5f);
+	float sr = sinf(roll_initial * 0.5f);
+	q0 = cr * cp * cy + sr * sp * sy;
+	q1 = sr * cp * cy - cr * sp * sy;
+	q2 = cr * sp * cy + sr * cp * sy;
+	q3 = cr * cp * sy - sr * sp * cy;
+	_ahrs.set_state(q0, q1, q2, q3); // Set initial state
 }

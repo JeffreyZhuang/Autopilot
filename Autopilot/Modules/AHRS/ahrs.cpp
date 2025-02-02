@@ -13,9 +13,9 @@ void AHRS::setup()
 	filter.set_gain(0.1);
 }
 
-void AHRS::set_state()
+void AHRS::set_state(float q0, float q1, float q2, float q3)
 {
-	filter.set_state();
+	filter.set_state(q0, q1, q2, q3);
 }
 
 bool AHRS::check_new_imu_data()
@@ -30,7 +30,7 @@ bool AHRS::check_new_compass_data()
 
 void AHRS::apply_compass_calibration()
 {
-	filter.set_state();
+
 }
 
 void AHRS::update()
