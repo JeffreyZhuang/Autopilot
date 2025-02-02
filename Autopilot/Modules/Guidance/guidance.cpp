@@ -44,8 +44,6 @@ void Guidance::update_mission()
 		_plane->guidance_hdg_setpoint += 360.0;
 	}
 
-	printf("%.0f %.0f %.0f\n", _plane->guidance_hdg_setpoint, trk_hdg * 180.0f / M_PI, clamp(kP * (0 - xte), -90, 90));
-
 	// Calculate distance to waypoint to determine if waypoint reached
 	float err_n = target_wp.n - _plane->nav_pos_north;
 	float err_e = target_wp.e - _plane->nav_pos_east;

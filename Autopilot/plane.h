@@ -114,11 +114,11 @@ struct Plane
     uint64_t nav_timestamp;
 
     // Guidance
+    uint8_t waypoint_index = 0;
     uint8_t num_waypoints = 0;
 	Waypoint waypoints[MAX_NUM_WPTS];
     float guidance_hdg_setpoint = 0;
     float guidance_d_setpoint = 0;
-    uint8_t waypoint_index = 0;
 
     // RC
     float rc_rudder = 0;
