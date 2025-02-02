@@ -106,7 +106,7 @@ void Autopilot::evaluate_auto_mode()
 	switch (_plane->autoMode)
 	{
 	case AutoMode::READY:
-		_plane->autoMode = AutoMode::TAKEOFF;
+		ready();
 		break;
 	case AutoMode::TAKEOFF:
 		takeoff();
@@ -118,10 +118,17 @@ void Autopilot::evaluate_auto_mode()
 		land();
 		break;
 	case AutoMode::FLARE:
+		flare();
 		break;
 	case AutoMode::SAFE:
+		safe();
 		break;
 	}
+}
+
+void Autopilot::ready()
+{
+	_plane->autoMode = AutoMode::TAKEOFF;
 }
 
 void Autopilot::takeoff()
@@ -142,6 +149,16 @@ void Autopilot::mission()
 void Autopilot::land()
 {
 	_control.update_land();
+}
+
+void Autopilot::flare()
+{
+
+}
+
+void Autopilot::safe()
+{
+
 }
 
 /**

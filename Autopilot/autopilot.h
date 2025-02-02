@@ -39,9 +39,12 @@ private:
 
     // Auto mode
     void evaluate_auto_mode();
+    void ready();
     void takeoff();
     void mission();
     void land();
+    void flare();
+    void safe();
 
 	// Manual mode
     void evaluate_manual_mode();
