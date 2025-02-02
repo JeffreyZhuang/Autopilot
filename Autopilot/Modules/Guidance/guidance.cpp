@@ -36,7 +36,7 @@ void Guidance::update_mission()
 	float trk_hdg = atan2f(target_wp.e - prev_wp.e, target_wp.n - prev_wp.n);
 
 	// Calculate cross track error
-	float xte = cosf(trk_hdg) * (prev_wp.e - target_wp.e) - sinf(trk_hdg) * (prev_wp.e - target_wp.e);
+	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - target_wp.e) - sinf(trk_hdg) * (_plane->nav_pos_north - target_wp.n);
 
 	// Calculate heading setpoint
 	_plane->guidance_hdg_setpoint = trk_hdg * 180.0f / M_PI + clamp(kP * xte, -45, 45);
@@ -44,7 +44,7 @@ void Guidance::update_mission()
 		_plane->guidance_hdg_setpoint += 360.0;
 	}
 
-	printf("%.0f %.0f\n", trk_hdg * 180.0f / M_PI, clamp(kP * xte, -45, 45));
+	printf("%.0f %.0f %.0f\n", _plane->guidance_hdg_setpoint, trk_hdg * 180.0f / M_PI, clamp(kP * xte, -45, 45));
 
 	// Calculate distance to waypoint to determine if waypoint reached
 	float err_n = target_wp.n - _plane->nav_pos_north;
