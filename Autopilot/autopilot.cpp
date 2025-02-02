@@ -15,10 +15,13 @@ Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->main_dt),
 
 void Autopilot::setup()
 {
-	_hal->init();
 	init_state();
+
+	_hal->init();
+
 	_ahrs.setup();
 	_guidance.init();
+
 	_hal->set_main_task(&Autopilot::static_main_task);
 	_hal->set_background_task(&Autopilot::static_logger_task);
 }
