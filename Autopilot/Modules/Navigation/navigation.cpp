@@ -60,6 +60,11 @@ void Navigation::execute()
 	}
 }
 
+bool Navigation::check_gnss_lock()
+{
+	return (_plane->gnss_sats > 5) && (fabs(_plane->gnss_lat) > 0) && (fabs(_plane->gnss_lat) > 0);
+}
+
 // Calibrate sensors
 // Easier if I move this to the drivers... or maybe not because waiting for converging
 // Wait for converging especially AHRS heading
@@ -73,8 +78,7 @@ void Navigation::execute_initialization()
 
 	if (check_new_gnss_data())
 	{
-		// Check if GNSS is locked
-		if (_plane->gnss_sats > 5 && _plane->gnss_lat > 0) // Put this in the check_new_gnss_data() function
+		if (check_gnss_lock())
 		{
 			// Use the first GPS fix as the center
 			_plane->gnss_center_lat = _plane->gnss_lat;

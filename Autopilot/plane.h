@@ -4,6 +4,12 @@
 #include <stdint.h>
 #include "parameters.h"
 
+enum class SystemMode
+{
+	BOOT,
+	FLIGHT
+};
+
 enum class ManualMode
 {
 	MANUAL,
@@ -12,7 +18,7 @@ enum class ManualMode
 
 enum class AutoMode
 {
-	TAKEOFF_DETECT, // Change to ARMED
+	READY,
 	TAKEOFF,
 	MISSION,
 	LAND
@@ -36,6 +42,7 @@ struct Plane
     float autopilot_voltage = 0;
 
     // State machine
+    SystemMode systemMode;
     ManualMode manualMode;
     AutoMode autoMode;
 

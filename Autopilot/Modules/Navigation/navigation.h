@@ -56,6 +56,8 @@ private:
 	bool check_new_baro_data();
 	bool check_new_gnss_data();
 
+	bool check_gnss_lock();
+
 	void predict_imu();
 
 	void update_gps();

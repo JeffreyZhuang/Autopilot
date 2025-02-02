@@ -13,7 +13,7 @@ Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->main_dt),
 	_instance = this;
 }
 
-void Autopilot::run()
+void Autopilot::setup()
 {
 	_hal->init();
 	init_state();
@@ -26,13 +26,47 @@ void Autopilot::run()
 void Autopilot::main_task()
 {
 	update_time();
-
 	_hal->read_sensors();
+	evaluate_system_mode();
+	_hal->write_storage_buffer();
+	_telem.update();
+}
 
+void Autopilot::logger_task()
+{
+	_hal->flush_storage_buffer();
+}
+
+/**
+ * System Modes
+ */
+void Autopilot::evaluate_system_mode()
+{
+	switch (_plane->systemMode)
+	{
+	case SystemMode::BOOT:
+		boot();
+		break;
+	case SystemMode::FLIGHT:
+		flight();
+		break;
+	}
+}
+
+void Autopilot::boot()
+{
+	if (false)
+	{
+		_plane->systemMode = SystemMode::FLIGHT;
+	}
+}
+
+void Autopilot::flight()
+{
 	_ahrs.update();
 	_navigation.execute();
 
-	_guidance.update(); // Should I only have guidance for auto mode? Its nice to fly manually with flight director though, also fly some of it manually and the rest auto
+	_guidance.update();
 
 	if (_plane->manual_sw)
 	{
@@ -42,15 +76,25 @@ void Autopilot::main_task()
 	{
 		evaluate_manual_mode();
 	}
-
-	_hal->write_storage_buffer();
-
-	_telem.update();
 }
 
-void Autopilot::logger_task()
+/**
+ * Auto Modes
+ */
+void Autopilot::evaluate_auto_mode()
 {
-	_hal->flush_storage_buffer();
+	switch (_plane->autoMode)
+	{
+	case AutoMode::TAKEOFF:
+		takeoff();
+		break;
+	case AutoMode::MISSION:
+		mission();
+		break;
+	case AutoMode::LAND:
+		land();
+		break;
+	}
 }
 
 void Autopilot::takeoff()
@@ -73,22 +117,9 @@ void Autopilot::land()
 	_control.update_land();
 }
 
-void Autopilot::evaluate_auto_mode()
-{
-	switch (_plane->autoMode)
-	{
-	case AutoMode::TAKEOFF:
-		takeoff();
-		break;
-	case AutoMode::MISSION:
-		mission();
-		break;
-	case AutoMode::LAND:
-		land();
-		break;
-	}
-}
-
+/**
+ * Manual Modes
+ */
 void Autopilot::evaluate_manual_mode()
 {
 	switch (_plane->manualMode)
@@ -102,8 +133,12 @@ void Autopilot::evaluate_manual_mode()
 	}
 }
 
+/**
+ * Helper functions
+ */
 void Autopilot::init_state()
 {
+	_plane->systemMode = SystemMode::BOOT;
 	_plane->manualMode = ManualMode::MANUAL;
 	_plane->autoMode = AutoMode::TAKEOFF;
 }

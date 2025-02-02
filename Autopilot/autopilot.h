@@ -19,7 +19,7 @@ class Autopilot
 public:
 	Autopilot(HAL* hal, Plane* plane);
 
-    void run();
+    void setup();
 
     static Autopilot *get_instance() { return _instance; }
 
@@ -32,16 +32,25 @@ private:
     Guidance _guidance;
     Telem _telem;
 
-    // States
+    // System mode
+    void evaluate_system_mode();
+	void boot();
+	void flight();
+
+    // Auto mode
+    void evaluate_auto_mode();
     void takeoff();
     void mission();
     void land();
 
-    void evaluate_auto_mode();
+	// Manual mode
     void evaluate_manual_mode();
+
+    // Helper functions
     void update_time();
     void init_state();
 
+    // Scheduler
     void main_task();
 	void logger_task();
     static void static_main_task() { _instance->main_task(); }

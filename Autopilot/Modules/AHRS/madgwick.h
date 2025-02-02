@@ -50,6 +50,7 @@ public:
     float get_q2() { return q2; };
     float get_q3() { return q3; };
     void set_gain(float b);
+    void set_state();
 
     float getRoll() {
         if (!anglesComputed) computeAngles();

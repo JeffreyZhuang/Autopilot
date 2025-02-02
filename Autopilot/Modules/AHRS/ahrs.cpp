@@ -30,7 +30,7 @@ bool AHRS::check_new_compass_data()
 
 void AHRS::apply_compass_calibration()
 {
-
+	filter.set_state();
 }
 
 void AHRS::update()

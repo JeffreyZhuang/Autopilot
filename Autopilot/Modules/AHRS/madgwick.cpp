@@ -50,6 +50,11 @@ void Madgwick::set_gain(float b)
 	beta = b;
 }
 
+void Madgwick::set_state()
+{
+	// Set the values of q
+}
+
 void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) {
 	float recipNorm;
 	float s0, s1, s2, s3;

@@ -16,7 +16,7 @@ void autopilot_main()
 	Plane plane;
 	Hal hal(&plane);
 	Autopilot autopilot(&hal, &plane);
-	autopilot.run();
+	autopilot.setup();
 }
 
 extern "C"
