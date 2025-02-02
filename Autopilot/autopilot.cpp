@@ -1,5 +1,8 @@
 #include <autopilot.h>
 
+// Use the three switch for direct, stab, and auto
+// Then one switch that can override and force manual.
+
 Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->main_dt),
@@ -93,7 +96,24 @@ void Autopilot::flight()
 
 	if (_plane->manual_sw)
 	{
-		evaluate_auto_mode();
+		if (_plane->mode_sw == 0)
+		{
+			_plane->manualMode = ManualMode::MANUAL;
+			evaluate_manual_mode();
+		}
+		else if (_plane->mode_sw == 1)
+		{
+			_plane->manualMode = ManualMode::STABILIZED;
+			evaluate_manual_mode();
+		}
+		else if (_plane->mode_sw == 2)
+		{
+			evaluate_auto_mode();
+		}
+		else
+		{
+
+		}
 	}
 	else
 	{
