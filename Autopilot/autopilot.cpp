@@ -57,7 +57,7 @@ void Autopilot::evaluate_system_mode()
 		flight();
 		break;
 	}
-}
+}a
 
 void Autopilot::boot()
 {
