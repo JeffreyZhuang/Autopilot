@@ -3,6 +3,8 @@
 // Use the three switch for direct, stab, and auto
 // Then one switch that can override and force manual.
 
+// I don't need an enum for manual
+
 Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->main_dt),
@@ -110,13 +112,10 @@ void Autopilot::flight()
 		{
 			evaluate_auto_mode();
 		}
-		else
-		{
-
-		}
 	}
 	else
 	{
+		_plane->manualMode = ManualMode::MANUAL;
 		evaluate_manual_mode();
 	}
 }
