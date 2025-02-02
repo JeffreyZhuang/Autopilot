@@ -20,7 +20,7 @@ constexpr float THR_DEADZONE = 0.1; // When throttle is set below this value, it
 // Attitude
 constexpr float PTCH_LIM_MAX_DEG = 10;
 constexpr float PTCH_LIM_MIN_DEG = -10;
-constexpr float ROLL_LIM_DEG = 30; // Maximum roll angle in either direction
+constexpr float ROLL_LIM_DEG = 40; // Maximum roll angle in either direction
 constexpr bool RUDDER_ONLY = false;
 
 // Autoland
@@ -38,7 +38,7 @@ constexpr float LAUN_ACC_TIME = 0.1; // Trigger time (acceleration must be above
 constexpr uint64_t LAUN_MOT_DEL = 2000000; // Delay in microseconds from launch detection to motor spin up
 
 // Guidance
-constexpr float MIN_DIST_WP = 100; // Distance in meters from waypoint until switching to next, "radius of acceptance"
+constexpr float MIN_DIST_WP = 50; // Distance in meters from waypoint until switching to next, "radius of acceptance"
 constexpr uint8_t MAX_NUM_WPTS = 100; // Maximum number of waypoints
 
 // Radio
