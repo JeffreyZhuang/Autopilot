@@ -31,9 +31,11 @@ void Autopilot::main_task()
 {
 	update_time();
 	_hal->read_sensors();
+
 	evaluate_system_mode();
-	_hal->write_storage_buffer();
+
 	_telem.update();
+	_hal->write_storage_buffer();
 }
 
 void Autopilot::logger_task()
@@ -86,8 +88,6 @@ void Autopilot::flight()
 	_ahrs.update();
 	_navigation.execute();
 
-	_guidance.update();
-
 	if (_plane->manual_sw)
 	{
 		evaluate_auto_mode();
@@ -129,11 +129,15 @@ void Autopilot::evaluate_auto_mode()
 void Autopilot::ready()
 {
 	_plane->autoMode = AutoMode::TAKEOFF;
+	takeoff_time = _plane->time;
 }
 
 void Autopilot::takeoff()
 {
-	_control.update_takeoff();
+	if (_plane->time - takeoff_time > LAUN_MOT_DEL)
+	{
+		_control.update_takeoff();
+	}
 
 	if (-_plane->nav_pos_down > TAKEOFF_ALT)
 	{
@@ -143,12 +147,24 @@ void Autopilot::takeoff()
 
 void Autopilot::mission()
 {
+	_guidance.update_mission();
+
 	_control.update_mission();
+
+	if (_plane->waypoint_index == _plane->num_waypoints)
+	{
+		// Switch to land
+	}
 }
 
 void Autopilot::land()
 {
 	_control.update_land();
+
+	if (-_plane->nav_pos_down < LAND_FLARE_ALT)
+	{
+		_plane->autoMode = AutoMode::FLARE;
+	}
 }
 
 void Autopilot::flare()

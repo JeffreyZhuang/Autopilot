@@ -13,7 +13,7 @@ void Guidance::init()
 
 // Generate position and altitude setpoint
 // Detect when setpoint reached and switch to next setpoint
-void Guidance::update()
+void Guidance::update_mission()
 {
 	Waypoint current_wp = _plane->waypoints[_plane->waypoint_index];
 	_plane->guidance_n_setpoint = current_wp.n;
@@ -33,4 +33,9 @@ void Guidance::update()
 	{
 		_plane->waypoint_index = 0;
 	}
+}
+
+void Guidance::update_landing()
+{
+
 }

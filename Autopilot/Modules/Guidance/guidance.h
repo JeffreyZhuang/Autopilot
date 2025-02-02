@@ -17,7 +17,8 @@ public:
 	Guidance(HAL* hal, Plane* plane);
 
 	void init();
-	void update();
+	void update_mission();
+	void update_landing();
 private:
 	HAL* _hal;
 	Plane*_plane;

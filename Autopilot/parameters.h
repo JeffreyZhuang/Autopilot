@@ -23,6 +23,9 @@ constexpr float PTCH_LIM_MIN_DEG = -10;
 constexpr float ROLL_LIM_DEG = 25; // Maximum roll angle in either direction
 constexpr bool RUDDER_ONLY = false;
 
+// Autoland
+constexpr float LAND_FLARE_ALT = 2;
+
 // Takeoff
 constexpr float TAKEOFF_ALT = 10; // Altitude that the plane will climb to during takeoff meters per second
 constexpr float TAKEOFF_THR = 1; // Throttle set during takeoff between 0 and 1
@@ -30,9 +33,9 @@ constexpr float TAKEOFF_AIRSPD = 10; // Rotation speed meters per second during 
 constexpr float TAKEOFF_PTCH = 10; // Pitch during takeoff
 
 // Launch detection
-constexpr float LAUN_ACC_THLD = 10; // Acceleration in units of gravity in body-forward direction to detect takeoff
+constexpr float LAUN_ACC_THLD = -1; // Acceleration in units of gravity in body-forward direction to detect takeoff
 constexpr float LAUN_ACC_TIME = 0.1; // Trigger time (acceleration must be above threshold for this amount of seconds to detect takeoff)
-constexpr float LAUN_MOT_DEL = 1; // Delay in seconds from launch detection to motor spin up
+constexpr uint64_t LAUN_MOT_DEL = 2000000; // Delay in microseconds from launch detection to motor spin up
 
 // Guidance
 constexpr float MIN_DIST_WP = 100; // Distance in meters from waypoint until switching to next, "radius of acceptance"
