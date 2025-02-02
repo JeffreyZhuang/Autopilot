@@ -58,8 +58,8 @@ void AHRS::set_initial_state()
 		q3 = cr * cp * sy - sr * sp * cy;
 	}
 
-	_ahrs.set_state(q0, q1, q2, q3); // Set initial state
-	_ahrs.update();
+	filter.set_state(q0, q1, q2, q3); // Set initial state
+	update();
 }
 
 bool AHRS::check_new_imu_data()

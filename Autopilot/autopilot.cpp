@@ -64,7 +64,6 @@ void Autopilot::evaluate_system_mode()
 void Autopilot::boot()
 {
 	_ahrs.set_initial_state();
-	_navigation.execute();
 
 	// Calibrate barometer
 	_plane->baro_offset = _plane->baro_alt;
@@ -76,6 +75,7 @@ void Autopilot::boot()
 		_plane->gnss_center_lat = _plane->gnss_lat;
 		_plane->gnss_center_lon = _plane->gnss_lon;
 	}
+	_navigation.execute();
 
 	bool transmitter_safe = (_plane->rc_throttle < THR_DEADZONE) && (_plane->manual_sw == false);
 
