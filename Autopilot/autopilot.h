@@ -5,11 +5,11 @@
 #include <stdio.h>
 #include <cstring>
 #include "hal.h"
-#include "ahrs.h"
-#include "navigation.h"
-#include "control.h"
-#include "guidance.h"
-#include "telem.h"
+#include "Modules/AHRS/ahrs.h"
+#include "Modules/Navigation/navigation.h"
+#include "Modules/Control/control.h"
+#include "Modules/Guidance/guidance.h"
+#include "Modules/Telemetry/telem.h"
 
 /**
  * @brief Autopilot

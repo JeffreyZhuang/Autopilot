@@ -2,7 +2,6 @@
 #define INC_DRIVERS_MLRS_TELEM_H_
 
 #include "stm32f4xx_hal.h"
-#include "cobs.h"
 #include <cstdio>
 #include <cstring>
 

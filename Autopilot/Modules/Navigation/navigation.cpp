@@ -1,4 +1,4 @@
-#include <navigation.h>
+#include <Modules/Navigation/navigation.h>
 
 // Probably kalman filter blacking out because GNSS returns NaN and that gets fed into kalman
 
