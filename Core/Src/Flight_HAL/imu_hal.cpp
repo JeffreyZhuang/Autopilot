@@ -4,10 +4,10 @@ void Flight_hal::init_imu()
 {
 	_imu.begin();
 
-	_imu.setAccelODR(ICM42688::odr200);
+	_imu.setAccelODR(ICM42688::odr100);
 	_imu.setAccelFS(ICM42688::gpm4);
 
-	_imu.setGyroODR(ICM42688::odr200);
+	_imu.setGyroODR(ICM42688::odr100);
 	_imu.setGyroFS(ICM42688::dps500);
 }
 
