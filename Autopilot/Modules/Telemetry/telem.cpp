@@ -66,10 +66,15 @@ void Telem::parse_telemetry()
 	{
 		Waypoint_payload waypoint_payload;
 		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
-		printf("%f %f %f\n", waypoint_payload.waypoint[0], waypoint_payload.waypoint[1], waypoint_payload.waypoint[2]);
+
+		double wp_north, wp_east, wp_down;
+		lat_lon_to_meters(waypoint_payload.lat, waypoint_payload.lon, _plane->center_lat, _plane->center_lon, &wp_north, &wp_east);
+		wp_down = waypoint_payload.alt;
+
+		printf("%f %f %f\n", wp_north, wp_east, wp_down);
 
 		_plane->num_waypoints = waypoint_payload.waypoint_index + 1; // Add a byte to indicate max number of waypoints later
-		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.waypoint[0], waypoint_payload.waypoint[1], waypoint_payload.waypoint[2]};
+		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){wp_north, wp_east, wp_down};
 	}
 }
 

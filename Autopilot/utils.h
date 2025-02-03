@@ -8,6 +8,12 @@
 #ifndef MODULES_UTILS_H_
 #define MODULES_UTILS_H_
 
+#include <cmath>
+
+#define EARTH_RADIUS 6378137.0 // Earth's radius in meters
+
 float clamp(float n, float min, float max);
+void lat_lon_to_meters(double lat, double lon, double refLat, double refLon, double *north, double *east);
+void meters_to_lat_lon(double north, double east, double refLat, double refLon, double *lat, double *lon);
 
 #endif /* MODULES_UTILS_H_ */

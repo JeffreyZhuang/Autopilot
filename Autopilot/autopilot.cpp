@@ -77,8 +77,8 @@ void Autopilot::boot()
 	bool gnss_locked = (_plane->gnss_sats > 5) && (fabs(_plane->gnss_lat) > 0) && (fabs(_plane->gnss_lat) > 0);
 	if (gnss_locked)
 	{
-		_plane->gnss_center_lat = _plane->gnss_lat;
-		_plane->gnss_center_lon = _plane->gnss_lon;
+		_plane->center_lat = _plane->gnss_lat;
+		_plane->center_lon = _plane->gnss_lon;
 
 		_navigation.execute();
 	}

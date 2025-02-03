@@ -155,8 +155,8 @@ void Navigation::read_gnss()
 
 	// Convert from lat/lon to meters
 	double earth_radius = 6371000;
-	double lat1 = _plane->gnss_center_lat * M_PI / 180.0;
-	double lon1 = _plane->gnss_center_lon * M_PI / 180.0;
+	double lat1 = _plane->center_lat * M_PI / 180.0;
+	double lon1 = _plane->center_lon * M_PI / 180.0;
 	double lat2 = _plane->gnss_lat * M_PI / 180.0;
 	double lon2 = _plane->gnss_lon * M_PI / 180.0;
 	last_gnss_timestamp = _plane->gnss_timestamp;

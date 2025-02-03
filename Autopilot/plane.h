@@ -85,8 +85,6 @@ struct Plane
     double gnss_lon = 0;
     float gnss_asl = 0;
     uint8_t gnss_sats = 0;
-    double gnss_center_lat = 0;
-    double gnss_center_lon = 0;
     bool gnss_lock = false;
     uint64_t gnss_timestamp;
 
@@ -111,6 +109,8 @@ struct Plane
     float nav_acc_east = 0;
     float nav_acc_down = 0;
     float nav_airspeed = 0;
+    double center_lat = 0;
+	double center_lon = 0;
     uint64_t nav_timestamp;
 
     // Guidance

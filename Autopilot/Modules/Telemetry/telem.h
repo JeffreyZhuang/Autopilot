@@ -11,6 +11,7 @@
 #include <cstring>
 #include "hal.h"
 #include "cobs.h"
+#include "utils.h"
 
 struct __attribute__((packed))Telem_payload
 {
@@ -32,7 +33,9 @@ struct __attribute__((packed))Waypoint_payload
 {
 	uint8_t payload_type;
 	uint8_t waypoint_index;
-	float waypoint[3];
+	float lat;
+	float lon;
+	float alt;
 	uint8_t empty[24];
 };
 
