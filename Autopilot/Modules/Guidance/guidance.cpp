@@ -17,9 +17,13 @@ void Guidance::init()
 // Detect when setpoint reached and switch to next setpoint
 void Guidance::update_mission()
 {
+	double tgt_wp_north, tgt_wp_east, prev_wp_north, prev_wp_east;
+
 	// Determine target waypoint
 	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
-	_plane->guidance_d_setpoint = target_wp.d;
+	lat_lon_to_meters(target_wp.lat, target_wp.lon, _plane->center_lat, _plane->center_lon, &tgt_wp_north, &tgt_wp_east);
+
+	_plane->guidance_d_setpoint = target_wp.alt;
 
 	// Determine previous waypoint
 	Waypoint prev_wp;
@@ -29,14 +33,15 @@ void Guidance::update_mission()
 	}
 	else
 	{
-		prev_wp = Waypoint{0, 0, 0};
+		prev_wp = Waypoint{_plane->center_lat, _plane->center_lon, 0};
 	}
+	lat_lon_to_meters(prev_wp.lat, prev_wp.lon, _plane->center_lat, _plane->center_lon, &prev_wp_north, &prev_wp_east);
 
 	// Calculate track heading
-	float trk_hdg = atan2f(target_wp.e - prev_wp.e, target_wp.n - prev_wp.n);
+	float trk_hdg = atan2f(tgt_wp_east - prev_wp_east, tgt_wp_north - prev_wp_north);
 
 	// Calculate cross track error
-	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - target_wp.e) - sinf(trk_hdg) * (_plane->nav_pos_north - target_wp.n);
+	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - tgt_wp_east) - sinf(trk_hdg) * (_plane->nav_pos_north - tgt_wp_north);
 
 	// Calculate heading setpoint
 	_plane->guidance_hdg_setpoint = trk_hdg * 180.0f / M_PI + clamp(kP * (0 - xte), -90, 90);
@@ -45,8 +50,8 @@ void Guidance::update_mission()
 	}
 
 	// Calculate distance to waypoint to determine if waypoint reached
-	float err_n = target_wp.n - _plane->nav_pos_north;
-	float err_e = target_wp.e - _plane->nav_pos_east;
+	float err_n = tgt_wp_north - _plane->nav_pos_north;
+	float err_e = tgt_wp_east - _plane->nav_pos_east;
 	float dist_to_wp = sqrtf(powf(err_n, 2) + powf(err_e, 2));
 	if ((dist_to_wp < MIN_DIST_WP) && (_plane->waypoint_index < _plane->num_waypoints - 1))
 	{
