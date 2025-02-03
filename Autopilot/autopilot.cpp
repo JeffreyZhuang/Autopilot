@@ -84,7 +84,7 @@ void Autopilot::boot()
 	}
 
 //	bool transmitter_safe = (_plane->rc_throttle < THR_DEADZONE) && (_plane->manual_sw == false);
-	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false);
+	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false) && (_plane->mode_sw == 0);
 
 	if (gnss_locked && transmitter_safe)
 	{
@@ -96,20 +96,16 @@ void Autopilot::flight()
 {
 	_ahrs.update();
 	_navigation.execute();
+	// Its fine to add guidance to manual if I indicate target waypoint over radio
 
 	if (_plane->manual_sw)
 	{
-		if (_plane->mode_sw == 0)
-		{
-			_plane->manualMode = ManualMode::MANUAL;
-			evaluate_manual_mode();
-		}
-		else if (_plane->mode_sw == 1)
+		if (_plane->mode_sw)
 		{
 			_plane->manualMode = ManualMode::STABILIZED;
 			evaluate_manual_mode();
 		}
-		else if (_plane->mode_sw == 2)
+		else
 		{
 			evaluate_auto_mode();
 		}

@@ -125,7 +125,7 @@ struct Plane
     float rc_elevator = 0;
     float rc_throttle = 0;
     bool manual_sw;
-    uint8_t mode_sw; // 0, 1, or 2
+    bool mode_sw;
 
     // Telemetry
     uint8_t latest_packet[TELEM_PKT_LEN];
