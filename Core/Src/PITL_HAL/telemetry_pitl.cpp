@@ -3,12 +3,11 @@
 
 void Pitl_hal::read_rc()
 {
-	// Need to add some mixer
-	// Convert from 1000 to 2000 to -1 to 1 range
+	// Convert range from (1000, 2000) to (-1, 1)
 	_plane->rc_rudder = clamp(((int)mlrs_rc.rc_data[0] - 1500) / 500.0f, -1, 1);
 	_plane->rc_elevator = clamp(-((int)mlrs_rc.rc_data[1] - 1500) / 500.0f, -1, 1);
 
-	// 0 to 1 range
+	// (0, 1) range
 	_plane->rc_throttle = clamp(((int)mlrs_rc.rc_data[2] - 1000) / 1000.0f, 0, 1);
 
 	_plane->manual_sw = mlrs_rc.rc_data[5] > 1500;
