@@ -4,6 +4,7 @@
 #include <math.h>
 #include "hal.h"
 #include "pid.h"
+#include "utils.h"
 
 // Calculates and sends commands to servos
 class Control
@@ -28,8 +29,6 @@ private:
 	PID hdg_controller;
 	PID alt_controller;
 	PID speed_controller;
-
-	float clamp(float n, float min, float max);
 };
 
 #endif /* CONTROL_H_ */

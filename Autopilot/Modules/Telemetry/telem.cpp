@@ -19,6 +19,7 @@ void Telem::transmit()
 	payload.lat = _plane->gnss_lat;
 	payload.lon = _plane->gnss_lon;
 	payload.mode_id = _plane->mode_id;
+	payload.wp_idx = _plane->waypoint_index;
 
 	uint8_t payload_arr[sizeof(Telem_payload)];
 	memcpy(payload_arr, &payload, sizeof(Telem_payload));

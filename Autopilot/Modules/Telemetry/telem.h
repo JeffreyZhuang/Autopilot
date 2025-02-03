@@ -23,7 +23,8 @@ struct __attribute__((packed))Telem_payload
 	float lat;
 	float lon;
 	uint8_t mode_id;
-	uint8_t empty[8];
+	uint8_t wp_idx;
+	uint8_t empty[7];
 };
 
 // 28 bytes, but padding will align to nearest 4 bytes so it will be 30 bytes, so you have to remove padding

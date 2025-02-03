@@ -96,7 +96,6 @@ void Autopilot::flight()
 {
 	_ahrs.update();
 	_navigation.execute();
-	_guidance.update_mission();
 
 	if (_plane->manual_sw)
 	{
@@ -173,6 +172,8 @@ void Autopilot::takeoff()
 
 void Autopilot::mission()
 {
+	_guidance.update_mission();
+
 	_control.update_mission();
 
 	if (_plane->waypoint_index == _plane->num_waypoints)
@@ -209,6 +210,8 @@ void Autopilot::safe()
 void Autopilot::evaluate_manual_mode()
 {
 	_plane->mode_id = static_cast<uint8_t>(_plane->manualMode);
+
+	_guidance.update_mission();
 
 	switch (_plane->manualMode)
 	{

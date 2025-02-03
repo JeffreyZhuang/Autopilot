@@ -9,7 +9,7 @@
 #define PARAMETERS_H_
 
 // Airspeed
-constexpr float AIRSPEED_CRUISE = 10; // Meters per second
+constexpr float AIRSPEED_CRUISE = 8; // Meters per second
 
 // Throttle
 constexpr float TRIM_THROTTLE = 0.3; // Steady-state cruise throttle

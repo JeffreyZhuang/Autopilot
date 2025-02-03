@@ -5,7 +5,7 @@ PID::PID(float kP, float kI, float kD, float integral_limit, float output_min, f
     _kP = kP;
     _kI = kI;
     _kD = kD;
-    _integral_limit = integral_limit;
+    _integral_limit = integral_limit; // Limit for entire integral term
     _output_min = output_min;
     _output_max = output_max;
     _normalize_180 = normalize_180;
@@ -19,8 +19,11 @@ float PID::get_output(float state, float setpoint, float dt)
     	error = normalize_angle(error);
     }
 
-    _integral += error * dt;
-    _integral = clamp(_integral, -_integral_limit, _integral_limit);
+    if (_kI != 0)
+    {
+    	_integral += error * dt;
+    	_integral = clamp(_integral, -_integral_limit / _kI, _integral_limit / _kI);
+    }
 
     float derivative = (error - _prev_error) / dt;
     _prev_error = error;
