@@ -32,11 +32,6 @@ constexpr float TAKEOFF_THR = 1; // Throttle set during takeoff between 0 and 1
 constexpr float TAKEOFF_AIRSPD = 10; // Rotation speed meters per second during takeoff, ignored during hand launch
 constexpr float TAKEOFF_PTCH = 10; // Pitch during takeoff
 
-// Launch detection
-constexpr float LAUN_ACC_THLD = -1; // Acceleration in units of gravity in body-forward direction to detect takeoff
-constexpr float LAUN_ACC_TIME = 0.1; // Trigger time (acceleration must be above threshold for this amount of seconds to detect takeoff)
-constexpr uint64_t LAUN_MOT_DEL = 2000000; // Delay in microseconds from launch detection to motor spin up
-
 // Guidance
 constexpr float MIN_DIST_WP = 50; // Distance in meters from waypoint until switching to next, "radius of acceptance"
 constexpr uint8_t MAX_NUM_WPTS = 100; // Maximum number of waypoints

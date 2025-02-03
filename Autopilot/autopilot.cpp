@@ -84,7 +84,7 @@ void Autopilot::boot()
 	}
 
 //	bool transmitter_safe = (_plane->rc_throttle < THR_DEADZONE) && (_plane->manual_sw == false);
-	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false) && (_plane->manual_sw == false);
+	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
 
 	if (gnss_locked && transmitter_safe)
 	{
@@ -148,21 +148,15 @@ void Autopilot::evaluate_auto_mode()
 
 void Autopilot::ready()
 {
-	// BUT THIS RUNS ON STARTUP, NOT ON SWITCH
-	// HAVE SINGLE ENUM. STILL THREE INSTANCES, EXCEPT YOU HAVE ONE MASTER INSTANCE THAT CHOOSES WHICH OF THE THREE TO RUN
-	// THEN YOU ONLY NEED ONE SWITCH STATEMENT
-	// Nevermind this is fine because ready never gets called
-	// What happens if you switch to manual, auto, manual, and then auto again? The motor will start accendentally>
-	_plane->autoMode = AutoMode::TAKEOFF;
-	takeoff_time = _plane->time;
+	if (_plane->rc_throttle > 0.5)
+	{
+		_plane->autoMode = AutoMode::TAKEOFF;
+	}
 }
 
 void Autopilot::takeoff()
 {
-	if (_plane->time - takeoff_time > LAUN_MOT_DEL)
-	{
-		_control.update_takeoff();
-	}
+	_control.update_takeoff();
 
 	if (-_plane->nav_pos_down > TAKEOFF_ALT)
 	{

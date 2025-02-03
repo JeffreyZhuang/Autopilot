@@ -32,8 +32,6 @@ private:
     Guidance _guidance;
     Telem _telem;
 
-    uint64_t takeoff_time;
-
     // System mode
     void evaluate_system_mode();
 	void boot();
