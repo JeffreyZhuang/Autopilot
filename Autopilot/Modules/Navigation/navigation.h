@@ -3,6 +3,7 @@
 
 #include "hal.h"
 #include "kalman.h"
+#include "utils.h"
 
 static constexpr int n = 6;
 static constexpr int m = 3;
