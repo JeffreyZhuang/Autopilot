@@ -98,6 +98,8 @@ void Autopilot::flight()
 	_navigation.execute();
 	// Its fine to add guidance to manual if I indicate target waypoint over radio
 
+	printf("%d %d\n", _plane->manual_sw, _plane->mode_sw);
+
 	if (_plane->manual_sw)
 	{
 		if (_plane->mode_sw)
