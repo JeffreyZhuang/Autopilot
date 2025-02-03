@@ -84,7 +84,7 @@ void Autopilot::boot()
 	}
 
 //	bool transmitter_safe = (_plane->rc_throttle < THR_DEADZONE) && (_plane->manual_sw == false);
-	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false) && (_plane->mode_sw == 0);
+	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false) && (_plane->manual_sw == false);
 
 	if (gnss_locked && transmitter_safe)
 	{
@@ -102,12 +102,12 @@ void Autopilot::flight()
 	{
 		if (_plane->mode_sw)
 		{
-			_plane->manualMode = ManualMode::STABILIZED;
-			evaluate_manual_mode();
+			evaluate_auto_mode();
 		}
 		else
 		{
-			evaluate_auto_mode();
+			_plane->manualMode = ManualMode::STABILIZED;
+			evaluate_manual_mode();
 		}
 	}
 	else
