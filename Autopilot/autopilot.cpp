@@ -96,9 +96,7 @@ void Autopilot::flight()
 {
 	_ahrs.update();
 	_navigation.execute();
-	// Its fine to add guidance to manual if I indicate target waypoint over radio
-
-	printf("%d %d\n", _plane->manual_sw, _plane->mode_sw);
+	_guidance.update_mission();
 
 	if (_plane->manual_sw)
 	{
@@ -175,8 +173,6 @@ void Autopilot::takeoff()
 
 void Autopilot::mission()
 {
-	_guidance.update_mission();
-
 	_control.update_mission();
 
 	if (_plane->waypoint_index == _plane->num_waypoints)
