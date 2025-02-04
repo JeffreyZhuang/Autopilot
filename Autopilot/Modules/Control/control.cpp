@@ -1,11 +1,11 @@
 #include "control.h"
 
 // Use PI controller for pitch and roll, then your integral term is the servo misalignment
-Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 0, 0, -1, 1, false),
-											 	 	   pitch_controller(0.04, 0.01, 0, 0.5, -1, 1, false),
-													   hdg_controller(1, 0, 0, 0, -ROLL_LIM_DEG, ROLL_LIM_DEG, true),
-													   alt_controller(1, 0, 0, 0, PTCH_LIM_MIN_DEG, PTCH_LIM_MAX_DEG, false),
-													   speed_controller(0.05, 0.01, 0, 0.5, -1, 1, false)
+Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 0, 0, -1, 1, 0, false),
+											 	 	   pitch_controller(0.04, 0.01, 0, 0.5, -1, 1, 0, false),
+													   hdg_controller(1, 0, 0, 0, -ROLL_LIM_DEG, ROLL_LIM_DEG, 0, true),
+													   alt_controller(1, 0, 0, 0, PTCH_LIM_MIN_DEG, PTCH_LIM_MAX_DEG, 0, false),
+													   speed_controller(0.05, 0.01, 0, 0.5, 0, 1, TRIM_THROTTLE, false)
 {
 	_hal = hal;
 	_plane = plane;
@@ -66,8 +66,7 @@ void Control::update_mission()
 	// Calculate control outputs to track roll and pitch setpoints
 	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt);
 	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, pitch_setpoint, _dt);
-	float throttle = TRIM_THROTTLE + speed_controller.get_output(_plane->nav_airspeed, AIRSPEED_CRUISE, _dt);
-	throttle = clamp(throttle, 0, 1);
+	float throttle = speed_controller.get_output(_plane->nav_airspeed, AIRSPEED_CRUISE, _dt);
 
 	// Set control surfaces
 	_hal->set_elevator(elevator);
@@ -84,8 +83,7 @@ void Control::update_land()
 	// Calculate control outputs to track roll and pitch setpoints
 	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt);
 	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, pitch_setpoint, _dt);
-	float throttle = TRIM_THROTTLE + speed_controller.get_output(_plane->nav_airspeed, AIRSPEED_LANDING, _dt);
-	throttle = clamp(throttle, 0, 1);
+	float throttle = speed_controller.get_output(_plane->nav_airspeed, AIRSPEED_LANDING, _dt);
 
 	// Set control surfaces
 	_hal->set_elevator(elevator);

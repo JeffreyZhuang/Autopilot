@@ -1,6 +1,13 @@
 #include "pid.h"
 
-PID::PID(float kP, float kI, float kD, float integral_limit, float output_min, float output_max, bool normalize_180)
+PID::PID(float kP,
+		 float kI,
+		 float kD,
+		 float integral_limit,
+		 float output_min,
+		 float output_max,
+		 float trim,
+		 bool normalize_180)
 {
     _kP = kP;
     _kI = kI;
@@ -8,6 +15,7 @@ PID::PID(float kP, float kI, float kD, float integral_limit, float output_min, f
     _integral_limit = integral_limit; // Limit for entire integral term
     _output_min = output_min;
     _output_max = output_max;
+    _trim = trim;
     _normalize_180 = normalize_180;
 }
 
@@ -28,7 +36,7 @@ float PID::get_output(float state, float setpoint, float dt)
     float derivative = (error - _prev_error) / dt;
     _prev_error = error;
 
-    float output = _kP * error + _kI * _integral + _kD * derivative;
+    float output = _trim + _kP * error + _kI * _integral + _kD * derivative;
     output = clamp(output, _output_min, _output_max);
 
     return output;
