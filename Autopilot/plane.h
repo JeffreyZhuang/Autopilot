@@ -122,8 +122,8 @@ struct Plane
     float guidance_hdg_setpoint = 0;
     float guidance_d_setpoint = 0;
     float rwy_hdg = 180.0f + 67.0f;
-    float rwy_pos_north = 0;
-    float rwy_pos_east = 0;
+    float rwy_pos_north = 228;
+    float rwy_pos_east = 521;
 
     // RC
     float rc_rudder = 0;
