@@ -39,7 +39,6 @@ void Pitl_hal::read_pitl()
 	}
 	else if (buff2_ready)
 	{
-
 		data = usb_buff2;
 		buff2_ready = false;
 	}

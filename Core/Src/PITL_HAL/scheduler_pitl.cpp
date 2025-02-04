@@ -13,12 +13,12 @@ void Pitl_hal::set_main_task(void (*task)())
 	}
 }
 
-void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
+__weak void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
 	Pitl_hal::get_instance()->usb_rx_callback(Buf, Len);
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+__weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	if (huart == &huart4)
 	{
