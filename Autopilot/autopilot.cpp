@@ -172,10 +172,11 @@ void Autopilot::mission()
 
 	if (_plane->waypoint_index == _plane->num_waypoints)
 	{
-		// Switch to land
+		_plane->autoMode = AutoMode::LAND;
 	}
 }
 
+// Glide path to runway
 void Autopilot::land()
 {
 	_guidance.update_landing();
@@ -188,6 +189,7 @@ void Autopilot::land()
 	}
 }
 
+// Lower descent rate below altitude threshold
 void Autopilot::flare()
 {
 

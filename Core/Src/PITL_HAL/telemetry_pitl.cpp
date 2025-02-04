@@ -21,5 +21,13 @@ void Pitl_hal::transmit_telem(uint8_t tx_buff[], int len)
 
 bool Pitl_hal::read_telem()
 {
-	return mlrs_telem.read(_plane->latest_packet);
+	uint8_t packet[TELEM_PKT_LEN];
+
+	if (mlrs_telem.read(packet))
+	{
+		memcpy(_plane->latest_packet, packet, sizeof(packet));
+		return true;
+	}
+
+	return false;
 }

@@ -1,11 +1,11 @@
 #ifndef AUTOPILOT_H
 #define AUTOPILOT_H
 
-#include <Modules/Attitude/ahrs.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <cstring>
 #include "hal.h"
+#include "Modules/Attitude/ahrs.h"
 #include "Modules/Navigation/navigation.h"
 #include "Modules/Control/control.h"
 #include "Modules/Guidance/guidance.h"
