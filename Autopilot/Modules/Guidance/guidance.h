@@ -25,7 +25,7 @@ private:
 	HAL* _hal;
 	Plane*_plane;
 
-	float kP = 0.3;
+	float kP = 0.5;
 };
 
 #endif /* GUIDANCE_H_ */
