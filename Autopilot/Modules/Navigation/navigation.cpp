@@ -83,8 +83,6 @@ void Navigation::update_gps()
 {
 	read_gnss();
 
-//	printf("%.2f %.2f\n", gnss_n, gnss_e);
-
 	Eigen::VectorXf y(2);
 	y << gnss_n,
 		 gnss_e;
@@ -150,8 +148,13 @@ void Navigation::read_imu()
 
 void Navigation::read_gnss()
 {
-	lat_lon_to_meters(_plane->gnss_lat, _plane->gnss_lon, _plane->center_lat, _plane->center_lon, &gnss_n, &gnss_e);
+	double north, east;
+	lat_lon_to_meters(_plane->gnss_lat, _plane->gnss_lon, _plane->center_lat, _plane->center_lon, &north, &east);
+	gnss_n = (float)north;
+	gnss_e = (float)east;
 	gnss_d = _plane->gnss_asl;
+
+	last_gnss_timestamp = _plane->gnss_timestamp;
 }
 
 bool Navigation::check_new_imu_data()

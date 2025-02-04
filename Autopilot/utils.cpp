@@ -15,20 +15,14 @@ float clamp(float n, float min, float max)
     return n;
 }
 
-void lat_lon_to_meters(double lat, double lon, double refLat, double refLon, double *north, double *east) {
-    // Convert degrees to radians
-    double latRad = lat * M_PI / 180.0;
-    double lonRad = lon * M_PI / 180.0;
-    double refLatRad = refLat * M_PI / 180.0;
-    double refLonRad = refLon * M_PI / 180.0;
+void lat_lon_to_meters(double lat_ref, double lon_ref, double lat, double lon, double *north, double *east) {
+    double dLat = (lat - lat_ref) * M_PI / 180.0;
+    double dLon = (lon - lon_ref) * M_PI / 180.0;
 
-    // Calculate differences
-    double dLat = latRad - refLatRad;
-    double dLon = lonRad - refLonRad;
+    double meanLat = (lat + lat_ref) / 2.0 * M_PI / 180.0;
 
-    // Approximate conversion (assuming small distances)
-    *north = dLat * EARTH_RADIUS; // North displacement (meters)
-    *east = dLon * EARTH_RADIUS * cos(refLatRad); // East displacement (meters)
+    *north = dLat * EARTH_RADIUS;
+    *east = dLon * EARTH_RADIUS * cos(meanLat);
 }
 
 void meters_to_lat_lon(double north, double east, double refLat, double refLon, double *lat, double *lon) {

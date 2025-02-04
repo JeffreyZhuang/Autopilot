@@ -32,9 +32,9 @@ enum class AutoMode
 };
 
 struct Waypoint {
-	float lat;
-	float lon;
-	float alt;
+	double lat;
+	double lon;
+	double alt;
 };
 
 /**
