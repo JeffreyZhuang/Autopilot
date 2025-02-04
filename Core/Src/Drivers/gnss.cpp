@@ -31,32 +31,16 @@ bool GNSS::parse(uint8_t sentence[])
 
 		// Parse
 		char* line = (char*)sentence;
-		switch (minmea_sentence_id(line, false))
+		struct minmea_sentence_gga frame;
+		if (minmea_parse_gga(&frame, line))
 		{
-		case MINMEA_SENTENCE_RMC:
-		{
-			struct minmea_sentence_rmc frame;
-			if (minmea_parse_rmc(&frame, line))
-			{
-				lat = minmea_tocoord(&frame.latitude);
-				lon = minmea_tocoord(&frame.longitude);
-			}
+			lat = minmea_tocoord(&frame.latitude);
+			lon = minmea_tocoord(&frame.longitude);
+			sats = frame.satellites_tracked;
+			fix_quality = frame.fix_quality;
 
-			break;
+			return true;
 		}
-		case MINMEA_SENTENCE_GSV:
-		{
-			struct minmea_sentence_gsv frame;
-			if (minmea_parse_gsv(&frame, line))
-			{
-				sats = frame.total_sats;
-			}
-
-			break;
-		}
-		}
-
-		return true;
 	}
 
 	return false;
