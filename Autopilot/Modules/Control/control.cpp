@@ -95,5 +95,7 @@ void Control::update_land()
 
 void Control::update_flare()
 {
+	_hal->set_elevator(0);
+	_hal->set_rudder(0);
 	_hal->set_throttle(0);
 }

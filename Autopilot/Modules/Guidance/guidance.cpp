@@ -64,10 +64,10 @@ void Guidance::update_landing()
 							   powf(_plane->nav_pos_east - _plane->rwy_pos_east, 2));
 
 	// Follow glideslope angle
-	_plane->guidance_d_setpoint = dist_to_land * sinf(LAND_GS_DEG * M_PI / 180);
+	_plane->guidance_d_setpoint = dist_to_land * sinf(LAND_GS_DEG * M_PI / 180.0f);
 
 	// Set track heading to runway heading
-	float trk_hdg = _plane->rwy_hdg;
+	float trk_hdg = _plane->rwy_hdg * M_PI / 180.0f;
 
 	// Calculate cross track error
 	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - _plane->rwy_pos_east) -
