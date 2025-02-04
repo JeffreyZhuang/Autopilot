@@ -20,6 +20,7 @@ public:
 	void init();
 	void update_mission();
 	void update_landing();
+	void update_flare();
 private:
 	HAL* _hal;
 	Plane*_plane;

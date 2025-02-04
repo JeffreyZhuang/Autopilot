@@ -79,3 +79,14 @@ void Guidance::update_landing()
 		_plane->guidance_hdg_setpoint += 360.0;
 	}
 }
+
+void Guidance::update_flare()
+{
+	float dist_to_land = sqrtf(powf(_plane->nav_pos_north - _plane->rwy_pos_north, 2) +
+							   powf(_plane->nav_pos_east - _plane->rwy_pos_east, 2));
+
+	// Follow shallow glideslope angle
+	float gs_angle = 3;
+	_plane->guidance_d_setpoint = dist_to_land * sinf(gs_angle * M_PI / 180.0f);
+}
+

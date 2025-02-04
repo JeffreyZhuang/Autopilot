@@ -192,6 +192,7 @@ void Autopilot::land()
 // Lower descent rate below altitude threshold
 void Autopilot::flare()
 {
+	_guidance.update_flare();
 	_control.update_flare();
 }
 

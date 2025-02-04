@@ -93,7 +93,16 @@ void Control::update_land()
 
 void Control::update_flare()
 {
-	_hal->set_elevator(0);
-	_hal->set_rudder(0);
+	// Calculate roll and pitch setpoints to reach waypoint
+	float roll_setpoint = 0;
+	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt);
+
+	// Calculate control outputs to track roll and pitch setpoints
+	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt);
+	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, pitch_setpoint, _dt);
+
+	// Set control surfaces
+	_hal->set_elevator(elevator);
+	_hal->set_rudder(rudder);
 	_hal->set_throttle(0);
 }
