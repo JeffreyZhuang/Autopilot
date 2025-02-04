@@ -6,6 +6,8 @@ Telem::Telem(HAL* hal, Plane* plane)
 {
 	_plane = plane;
 	_hal = hal;
+
+	prev_transmit_time = _hal->get_time_us();
 }
 
 void Telem::transmit()
@@ -66,12 +68,14 @@ void Telem::parse_telemetry()
 	{
 		Command_payload command_payload;
 		memcpy(&command_payload, payload, sizeof(Command_payload));
-		printf("%d\n", command_payload.command);
+//		printf("%d\n", command_payload.command);
 	}
 	else if (payload[0] == 2) // Waypoint payload
 	{
 		Waypoint_payload waypoint_payload;
 		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
+
+		printf("%f\n", waypoint_payload.alt);
 
 		_plane->num_waypoints = waypoint_payload.waypoint_index + 1; // Add a byte to indicate max number of waypoints later
 		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.lat, waypoint_payload.lon, waypoint_payload.alt};
@@ -89,6 +93,10 @@ void Telem::update()
 	}
 	else
 	{
-		transmit();
+		// Limit to 10Hz to prevent overflowing buffer
+		if (_hal->get_time_us() - prev_transmit_time > 100000)
+		{
+			transmit();
+		}
 	}
 }

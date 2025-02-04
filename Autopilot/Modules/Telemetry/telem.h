@@ -57,6 +57,7 @@ private:
 	void transmit();
 	void parse_telemetry();
 	void acknowledgement();
+	uint64_t prev_transmit_time;
 };
 
 #endif /* TELEM_H_ */

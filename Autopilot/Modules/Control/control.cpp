@@ -1,5 +1,7 @@
 #include "control.h"
 
+#include <cstdio>
+
 // Use PI controller for pitch and roll, then your integral term is the servo misalignment
 Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 0, 0, -1, 1, 0, false),
 											 	 	   pitch_controller(0.04, 0.01, 0, 0.5, -1, 1, 0, false),
@@ -59,6 +61,8 @@ void Control::update_takeoff()
 // Use guidance altitude and position setpoint to calculate control commands
 void Control::update_mission()
 {
+	printf("%f\n", _plane->guidance_d_setpoint);
+
 	// Calculate roll and pitch setpoints to reach waypoint
 	float roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, _dt);
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt);

@@ -1,5 +1,15 @@
 #include "mlrs_telem.h"
 
+#define BYTE_TO_BINARY(byte)  \
+  ((byte) & 0x80 ? '1' : '0'), \
+  ((byte) & 0x40 ? '1' : '0'), \
+  ((byte) & 0x20 ? '1' : '0'), \
+  ((byte) & 0x10 ? '1' : '0'), \
+  ((byte) & 0x08 ? '1' : '0'), \
+  ((byte) & 0x04 ? '1' : '0'), \
+  ((byte) & 0x02 ? '1' : '0'), \
+  ((byte) & 0x01 ? '1' : '0')
+
 #include <cstdio> // printf testing
 
 Mlrs_telem::Mlrs_telem(UART_HandleTypeDef* uart)
@@ -32,8 +42,6 @@ bool Mlrs_telem::read(uint8_t packet[])
 
 void Mlrs_telem::dma_complete()
 {
-	printf("%d\n", rx_buffer[0]);
-
 	// Detect start byte
 	if (rx_buffer[0] == 0)
 	{
@@ -42,6 +50,8 @@ void Mlrs_telem::dma_complete()
 
 	if (in_reading)
 	{
+		printf("%c%c%c%c%c%c%c%c ", BYTE_TO_BINARY(rx_buffer[0]));
+
 		working_packet[packet_index] = rx_buffer[0];
 		packet_index++;
 
@@ -58,6 +68,7 @@ void Mlrs_telem::dma_complete()
 				}
 
 				new_packet = true;
+				printf("\n");
 			}
 		}
 	}

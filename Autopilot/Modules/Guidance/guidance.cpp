@@ -52,7 +52,7 @@ void Guidance::update_mission()
 	float err_n = tgt_wp_north - _plane->nav_pos_north;
 	float err_e = tgt_wp_east - _plane->nav_pos_east;
 	float dist_to_wp = sqrtf(powf(err_n, 2) + powf(err_e, 2));
-	if ((dist_to_wp < MIN_DIST_WP) && (_plane->waypoint_index < _plane->num_waypoints - 1))
+	if ((dist_to_wp < MIN_DIST_WP) && (_plane->waypoint_index < _plane->num_waypoints))
 	{
 		_plane->waypoint_index++;
 	}
