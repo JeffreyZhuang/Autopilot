@@ -119,6 +119,9 @@ struct Plane
 	Waypoint waypoints[MAX_NUM_WPTS];
     float guidance_hdg_setpoint = 0;
     float guidance_d_setpoint = 0;
+    float rwy_hdg = 67;
+    float rwy_pos_north = 0;
+    float rwy_pos_east = 0;
 
     // RC
     float rc_rudder = 0;
