@@ -13,10 +13,11 @@ public:
 	Control(HAL* hal, Plane* plane, float dt);
 
 	void update_manual();
+	void update_stabilized();
 	void update_takeoff();
 	void update_mission();
 	void update_land();
-	void update_stabilized();
+	void update_flare();
 
 private:
 	HAL* _hal;

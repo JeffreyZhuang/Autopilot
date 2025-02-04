@@ -92,3 +92,8 @@ void Control::update_land()
 	_hal->set_rudder(rudder);
 	_hal->set_throttle(throttle);
 }
+
+void Control::update_flare()
+{
+	_hal->set_throttle(0);
+}
