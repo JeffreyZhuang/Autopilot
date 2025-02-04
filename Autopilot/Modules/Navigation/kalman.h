@@ -35,7 +35,6 @@ private:
     int _m = 3; // Length of input vector
 
     float predict_dt = 0.01;
-    float update_dt = 0.1;
 };
 
 #endif /* KALMAN_H_ */

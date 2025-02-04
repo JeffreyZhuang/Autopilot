@@ -21,7 +21,7 @@ void Guidance::update_mission()
 
 	// Determine target waypoint
 	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
-	lat_lon_to_meters(target_wp.lat, target_wp.lon, _plane->center_lat, _plane->center_lon, &tgt_wp_north, &tgt_wp_east);
+	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, target_wp.lat, target_wp.lon, &tgt_wp_north, &tgt_wp_east);
 	printf("%.0f %.0f %.0f %.0f\n", _plane->nav_pos_north, _plane->nav_pos_east, tgt_wp_north, tgt_wp_east);
 //	printf("%.4f %.4f, %.0f %.0f %.1f\n", target_wp.lat, target_wp.lon, tgt_wp_north, tgt_wp_east, target_wp.alt); // Why this backwards???
 	_plane->guidance_d_setpoint = target_wp.alt;
@@ -36,7 +36,7 @@ void Guidance::update_mission()
 	{
 		prev_wp = Waypoint{_plane->center_lat, _plane->center_lon, 0};
 	}
-	lat_lon_to_meters(prev_wp.lat, prev_wp.lon, _plane->center_lat, _plane->center_lon, &prev_wp_north, &prev_wp_east);
+	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, prev_wp.lat, prev_wp.lon, &prev_wp_north, &prev_wp_east);
 
 	// Calculate track heading
 	float trk_hdg = atan2f(tgt_wp_east - prev_wp_east, tgt_wp_north - prev_wp_north);

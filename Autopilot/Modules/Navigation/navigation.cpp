@@ -149,7 +149,7 @@ void Navigation::read_imu()
 void Navigation::read_gnss()
 {
 	double north, east;
-	lat_lon_to_meters(_plane->gnss_lat, _plane->gnss_lon, _plane->center_lat, _plane->center_lon, &north, &east);
+	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, _plane->gnss_lat, _plane->gnss_lon, &north, &east);
 	gnss_n = (float)north;
 	gnss_e = (float)east;
 	gnss_d = _plane->gnss_asl;

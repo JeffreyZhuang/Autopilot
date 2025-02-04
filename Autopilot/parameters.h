@@ -9,7 +9,7 @@
 #define PARAMETERS_H_
 
 // Airspeed
-constexpr float AIRSPEED_CRUISE = 15; // Meters per second
+constexpr float AIRSPEED_CRUISE = 14; // Meters per second
 
 // Throttle
 constexpr float TRIM_THROTTLE = 0.3; // Steady-state cruise throttle
@@ -20,7 +20,7 @@ constexpr float THR_DEADZONE = 0; // When throttle is set below this value, it i
 // Attitude
 constexpr float PTCH_LIM_MAX_DEG = 10;
 constexpr float PTCH_LIM_MIN_DEG = -10;
-constexpr float ROLL_LIM_DEG = 30; // Maximum roll angle in either direction
+constexpr float ROLL_LIM_DEG = 20; // Maximum roll angle in either direction
 constexpr bool RUDDER_ONLY = false;
 
 // Autoland
