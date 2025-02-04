@@ -32,7 +32,7 @@ void Flight_hal::set_background_task(void (*task)())
 	}
 }
 
-__weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim == &htim7)
 	{
@@ -40,7 +40,7 @@ __weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
-__weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	if (huart == &huart3)
 	{
@@ -48,7 +48,7 @@ __weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 	}
 }
 
-__weak void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
+void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
 	CDC_Transmit_FS(Buf, Len);
 }
