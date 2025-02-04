@@ -90,6 +90,7 @@ void Telem::update()
 	{
 		parse_telemetry();
 		acknowledgement();
+		prev_transmit_time = _hal->get_time_us();
 	}
 	else
 	{
@@ -97,6 +98,7 @@ void Telem::update()
 		if (_hal->get_time_us() - prev_transmit_time > 100000)
 		{
 			transmit();
+			prev_transmit_time = _hal->get_time_us();
 		}
 	}
 }
