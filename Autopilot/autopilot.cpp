@@ -83,7 +83,6 @@ void Autopilot::boot()
 	}
 
 	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
-
 	if (_plane->fix_quality == 1 && transmitter_safe)
 	{
 		_plane->systemMode = SystemMode::FLIGHT;
@@ -184,6 +183,7 @@ void Autopilot::land()
 	if (-_plane->nav_pos_down < LAND_FLARE_ALT)
 	{
 		_plane->autoMode = AutoMode::FLARE;
+		_plane->flare_start_time = _plane->time;
 	}
 }
 
@@ -192,11 +192,18 @@ void Autopilot::flare()
 {
 	_guidance.update_flare();
 	_control.update_flare();
+
+	if (_plane->time - _plane->flare_start_time > 5000000)
+	{
+		_plane->autoMode = AutoMode::SAFE;
+	}
 }
 
 void Autopilot::safe()
 {
-
+	_hal->set_rudder(0);
+	_hal->set_elevator(0);
+	_hal->set_throttle(0);
 }
 
 /**

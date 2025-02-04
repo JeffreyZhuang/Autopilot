@@ -58,6 +58,8 @@ struct Plane
     uint64_t loop_execution_time;
     uint32_t loop_iteration;
 
+    uint64_t flare_start_time;
+
     // IMU
     float imu_ax = 0;
     float imu_ay = 0;
