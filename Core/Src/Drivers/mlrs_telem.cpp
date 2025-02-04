@@ -1,5 +1,7 @@
 #include "mlrs_telem.h"
 
+#include <cstdio> // printf testing
+
 Mlrs_telem::Mlrs_telem(UART_HandleTypeDef* uart)
 {
 	_uart = uart;
@@ -30,22 +32,34 @@ bool Mlrs_telem::read(uint8_t packet[])
 
 void Mlrs_telem::dma_complete()
 {
-	working_packet[packet_index] = rx_buffer[0];
-	packet_index++;
+	printf("%d\n", rx_buffer[0]);
 
-	if (packet_index == packet_len) // Fix to detect start byte
+	// Detect start byte
+	if (rx_buffer[0] == 0)
 	{
-		if (!new_packet)
+		in_reading = true;
+	}
+
+	if (in_reading)
+	{
+		working_packet[packet_index] = rx_buffer[0];
+		packet_index++;
+
+		if (packet_index == packet_len)
 		{
-			for (int i = 0; i < packet_len; i++)
+			in_reading = false;
+			packet_index = 0;
+
+			if (!new_packet)
 			{
-				complete_packet[i] = working_packet[i];
+				for (int i = 0; i < packet_len; i++)
+				{
+					complete_packet[i] = working_packet[i];
+				}
+
+				new_packet = true;
 			}
-
-			new_packet = true;
 		}
-
-		packet_index = 0;
 	}
 
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);

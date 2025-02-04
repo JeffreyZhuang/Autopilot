@@ -21,6 +21,7 @@ private:
 	uint8_t working_packet[packet_len];
 	uint8_t packet_index = 0;
 	bool new_packet = false;
+	bool in_reading = false;
 };
 
 #endif /* INC_DRIVERS_MLRS_TELEM_H_ */

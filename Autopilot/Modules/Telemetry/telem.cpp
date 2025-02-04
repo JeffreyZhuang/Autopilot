@@ -60,7 +60,7 @@ void Telem::parse_telemetry()
 	uint8_t payload[TELEM_PKT_LEN - 2]; // Subtract two since removed start byte and COBS byte
 	cobs_decode(payload, sizeof(payload), packet_no_start_byte, sizeof(packet_no_start_byte)); // Need to handle the case where 0 is not found?
 
-	printf("%d\n", payload[0]); // ERROR IS PROBABLY BECAUSE ITS NOT FINDING START BYTE
+//	printf("%d\n", payload[0]); // ERROR IS PROBABLY BECAUSE ITS NOT FINDING START BYTE
 
 	if (payload[0] == 1) // Command payload
 	{
