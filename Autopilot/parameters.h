@@ -10,6 +10,7 @@
 
 // Airspeed
 constexpr float AIRSPEED_CRUISE = 14; // Meters per second
+constexpr float AIRSPEED_LANDING = 12;
 
 // Throttle
 constexpr float TRIM_THROTTLE = 0.3; // Steady-state cruise throttle

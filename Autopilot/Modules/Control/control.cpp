@@ -84,7 +84,7 @@ void Control::update_land()
 	// Calculate control outputs to track roll and pitch setpoints
 	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt);
 	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, pitch_setpoint, _dt);
-	float throttle = TRIM_THROTTLE + speed_controller.get_output(_plane->nav_airspeed, AIRSPEED_CRUISE, _dt);
+	float throttle = TRIM_THROTTLE + speed_controller.get_output(_plane->nav_airspeed, AIRSPEED_LANDING, _dt);
 	throttle = clamp(throttle, 0, 1);
 
 	// Set control surfaces
