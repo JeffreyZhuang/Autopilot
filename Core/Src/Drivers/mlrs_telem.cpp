@@ -33,11 +33,11 @@ void Mlrs_telem::dma_complete()
 	working_packet[packet_index] = rx_buffer[0];
 	packet_index++;
 
-	if (packet_index == 40)
+	if (packet_index == packet_len) // Fix to detect start byte
 	{
 		if (!new_packet)
 		{
-			for (int i = 0; i < 40; i++)
+			for (int i = 0; i < packet_len; i++)
 			{
 				complete_packet[i] = working_packet[i];
 			}

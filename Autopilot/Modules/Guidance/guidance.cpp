@@ -22,8 +22,6 @@ void Guidance::update_mission()
 	// Determine target waypoint
 	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
 	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, target_wp.lat, target_wp.lon, &tgt_wp_north, &tgt_wp_east);
-	printf("%.0f %.0f %.0f %.0f\n", _plane->nav_pos_north, _plane->nav_pos_east, tgt_wp_north, tgt_wp_east);
-//	printf("%.4f %.4f, %.0f %.0f %.1f\n", target_wp.lat, target_wp.lon, tgt_wp_north, tgt_wp_east, target_wp.alt); // Why this backwards???
 	_plane->guidance_d_setpoint = target_wp.alt;
 
 	// Determine previous waypoint
