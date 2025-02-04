@@ -77,13 +77,18 @@ void Control::update_mission()
 
 void Control::update_land()
 {
-	float roll_setpoint = 0;
-	float pitch_setpoint = 10;
+	// Calculate roll and pitch setpoints to reach waypoint
+	float roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, _dt);
+	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt);
 
-	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt / 1000000);
-	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, pitch_setpoint, _dt / 1000000);
+	// Calculate control outputs to track roll and pitch setpoints
+	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt);
+	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, pitch_setpoint, _dt);
+	float throttle = TRIM_THROTTLE + speed_controller.get_output(_plane->nav_airspeed, AIRSPEED_CRUISE, _dt);
+	throttle = clamp(throttle, 0, 1);
 
+	// Set control surfaces
 	_hal->set_elevator(elevator);
 	_hal->set_rudder(rudder);
-	_hal->set_throttle(0);
+	_hal->set_throttle(throttle);
 }
