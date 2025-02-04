@@ -10,6 +10,7 @@ Telem::Telem(HAL* hal, Plane* plane)
 
 void Telem::transmit()
 {
+	// Create struct
 	Telem_payload payload;
 	payload.roll = _plane->ahrs_roll;
 	payload.pitch = _plane->ahrs_pitch;
@@ -21,15 +22,17 @@ void Telem::transmit()
 	payload.mode_id = _plane->mode_id;
 	payload.wp_idx = _plane->waypoint_index;
 
+	// Convert struct to byte array
 	uint8_t payload_arr[sizeof(Telem_payload)];
 	memcpy(payload_arr, &payload, sizeof(Telem_payload));
 
+	// Consistent overhead byte stuffing
 	uint8_t packet_no_start_byte[TELEM_PKT_LEN - 1]; // Packet without start byte, therefore subtract 1
 	cobs_encode(packet_no_start_byte, sizeof(packet_no_start_byte), payload_arr, sizeof(Telem_payload));
 
-	// Add start byte to packet
+	// Add start byte to beginning of packet
 	uint8_t packet[TELEM_PKT_LEN];
-	packet[0] = 0;
+	packet[0] = 0; // Start byte
 	for (int i = 1; i < TELEM_PKT_LEN; i++)
 	{
 		packet[i] = packet_no_start_byte[i - 1];
