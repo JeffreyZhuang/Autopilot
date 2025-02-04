@@ -13,6 +13,7 @@ void Flight_hal::read_gnss()
 		_plane->gnss_lat = _gnss.lat;
 		_plane->gnss_lon = _gnss.lon;
 		_plane->gnss_sats = _gnss.sats;
+		_plane->fix_quality = _gnss.fix_quality;
 		_plane->gnss_timestamp = get_time_us();
 	}
 }

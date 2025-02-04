@@ -65,6 +65,7 @@ void Pitl_hal::read_pitl()
 	_plane->gnss_lon = data->lon;
 	_plane->gnss_asl = data->asl;
 	_plane->gnss_sats = 10;
+	_plane->fix_quality = 1;
 	_plane->gnss_timestamp = time;
 
 	// Transmit control commands
