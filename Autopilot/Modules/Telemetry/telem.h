@@ -10,8 +10,8 @@
 
 #include <cstring>
 #include "hal.h"
-#include "cobs.h"
-#include "utils.h"
+#include "Lib/COBS/cobs.h"
+#include "Lib/Utils/utils.h"
 
 struct __attribute__((packed))Telem_payload
 {

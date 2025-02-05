@@ -2,8 +2,8 @@
 #define NAVIGATION_H
 
 #include "hal.h"
-#include "kalman.h"
-#include "utils.h"
+#include "Lib/Kalman/kalman.h"
+#include "Lib/Utils/utils.h"
 
 static constexpr int n = 6;
 static constexpr int m = 3;

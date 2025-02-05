@@ -20,7 +20,7 @@
 // Header files
 
 #include <math.h>
-#include <Modules/Attitude/madgwick.h>
+#include <Lib/Madgwick/madgwick.h>
 
 //-------------------------------------------------------------------------------------------
 // Definitions

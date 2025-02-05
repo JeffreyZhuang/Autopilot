@@ -1,7 +1,7 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include <Modules/Attitude/madgwick.h>
+#include <Lib/Madgwick/madgwick.h>
 #include "plane.h"
 #include "hal.h"
 #include <stdio.h>
