@@ -7,7 +7,7 @@ Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 
 											 	 	   pitch_controller(0.04, 0.0, 0, 0, -1, 1, 0, false),
 													   hdg_controller(1, 0, 0, 0, -ROLL_LIM_DEG, ROLL_LIM_DEG, 0, true),
 													   alt_controller(1, 0, 0, 0, PTCH_LIM_MIN_DEG, PTCH_LIM_MAX_DEG, 0, false),
-													   speed_controller(0.005, 0, 0, 1, 0, 1, TRIM_THROTTLE, false) // Start with P first, then add I
+													   speed_controller(0.01, 0.0001, 0, 1, 0, 1, TRIM_THROTTLE, false) // Start with P first, then add I
 {
 	_hal = hal;
 	_plane = plane;
@@ -95,11 +95,13 @@ void Control::update_land()
 	_hal->set_throttle(throttle);
 }
 
+// Pitch dips because throttle cut
 void Control::update_flare()
 {
 	// Calculate roll and pitch setpoints to reach waypoint
 	float roll_setpoint = 0;
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt);
+//	float pitch_setpoint = 10;
 
 	// Calculate control outputs to track roll and pitch setpoints
 	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt);

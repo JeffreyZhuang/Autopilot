@@ -25,7 +25,7 @@ constexpr float ROLL_LIM_DEG = 20; // Maximum roll angle in either direction
 constexpr bool RUDDER_ONLY = false;
 
 // Autoland
-constexpr float LAND_FLARE_ALT = 25; // Flare altitude
+constexpr float LAND_FLARE_ALT = 35; // Flare altitude
 constexpr float LAND_GS_DEG = 10; // Landing glideslope angle
 
 // Takeoff
