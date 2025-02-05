@@ -86,7 +86,7 @@ void Guidance::update_flare()
 							   powf(_plane->nav_pos_east - _plane->rwy_pos_east, 2));
 
 	// Follow shallow glideslope angle
-	float gs_angle = 3;
-	_plane->guidance_d_setpoint = dist_to_land * sinf(gs_angle * M_PI / 180.0f);
+	float gs_angle = 2;
+	_plane->guidance_d_setpoint = -dist_to_land * sinf(gs_angle * M_PI / 180.0f);
 }
 

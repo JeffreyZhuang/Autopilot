@@ -94,8 +94,8 @@ void Telem::update()
 	}
 	else
 	{
-		// Limit to 10Hz to prevent overflowing buffer
-		if (_hal->get_time_us() - prev_transmit_time > 100000)
+		// Limit to 20Hz to prevent overflowing buffer
+		if (_hal->get_time_us() - prev_transmit_time > 50000)
 		{
 			transmit();
 			prev_transmit_time = _hal->get_time_us();
