@@ -121,6 +121,8 @@ struct Plane
 	Waypoint waypoints[MAX_NUM_WPTS];
     float guidance_hdg_setpoint = 0;
     float guidance_d_setpoint = 0;
+
+    // Landing
     float land_hdg = 0;
     float land_lat = 0;
     float land_lon = 0;
