@@ -18,6 +18,9 @@ extern "C"
 #include "minmea.h"
 }
 
+/**
+ * Configure GNSS in U-center to ONLY output GGA NMEA sentences
+ */
 class GNSS
 {
 public:
