@@ -168,13 +168,13 @@ void Autopilot::mission()
 	_control.update_mission();
 
 	// Calculate distance to waypoint
-	double tgt_wp_north, tgt_wp_east, prev_wp_north, prev_wp_east;
+	double tgt_wp_north, tgt_wp_east;
 	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
 	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, target_wp.lat, target_wp.lon, &tgt_wp_north, &tgt_wp_east);
 	float dist_to_wp = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));
 
 	// If the plane has reached the last waypoint
-	if ((_plane->waypoint_index == _plane->num_waypoints - 1) && (dist_to_wp < 100))
+	if ((_plane->waypoint_index == _plane->num_waypoints - 1) && (dist_to_wp < MIN_DIST_WP))
 	{
 		_plane->autoMode = AutoMode::LAND;
 	}
