@@ -83,7 +83,6 @@ void Telem::parse_telemetry()
 		_plane->land_lat = landing_target_payload.lat;
 		_plane->land_lon = landing_target_payload.lon;
 		_plane->land_hdg = landing_target_payload.hdg;
-		printf("%f %f %f\n", _plane->land_lat, _plane->land_lon, _plane->land_hdg);
 	}
 }
 

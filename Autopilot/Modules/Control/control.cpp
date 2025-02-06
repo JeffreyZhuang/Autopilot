@@ -101,7 +101,8 @@ void Control::update_flare()
 	// Calculate roll and pitch setpoints to reach waypoint
 	float roll_setpoint = 0;
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt);
-//	float pitch_setpoint = 10;
+
+	printf("%f %f\n", _plane->guidance_d_setpoint, pitch_setpoint);
 
 	// Calculate control outputs to track roll and pitch setpoints
 	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt);
