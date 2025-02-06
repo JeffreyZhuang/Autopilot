@@ -85,14 +85,7 @@ void Guidance::update_landing()
 
 void Guidance::update_flare()
 {
-	double land_north, land_east;
-	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, _plane->land_lat, _plane->land_lon, &land_north, &land_east);
-
-	float dist_to_land = sqrtf(powf(_plane->nav_pos_north - land_north, 2) +
-							   powf(_plane->nav_pos_east - land_east, 2));
-
-	// Follow shallow glideslope angle
-	float gs_angle = 2;
-	_plane->guidance_d_setpoint = -dist_to_land * sinf(gs_angle * M_PI / 180.0f);
+	// Set descent rate to -0.5m/s
+	_plane->guidance_d_setpoint += 0.5 * _hal->main_dt;
 }
 
