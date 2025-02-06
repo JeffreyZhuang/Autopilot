@@ -27,7 +27,7 @@ constexpr bool RUDDER_ONLY = false;
 // Autoland
 constexpr float LAND_GS_DEG = 10; // Landing glideslope angle
 constexpr float LAND_FLARE_ALT = 25; // Flare altitude
-constexpr float FLARE_SINK_RATE = 1;
+constexpr float FLARE_SINK_RATE = 0.7;
 
 // Takeoff
 constexpr float TAKEOFF_ALT = 10; // Altitude that the plane will climb to during takeoff meters per second
