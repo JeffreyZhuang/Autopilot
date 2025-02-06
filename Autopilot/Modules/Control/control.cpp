@@ -12,6 +12,8 @@ Control::Control(HAL * hal, Plane * plane, float dt) : roll_controller(0.04, 0, 
 	_hal = hal;
 	_plane = plane;
 	_dt = dt;
+
+	printf("dt: %f\n", dt);
 }
 
 // Read from radio and direct to servos
@@ -61,8 +63,6 @@ void Control::update_takeoff()
 // Use guidance altitude and position setpoint to calculate control commands
 void Control::update_mission()
 {
-	printf("%f\n", _plane->guidance_d_setpoint);
-
 	// Calculate roll and pitch setpoints to reach waypoint
 	float roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, _dt);
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt);
@@ -101,8 +101,6 @@ void Control::update_flare()
 	// Calculate roll and pitch setpoints to reach waypoint
 	float roll_setpoint = 0;
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt);
-
-	printf("%f %f\n", _plane->guidance_d_setpoint, pitch_setpoint);
 
 	// Calculate control outputs to track roll and pitch setpoints
 	float rudder = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt);
