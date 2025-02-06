@@ -60,18 +60,21 @@ void Guidance::update_mission()
 
 void Guidance::update_landing()
 {
-	float dist_to_land = sqrtf(powf(_plane->nav_pos_north - _plane->rwy_pos_north, 2) +
-							   powf(_plane->nav_pos_east - _plane->rwy_pos_east, 2));
+	double land_north, land_east, land_hdg;
+	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, _plane->land_lat, _plane->land_lon, &land_north, &land_east);
+
+	float dist_to_land = sqrtf(powf(_plane->nav_pos_north - land_north, 2) +
+							   powf(_plane->nav_pos_east - land_east, 2));
 
 	// Follow glideslope angle
 	_plane->guidance_d_setpoint = -dist_to_land * sinf(LAND_GS_DEG * M_PI / 180.0f);
 
 	// Set track heading to runway heading
-	float trk_hdg = _plane->rwy_hdg * M_PI / 180.0f;
+	float trk_hdg = land_hdg * M_PI / 180.0f;
 
 	// Calculate cross track error
-	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - _plane->rwy_pos_east) -
-				sinf(trk_hdg) * (_plane->nav_pos_north - _plane->rwy_pos_north);
+	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - land_east) -
+				sinf(trk_hdg) * (_plane->nav_pos_north - land_north);
 
 	// Calculate heading setpoint
 	_plane->guidance_hdg_setpoint = trk_hdg * 180.0f / M_PI + clamp(kP * (0 - xte), -90, 90);
@@ -82,8 +85,11 @@ void Guidance::update_landing()
 
 void Guidance::update_flare()
 {
-	float dist_to_land = sqrtf(powf(_plane->nav_pos_north - _plane->rwy_pos_north, 2) +
-							   powf(_plane->nav_pos_east - _plane->rwy_pos_east, 2));
+	double land_north, land_east, land_hdg;
+	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, _plane->land_lat, _plane->land_lon, &land_north, &land_east);
+
+	float dist_to_land = sqrtf(powf(_plane->nav_pos_north - land_north, 2) +
+							   powf(_plane->nav_pos_east - land_east, 2));
 
 	// Follow shallow glideslope angle
 	float gs_angle = 2;

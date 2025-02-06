@@ -62,8 +62,6 @@ void Telem::parse_telemetry()
 	uint8_t payload[TELEM_PKT_LEN - 2]; // Subtract two since removed start byte and COBS byte
 	cobs_decode(payload, sizeof(payload), packet_no_start_byte, sizeof(packet_no_start_byte)); // Need to handle the case where 0 is not found?
 
-//	printf("%d\n", payload[0]); // ERROR IS PROBABLY BECAUSE ITS NOT FINDING START BYTE
-
 	if (payload[0] == 1) // Command payload
 	{
 		Command_payload command_payload;
@@ -75,10 +73,16 @@ void Telem::parse_telemetry()
 		Waypoint_payload waypoint_payload;
 		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
 
-		printf("%f\n", waypoint_payload.alt);
-
 		_plane->num_waypoints = waypoint_payload.waypoint_index + 1; // Add a byte to indicate max number of waypoints later
 		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.lat, waypoint_payload.lon, waypoint_payload.alt};
+	}
+	else if (payload[0] == 3) // Landing target payload
+	{
+		Landing_target_payload landing_target_payload;
+		memcpy(&landing_target_payload, payload, sizeof(Landing_target_payload));
+		_plane->land_lat = landing_target_payload.lat;
+		_plane->land_lon = landing_target_payload.lon;
+		_plane->land_hdg = landing_target_payload.hdg;
 	}
 }
 

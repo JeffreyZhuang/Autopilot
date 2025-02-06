@@ -39,6 +39,15 @@ struct __attribute__((packed))Waypoint_payload
 	uint8_t empty[24];
 };
 
+struct __attribute__((packed))Landing_target_payload
+{
+	uint8_t payload_type;
+	float lat;
+	float lon;
+	float hdg;
+	uint8_t empty[25];
+};
+
 struct __attribute__((packed))Command_payload
 {
 	uint8_t payload_type;
