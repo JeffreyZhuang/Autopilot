@@ -85,7 +85,7 @@ void Guidance::update_landing()
 
 void Guidance::update_flare()
 {
-	// Decrease altitude setpoint at a rate of 0.5m/s
+	// Decrease altitude setpoint at a rate of FLARE_SINK_RATE
 	_plane->guidance_d_setpoint = LAND_FLARE_ALT + FLARE_SINK_RATE * (_plane->time - _plane->flare_start_time) / 1000000.0f;
 }
 
