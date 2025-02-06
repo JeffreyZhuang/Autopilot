@@ -187,9 +187,10 @@ void Autopilot::land()
 
 	_control.update_land();
 
-	if (-_plane->rangefinder_dist < LAND_FLARE_ALT)
+	if (_plane->rangefinder_dist < LAND_FLARE_ALT)
 	{
 		_plane->autoMode = AutoMode::FLARE;
+		_plane->flare_alt = _plane->nav_pos_down;
 		_plane->flare_start_time = _plane->time;
 	}
 }
