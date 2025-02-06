@@ -35,6 +35,7 @@ struct Pitl_rx_packet
 	float asl;
 	float lat;
 	float lon;
+	float agl;
 };
 
 // Use aileron instead of rudder. Afterwards I just set aileron command directly to rudder.

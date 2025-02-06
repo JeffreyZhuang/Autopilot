@@ -100,6 +100,10 @@ struct Plane
     float ahrs_q3 = 0;
     uint64_t ahrs_timestamp;
 
+    // Rangefinder
+    float rangefinder_dist;
+    uint64_t rangefinder_timestamp;
+
     // Navigation
     float nav_pos_north = 0;
     float nav_pos_east = 0;

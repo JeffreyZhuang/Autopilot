@@ -16,8 +16,6 @@ Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane), mlrs_rc(&huart4), mlrs_telem(&hua
 
 void Pitl_hal::init()
 {
-	printf("Start\n");
-
 	mlrs_rc.setup();
 	mlrs_telem.setup();
 }
@@ -67,6 +65,8 @@ void Pitl_hal::read_pitl()
 	_plane->gnss_sats = 10;
 	_plane->fix_quality = 1;
 	_plane->gnss_timestamp = time;
+	_plane->rangefinder_dist = data->agl;
+	_plane->rangefinder_timestamp = time;
 
 	// Transmit control commands
 	uint8_t txBuf[sizeof(Pitl_tx_packet)];
