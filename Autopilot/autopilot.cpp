@@ -200,7 +200,7 @@ void Autopilot::flare()
 	_guidance.update_flare();
 	_control.update_flare();
 
-	if (_plane->time - _plane->flare_start_time > 5000000)
+	if (_plane->time - _plane->flare_start_time > 10000000)
 	{
 		_plane->autoMode = AutoMode::SAFE;
 	}
