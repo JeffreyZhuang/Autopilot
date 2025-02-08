@@ -15,7 +15,7 @@ class AHRS
 public:
     AHRS(HAL* hal, Plane* plane, float dt);
     void setup();
-    void set_initial_state();
+    bool set_initial_state();
     void update();
 private:
     void update_imu();
@@ -30,8 +30,9 @@ private:
     Madgwick filter;
 
     float _dt;
-    uint64_t last_imu_timestamp;
-    uint64_t last_compass_timestamp;
+    uint64_t last_imu_timestamp = 0;
+    uint64_t last_compass_timestamp = 0;
+    bool initial_state_set = false;
 };
 
 #endif

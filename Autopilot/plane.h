@@ -65,20 +65,20 @@ struct Plane
     float imu_gx = 0;
     float imu_gy = 0;
     float imu_gz = 0;
-    float imu_temp;
-    uint32_t imu_timestamp;
+    float imu_temp = 0;
+    uint32_t imu_timestamp = 0;
 
     // Compass
     float compass_mx = 0;
     float compass_my = 0;
     float compass_mz = 0;
-    uint64_t compass_timestamp;
+    uint64_t compass_timestamp = 0;
 
     // Barometer
     float baro_alt = 0;
     float baro_offset = 0;
     float baro_temp = 0;
-    uint64_t baro_timestamp;
+    uint64_t baro_timestamp = 0;
 
     // GNSS
     double gnss_lat = 0;
@@ -86,7 +86,7 @@ struct Plane
     float gnss_asl = 0;
     uint8_t gnss_sats = 0;
     bool fix_quality = 0;
-    uint64_t gnss_timestamp;
+    uint64_t gnss_timestamp = 0;
 
     // AHRS
     float ahrs_roll = 0;
@@ -96,11 +96,11 @@ struct Plane
     float ahrs_q1 = 0;
     float ahrs_q2 = 0;
     float ahrs_q3 = 0;
-    uint64_t ahrs_timestamp;
+    uint64_t ahrs_timestamp = 0;
 
     // Rangefinder
-    float rangefinder_dist;
-    uint64_t rangefinder_timestamp;
+    float rangefinder_dist = 0;
+    uint64_t rangefinder_timestamp = 0;
 
     // Navigation
     float nav_pos_north = 0;
@@ -115,7 +115,7 @@ struct Plane
     float nav_airspeed = 0;
     double center_lat = 0;
 	double center_lon = 0;
-    uint64_t nav_timestamp;
+    uint64_t nav_timestamp = 0;
 
     // Guidance
     uint8_t waypoint_index = 0;
@@ -128,7 +128,7 @@ struct Plane
     float land_hdg = 0;
     float land_lat = 0;
     float land_lon = 0;
-    uint64_t flare_start_time;
+    uint64_t flare_start_time = 0;
     float flare_alt = 0;
 
     // RC

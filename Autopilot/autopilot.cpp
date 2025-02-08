@@ -66,11 +66,13 @@ void Autopilot::evaluate_system_mode()
 	}
 }
 
+// Set initial state only once, and then update AHRS normally so you have time for filter to converge
+// Then check for filter converge before moving out of boot
 void Autopilot::boot()
 {
 	_ahrs.set_initial_state();
+	_ahrs.update();
 
-	// Zero barometer
 	_plane->baro_offset = _plane->baro_alt;
 
 	// Set home position to first GPS fix
@@ -78,9 +80,9 @@ void Autopilot::boot()
 	{
 		_plane->center_lat = _plane->gnss_lat;
 		_plane->center_lon = _plane->gnss_lon;
-	}
 
-	_navigation.execute();
+		_navigation.execute();
+	}
 
 	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
 	if (_plane->fix_quality == 1 && transmitter_safe)
