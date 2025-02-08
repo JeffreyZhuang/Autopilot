@@ -70,6 +70,7 @@ void Autopilot::evaluate_system_mode()
 // Then check for filter converge before moving out of boot
 void Autopilot::boot()
 {
+	printf("%d %d\n", _ahrs.set_initial_state(), _ahrs.initial_state_set);
 	if (_ahrs.initial_state_set)
 	{
 		_ahrs.update();
