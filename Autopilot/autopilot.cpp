@@ -70,7 +70,6 @@ void Autopilot::evaluate_system_mode()
 // Then check for filter converge before moving out of boot
 void Autopilot::boot()
 {
-	// Only works when SWO connected????? Otherwise IMU doesn't init and reads 0
 	if (_ahrs.initial_state_set)
 	{
 		_ahrs.update();
