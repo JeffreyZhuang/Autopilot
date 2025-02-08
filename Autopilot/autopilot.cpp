@@ -70,8 +70,14 @@ void Autopilot::evaluate_system_mode()
 // Then check for filter converge before moving out of boot
 void Autopilot::boot()
 {
-	_ahrs.set_initial_state();
-	_ahrs.update();
+	if (_ahrs.initial_state_set)
+	{
+		_ahrs.update();
+	}
+	else
+	{
+		_ahrs.set_initial_state();
+	}
 
 	_plane->baro_offset = _plane->baro_alt;
 

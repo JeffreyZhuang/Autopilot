@@ -17,6 +17,7 @@ public:
     void setup();
     bool set_initial_state();
     void update();
+    bool initial_state_set = false;
 private:
     void update_imu();
     void update_imu_mag();
@@ -32,7 +33,6 @@ private:
     float _dt;
     uint64_t last_imu_timestamp = 0;
     uint64_t last_compass_timestamp = 0;
-    bool initial_state_set = false;
 };
 
 #endif
