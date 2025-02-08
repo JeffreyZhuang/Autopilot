@@ -3,12 +3,14 @@
 
 #include "hal.h"
 #include "plane.h"
-#include <gnss.h>
-#include <icm42688p.h>
-#include <ina219.h>
-#include <mlx90393.h>
-#include <sd.h>
+#include "gnss.h"
+#include "icm42688p.h"
+#include "ina219.h"
+#include "mlx90393.h"
+#include "sd.h"
 #include "servos.h"
+#include "mlrs_rc.h"
+#include "mlrs_telem.h"
 
 extern "C"
 {
@@ -24,6 +26,8 @@ extern DMA_HandleTypeDef hdma_sdio_tx;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim7;
 extern UART_HandleTypeDef huart3;
+extern UART_HandleTypeDef huart4;
+extern UART_HandleTypeDef huart6;
 
 class Flight_hal : public HAL
 {
@@ -31,7 +35,9 @@ public:
 	Flight_hal(Plane * plane) : HAL(plane),
 								_imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),
 								_ina219(&hi2c1, 0.01),
-								_gnss(&huart3)
+								_gnss(&huart3),
+								mlrs_rc(&huart4),
+								mlrs_telem(&huart6)
 	{
 		_instance = this;
 		_plane = plane;
@@ -51,13 +57,7 @@ public:
 	// gnss_hal.cpp
 	void init_gnss();
 	void read_gnss();
-	static void gnss_dma_complete()
-	{
-		if (_instance != nullptr)
-		{
-			_instance->_gnss.dma_complete();
-		}
-	}
+	static void gnss_dma_complete() { _instance->_gnss.dma_complete(); }
 
 	// compass_hal.cpp
 	void init_compass();
@@ -81,21 +81,21 @@ public:
 	// servos_hal.cpp
 	void set_elevator(float deg);
 	void set_rudder(float deg);
+	void set_throttle(float throttle);
 
 	// power_monitor_hal.cpp
 	void read_power_monitor();
+
+	// telemetry_hal.cpp
+	void read_rc();
+	void transmit_telem(uint8_t tx_buff[], int len);
+	bool read_telem();
 
 	// scheduler_hal.cpp
 	void set_main_task(void (*task)());
 	void set_background_task(void (*task)());
 	void execute_main_task();
-	static void main_task_callback()
-	{
-		if (_instance != nullptr)
-		{
-			_instance->execute_main_task();
-		}
-	}
+	static void main_task_callback() { _instance->execute_main_task(); }
 
 private:
 	Plane* _plane;
@@ -104,6 +104,8 @@ private:
 	Adafruit_MLX90393 _mag;
 	GNSS _gnss;
 	Sd _sd;
+	Mlrs_rc mlrs_rc;
+	Mlrs_telem mlrs_telem;
 
 	float _hard_iron[3] = {52.67, -5.27, 81.54};
 	float _soft_iron[3][3] = {{1.031, 0.015, -0.0032},

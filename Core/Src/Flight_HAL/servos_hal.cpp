@@ -17,3 +17,8 @@ void Flight_hal::set_rudder(float deg)
 {
 
 }
+
+void Flight_hal::set_throttle(float throttle)
+{
+
+}
