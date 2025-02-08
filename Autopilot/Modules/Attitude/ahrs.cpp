@@ -94,8 +94,6 @@ void AHRS::update()
 {
 	if (check_new_imu_data())
 	{
-		printf("Update\n");
-
 		if (check_new_compass_data())
 		{
 			update_imu_mag();

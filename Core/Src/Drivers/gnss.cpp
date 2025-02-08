@@ -31,7 +31,7 @@ bool GNSS::parse()
 			lat = minmea_tocoord_double(&frame.latitude);
 			lon = minmea_tocoord_double(&frame.longitude);
 			sats = frame.satellites_tracked;
-			fix_quality = frame.fix_quality == 1;
+			fix = frame.fix_quality == 1;
 
 			return true;
 		}

@@ -32,7 +32,7 @@ public:
 	double lat = 0; // deg
 	double lon = 0;
 	uint8_t sats = 0;
-	bool fix_quality = 0;
+	bool fix = false;
 private:
 	UART_HandleTypeDef* _uart;
 

@@ -70,7 +70,7 @@ void Autopilot::evaluate_system_mode()
 // Then check for filter converge before moving out of boot
 void Autopilot::boot()
 {
-	printf("%d %d\n", _ahrs.set_initial_state(), _ahrs.initial_state_set);
+	// Only works when SWO connected????? Otherwise IMU doesn't init and reads 0
 	if (_ahrs.initial_state_set)
 	{
 		_ahrs.update();
@@ -83,7 +83,7 @@ void Autopilot::boot()
 	_plane->baro_offset = _plane->baro_alt;
 
 	// Set home position to first GPS fix
-	if (_plane->fix_quality == 1)
+	if (_plane->gps_fix)
 	{
 		_plane->center_lat = _plane->gnss_lat;
 		_plane->center_lon = _plane->gnss_lon;
@@ -92,7 +92,7 @@ void Autopilot::boot()
 	}
 
 	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
-	if (_plane->fix_quality == 1 && transmitter_safe)
+	if (_plane->gps_fix && transmitter_safe)
 	{
 		_plane->systemMode = SystemMode::FLIGHT;
 	}

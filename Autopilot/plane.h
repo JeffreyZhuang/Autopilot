@@ -85,7 +85,7 @@ struct Plane
     double gnss_lon = 0;
     float gnss_asl = 0;
     uint8_t gnss_sats = 0;
-    bool fix_quality = 0;
+    bool gps_fix = false;
     uint64_t gnss_timestamp = 0;
 
     // AHRS
