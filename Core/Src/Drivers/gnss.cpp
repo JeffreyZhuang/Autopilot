@@ -19,7 +19,7 @@ void GNSS::setup()
 
 bool GNSS::parse(uint8_t sentence[])
 {
-	if (new_data)
+	if (buffer_full)
 	{
 		// Return sentence
 		for (int i = 0; i < sizeof(complete_nmea_sentence) / sizeof(complete_nmea_sentence[0]); i++)
@@ -27,7 +27,7 @@ bool GNSS::parse(uint8_t sentence[])
 			sentence[i] = complete_nmea_sentence[i];
 		}
 
-		new_data = false;
+		buffer_full = false;
 
 		// Parse
 		char* line = (char*)sentence;
@@ -61,7 +61,7 @@ void GNSS::dma_complete()
 
 	if ((char)(rx_buffer[0]) == '\n')
 	{
-		new_data = false;
+		buffer_full = false;
 
 		// Copy gnss_sentence to complete_nmea_sentence and set nmea_sentence to 0
 		for (int i = 0; i < nmea_sentence_len; i++)
@@ -70,7 +70,7 @@ void GNSS::dma_complete()
 			nmea_sentence[i] = 0;
 		}
 
-		new_data = true;
+		buffer_full = true;
 		last_sentence_index = 0;
 	}
 

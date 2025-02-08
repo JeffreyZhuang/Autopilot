@@ -43,7 +43,7 @@ private:
 	uint8_t complete_nmea_sentence[nmea_sentence_len];
 	uint8_t last_sentence_index = 0;
 
-	bool new_data = false;
+	bool buffer_full = false;
 };
 
 #endif /* INC_GNSS_H_ */
