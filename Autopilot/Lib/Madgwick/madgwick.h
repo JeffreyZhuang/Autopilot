@@ -32,7 +32,6 @@ private:
     float roll;
     float pitch;
     float yaw;
-    char anglesComputed;
     void computeAngles();
 
 //-------------------------------------------------------------------------------------------
@@ -53,27 +52,27 @@ public:
     void set_state(float q0_, float q1_, float q2_, float q3_);
 
     float getRoll() {
-        if (!anglesComputed) computeAngles();
+        computeAngles();
         return roll * 57.29578f;
     }
     float getPitch() {
-        if (!anglesComputed) computeAngles();
+        computeAngles();
         return pitch * 57.29578f;
     }
     float getYaw() {
-        if (!anglesComputed) computeAngles();
+        computeAngles();
         return yaw * 57.29578f + 180.0f;
     }
     float getRollRadians() {
-        if (!anglesComputed) computeAngles();
+        computeAngles();
         return roll;
     }
     float getPitchRadians() {
-        if (!anglesComputed) computeAngles();
+        computeAngles();
         return pitch;
     }
     float getYawRadians() {
-        if (!anglesComputed) computeAngles();
+        computeAngles();
         return yaw;
     }
 };

@@ -42,7 +42,6 @@ Madgwick::Madgwick() {
 	q2 = 0.0f;
 	q3 = 0.0f;
 	invSampleFreq = 1.0f / sampleFreqDef;
-	anglesComputed = 0;
 }
 
 void Madgwick::set_gain(float b)
@@ -157,7 +156,6 @@ void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az
 	q1 *= recipNorm;
 	q2 *= recipNorm;
 	q3 *= recipNorm;
-	anglesComputed = 0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -234,7 +232,6 @@ void Madgwick::updateIMU(float gx, float gy, float gz, float ax, float ay, float
 	q1 *= recipNorm;
 	q2 *= recipNorm;
 	q3 *= recipNorm;
-	anglesComputed = 0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -259,6 +256,5 @@ void Madgwick::computeAngles()
 	roll = atan2f(q0*q1 + q2*q3, 0.5f - q1*q1 - q2*q2);
 	pitch = asinf(-2.0f * (q1*q3 - q0*q2));
 	yaw = atan2f(q1*q2 + q0*q3, 0.5f - q2*q2 - q3*q3);
-	anglesComputed = 1;
 }
 

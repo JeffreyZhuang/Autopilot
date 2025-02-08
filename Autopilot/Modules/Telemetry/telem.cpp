@@ -23,6 +23,8 @@ void Telem::transmit()
 	payload.lon = _plane->gnss_lon;
 	payload.mode_id = _plane->mode_id;
 	payload.wp_idx = _plane->waypoint_index;
+	payload.gps_sats = _plane->gnss_sats;
+	payload.gps_fix = _plane->fix_quality;
 
 	// Convert struct to byte array
 	uint8_t payload_arr[sizeof(Telem_payload)];

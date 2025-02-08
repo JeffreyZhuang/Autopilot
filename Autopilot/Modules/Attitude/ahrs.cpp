@@ -59,6 +59,7 @@ void AHRS::set_initial_state()
 	}
 
 	filter.set_state(q0, q1, q2, q3); // Set initial state
+
 	publish_ahrs();
 }
 
