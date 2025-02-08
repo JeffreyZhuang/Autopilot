@@ -17,25 +17,19 @@ void GNSS::setup()
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
 }
 
-bool GNSS::parse(uint8_t sentence[])
+bool GNSS::parse()
 {
 	if (buffer_full)
 	{
-		// Return sentence
-		for (int i = 0; i < nmea_sentence_len; i++)
-		{
-			sentence[i] = complete_nmea_sentence[i];
-		}
-
 		buffer_full = false;
 
 		// Parse
-		char* line = (char*)sentence;
+		char* line = (char*)complete_sentence;
 		struct minmea_sentence_gga frame;
 		if (minmea_parse_gga(&frame, line))
 		{
-			lat = minmea_tocoord(&frame.latitude);
-			lon = minmea_tocoord(&frame.longitude);
+			lat = minmea_tocoord_double(&frame.latitude);
+			lon = minmea_tocoord_double(&frame.longitude);
 			sats = frame.satellites_tracked;
 			fix_quality = frame.fix_quality;
 
@@ -49,32 +43,45 @@ bool GNSS::parse(uint8_t sentence[])
 // Remember to disable UBX output! It is only made for NMEA packets, not UBX.
 void GNSS::dma_complete()
 {
-	// Append recieved byte to GNSS sentence
-	nmea_sentence[last_sentence_index] = rx_buffer[0];
-	last_sentence_index++;
-
-	// Prevent out of range index
-	if (last_sentence_index == nmea_sentence_len)
+	if (!buffer_full)
 	{
-		last_sentence_index = nmea_sentence_len - 1;
-	}
+		// Append recieved byte to GNSS sentence
+		working_sentence[last_sentence_index] = rx_buffer[0];
+		last_sentence_index++;
 
-	if ((char)(rx_buffer[0]) == '\n')
-	{
-		if (!buffer_full)
+		// Prevent out of range index
+		// This is sketch, need to refactor
+		if (last_sentence_index == sentence_len)
 		{
-			// Copy gnss_sentence to complete_nmea_sentence and set nmea_sentence to 0
-			for (int i = 0; i < nmea_sentence_len; i++)
+			last_sentence_index = sentence_len - 1;
+		}
+
+		if ((char)(rx_buffer[0]) == '\n')
+		{
+			// Copy gnss_sentence to complete sentence and set working sentence to 0
+			for (int i = 0; i < sentence_len; i++)
 			{
-				complete_nmea_sentence[i] = nmea_sentence[i];
-				nmea_sentence[i] = 0;
+				complete_sentence[i] = working_sentence[i];
+				working_sentence[i] = 0;
 			}
 
 			buffer_full = true;
+			last_sentence_index = 0;
 		}
-
-		last_sentence_index = 0;
 	}
 
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
+}
+
+double GNSS::minmea_tocoord_double(const struct minmea_float *f)
+{
+    if (f->scale == 0)
+        return NAN;
+    if (f->scale  > (INT_LEAST32_MAX / 100))
+        return NAN;
+    if (f->scale < (INT_LEAST32_MIN / 100))
+        return NAN;
+    int_least32_t degrees = f->value / (f->scale * 100);
+    int_least32_t minutes = f->value % (f->scale * 100);
+    return (double) degrees + (double) minutes / (60 * f->scale);
 }

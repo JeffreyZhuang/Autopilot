@@ -7,8 +7,7 @@ void Flight_hal::init_gnss()
 
 void Flight_hal::read_gnss()
 {
-	uint8_t sentence[100];
-	if (_gnss.parse(sentence))
+	if (_gnss.parse())
 	{
 		_plane->gnss_lat = _gnss.lat;
 		_plane->gnss_lon = _gnss.lon;

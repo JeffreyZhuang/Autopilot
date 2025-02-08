@@ -27,7 +27,7 @@ public:
 	GNSS(UART_HandleTypeDef* uart);
 	void setup();
 	void dma_complete();
-	bool parse(uint8_t sentence[]);
+	bool parse();
 
 	double lat = 0; // deg
 	double lon = 0;
@@ -38,12 +38,14 @@ private:
 
 	uint8_t rx_buffer[1];
 
-	static constexpr uint8_t nmea_sentence_len = 100;
-	uint8_t nmea_sentence[nmea_sentence_len];
-	uint8_t complete_nmea_sentence[nmea_sentence_len];
+	static constexpr uint8_t sentence_len = 100;
+	uint8_t working_sentence[sentence_len];
+	uint8_t complete_sentence[sentence_len];
 	uint8_t last_sentence_index = 0;
 
 	bool buffer_full = false;
+
+	double minmea_tocoord_double(const struct minmea_float *f);
 };
 
 #endif /* INC_GNSS_H_ */
