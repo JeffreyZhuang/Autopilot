@@ -10,6 +10,7 @@ void Flight_hal::init()
 	init_compass();
 	init_gnss();
 	init_logger();
+	init_telem();
 }
 
 void Flight_hal::read_sensors()
@@ -19,4 +20,5 @@ void Flight_hal::read_sensors()
 	read_compass();
 	read_gnss();
 	read_power_monitor();
+	read_rc();
 }

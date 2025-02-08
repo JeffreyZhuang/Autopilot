@@ -1,6 +1,12 @@
 #include "Flight_HAL/flight_hal.h"
 #include "Lib/Utils/utils.h"
 
+void Flight_hal::init_telem()
+{
+	mlrs_rc.setup();
+	mlrs_telem.setup();
+}
+
 void Flight_hal::read_rc()
 {
 	// Convert range from (1000, 2000) to (-1, 1)

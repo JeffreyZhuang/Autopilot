@@ -46,6 +46,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 	{
 		Flight_hal::gnss_dma_complete();
 	}
+	else if (huart == &huart4)
+	{
+		Flight_hal::rc_dma_complete();
+	}
+	else if (huart == &huart6)
+	{
+		Flight_hal::telemetry_dma_complete();
+	}
 }
 
 void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
