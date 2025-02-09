@@ -30,7 +30,7 @@ constexpr float LAND_FLARE_ALT = 3; // Flare altitude
 constexpr float FLARE_SINK_RATE = 0.3;
 
 // Takeoff
-constexpr float TAKEOFF_ALT = 10; // Altitude that the plane will climb to during takeoff meters per second
+constexpr float TAKEOFF_ALT = 5; // Altitude that the plane will climb to during takeoff meters per second
 constexpr float TAKEOFF_THR = 1; // Throttle set during takeoff between 0 and 1
 constexpr float TAKEOFF_AIRSPD = 10; // Rotation speed meters per second during takeoff, ignored during hand launch
 constexpr float TAKEOFF_PTCH = 10; // Pitch during takeoff

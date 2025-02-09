@@ -20,6 +20,11 @@ void Flight_hal::execute_main_task()
 	}
 }
 
+float Flight_hal::get_main_dt() const
+{
+	return 0.01;
+}
+
 void Flight_hal::set_background_task(void (*task)())
 {
 	background_task = task;

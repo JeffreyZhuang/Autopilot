@@ -42,9 +42,7 @@ public:
     // Scheduler
     virtual void set_main_task(void (*task)()) = 0;
     virtual void set_background_task(void (*task)()) = 0;
-
-    float main_dt;
-    float control_dt;
+    virtual float get_main_dt() const = 0;
 
 private:
     Plane* _plane;

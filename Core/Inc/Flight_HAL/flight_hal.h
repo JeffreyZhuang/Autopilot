@@ -96,6 +96,7 @@ public:
 	// scheduler_hal.cpp
 	void set_main_task(void (*task)());
 	void set_background_task(void (*task)());
+	float get_main_dt() const override;
 	void execute_main_task();
 	static void main_task_callback() { _instance->execute_main_task(); }
 

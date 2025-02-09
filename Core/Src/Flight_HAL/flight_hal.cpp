@@ -1,6 +1,8 @@
 #include "Flight_HAL/flight_hal.h"
 
-Flight_hal* Flight_hal::_instance = nullptr;
+// Add override keywords
+
+Flight_hal* Flight_hal::_instance = nullptr; // Can I just move this to class?
 
 Flight_hal::Flight_hal(Plane * plane) : HAL(plane),
 										_imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),
@@ -13,9 +15,6 @@ Flight_hal::Flight_hal(Plane * plane) : HAL(plane),
 {
 	_instance = this;
 	_plane = plane;
-
-	main_dt = 0.01;
-	control_dt = 0.02;
 }
 
 void Flight_hal::init()
