@@ -21,8 +21,6 @@ public:
 
     void setup();
 
-    static Autopilot *get_instance() { return _instance; }
-
 private:
     HAL* _hal;
     Plane* _plane;

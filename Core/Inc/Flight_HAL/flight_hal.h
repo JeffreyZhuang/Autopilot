@@ -115,6 +115,7 @@ private:
 	// scheduler_hal.cpp
 	void (*main_task)() = nullptr;
 	void (*background_task)() = nullptr;
+
 	static Flight_hal* _instance;
 };
 
