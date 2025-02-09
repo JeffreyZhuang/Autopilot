@@ -1,7 +1,7 @@
 #ifndef INC_FLIGHT_HAL_H_
 #define INC_FLIGHT_HAL_H_
 
-#include <SERVO.h>
+#include "servo.h"
 #include "hal.h"
 #include "plane.h"
 #include "gnss.h"
@@ -19,12 +19,18 @@ extern "C"
 }
 
 extern I2C_HandleTypeDef hi2c1;
+
 extern SPI_HandleTypeDef hspi1;
+
 extern SD_HandleTypeDef hsd;
+
 extern DMA_HandleTypeDef hdma_sdio_rx;
 extern DMA_HandleTypeDef hdma_sdio_tx;
+
+extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim7;
+
 extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart6;
@@ -70,6 +76,7 @@ public:
 	uint64_t get_time_us();
 
 	// servos_hal.cpp
+	void init_servos();
 	void set_elevator(float deg);
 	void set_rudder(float deg);
 	void set_throttle(float throttle);
@@ -100,6 +107,7 @@ private:
 	Sd _sd;
 	Mlrs_rc mlrs_rc;
 	Mlrs_telem mlrs_telem;
+	Servo servo_elevator;
 
 	float _hard_iron[3] = {52.67, -5.27, 81.54};
 	float _soft_iron[3][3] = {{1.031, 0.015, -0.0032},

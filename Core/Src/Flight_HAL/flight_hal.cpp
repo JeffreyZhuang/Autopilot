@@ -7,7 +7,8 @@ Flight_hal::Flight_hal(Plane * plane) : HAL(plane),
 										_ina219(&hi2c1, 0.01),
 										_gnss(&huart3),
 										mlrs_rc(&huart4),
-										mlrs_telem(&huart6)
+										mlrs_telem(&huart6),
+										servo_elevator(&htim3, TIM_CHANNEL_1)
 {
 	_instance = this;
 	_plane = plane;
@@ -24,6 +25,7 @@ void Flight_hal::init()
 	init_gnss();
 	init_logger();
 	init_telem();
+	init_servos();
 }
 
 void Flight_hal::read_sensors()

@@ -5,7 +5,7 @@
  *      Author: jeffr
  */
 
-#include <ina219.h>
+#include "ina219.h"
 
 INA219::INA219(I2C_HandleTypeDef * hi2c, float shunt_resistance)
 {
