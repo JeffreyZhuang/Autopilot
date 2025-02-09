@@ -11,8 +11,7 @@ extern "C" {
 	#include "usbd_cdc_if.h"
 }
 
-// Beware of padding to align to 4 byte memory
-struct Sd_packet
+struct __attribute__((packed))Sd_packet
 {
 	uint64_t time;
 	float acc_z;

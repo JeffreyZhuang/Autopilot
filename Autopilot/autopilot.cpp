@@ -1,8 +1,4 @@
-#include <autopilot.h>
-
-// I don't need an enum for manual
-
-// Add feature to fly wihtout GPS? Useful for indoor testing
+#include "autopilot.h"
 
 Autopilot* Autopilot::_instance = nullptr;
 
@@ -77,9 +73,6 @@ void Autopilot::boot()
 	{
 		_ahrs.set_initial_state();
 	}
-
-	_hal->set_elevator(_plane->rc_elevator);
-	_hal->set_rudder(_plane->rc_rudder);
 
 	_plane->baro_offset = _plane->baro_alt;
 
