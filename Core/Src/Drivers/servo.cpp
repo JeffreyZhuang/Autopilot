@@ -10,6 +10,8 @@ void Servo::init()
 {
 	// Note: ARR must be set to 1000
 	HAL_TIM_PWM_Start(_tim, _channel);
+
+	set_angle(90); // Set to mid point
 }
 
 void Servo::set_angle(uint8_t deg)

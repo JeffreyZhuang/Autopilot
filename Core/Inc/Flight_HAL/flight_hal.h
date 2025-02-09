@@ -108,6 +108,7 @@ private:
 	Mlrs_rc mlrs_rc;
 	Mlrs_telem mlrs_telem;
 	Servo servo_elevator;
+//	Servo servo_aileron;
 
 	float _hard_iron[3] = {52.67, -5.27, 81.54};
 	float _soft_iron[3][3] = {{1.031, 0.015, -0.0032},
