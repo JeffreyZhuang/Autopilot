@@ -19,7 +19,7 @@ public:
 	float read_voltage();
 	float read_current();
 private:
-	uint16_t read_16(uint8_t register);
+	uint16_t read_16(uint8_t reg);
 
 	float _shunt_resistance;
 	I2C_HandleTypeDef* _hi2c;

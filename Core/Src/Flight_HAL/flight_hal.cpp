@@ -1,6 +1,7 @@
 #include "Flight_HAL/flight_hal.h"
 
 // Add override keywords
+// https://barenakedembedded.com/how-to-use-cpp-with-stm32-hal/
 
 Flight_hal* Flight_hal::_instance = nullptr; // Can I just move this to class?
 
