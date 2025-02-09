@@ -49,6 +49,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -63,6 +65,8 @@ void USB_CDC_RxHandler(uint8_t*, uint32_t);
 #define BARO_CS_GPIO_Port GPIOC
 #define IMU_CS_Pin GPIO_PIN_15
 #define IMU_CS_GPIO_Port GPIOC
+#define SERVO1_Pin GPIO_PIN_6
+#define SERVO1_GPIO_Port GPIOA
 #define MAIN_LED_Pin GPIO_PIN_5
 #define MAIN_LED_GPIO_Port GPIOC
 
