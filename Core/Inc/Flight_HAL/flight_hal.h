@@ -41,8 +41,8 @@ class Flight_hal : public HAL
 public:
 	Flight_hal(Plane * plane);
 
-	void init();
-	void read_sensors();
+	void init() override;
+	void read_sensors() override;
 
 	// imu_hal.cpp
 	void init_imu();
@@ -63,24 +63,24 @@ public:
 
 	// logger_hal.cpp
 	void init_logger();
-	void write_storage_buffer();
-	void flush_storage_buffer();
-	void read_storage();
+	void write_storage_buffer() override;
+	void flush_storage_buffer() override;
+	void read_storage() override;
 
 	// debug_hal.cpp
-	void debug_print(char * str);
-	void usb_print(char * str);
-	void toggle_led();
+	void debug_print(char * str) override;
+	void usb_print(char * str) override;
+	void toggle_led() override;
 
 	// time_hal.cpp
-	void delay_us(uint64_t);
-	uint64_t get_time_us();
+	void delay_us(uint64_t) override;
+	uint64_t get_time_us() override;
 
 	// servos_hal.cpp
 	void init_servos();
-	void set_elevator(float deg);
-	void set_rudder(float deg);
-	void set_throttle(float throttle);
+	void set_elevator(float deg) override;
+	void set_rudder(float deg) override;
+	void set_throttle(float throttle) override;
 
 	// power_monitor_hal.cpp
 	void read_power_monitor();
@@ -88,14 +88,14 @@ public:
 	// telemetry_hal.cpp
 	void init_telem();
 	void read_rc();
-	void transmit_telem(uint8_t tx_buff[], int len);
-	bool read_telem();
+	void transmit_telem(uint8_t tx_buff[], int len) override;
+	bool read_telem() override;
 	static void rc_dma_complete() { _instance->mlrs_rc.dma_complete(); }
 	static void telemetry_dma_complete() { _instance->mlrs_telem.dma_complete(); }
 
 	// scheduler_hal.cpp
-	void set_main_task(void (*task)());
-	void set_background_task(void (*task)());
+	void set_main_task(void (*task)()) override;
+	void set_background_task(void (*task)()) override;
 	float get_main_dt() const override;
 	void execute_main_task();
 	static void main_task_callback() { _instance->execute_main_task(); }
