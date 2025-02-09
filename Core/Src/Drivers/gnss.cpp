@@ -17,25 +17,14 @@ void GNSS::setup()
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
 }
 
-bool GNSS::parse()
+bool GNSS::read()
 {
-//	if (buffer_full)
-//	{
-//		buffer_full = false;
-//
-//		// Parse
-//		char* line = (char*)complete_sentence;
-//		struct minmea_sentence_gga frame;
-//		if (minmea_parse_gga(&frame, line))
-//		{
-//			lat = minmea_tocoord_double(&frame.latitude);
-//			lon = minmea_tocoord_double(&frame.longitude);
-//			sats = frame.satellites_tracked;
-//			fix = frame.fix_quality == 1;
-//
-//			return true;
-//		}
-//	}
+	if (new_data)
+	{
+		new_data = false;
+
+		return true;
+	}
 
 	return false;
 }
@@ -57,7 +46,16 @@ void GNSS::dma_complete()
 		sentence_index = 0;
 		sentence_started = false;
 
-		printf("%s\n", sentence);
+		struct minmea_sentence_gga frame;
+		if (minmea_parse_gga(&frame, (char*)sentence))
+		{
+			lat = minmea_tocoord_double(&frame.latitude);
+			lon = minmea_tocoord_double(&frame.longitude);
+			sats = frame.satellites_tracked;
+			fix = frame.fix_quality == 1;
+
+			new_data = true;
+		}
 	}
 	else if (sentence_started && sentence_index < max_sentence_len)
 	{

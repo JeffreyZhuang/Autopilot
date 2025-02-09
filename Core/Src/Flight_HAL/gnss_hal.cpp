@@ -7,7 +7,7 @@ void Flight_hal::init_gnss()
 
 void Flight_hal::read_gnss()
 {
-	if (_gnss.parse())
+	if (_gnss.read())
 	{
 		_plane->gnss_lat = _gnss.lat;
 		_plane->gnss_lon = _gnss.lon;

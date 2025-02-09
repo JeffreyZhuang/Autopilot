@@ -26,11 +26,11 @@ class GNSS
 public:
 	GNSS(UART_HandleTypeDef* uart);
 	void setup();
+	bool read();
 	void dma_complete();
-	bool parse();
 
 	double lat = 0; // deg
-	double lon = 0;
+	double lon = 0; // deg
 	uint8_t sats = 0;
 	bool fix = false;
 private:
@@ -39,9 +39,10 @@ private:
 	uint8_t rx_buffer[1];
 
 	static constexpr uint8_t max_sentence_len = 100;
-	uint8_t sentence[max_sentence_len];
+	char sentence[max_sentence_len];
 	uint8_t sentence_index = 0;
 	bool sentence_started = false;
+	bool new_data = false;
 
 	double minmea_tocoord_double(const struct minmea_float *f);
 };
