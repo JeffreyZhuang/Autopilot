@@ -1,6 +1,7 @@
 #ifndef INC_FLIGHT_HAL_H_
 #define INC_FLIGHT_HAL_H_
 
+#include <SERVO.h>
 #include "hal.h"
 #include "plane.h"
 #include "gnss.h"
@@ -8,7 +9,6 @@
 #include "ina219.h"
 #include "mlx90393.h"
 #include "sd.h"
-#include "servos.h"
 #include "mlrs_rc.h"
 #include "mlrs_telem.h"
 

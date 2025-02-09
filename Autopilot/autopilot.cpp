@@ -1,8 +1,5 @@
 #include <autopilot.h>
 
-// Use the three switch for direct, stab, and auto
-// Then one switch that can override and force manual.
-
 // I don't need an enum for manual
 
 Autopilot* Autopilot::_instance = nullptr;
