@@ -9,8 +9,6 @@
 class HAL
 {
 public:
-	virtual ~HAL() {}
-
     virtual void init() = 0;
 
     // Sensors
@@ -43,6 +41,8 @@ public:
     virtual void set_main_task(void (*task)()) = 0;
     virtual void set_background_task(void (*task)()) = 0;
     virtual float get_main_dt() const = 0;
+
+    virtual ~HAL() {}
 };
 
 #endif
