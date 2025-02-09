@@ -2,6 +2,8 @@
 
 // I don't need an enum for manual
 
+// Add feature to fly wihtout GPS? Useful for indoor testing
+
 Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->main_dt),
