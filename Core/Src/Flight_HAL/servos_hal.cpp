@@ -14,8 +14,8 @@ void Flight_hal::init_servos()
 
 void Flight_hal::set_elevator(float deg)
 {
-	// deg is from 0 to 1 not degrees, need to change later
-	servo_elevator.set_angle((uint8_t)(deg * 180));
+	// deg is from -1 to 1, not degrees, need to change later
+	servo_elevator.set_angle((uint8_t)(90 + deg * 90));
 }
 
 void Flight_hal::set_rudder(float deg)
