@@ -38,12 +38,10 @@ private:
 
 	uint8_t rx_buffer[1];
 
-	static constexpr uint8_t sentence_len = 100;
-	uint8_t working_sentence[sentence_len];
-	uint8_t complete_sentence[sentence_len];
-	uint8_t last_sentence_index = 0;
-
-	bool buffer_full = false;
+	static constexpr uint8_t max_sentence_len = 100;
+	uint8_t sentence[max_sentence_len];
+	uint8_t sentence_index = 0;
+	bool sentence_started = false;
 
 	double minmea_tocoord_double(const struct minmea_float *f);
 };

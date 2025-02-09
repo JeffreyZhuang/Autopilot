@@ -19,23 +19,23 @@ void GNSS::setup()
 
 bool GNSS::parse()
 {
-	if (buffer_full)
-	{
-		buffer_full = false;
-
-		// Parse
-		char* line = (char*)complete_sentence;
-		struct minmea_sentence_gga frame;
-		if (minmea_parse_gga(&frame, line))
-		{
-			lat = minmea_tocoord_double(&frame.latitude);
-			lon = minmea_tocoord_double(&frame.longitude);
-			sats = frame.satellites_tracked;
-			fix = frame.fix_quality == 1;
-
-			return true;
-		}
-	}
+//	if (buffer_full)
+//	{
+//		buffer_full = false;
+//
+//		// Parse
+//		char* line = (char*)complete_sentence;
+//		struct minmea_sentence_gga frame;
+//		if (minmea_parse_gga(&frame, line))
+//		{
+//			lat = minmea_tocoord_double(&frame.latitude);
+//			lon = minmea_tocoord_double(&frame.longitude);
+//			sats = frame.satellites_tracked;
+//			fix = frame.fix_quality == 1;
+//
+//			return true;
+//		}
+//	}
 
 	return false;
 }
@@ -43,31 +43,26 @@ bool GNSS::parse()
 // Remember to disable UBX output! It is only made for NMEA packets, not UBX.
 void GNSS::dma_complete()
 {
-	if (!buffer_full)
+	char c = rx_buffer[0];
+
+	if (c == '$')
 	{
-		// Append recieved byte to GNSS sentence
-		working_sentence[last_sentence_index] = rx_buffer[0];
-		last_sentence_index++;
+		sentence[0] = c;
+		sentence_index = 1;
+		sentence_started = true;
+	}
+	else if (c == '\r' && sentence_started && sentence_index < max_sentence_len)
+	{
+		sentence[sentence_index] = c;
+		sentence_index = 0;
+		sentence_started = false;
 
-		// Prevent out of range index
-		// This is sketch, need to refactor
-		if (last_sentence_index == sentence_len)
-		{
-			last_sentence_index = sentence_len - 1;
-		}
-
-		if ((char)(rx_buffer[0]) == '\n')
-		{
-			// Copy gnss_sentence to complete sentence and set working sentence to 0
-			for (int i = 0; i < sentence_len; i++)
-			{
-				complete_sentence[i] = working_sentence[i];
-				working_sentence[i] = 0;
-			}
-
-			buffer_full = true;
-			last_sentence_index = 0;
-		}
+		printf("%s\n", sentence);
+	}
+	else if (sentence_started && sentence_index < max_sentence_len)
+	{
+		sentence[sentence_index] = c;
+		sentence_index++;
 	}
 
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
