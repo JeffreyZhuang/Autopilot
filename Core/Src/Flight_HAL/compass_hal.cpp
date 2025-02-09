@@ -11,6 +11,10 @@ void Flight_hal::read_compass()
 {
 	if (_mag.readDataNonBlocking())
 	{
+		float _hard_iron[3] = {52.67, -5.27, 81.54};
+		float _soft_iron[3][3] = {{1.031, 0.015, -0.0032},
+								  {0.015, 0.967, -0.025},
+								  {-0.032, -0.025, 1.005}};
 		float mag_data[3] = {_mag.x, _mag.y, _mag.z};
 		float hi_cal[3];
 

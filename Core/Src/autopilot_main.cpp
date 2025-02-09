@@ -1,6 +1,10 @@
 #include "autopilot_main.h"
 #include "autopilot.h"
 
+// Scheduler seperate from HAL that calls directly to autopilot?
+// Seperate mains for each HAL
+// But then how to do GNSS callback?
+
 // Exclude Flight_HAL source folder from build if PITL is enabled
 #define PITL_ENABLE false
 #if PITL_ENABLE
