@@ -76,6 +76,9 @@ void Autopilot::boot()
 		_ahrs.set_initial_state();
 	}
 
+	_hal->set_elevator(_plane->rc_elevator);
+	_hal->set_rudder(_plane->rc_rudder);
+
 	_plane->baro_offset = _plane->baro_alt;
 
 	// Set home position to first GPS fix

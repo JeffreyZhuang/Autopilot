@@ -69,6 +69,8 @@ void USB_CDC_RxHandler(uint8_t*, uint32_t);
 #define SERVO1_GPIO_Port GPIOA
 #define MAIN_LED_Pin GPIO_PIN_5
 #define MAIN_LED_GPIO_Port GPIOC
+#define SERVO2_Pin GPIO_PIN_15
+#define SERVO2_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

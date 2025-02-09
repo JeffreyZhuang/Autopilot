@@ -8,7 +8,8 @@ Flight_hal::Flight_hal(Plane * plane) : HAL(plane),
 										_gnss(&huart3),
 										mlrs_rc(&huart4),
 										mlrs_telem(&huart6),
-										servo_elevator(&htim3, TIM_CHANNEL_1)
+										servo_elevator(&htim3, TIM_CHANNEL_1),
+										servo_aileron(&htim2, TIM_CHANNEL_1)
 {
 	_instance = this;
 	_plane = plane;
