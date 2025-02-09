@@ -42,4 +42,7 @@ constexpr uint8_t MAX_NUM_WPTS = 100; // Maximum number of waypoints
 // Radio
 constexpr uint8_t TELEM_PKT_LEN = 40;
 
+// AHRS
+constexpr float mag_declination = 0; // Degrees, determined from online calculator
+
 #endif /* PARAMETERS_H_ */
