@@ -61,6 +61,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 
 void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
-	CDC_Transmit_FS(Buf, Len);
+	CDC_Transmit_FS(Buf, Len); // Placeholder
 }
 
