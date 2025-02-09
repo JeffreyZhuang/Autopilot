@@ -49,6 +49,8 @@ void GNSS::dma_complete()
 		struct minmea_sentence_gga frame;
 		if (minmea_parse_gga(&frame, (char*)sentence))
 		{
+			printf("%s\n", sentence);
+
 			lat = minmea_tocoord_double(&frame.latitude);
 			lon = minmea_tocoord_double(&frame.longitude);
 			sats = frame.satellites_tracked;
