@@ -5,12 +5,12 @@
 
 /**
  * @brief Hardware abstraction layer
- *
  */
 class HAL
 {
 public:
-    HAL(Plane* plane);
+	virtual ~HAL() {}
+
     virtual void init() = 0;
 
     // Sensors
@@ -43,9 +43,6 @@ public:
     virtual void set_main_task(void (*task)()) = 0;
     virtual void set_background_task(void (*task)()) = 0;
     virtual float get_main_dt() const = 0;
-
-private:
-    Plane* _plane;
 };
 
 #endif
