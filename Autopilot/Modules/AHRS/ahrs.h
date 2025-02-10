@@ -1,7 +1,7 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include <Lib/Madgwick/madgwick.h>
+#include "Lib/IMU_EKF/ESKF.h"
 #include "plane.h"
 #include "hal.h"
 #include <stdio.h>
@@ -28,7 +28,8 @@ private:
 
     Plane* _plane;
     HAL* _hal;
-    Madgwick filter;
+//    Madgwick filter;
+    IMU_EKF::ESKF<float> filter;
 
     float _dt;
     uint64_t last_imu_timestamp = 0;

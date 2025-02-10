@@ -17,7 +17,7 @@ void Telem::transmit()
 	payload.roll = (int16_t)(_plane->ahrs_roll * 100);
 	payload.pitch = (int16_t)(_plane->ahrs_pitch * 100);
 	payload.yaw = _plane->ahrs_yaw;
-	payload.alt = -_plane->nav_pos_down;
+	payload.alt = (int16_t)(-_plane->nav_pos_down * 10);
 	payload.spd = _plane->nav_airspeed;
 	payload.lat = _plane->gnss_lat;
 	payload.lon = _plane->gnss_lon;

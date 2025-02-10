@@ -23,7 +23,8 @@
 class Madgwick{
 private:
     static float invSqrt(float x);
-    float beta;				// algorithm gain
+    float beta_acc;
+    float beta_mag;
     float q0;
     float q1;
     float q2;
@@ -37,15 +38,13 @@ private:
 //-------------------------------------------------------------------------------------------
 // Function declarations
 public:
-    Madgwick(void);
-    void begin(float sampleFrequency) { invSampleFreq = 1.0f / sampleFrequency; }
+    Madgwick(float dt, float beta_acc_def, float beta_mag_def);
     void update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
     void updateIMU(float gx, float gy, float gz, float ax, float ay, float az);
     float get_q0() { return q0; };
     float get_q1() { return q1; };
     float get_q2() { return q2; };
     float get_q3() { return q3; };
-    void set_gain(float b);
     void set_state(float q0_, float q1_, float q2_, float q3_);
 
     float getRoll() {
