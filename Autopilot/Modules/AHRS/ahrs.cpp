@@ -11,13 +11,21 @@ void AHRS::setup()
 {
 //	filter.begin(1.0f / _dt);
 //	filter.set_gain(0.1);
-	filter.init();
 }
 
 bool AHRS::set_initial_state()
 {
-	initial_state_set = true;
-	return true;
+	if (check_new_imu_data() && check_new_compass_data() && !initial_state_set)
+	{
+		filter.initWithAcc(_plane->imu_ax, _plane->imu_ay, _plane->imu_az);
+
+		initial_state_set = true;
+
+		return true;
+	}
+
+	return false;
+}
 
 //	if (check_new_imu_data() && check_new_compass_data() && !initial_state_set)
 //	{
@@ -77,7 +85,7 @@ bool AHRS::set_initial_state()
 //	}
 //
 //	return false;
-}
+//}
 
 bool AHRS::check_new_imu_data()
 {
@@ -96,15 +104,23 @@ void AHRS::apply_compass_calibration()
 
 void AHRS::update()
 {
+	W << 1, 0, 0,
+		 0, 1, 0,
+		 0, 0, 1;
+	V << 0, 0, 0;
+	B = 50; // uT, or take magnitude?
+
 	filter.predict(_dt);
 	filter.correctGyr(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz);
+	filter.correctAcc(_plane->imu_ax, _plane->imu_ay, _plane->imu_az);
+	filter.correctMag(_plane->compass_mx, _plane->compass_my, _plane->compass_mz, incl, B, W, V);
 	filter.reset();
 
 	float roll, pitch, yaw;
 	filter.getAttitude(roll, pitch, yaw);
-	_plane->ahrs_roll = roll * M_PI / 180.0f;
-	_plane->ahrs_pitch = pitch * M_PI / 180.0f;
-	_plane->ahrs_yaw = yaw * M_PI / 180.0f;
+	_plane->ahrs_roll = roll * 180.0f / M_PI;
+	_plane->ahrs_pitch = pitch * 180.0f / M_PI;
+	_plane->ahrs_yaw = yaw * 180.0f / M_PI;
 
 	printf("%f, %f, %f\n", roll, pitch, yaw);
 
