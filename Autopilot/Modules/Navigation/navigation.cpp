@@ -107,7 +107,7 @@ void Navigation::update_baro()
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 1> R(0.01);
+	Eigen::DiagonalMatrix<float, 1> R(100);
 
 	kalman.update(R, H, y);
 

@@ -14,8 +14,8 @@ void Telem::transmit()
 {
 	// Create struct
 	Telem_payload payload;
-	payload.roll = _plane->ahrs_roll;
-	payload.pitch = _plane->ahrs_pitch;
+	payload.roll = (int16_t)(_plane->ahrs_roll * 100);
+	payload.pitch = (int16_t)(_plane->ahrs_pitch * 100);
 	payload.yaw = _plane->ahrs_yaw;
 	payload.alt = -_plane->nav_pos_down;
 	payload.spd = _plane->nav_airspeed;

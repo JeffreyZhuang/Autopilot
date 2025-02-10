@@ -45,4 +45,6 @@ constexpr uint8_t TELEM_PKT_LEN = 40;
 // AHRS
 constexpr float MAG_DECL = 0; // Degrees, determined from online calculator
 
+// Servos
+
 #endif /* PARAMETERS_H_ */
