@@ -1,10 +1,14 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include "Lib/KalmanQuatAtt/KalmanQuatAtt.h"
 #include "plane.h"
 #include "hal.h"
 #include <stdio.h>
+
+extern "C"
+{
+#include "Lib/KalmanQuatAtt/KalmanQuatAtt.h"
+}
 
 /**
  * @brief Attitude Heading Reference System
