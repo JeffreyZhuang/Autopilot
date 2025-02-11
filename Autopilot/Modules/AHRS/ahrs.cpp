@@ -18,7 +18,6 @@ void AHRS::setup()
 
 }
 
-// Moving average
 bool AHRS::set_initial_state()
 {
 	if (check_new_imu_data() && check_new_compass_data() && !initial_state_set)
