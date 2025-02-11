@@ -114,9 +114,27 @@ bool AHRS::check_new_compass_data()
     return _plane->compass_timestamp > last_compass_timestamp;
 }
 
-void AHRS::apply_compass_calibration()
+void AHRS::apply_compass_calibration(float mag_data[3])
 {
-	// Apply soft and hard iron calibration here
+	float _hard_iron[3] = {-46.301146, 3.866545, -71.601346};
+	float _soft_iron[3][3] = {{1.189985, 0.015110, -0.066520},
+							  {0.015110, 1.205787, -0.039344},
+							  {-0.066520, -0.039344, 1.183604}};
+	float hi_cal[3];
+
+	// Apply hard-iron offsets
+	for (uint8_t i = 0; i < 3; i++)
+	{
+		hi_cal[i] = mag_data[i] - _hard_iron[i];
+	}
+
+	// Apply soft-iron scaling
+	for (uint8_t i = 0; i < 3; i++)
+	{
+		mag_data[i] = (_soft_iron[i][0] * hi_cal[0]) +
+					  (_soft_iron[i][1] * hi_cal[1]) +
+					  (_soft_iron[i][2] * hi_cal[2]);
+	}
 }
 
 void AHRS::update()
@@ -127,13 +145,13 @@ void AHRS::update()
 		{
 			update_imu_mag();
 
-			// Send to motioncal for calibration
+			// Send to USB for calibration
 			char tx_buff[200];
 			sprintf(tx_buff,
 					"%.6f,%.6f,%.6f\n",
 					_plane->compass_mx,
 					_plane->compass_my,
-					_plane->compass_mz); // No accel or gyro data
+					_plane->compass_mz);
 			_hal->usb_print(tx_buff);
 
 		}
