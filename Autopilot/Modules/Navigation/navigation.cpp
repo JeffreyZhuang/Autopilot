@@ -178,16 +178,16 @@ void Navigation::read_gnss()
 
 bool Navigation::check_new_imu_data()
 {
-    return last_imu_timestamp != _plane->imu_timestamp;
+    return _plane->imu_timestamp > last_imu_timestamp;
 }
 
 bool Navigation::check_new_gnss_data()
 {
-	return last_gnss_timestamp != _plane->gnss_timestamp;
+	return _plane->gnss_timestamp > last_gnss_timestamp;
 }
 
 bool Navigation::check_new_baro_data()
 {
-	return last_baro_timestamp != _plane->baro_timestamp;
+	return _plane->baro_timestamp > last_baro_timestamp;
 }
 
