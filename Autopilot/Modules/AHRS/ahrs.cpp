@@ -1,6 +1,6 @@
 #include <Modules/AHRS/ahrs.h>
 
-AHRS::AHRS(HAL* hal, Plane* plane, float dt) : filter(dt, 0.01),
+AHRS::AHRS(HAL* hal, Plane* plane, float dt) : filter(dt, 1),
 											   avg_ax(window_size, window_ax),
 											   avg_ay(window_size, window_ay),
 											   avg_az(window_size, window_az),
@@ -22,12 +22,31 @@ bool AHRS::set_initial_state()
 {
 	if (check_new_imu_data() && check_new_compass_data() && !initial_state_set)
 	{
+		float _hard_iron[3] = {-46.301146, 3.866545, -71.601346};
+		float _soft_iron[3][3] = {{1.189985, 0.015110, -0.066520},
+								  {0.015110, 1.205787, -0.039344},
+								  {-0.066520, -0.039344, 1.183604}};
+		float mag_data[3] = {_plane->compass_mx, _plane->compass_my, _plane->compass_mz};
+		float hi_cal[3];
+
+		// Apply hard-iron offsets
+		for (uint8_t i = 0; i < 3; i++) {
+			hi_cal[i] = mag_data[i] - _hard_iron[i];
+		}
+
+		// Apply soft-iron scaling
+		for (uint8_t i = 0; i < 3; i++) {
+			mag_data[i] = (_soft_iron[i][0] * hi_cal[0]) +
+						  (_soft_iron[i][1] * hi_cal[1]) +
+						  (_soft_iron[i][2] * hi_cal[2]);
+		}
+
 		avg_ax.add(-_plane->imu_ax);
 		avg_ay.add(-_plane->imu_ay);
 		avg_az.add(-_plane->imu_az);
-		avg_mx.add(-_plane->compass_mx);
-		avg_my.add(-_plane->compass_my);
-		avg_mz.add(-_plane->compass_mz);
+		avg_mx.add(-mag_data[0]);
+		avg_my.add(-mag_data[1]);
+		avg_mz.add(-mag_data[2]);
 
 		last_imu_timestamp = _plane->imu_timestamp;
 		last_compass_timestamp = _plane->compass_timestamp;
@@ -107,6 +126,16 @@ void AHRS::update()
 		if (check_new_compass_data())
 		{
 			update_imu_mag();
+
+			// Send to motioncal for calibration
+			char tx_buff[200];
+			sprintf(tx_buff,
+					"%.6f,%.6f,%.6f\n",
+					_plane->compass_mx,
+					_plane->compass_my,
+					_plane->compass_mz); // No accel or gyro data
+			_hal->usb_print(tx_buff);
+
 		}
 		else
 		{
@@ -126,9 +155,28 @@ void AHRS::update_imu()
 
 void AHRS::update_imu_mag()
 {
+	float _hard_iron[3] = {-46.301146, 3.866545, -71.601346};
+	float _soft_iron[3][3] = {{1.189985, 0.015110, -0.066520},
+							  {0.015110, 1.205787, -0.039344},
+							  {-0.066520, -0.039344, 1.183604}};
+	float mag_data[3] = {_plane->compass_mx, _plane->compass_my, _plane->compass_mz};
+	float hi_cal[3];
+
+	// Apply hard-iron offsets
+	for (uint8_t i = 0; i < 3; i++) {
+		hi_cal[i] = mag_data[i] - _hard_iron[i];
+	}
+
+	// Apply soft-iron scaling
+	for (uint8_t i = 0; i < 3; i++) {
+		mag_data[i] = (_soft_iron[i][0] * hi_cal[0]) +
+					  (_soft_iron[i][1] * hi_cal[1]) +
+					  (_soft_iron[i][2] * hi_cal[2]);
+	}
+
 	filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
 				  -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az,
-				  -_plane->compass_mx, -_plane->compass_my, -_plane->compass_mz);
+				  -mag_data[0], -mag_data[1], -mag_data[2]);
 	last_imu_timestamp = _plane->imu_timestamp;
 	last_compass_timestamp = _plane->compass_timestamp;
 }
