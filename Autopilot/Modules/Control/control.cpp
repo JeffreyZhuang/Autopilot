@@ -93,7 +93,6 @@ void Control::update_land()
 	_hal->set_throttle(throttle);
 }
 
-// Pitch dips because throttle cut
 void Control::update_flare()
 {
 	// Calculate roll and pitch setpoints to reach waypoint

@@ -11,6 +11,9 @@ extern "C" {
 	#include "usbd_cdc_if.h"
 }
 
+
+// Switch from struct to uint8_t, then in Autopilot convert struct to uint8_t
+
 struct __attribute__((packed))Sd_packet
 {
 	uint64_t time;

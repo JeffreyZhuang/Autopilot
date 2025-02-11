@@ -32,7 +32,7 @@ private:
 
     Madgwick filter;
 
-    static constexpr size_t window_size = 5;
+    static constexpr size_t window_size = 20;
     float window_ax[window_size];
     float window_ay[window_size];
     float window_az[window_size];

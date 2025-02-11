@@ -1,6 +1,6 @@
 #include <Modules/AHRS/ahrs.h>
 
-AHRS::AHRS(HAL* hal, Plane* plane, float dt) : filter(dt, 1),
+AHRS::AHRS(HAL* hal, Plane* plane, float dt) : filter(dt, 0.01),
 											   avg_ax(window_size, window_ax),
 											   avg_ay(window_size, window_ay),
 											   avg_az(window_size, window_az),
@@ -78,8 +78,6 @@ bool AHRS::set_initial_state()
 
 			filter.set_state(q0, q1, q2, q3); // Set initial state
 
-			publish_ahrs();
-
 			initial_state_set = true;
 		}
 	}
@@ -89,17 +87,17 @@ bool AHRS::set_initial_state()
 
 bool AHRS::check_new_imu_data()
 {
-    return _plane->imu_timestamp != last_imu_timestamp;
+    return _plane->imu_timestamp > last_imu_timestamp;
 }
 
 bool AHRS::check_new_compass_data()
 {
-    return _plane->compass_timestamp != last_compass_timestamp;
+    return _plane->compass_timestamp > last_compass_timestamp;
 }
 
 void AHRS::apply_compass_calibration()
 {
-
+	// Apply soft and hard iron calibration here
 }
 
 void AHRS::update()

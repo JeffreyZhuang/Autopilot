@@ -12,6 +12,8 @@ Telem::Telem(HAL* hal, Plane* plane)
 
 void Telem::transmit()
 {
+	// transmit nav_pos_north and nav_pos_east meters*100
+
 	// Create struct
 	Telem_payload payload;
 	payload.roll = (int16_t)(_plane->ahrs_roll * 100);
