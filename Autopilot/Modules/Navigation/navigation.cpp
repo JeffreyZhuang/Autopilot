@@ -85,7 +85,20 @@ void Navigation::execute()
 
 void Navigation::predict_imu()
 {
-	read_imu();
+	// Get IMU data
+	Eigen::Vector3f acc_inertial(_plane->imu_ax, _plane->imu_ay, _plane->imu_az);
+	last_imu_timestamp = _plane->imu_timestamp;
+
+	// Get quaternion from AHRS
+	Eigen::Quaternionf q(_plane->ahrs_q0, _plane->ahrs_q1, _plane->ahrs_q2, _plane->ahrs_q3);
+
+	// Rotate inertial frame to ECF
+	Eigen::Vector3f acc_world = q * acc_inertial * g;
+	acc_world(2) += g; // Gravity correction
+
+	_plane->nav_acc_north = acc_world(0);
+	_plane->nav_acc_east = acc_world(1);
+	_plane->nav_acc_down = acc_world(2);
 
 	Eigen::VectorXf u(m);
 	u << _plane->nav_acc_north,
@@ -99,11 +112,19 @@ void Navigation::predict_imu()
 
 void Navigation::update_gps()
 {
-	read_gnss();
+	// Conver lat/lon to meters
+	double gnss_north_meters, gnss_east_meters;
+	lat_lon_to_meters(_plane->home_lat,
+					  _plane->home_lon,
+					  _plane->gnss_lat,
+					  _plane->gnss_lon,
+					  &gnss_north_meters,
+					  &gnss_east_meters);
+	last_gnss_timestamp = _plane->gnss_timestamp;
 
 	Eigen::VectorXf y(2);
-	y << gnss_n,
-		 gnss_e;
+	y << gnss_north_meters,
+		 gnss_east_meters;
 
 	Eigen::MatrixXf H(2, n);
 	H << 1, 0, 0, 0, 0, 0,
@@ -145,34 +166,14 @@ void Navigation::update_plane()
 	_plane->nav_timestamp = _hal->get_time_us();
 }
 
-// Rotate inertial frame to ECF
 void Navigation::read_imu()
 {
-	// Get IMU data
-	Eigen::Vector3f acc_inertial(_plane->imu_ax, _plane->imu_ay, _plane->imu_az);
-	last_imu_timestamp = _plane->imu_timestamp;
 
-	// Get quaternion from AHRS
-	Eigen::Quaternionf q(_plane->ahrs_q0, _plane->ahrs_q1, _plane->ahrs_q2, _plane->ahrs_q3);
-
-	// Convert from inertial frame to ECF
-	Eigen::Vector3f acc_world = q * acc_inertial * g;
-	acc_world(2) += g; // Gravity correction
-
-	_plane->nav_acc_north = acc_world(0);
-	_plane->nav_acc_east = acc_world(1);
-	_plane->nav_acc_down = acc_world(2);
 }
 
 void Navigation::read_gnss()
 {
-	double north, east;
-	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, _plane->gnss_lat, _plane->gnss_lon, &north, &east);
-	gnss_n = (float)north;
-	gnss_e = (float)east;
-	gnss_d = _plane->gnss_asl;
 
-	last_gnss_timestamp = _plane->gnss_timestamp;
 }
 
 bool Navigation::check_new_imu_data()

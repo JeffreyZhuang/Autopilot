@@ -28,6 +28,7 @@ constexpr bool RUDDER_ONLY = false;
 constexpr float LAND_GS_DEG = 6; // Landing glideslope angle
 constexpr float LAND_FLARE_ALT = 3; // Flare altitude
 constexpr float FLARE_SINK_RATE = 0.3;
+constexpr float FLARE_PITCH_MAX_DEG = 10; // Maximum pitch during flare
 
 // Takeoff
 constexpr float TAKEOFF_ALT = 5; // Altitude that the plane will climb to during takeoff meters per second

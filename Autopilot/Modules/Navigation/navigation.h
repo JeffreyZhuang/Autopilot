@@ -35,7 +35,7 @@ private:
     float gnss_e = 0;
     float gnss_d = 0;
 
-    float g = 9.80665;
+    const float g = 9.80665;
 
     // Kalman
     Eigen::MatrixXf get_a(float dt);

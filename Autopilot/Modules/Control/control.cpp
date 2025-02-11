@@ -50,7 +50,7 @@ void Control::update_stabilized()
 
 void Control::update_takeoff()
 {
-	float rudder = roll_controller.get_output(_plane->ahrs_roll,0, _dt);
+	float rudder = roll_controller.get_output(_plane->ahrs_roll, 0, _dt);
 	float elevator = pitch_controller.get_output(_plane->ahrs_pitch, TAKEOFF_PTCH, _dt);
 
 	_hal->set_elevator(elevator);
