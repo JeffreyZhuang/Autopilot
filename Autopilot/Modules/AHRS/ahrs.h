@@ -1,7 +1,7 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include "Lib/IMU_EKF/ESKF.h"
+#include "Lib/KalmanQuatAtt/KalmanQuatAtt.h"
 #include "plane.h"
 #include "hal.h"
 #include <stdio.h>
@@ -28,12 +28,6 @@ private:
 
     Plane* _plane;
     HAL* _hal;
-//    Madgwick filter;
-    IMU_EKF::ESKF<float> filter;
-    Eigen::Matrix<float, 3, 3> W; // soft-iron
-    Eigen::Matrix<float, 3, 1> V; // hard-iron
-    float incl = 0; // inclination
-    float B; // geomagnetic field strength
 
     float _dt;
     uint64_t last_imu_timestamp = 0;

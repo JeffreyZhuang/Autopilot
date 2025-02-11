@@ -119,7 +119,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Lib/Madgwick" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Autopilot"/>
+						<entry excluding="Lib/IMU_EKF|Lib/Madgwick" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Autopilot"/>
 						<entry excluding="Src/PITL_HAL" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FATFS"/>
@@ -232,7 +232,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Lib/Madgwick" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Autopilot"/>
+						<entry excluding="Lib/IMU_EKF|Lib/Madgwick" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Autopilot"/>
 						<entry excluding="Src/PITL_HAL" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FATFS"/>
