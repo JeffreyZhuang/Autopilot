@@ -1,15 +1,15 @@
 #ifndef AUTOPILOT_H
 #define AUTOPILOT_H
 
-#include <Modules/AHRS/ahrs.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <cstring>
-#include "hal.h"
+#include "Modules/AHRS/ahrs.h"
 #include "Modules/Navigation/navigation.h"
 #include "Modules/Control/control.h"
 #include "Modules/Guidance/guidance.h"
 #include "Modules/Telemetry/telem.h"
+#include "hal.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <cstring>
 
 /**
  * @brief Autopilot
