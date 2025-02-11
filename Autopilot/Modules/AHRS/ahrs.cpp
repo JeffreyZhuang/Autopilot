@@ -1,6 +1,6 @@
 #include <Modules/AHRS/ahrs.h>
 
-AHRS::AHRS(HAL* hal, Plane* plane, float dt) : filter(dt, 0.1)
+AHRS::AHRS(HAL* hal, Plane* plane, float dt) : filter(dt, 1)
 {
     _plane = plane;
     _hal = hal;
