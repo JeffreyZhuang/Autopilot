@@ -21,7 +21,7 @@ void Guidance::update_mission()
 
 	// Determine target waypoint
 	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
-	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, target_wp.lat, target_wp.lon, &tgt_wp_north, &tgt_wp_east);
+	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, target_wp.lat, target_wp.lon, &tgt_wp_north, &tgt_wp_east);
 	_plane->guidance_d_setpoint = target_wp.alt;
 
 	// Determine previous waypoint
@@ -32,9 +32,9 @@ void Guidance::update_mission()
 	}
 	else
 	{
-		prev_wp = Waypoint{_plane->center_lat, _plane->center_lon, 0};
+		prev_wp = Waypoint{_plane->home_lat, _plane->home_lon, 0};
 	}
-	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, prev_wp.lat, prev_wp.lon, &prev_wp_north, &prev_wp_east);
+	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, prev_wp.lat, prev_wp.lon, &prev_wp_north, &prev_wp_east);
 
 	// Calculate track heading
 	float trk_hdg = atan2f(tgt_wp_east - prev_wp_east, tgt_wp_north - prev_wp_north);
@@ -61,7 +61,7 @@ void Guidance::update_mission()
 void Guidance::update_landing()
 {
 	double land_north, land_east;
-	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, _plane->land_lat, _plane->land_lon, &land_north, &land_east);
+	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, _plane->land_lat, _plane->land_lon, &land_north, &land_east);
 
 	float dist_to_land = sqrtf(powf(_plane->nav_pos_north - land_north, 2) +
 							   powf(_plane->nav_pos_east - land_east, 2));
@@ -87,5 +87,23 @@ void Guidance::update_flare()
 {
 	// Decrease altitude setpoint at a rate of FLARE_SINK_RATE
 	_plane->guidance_d_setpoint = _plane->flare_alt + FLARE_SINK_RATE * (_plane->time - _plane->flare_start_time) / 1000000.0f;
+}
+
+bool Guidance::reached_last_wp()
+{
+	bool mission_complete = false;
+
+	double tgt_wp_north, tgt_wp_east;
+	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
+	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, target_wp.lat, target_wp.lon, &tgt_wp_north, &tgt_wp_east);
+	float dist_to_wp = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));
+
+	// If the plane has reached the last waypoint
+	if ((_plane->waypoint_index == _plane->num_waypoints - 1) && (dist_to_wp < MIN_DIST_WP))
+	{
+		mission_complete = true;
+	}
+
+	return mission_complete;
 }
 

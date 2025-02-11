@@ -42,7 +42,7 @@ private:
     void mission();
     void land();
     void flare();
-    void safe();
+    void touchdown();
 
 	// Manual mode
     void evaluate_manual_mode();

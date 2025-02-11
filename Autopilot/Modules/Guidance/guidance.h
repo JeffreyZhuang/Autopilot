@@ -21,6 +21,7 @@ public:
 	void update_mission();
 	void update_landing();
 	void update_flare();
+	bool reached_last_wp();
 private:
 	HAL* _hal;
 	Plane*_plane;

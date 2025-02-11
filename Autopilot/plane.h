@@ -28,7 +28,7 @@ enum class AutoMode
 	MISSION = 6,
 	LAND = 7,
 	FLARE = 8,
-	SAFE = 9
+	TOUCHDOWN = 9
 };
 
 struct Waypoint {
@@ -113,8 +113,8 @@ struct Plane
     float nav_acc_east = 0;
     float nav_acc_down = 0;
     float nav_airspeed = 0;
-    double center_lat = 0;
-	double center_lon = 0;
+    double home_lat = 0;
+	double home_lon = 0;
     uint64_t nav_timestamp = 0;
 
     // Guidance

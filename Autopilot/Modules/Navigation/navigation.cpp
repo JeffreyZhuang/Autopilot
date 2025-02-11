@@ -44,13 +44,31 @@ Eigen::MatrixXf Navigation::get_q()
 	return Q;
 }
 
+bool Navigation::set_home()
+{
+	if (check_new_baro_data() && check_new_gnss_data() && !home_set)
+	{
+		// Set barometer home position
+		_plane->baro_offset = _plane->baro_alt;
+
+		// Set GNSS home position
+		_plane->home_lat = _plane->gnss_lat;
+		_plane->home_lon = _plane->gnss_lon;
+
+		home_set = true;
+	}
+
+	return home_set;
+}
+
 /**
  * @brief Update navigation
  *
  */
 void Navigation::execute()
 {
-	if (check_new_imu_data()) {
+	if (check_new_imu_data())
+	{
 		predict_imu();
 	}
 
@@ -149,7 +167,7 @@ void Navigation::read_imu()
 void Navigation::read_gnss()
 {
 	double north, east;
-	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, _plane->gnss_lat, _plane->gnss_lon, &north, &east);
+	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, _plane->gnss_lat, _plane->gnss_lon, &north, &east);
 	gnss_n = (float)north;
 	gnss_e = (float)east;
 	gnss_d = _plane->gnss_asl;

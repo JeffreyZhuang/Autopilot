@@ -18,11 +18,14 @@ public:
     Navigation(HAL* hal, Plane* plane, float predict_dt);
 
     void execute();
+    bool set_home();
 
 private:
     HAL* _hal;
     Plane* _plane;
     Kalman kalman;
+
+    bool home_set = false;
 
     uint64_t last_imu_timestamp;
     uint64_t last_gnss_timestamp;

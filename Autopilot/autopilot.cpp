@@ -65,19 +65,14 @@ void Autopilot::evaluate_system_mode()
 // Then check for filter converge before moving out of boot
 void Autopilot::boot()
 {
-	if (!_ahrs.set_initial_state())
+	if (_ahrs.set_initial_state())
 	{
 		_ahrs.update();
 	}
 
-	_plane->baro_offset = _plane->baro_alt;
-
 	// Set home position to first GPS fix
-	if (_plane->gps_fix)
+	if (_navigation.set_home())
 	{
-		_plane->center_lat = _plane->gnss_lat;
-		_plane->center_lon = _plane->gnss_lon;
-
 		_navigation.execute();
 	}
 
@@ -139,8 +134,8 @@ void Autopilot::evaluate_auto_mode()
 	case AutoMode::FLARE:
 		flare();
 		break;
-	case AutoMode::SAFE:
-		safe();
+	case AutoMode::TOUCHDOWN:
+		touchdown();
 		break;
 	}
 }
@@ -166,17 +161,9 @@ void Autopilot::takeoff()
 void Autopilot::mission()
 {
 	_guidance.update_mission();
-
 	_control.update_mission();
 
-	// Calculate distance to waypoint
-	double tgt_wp_north, tgt_wp_east;
-	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
-	lat_lon_to_meters(_plane->center_lat, _plane->center_lon, target_wp.lat, target_wp.lon, &tgt_wp_north, &tgt_wp_east);
-	float dist_to_wp = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));
-
-	// If the plane has reached the last waypoint
-	if ((_plane->waypoint_index == _plane->num_waypoints - 1) && (dist_to_wp < MIN_DIST_WP))
+	if (_guidance.reached_last_wp())
 	{
 		_plane->autoMode = AutoMode::LAND;
 	}
@@ -186,7 +173,6 @@ void Autopilot::mission()
 void Autopilot::land()
 {
 	_guidance.update_landing();
-
 	_control.update_land();
 
 	if (_plane->rangefinder_dist < LAND_FLARE_ALT)
@@ -205,11 +191,11 @@ void Autopilot::flare()
 
 	if (_plane->time - _plane->flare_start_time > 10000000)
 	{
-		_plane->autoMode = AutoMode::SAFE;
+		_plane->autoMode = AutoMode::TOUCHDOWN;
 	}
 }
 
-void Autopilot::safe()
+void Autopilot::touchdown()
 {
 	_hal->set_rudder(0);
 	_hal->set_elevator(0);
