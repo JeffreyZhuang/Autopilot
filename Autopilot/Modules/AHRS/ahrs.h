@@ -19,7 +19,6 @@ public:
     void setup();
     bool set_initial_state();
     void update();
-    bool initial_state_set = false;
 private:
     void update_imu();
     void update_imu_mag();
@@ -46,6 +45,8 @@ private:
     MovingAverage avg_mx;
 	MovingAverage avg_my;
 	MovingAverage avg_mz;
+
+	bool initial_state_set = false;
 
     float _dt;
     uint64_t last_imu_timestamp = 0;

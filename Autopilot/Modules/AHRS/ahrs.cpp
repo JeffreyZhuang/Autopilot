@@ -22,30 +22,25 @@ bool AHRS::set_initial_state()
 {
 	if (check_new_imu_data() && check_new_compass_data() && !initial_state_set)
 	{
-		// Get heading from mag and roll, pitch from accel, convert to quaternion and put in here
-		float q0, q1, q2, q3;
-		float ax = -_plane->imu_ax;
-		float ay = -_plane->imu_ay;
-		float az = -_plane->imu_az;
-		float mx = -_plane->compass_mx;
-		float my = -_plane->compass_my;
-		float mz = -_plane->compass_mz;
+		avg_ax.add(-_plane->imu_ax);
+		avg_ay.add(-_plane->imu_ay);
+		avg_az.add(-_plane->imu_az);
+		avg_mx.add(-_plane->compass_mx);
+		avg_my.add(-_plane->compass_my);
+		avg_mz.add(-_plane->compass_mz);
 
-		avg_ax.add(ax);
-		avg_ay.add(ay);
-		avg_az.add(az);
-		avg_mx.add(mx);
-		avg_my.add(my);
-		avg_mz.add(mz);
+		last_imu_timestamp = _plane->imu_timestamp;
+		last_compass_timestamp = _plane->compass_timestamp;
 
 		if (avg_ax.getFilled())
 		{
-			ax = avg_ax.getAverage();
-			ay = avg_ay.getAverage();
-			az = avg_az.getAverage();
-			mx = avg_mx.getAverage();
-			my = avg_my.getAverage();
-			mz = avg_mz.getAverage();
+			float q0, q1, q2, q3;
+			float ax = avg_ax.getAverage();
+			float ay = avg_ay.getAverage();
+			float az = avg_az.getAverage();
+			float mx = avg_mx.getAverage();
+			float my = avg_my.getAverage();
+			float mz = avg_mz.getAverage();
 
 			float roll_initial = atan2f(ay, az);
 			float pitch_initial = atan2f(-ax, sqrtf(powf(ay, 2) + powf(az, 2)));
@@ -83,18 +78,13 @@ bool AHRS::set_initial_state()
 
 			filter.set_state(q0, q1, q2, q3); // Set initial state
 
-			last_imu_timestamp = _plane->imu_timestamp;
-			last_compass_timestamp = _plane->compass_timestamp;
-
 			publish_ahrs();
 
 			initial_state_set = true;
-
-			return true;
 		}
 	}
 
-	return false;
+	return initial_state_set;
 }
 
 bool AHRS::check_new_imu_data()
