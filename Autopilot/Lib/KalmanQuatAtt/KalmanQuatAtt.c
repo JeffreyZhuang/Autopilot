@@ -12,7 +12,7 @@
 /* Include files */
 #include <string.h>
 #include <math.h>
-#include "Lib/KalmanQuatAtt/KalmanQuatAtt.h"
+#include "KalmanQuatAtt.h"
 
 /* Variable Definitions */
 static float p;
