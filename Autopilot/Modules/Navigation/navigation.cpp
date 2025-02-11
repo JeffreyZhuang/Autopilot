@@ -166,16 +166,6 @@ void Navigation::update_plane()
 	_plane->nav_timestamp = _hal->get_time_us();
 }
 
-void Navigation::read_imu()
-{
-
-}
-
-void Navigation::read_gnss()
-{
-
-}
-
 bool Navigation::check_new_imu_data()
 {
     return _plane->imu_timestamp > last_imu_timestamp;

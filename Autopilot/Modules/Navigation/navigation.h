@@ -42,9 +42,6 @@ private:
     Eigen::MatrixXf get_b(float dt);
     Eigen::MatrixXf get_q();
 
-    void read_imu();
-	void read_gnss();
-
 	bool check_new_imu_data();
 	bool check_new_baro_data();
 	bool check_new_gnss_data();
