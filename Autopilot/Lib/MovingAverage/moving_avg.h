@@ -15,6 +15,7 @@ public:
     explicit MovingAverage(size_t windowSize, float* buffer);
     void add(float value);
     float getAverage() const;
+    bool getFilled() const;
 
 private:
     float* buffer;

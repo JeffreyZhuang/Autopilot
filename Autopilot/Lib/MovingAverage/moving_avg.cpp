@@ -19,3 +19,7 @@ float MovingAverage::getAverage() const {
     size_t count = filled ? windowSize : index;
     return count == 0 ? 0.0f : sum / count;
 }
+
+bool MovingAverage::getFilled() const {
+	return filled;
+}
