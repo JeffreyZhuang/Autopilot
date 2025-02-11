@@ -16,8 +16,8 @@ bool AHRS::set_initial_state()
 {
 	if (check_new_imu_data() && check_new_compass_data() && !initial_state_set)
 	{
-		Eigen::Vector3f acc0 = {-_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az};
-		Eigen::Vector3f mag0 = {-_plane->compass_mx, -_plane->compass_my, -_plane->compass_mz};
+		Eigen::Vector3f acc0 = {_plane->imu_ax, _plane->imu_ay, _plane->imu_az};
+		Eigen::Vector3f mag0 = {_plane->compass_mx, _plane->compass_my, _plane->compass_mz};
 		mekf.initialize_from_acc_mag(acc0, mag0);
 
 		initial_state_set = true;
@@ -117,8 +117,8 @@ void AHRS::apply_compass_calibration()
 void AHRS::update()
 {
 	Eigen::Vector3f gyr = {_plane->imu_gx * M_PI / 180.0f, _plane->imu_gy * M_PI / 180.0f, _plane->imu_gz * M_PI / 180.0f};
-	Eigen::Vector3f acc = {-_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az};
-	Eigen::Vector3f mag = {-_plane->compass_mx, -_plane->compass_my, -_plane->compass_mz};
+	Eigen::Vector3f acc = {_plane->imu_ax, _plane->imu_ay, _plane->imu_az};
+	Eigen::Vector3f mag = {_plane->compass_mx, _plane->compass_my, _plane->compass_mz};
 
 	mekf.time_update(gyr, _dt);
 	mekf.measurement_update(acc, mag);
