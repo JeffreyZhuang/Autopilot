@@ -40,14 +40,11 @@ static float g;
 void updateEKFQuatAtt_initialize(void)
 {
   int i;
-  static const float dv4[7] = { 1.0E-6, 1.0E-6, 1.0E-6, 1.0E-6, 1.0E-8, 1.0E-8,
-    1.0E-8 };
+  static const float dv4[7] = { 1, 1, 1, 1, 1, 1, 1 };
 
-  static const float dv5[7] = { 2.5E-9, 2.5E-9, 2.5E-9, 2.5E-9, 1.0E-12,
-    1.0E-12, 1.0E-12 };
+  static const float dv5[7] = { 1, 1, 1, 1, 1, 1, 1 };
 
-  static const float dv6[6] = { 0.0025000000000000005, 0.0025000000000000005,
-    0.0025000000000000005, 0.0004, 0.0004, 0.0004 };
+  static const float dv6[6] = { 1, 1, 1, 1, 1, 1 };
 
   g = 9.81;
 

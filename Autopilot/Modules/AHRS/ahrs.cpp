@@ -107,14 +107,16 @@ void AHRS::apply_compass_calibration()
 void AHRS::update()
 {
 	float roll_deg, pitch_deg, yaw_deg;
-	const float gyro[3] = {_plane->imu_gx, _plane->imu_gy, _plane->imu_gz};
-	const float accel[3] = {_plane->imu_ax, _plane->imu_ay, _plane->imu_az};
+	const float gyro[3] = {_plane->imu_gx * M_PI / 180.0f, _plane->imu_gy * M_PI / 180.0f, _plane->imu_gz * M_PI / 180.0f};
+	const float accel[3] = {_plane->imu_ax * 9.81, _plane->imu_ay * 9.81, _plane->imu_az * 9.81};
 	const float mag[3] = {_plane->compass_mx, _plane->compass_my, _plane->compass_mz};
 	updateEKFQuatAtt(gyro, accel, mag, 0.0f, 0.0f, _dt, 1.0f, &roll_deg, &pitch_deg, &yaw_deg);
 
 	_plane->ahrs_roll = roll_deg;
 	_plane->ahrs_pitch = pitch_deg;
 	_plane->ahrs_yaw = yaw_deg;
+
+	printf("%f %f %f\n", roll_deg, pitch_deg, yaw_deg);
 
 //	if (check_new_imu_data())
 //	{

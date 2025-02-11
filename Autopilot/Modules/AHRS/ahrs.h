@@ -4,6 +4,7 @@
 #include "plane.h"
 #include "hal.h"
 #include <stdio.h>
+#include <math.h>
 
 extern "C"
 {
