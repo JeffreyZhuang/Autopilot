@@ -5,11 +5,12 @@
 #include "hal.h"
 #include <stdio.h>
 #include <math.h>
+#include "Lib/q-mekf/q_mekf.h"
 
-extern "C"
-{
-#include "Lib/KalmanQuatAtt/KalmanQuatAtt.h"
-}
+//extern "C"
+//{
+//#include "Lib/KalmanQuatAtt/KalmanQuatAtt.h"
+//}
 
 /**
  * @brief Attitude Heading Reference System
@@ -33,6 +34,11 @@ private:
 
     Plane* _plane;
     HAL* _hal;
+
+    Eigen::Vector3f sigma_a = {20.78e-3, 20.78e-3, 20.78e-3};
+	Eigen::Vector3f sigma_g = {100*M_PI/180, 100*M_PI/180, 100*M_PI/180};
+	Eigen::Vector3f sigma_m = {3.2e-3, 3.2e-3, 4.1e-3};
+	QuaternionMEKF<float, true> mekf;
 
     float _dt;
     uint64_t last_imu_timestamp = 0;
