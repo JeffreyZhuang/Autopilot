@@ -23,8 +23,7 @@
 class Madgwick{
 private:
     static float invSqrt(float x);
-    float beta_acc;
-    float beta_mag;
+    float _beta;
     float q0;
     float q1;
     float q2;
@@ -38,7 +37,7 @@ private:
 //-------------------------------------------------------------------------------------------
 // Function declarations
 public:
-    Madgwick(float dt, float beta_acc_def, float beta_mag_def);
+    Madgwick(float dt, float beta);
     void update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
     void updateIMU(float gx, float gy, float gz, float ax, float ay, float az);
     float get_q0() { return q0; };

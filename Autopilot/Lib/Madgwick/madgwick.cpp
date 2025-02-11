@@ -28,9 +28,8 @@
 //-------------------------------------------------------------------------------------------
 // AHRS algorithm update
 
-Madgwick::Madgwick(float dt, float beta_acc_def, float beta_mag_def) {
-	beta_acc = beta_acc_def;
-	beta_mag = beta_mag_def;
+Madgwick::Madgwick(float dt, float beta) {
+	_beta = beta;
 	q0 = 1.0f;
 	q1 = 0.0f;
 	q2 = 0.0f;
@@ -127,10 +126,10 @@ void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az
 		s3 *= recipNorm;
 
 		// Apply feedback step
-		qDot1 -= beta * s0;
-		qDot2 -= beta * s1;
-		qDot3 -= beta * s2;
-		qDot4 -= beta * s3;
+		qDot1 -= _beta * s0;
+		qDot2 -= _beta * s1;
+		qDot3 -= _beta * s2;
+		qDot4 -= _beta * s3;
 	}
 
 	// Integrate rate of change of quaternion to yield quaternion
@@ -203,10 +202,10 @@ void Madgwick::updateIMU(float gx, float gy, float gz, float ax, float ay, float
 		s3 *= recipNorm;
 
 		// Apply feedback step
-		qDot1 -= beta_acc * s0;
-		qDot2 -= beta_acc * s1;
-		qDot3 -= beta_acc * s2;
-		qDot4 -= beta_acc * s3;
+		qDot1 -= _beta * s0;
+		qDot2 -= _beta * s1;
+		qDot3 -= _beta * s2;
+		qDot4 -= _beta * s3;
 	}
 
 	// Integrate rate of change of quaternion to yield quaternion
