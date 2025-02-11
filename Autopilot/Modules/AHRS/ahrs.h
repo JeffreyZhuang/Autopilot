@@ -3,9 +3,10 @@
 
 #include "plane.h"
 #include "hal.h"
+#include "Lib/Madgwick/madgwick.h"
+#include "Lib/MovingAverage/moving_avg.h"
 #include <stdio.h>
 #include <math.h>
-#include "Lib/Madgwick/madgwick.h"
 
 /**
  * @brief Attitude Heading Reference System
@@ -31,6 +32,20 @@ private:
     HAL* _hal;
 
     Madgwick filter;
+
+    static constexpr size_t window_size = 5;
+    float window_ax[window_size];
+    float window_ay[window_size];
+    float window_az[window_size];
+    float window_mx[window_size];
+    float window_my[window_size];
+    float window_mz[window_size];
+    MovingAverage avg_ax;
+    MovingAverage avg_ay;
+    MovingAverage avg_az;
+    MovingAverage avg_mx;
+	MovingAverage avg_my;
+	MovingAverage avg_mz;
 
     float _dt;
     uint64_t last_imu_timestamp = 0;
