@@ -135,23 +135,6 @@ void AHRS::update()
 	}
 }
 
-void AHRS::mag_calibration()
-{
-	// Replace this with online mag calibration
-	// Or send to telem and do calibration GCS if thats not possible
-	if (check_new_compass_data())
-	{
-		// Send to USB for calibration
-		char tx_buff[200];
-		sprintf(tx_buff,
-				"%.6f,%.6f,%.6f\n",
-				_plane->compass_mx,
-				_plane->compass_my,
-				_plane->compass_mz);
-		_hal->usb_print(tx_buff);
-	}
-}
-
 void AHRS::update_imu()
 {
 	filter.updateIMU(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,

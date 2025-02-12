@@ -5,7 +5,7 @@ void Flight_hal::init_logger()
 	_sd.initialize();
 }
 
-void Flight_hal::write_storage_buffer()
+void Flight_hal::write_storage_buffer(uint8_t* data, uint16_t len)
 {
 	Sd_packet p;
 	p.time = _plane->time;

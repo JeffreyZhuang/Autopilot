@@ -141,8 +141,6 @@ struct Plane
     // Telemetry
     uint8_t latest_packet[TELEM_PKT_LEN];
     uint8_t mode_id;
-
-    bool mag_calibration = false;
 };
 
 #endif /* PLANE_H_ */

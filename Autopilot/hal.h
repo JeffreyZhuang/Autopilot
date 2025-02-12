@@ -19,7 +19,7 @@ public:
     virtual bool read_telem() = 0;
 
     // Logger
-    virtual void write_storage_buffer() = 0;
+    virtual void write_storage_buffer(uint8_t* data, uint16_t len) = 0;
     virtual void flush_storage_buffer() = 0;
     virtual void read_storage() = 0;
 

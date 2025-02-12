@@ -19,7 +19,6 @@ public:
     void setup();
     bool set_initial_state();
     void update();
-    void mag_calibration();
 private:
     void update_imu();
     void update_imu_mag();
