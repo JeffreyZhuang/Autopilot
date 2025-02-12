@@ -13,7 +13,7 @@ void Sd::initialize()
 
 void Sd::write()
 {
-	if (front_buff_full)
+	if (front_buff_full && !closed)
 	{
 		printf("time: %ld, front_buffer size: %d\n", HAL_GetTick(), sizeof(front_buffer));
 
@@ -36,16 +36,21 @@ void Sd::write()
 
 void Sd::read(uint8_t* rx_buff, uint16_t size)
 {
-	f_close(&fil);
-
-	FRESULT res = f_open(&fil, "data.bin", FA_READ);
-	if (res != FR_OK)
+	if (!closed)
 	{
-		printf("Error when opening file\n");
+		f_close(&fil);
+
+		FRESULT res = f_open(&fil, "data.bin", FA_READ);
+		if (res != FR_OK)
+		{
+			printf("Error when opening file\n");
+		}
+
+		closed = true;
 	}
 
 	UINT bytes_read;
-	res = f_read(&fil, rx_buff, size, &bytes_read);
+	FRESULT res = f_read(&fil, rx_buff, size, &bytes_read);
 }
 
 void Sd::append_buffer(uint8_t* packet, uint16_t size)

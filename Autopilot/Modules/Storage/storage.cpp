@@ -23,16 +23,12 @@ void Storage::write()
 
 void Storage::flush()
 {
-	if (_plane->systemMode != SystemMode::FLIGHT)
-		_hal->flush_storage_buffer();
+	_hal->flush_storage_buffer();
 }
 
 void Storage::read()
 {
-	printf("Start Read\n");
-
-	// Read 10 packets
-	for (int i = 0; i < 10; i++)
+	while (true)
 	{
 		Storage_packet packet;
 		uint8_t rx_buff[sizeof(Storage_packet)];
@@ -41,9 +37,6 @@ void Storage::read()
 
 		printf("%" PRIu64 " %f\n", packet.time, packet.acc_z);
 	}
-
-	printf("Done\n");
-	while (1);
 
 
 	// Keep reading single byte until start byte

@@ -27,6 +27,8 @@ private:
 	uint8_t new_buffer[buffer_max_len];
 	bool front_buff_full = false;
 	uint32_t back_buff_last_idx = 0;
+
+	bool closed = false; // Flag for closing the file before reading
 };
 
 #endif /* INC_SD_H_ */

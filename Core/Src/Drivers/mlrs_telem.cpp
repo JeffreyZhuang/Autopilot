@@ -50,7 +50,7 @@ void Mlrs_telem::dma_complete()
 
 	if (in_reading)
 	{
-		printf("%c%c%c%c%c%c%c%c ", BYTE_TO_BINARY(rx_buffer[0]));
+//		printf("%c%c%c%c%c%c%c%c ", BYTE_TO_BINARY(rx_buffer[0]));
 
 		working_packet[packet_index] = rx_buffer[0];
 		packet_index++;
@@ -68,7 +68,7 @@ void Mlrs_telem::dma_complete()
 				}
 
 				new_packet = true;
-				printf("\n");
+//				printf("\n");
 			}
 		}
 	}
