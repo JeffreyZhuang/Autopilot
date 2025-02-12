@@ -45,7 +45,7 @@ void Sd::read(uint8_t* rx_buff, uint16_t size)
 	}
 
 	UINT bytes_read;
-	f_read(&fil, rx_buff, size, &bytes_read);
+	res = f_read(&fil, rx_buff, size, &bytes_read);
 }
 
 void Sd::append_buffer(uint8_t* packet, uint16_t size)
@@ -58,6 +58,7 @@ void Sd::append_buffer(uint8_t* packet, uint16_t size)
 
 void Sd::append_byte(uint8_t byte)
 {
+	// Double buffering:
 	// If back_buffer is not full, add data to back_buffer
 	// If back_buffer is full and front_buffer is not full, swap back and front buffers add data to back_buffer
 	// If both buffers are full, there is no way to store the data so throw out the data
