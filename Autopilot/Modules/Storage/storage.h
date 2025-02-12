@@ -1,7 +1,7 @@
 #ifndef MODULES_STORAGE_STORAGE_H_
 #define MODULES_STORAGE_STORAGE_H_
 
-// TODO: Add COBS and start byte, and different message types (log events as well)
+// TODO: Add COBS and start byte
 
 #include "plane.h"
 #include "hal.h"
@@ -23,11 +23,10 @@ public:
 	void write();
 	void flush();
 	void read();
+
 private:
 	Plane* _plane;
 	HAL* _hal;
-private:
-
 };
 
 #endif /* MODULES_STORAGE_STORAGE_H_ */
