@@ -1,6 +1,6 @@
 #include <Modules/AHRS/ahrs.h>
 
-AHRS::AHRS(HAL* hal, Plane* plane, float dt) : filter(dt, 1),
+AHRS::AHRS(HAL* hal, Plane* plane, float dt) : filter(dt, 0.01),
 											   avg_ax(window_size, window_ax),
 											   avg_ay(window_size, window_ay),
 											   avg_az(window_size, window_az),

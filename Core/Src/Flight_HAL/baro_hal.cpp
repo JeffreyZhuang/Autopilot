@@ -8,7 +8,8 @@ void Flight_hal::init_baro()
 
 void Flight_hal::read_baro()
 {
-	float alt = Barometer_getAltitude(true);
-	_plane->baro_alt = alt;
-	_plane->baro_timestamp = get_time_us();
+	if (Barometer_getAltitude(&_plane->baro_alt))
+	{
+		_plane->baro_timestamp = get_time_us();
+	}
 }

@@ -205,16 +205,18 @@ int32_t Barometer_getPressure(bool calculate)
 	return pressure;
 }
 
-float Barometer_getAltitude(bool calculate)
+bool Barometer_getAltitude(float *alt)
 {
-	if (calculate)
+	if (Barometer_calculate())
 	{
-		Barometer_calculate();
+		*alt = altitude;
+		return true;
 	}
-	return altitude;
+
+	return false;
 }
 
-void Barometer_calculate()
+bool Barometer_calculate()
 {
 	int32_t dT;
 	int64_t TEMP, OFF, SENS, P;
@@ -264,5 +266,9 @@ void Barometer_calculate()
 		altitude = (1 - pow(r,c))*44330.77;
 
 		state = 0;
+
+		return true;
 	}
+
+	return false;
 }

@@ -27,9 +27,9 @@ private:
 
     bool home_set = false;
 
-    uint64_t last_imu_timestamp;
-    uint64_t last_gnss_timestamp;
-    uint64_t last_baro_timestamp;
+    uint64_t last_imu_timestamp = 0;
+    uint64_t last_gnss_timestamp = 0;
+    uint64_t last_baro_timestamp = 0;
 
     const float g = 9.80665;
 

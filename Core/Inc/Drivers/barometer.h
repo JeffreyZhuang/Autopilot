@@ -69,12 +69,12 @@ extern int32_t Barometer_getPressure(bool calculate);
  *
  * @return the altitude
  */
-extern float Barometer_getAltitude(bool calculate);
+extern bool Barometer_getAltitude(float *alt);
 
 /**
  * @brief calculate/update the altitude/pressure/temperature
  * 		  using the barometer
  */
-extern void Barometer_calculate();
+extern bool Barometer_calculate();
 
 #endif /* BAROMETER_H_ */

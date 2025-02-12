@@ -76,6 +76,8 @@ void Autopilot::boot()
 		_navigation.execute();
 	}
 
+	printf("%.2f %.2f %.2f\n", _plane->nav_pos_north, _plane->nav_pos_east, _plane->nav_pos_down);
+
 	bool waypoints_loaded = _plane->num_waypoints > 0;
 
 	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
