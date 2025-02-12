@@ -193,10 +193,13 @@ void Navigation::debug_serial()
 {
 	char tx_buff[200];
 	sprintf(tx_buff,
-			"%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
+			"%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
 			_plane->nav_acc_north,
 			_plane->nav_acc_east,
 			_plane->nav_acc_down,
+			_plane->nav_vel_north,
+			_plane->nav_vel_east,
+			_plane->nav_vel_down,
 			_plane->nav_pos_north,
 			_plane->nav_pos_east,
 			_plane->nav_pos_down);
