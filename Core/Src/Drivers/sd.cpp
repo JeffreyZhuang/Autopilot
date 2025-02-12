@@ -68,32 +68,32 @@ void Sd::append_buffer(uint8_t* packet, uint16_t size)
 	// If back_buffer is not full, add data to back_buffer
 	// If back_buffer is full and front_buffer is not full, swap back and front buffers add data to back_buffer
 	// If both buffers are full, there is no way to store the data so throw out the data
-	bool back_buff_full = back_buff_idx + size > buffer_len;
+	bool back_buff_full = back_buff_last_idx + size > buffer_len;
 
 	if (!back_buff_full)
 	{
 		// Add data to back buffer
-		for (int i = back_buff_idx; i < back_buff_idx + size; i++)
+		for (uint32_t i = back_buff_last_idx; i < back_buff_last_idx + size; i++)
 		{
 			back_buffer[i] = packet[i];
 		}
-		back_buff_idx += size;
+		back_buff_last_idx += size;
 	}
 	else if (back_buff_full && !front_buff_full)
 	{
 		// Copy back buffer to front buffer
-		memcpy(front_buffer, back_buffer, sizeof(back_buffer));
+		memcpy(front_buffer, back_buffer, back_buff_last_idx);
 		front_buff_full = true;
 
 		// Reset back buffer
-		back_buff_idx = 0;
+		back_buff_last_idx = 0;
 
 		// Add data to back buffer
 		for (int i = 0; i < size; i++)
 		{
 			back_buffer[i] = packet[i];
 		}
-		back_buff_idx = size;
+		back_buff_last_idx = size;
 	}
 	else if (back_buff_full && front_buff_full)
 	{

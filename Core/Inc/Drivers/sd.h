@@ -20,12 +20,12 @@ private:
 	FIL fil;
 
 	// Double buffering approach
-	static constexpr int buffer_len = 3000;
+	static constexpr uint32_t buffer_len = 3000;
 	uint8_t back_buffer[buffer_len];
 	uint8_t front_buffer[buffer_len];
 	uint8_t new_buffer[buffer_len];
 	bool front_buff_full = false;
-	int back_buff_idx = 0;
+	uint32_t back_buff_last_idx = 0;
 };
 
 #endif /* INC_SD_H_ */
