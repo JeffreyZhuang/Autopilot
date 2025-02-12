@@ -1,5 +1,7 @@
 #include "storage.h"
 
+#include <stdio.h> // Testing, remove later
+
 Storage::Storage(Plane* plane, HAL* hal)
 {
 	_plane = plane;
@@ -25,5 +27,14 @@ void Storage::flush()
 
 void Storage::read()
 {
+	// Read 10 packets
+	for (int i = 0; i < 10; i++)
+	{
+		Storage_packet packet;
+		uint8_t rx_buff[sizeof(Storage_packet)];
+		_hal->read_storage(rx_buff, sizeof(rx_buff));
+		memcpy(&packet, rx_buff, sizeof(packet));
 
+		printf("%d %f", (uint32_t)packet.time, packet.acc_z);
+	}
 }
