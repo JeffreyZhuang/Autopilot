@@ -87,7 +87,7 @@ void Navigation::execute()
 
 	if (check_new_baro_data())
 	{
-		update_baro();
+//		update_baro();
 	}
 }
 
@@ -105,7 +105,7 @@ void Navigation::predict_imu()
 	acc_world(2) += g; // Gravity correction
 
 //	printf("%.2f %.2f %.2f\n", acc_world(0), acc_world(1), acc_world(2));
-	printf("%.2f %.2f\n", _plane->nav_vel_north, _plane->nav_vel_east);
+	printf("%.2f %.2f %.2f\n", _plane->nav_vel_north, _plane->nav_vel_east, _plane->nav_vel_down);
 
 	_plane->nav_acc_north = acc_world(0);
 	_plane->nav_acc_east = acc_world(1);
