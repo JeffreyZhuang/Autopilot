@@ -1,10 +1,3 @@
-/*
- * parameters.h
- *
- *  Created on: Jan. 29, 2025
- *      Author: jeffr
- */
-
 #ifndef PARAMETERS_H_
 #define PARAMETERS_H_
 
@@ -45,6 +38,10 @@ constexpr uint8_t TELEM_PKT_LEN = 40;
 
 // AHRS
 constexpr float MAG_DECL = -10.2; // Degrees, determined from online calculator
+constexpr float HARD_IRON[3] = {-46.301146, 3.866545, -71.601346};
+constexpr float SOFT_IRON[3][3] = {{1.189985, 0.015110, -0.066520},
+						  	  	   {0.015110, 1.205787, -0.039344},
+								   {-0.066520, -0.039344, 1.183604}};
 
 // Servos
 

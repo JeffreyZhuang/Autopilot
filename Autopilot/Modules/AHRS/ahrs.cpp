@@ -100,24 +100,21 @@ bool AHRS::check_new_compass_data()
 
 void AHRS::apply_compass_calibration(float mag_data[3])
 {
-	float _hard_iron[3] = {-46.301146, 3.866545, -71.601346};
-	float _soft_iron[3][3] = {{1.189985, 0.015110, -0.066520},
-							  {0.015110, 1.205787, -0.039344},
-							  {-0.066520, -0.039344, 1.183604}};
+	// Storage for hard-iron calibrated magnetometer data
 	float hi_cal[3];
 
 	// Apply hard-iron offsets
 	for (uint8_t i = 0; i < 3; i++)
 	{
-		hi_cal[i] = mag_data[i] - _hard_iron[i];
+		hi_cal[i] = mag_data[i] - HARD_IRON[i];
 	}
 
 	// Apply soft-iron scaling
 	for (uint8_t i = 0; i < 3; i++)
 	{
-		mag_data[i] = (_soft_iron[i][0] * hi_cal[0]) +
-					  (_soft_iron[i][1] * hi_cal[1]) +
-					  (_soft_iron[i][2] * hi_cal[2]);
+		mag_data[i] = (SOFT_IRON[i][0] * hi_cal[0]) +
+					  (SOFT_IRON[i][1] * hi_cal[1]) +
+					  (SOFT_IRON[i][2] * hi_cal[2]);
 	}
 }
 
