@@ -144,16 +144,6 @@ void AHRS::update()
 		if (check_new_compass_data())
 		{
 			update_imu_mag();
-
-			// Send to USB for calibration
-			char tx_buff[200];
-			sprintf(tx_buff,
-					"%.6f,%.6f,%.6f\n",
-					_plane->compass_mx,
-					_plane->compass_my,
-					_plane->compass_mz);
-			_hal->usb_print(tx_buff);
-
 		}
 		else
 		{
@@ -161,6 +151,21 @@ void AHRS::update()
 		}
 
 		publish_ahrs();
+	}
+}
+
+void AHRS::mag_calibration()
+{
+	if (check_new_compass_data())
+	{
+		// Send to USB for calibration
+		char tx_buff[200];
+		sprintf(tx_buff,
+				"%.6f,%.6f,%.6f\n",
+				_plane->compass_mx,
+				_plane->compass_my,
+				_plane->compass_mz);
+		_hal->usb_print(tx_buff);
 	}
 }
 

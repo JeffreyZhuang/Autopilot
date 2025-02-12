@@ -25,6 +25,7 @@ private:
     void publish_ahrs();
     bool check_new_imu_data();
     bool check_new_compass_data();
+    void mag_calibration();
     void apply_compass_calibration(float mag_data[3]);
 
     Plane* _plane;

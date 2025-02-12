@@ -70,6 +70,11 @@ void Autopilot::boot()
 		_ahrs.update();
 	}
 
+	if (_plane->mag_calibration)
+	{
+		_ahrs.mag_calibration();
+	}
+
 	// Set home position to first GPS fix
 	if (_navigation.set_home())
 	{
