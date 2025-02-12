@@ -79,9 +79,8 @@ void Autopilot::boot()
 	if (_navigation.set_home())
 	{
 		_navigation.execute();
+		_navigation.debug_serial();
 	}
-
-//	printf("%.2f %.2f %.2f\n", _plane->nav_pos_north, _plane->nav_pos_east, _plane->nav_pos_down);
 
 	bool waypoints_loaded = _plane->num_waypoints > 0;
 

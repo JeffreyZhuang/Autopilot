@@ -82,12 +82,12 @@ void Navigation::execute()
 
 	if (check_new_gnss_data())
 	{
-//		update_gps();
+		update_gps();
 	}
 
 	if (check_new_baro_data())
 	{
-//		update_baro();
+		update_baro();
 	}
 }
 
@@ -103,9 +103,6 @@ void Navigation::predict_imu()
 	// Rotate inertial frame to ECF
 	Eigen::Vector3f acc_world = q * acc_inertial * g;
 	acc_world(2) += g; // Gravity correction
-
-//	printf("%.2f %.2f %.2f\n", acc_world(0), acc_world(1), acc_world(2));
-	printf("%.2f %.2f %.2f\n", _plane->nav_vel_north, _plane->nav_vel_east, _plane->nav_vel_down);
 
 	_plane->nav_acc_north = acc_world(0);
 	_plane->nav_acc_east = acc_world(1);
@@ -141,7 +138,7 @@ void Navigation::update_gps()
 	H << 1, 0, 0, 0, 0, 0,
 		 0, 1, 0, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 2> R(0.01, 0.01);
+	Eigen::DiagonalMatrix<float, 2> R(1000, 1000);
 
 	kalman.update(R, H, y);
 
@@ -157,7 +154,7 @@ void Navigation::update_baro()
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 1> R(100);
+	Eigen::DiagonalMatrix<float, 1> R(1000);
 
 	kalman.update(R, H, y);
 
@@ -192,3 +189,16 @@ bool Navigation::check_new_baro_data()
 	return _plane->baro_timestamp > last_baro_timestamp;
 }
 
+void Navigation::debug_serial()
+{
+	char tx_buff[200];
+	sprintf(tx_buff,
+			"%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
+			_plane->nav_acc_north,
+			_plane->nav_acc_east,
+			_plane->nav_acc_down,
+			_plane->nav_pos_north,
+			_plane->nav_pos_east,
+			_plane->nav_pos_down);
+	_hal->usb_print(tx_buff);
+}
