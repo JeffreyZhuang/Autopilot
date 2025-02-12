@@ -14,13 +14,14 @@ public:
 	void initialize();
 	void write();
 	void append_buffer(uint8_t* packet, uint16_t size);
+	void append_byte(uint8_t byte);
 	void read(uint8_t* rx_buff, uint16_t size);
 private:
 	FATFS fatfs;
 	FIL fil;
 
 	// Double buffering approach
-	static constexpr uint32_t buffer_max_len = 3000;
+	static constexpr uint32_t buffer_max_len = 2000;
 	uint8_t back_buffer[buffer_max_len];
 	uint8_t front_buffer[buffer_max_len];
 	uint8_t new_buffer[buffer_max_len];

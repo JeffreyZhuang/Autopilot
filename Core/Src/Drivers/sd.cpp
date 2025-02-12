@@ -1,10 +1,3 @@
-/*
- * microsd.c
- *
- *  Created on: Dec 23, 2024
- *      Author: jeffr
- */
-
 #include <sd.h>
 
 void Sd::initialize()
@@ -30,10 +23,6 @@ void Sd::write()
 		{
 			printf("Error during writing\n");
 		}
-		else
-		{
-//			printf("Write success\n");
-		}
 
 		front_buff_full = false;
 
@@ -41,10 +30,6 @@ void Sd::write()
 		if (res != FR_OK)
 		{
 			printf("Error during sync\n");
-		}
-		else
-		{
-//			printf("Sync success\n");
 		}
 	}
 }
@@ -63,38 +48,39 @@ void Sd::read(uint8_t* rx_buff, uint16_t size)
 	f_read(&fil, rx_buff, size, &bytes_read);
 }
 
-// Simpler if its only one byte
 void Sd::append_buffer(uint8_t* packet, uint16_t size)
+{
+	for (uint16_t i = 0; i < size; i++)
+	{
+		append_byte(packet[i]);
+	}
+}
+
+void Sd::append_byte(uint8_t byte)
 {
 	// If back_buffer is not full, add data to back_buffer
 	// If back_buffer is full and front_buffer is not full, swap back and front buffers add data to back_buffer
 	// If both buffers are full, there is no way to store the data so throw out the data
-	bool back_buff_full = back_buff_last_idx + size > buffer_max_len;
-
+	bool back_buff_full = back_buff_last_idx == buffer_max_len;
 	if (!back_buff_full)
 	{
-		// Add data to back buffer
-		for (uint32_t i = back_buff_last_idx; i < back_buff_last_idx + size; i++)
-		{
-			back_buffer[i] = packet[i];
-		}
-		back_buff_last_idx += size;
+		back_buffer[back_buff_last_idx] = byte;
+		back_buff_last_idx++;
 	}
 	else if (back_buff_full && !front_buff_full)
 	{
 		// Copy back buffer to front buffer
-		memcpy(front_buffer, back_buffer, back_buff_last_idx);
+		memcpy(front_buffer, back_buffer, buffer_max_len);
 		front_buff_full = true;
 
-		// Add data to back buffer
-		for (int i = 0; i < size; i++)
-		{
-			back_buffer[i] = packet[i];
-		}
-		back_buff_last_idx = size; // Reset back buffer last index
+		// Add byte to back buffer
+		back_buffer[0] = byte;
+
+		// Reset buffer index
+		back_buff_last_idx = 1;
 	}
-	else if (back_buff_full && front_buff_full)
+	else
 	{
-		// Throw out data
+		// Throw out data if both buffers full
 	}
 }
