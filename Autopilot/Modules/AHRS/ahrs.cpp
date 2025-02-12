@@ -122,8 +122,7 @@ void AHRS::update()
 {
 	if (check_new_imu_data())
 	{
-		// If acc too high
-		if (false)
+		if (sqrtf(powf(_plane->imu_ax, 2) + powf(_plane->imu_ay, 2) + powf(_plane->imu_az, 2)) > 2.0f)
 		{
 			update_gyro();
 		}
@@ -164,7 +163,7 @@ void AHRS::update_imu_mag()
 
 void AHRS::update_gyro()
 {
-	filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz);
+	filter.updateGyro(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz);
 	last_imu_timestamp = _plane->imu_timestamp;
 }
 
