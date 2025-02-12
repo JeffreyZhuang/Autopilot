@@ -37,4 +37,8 @@ void Storage::read()
 
 		printf("%d %f", (uint32_t)packet.time, packet.acc_z);
 	}
+
+
+	// Keep reading single byte until start byte
+	// Then COBS decode and put in Storage_packet struct to read
 }

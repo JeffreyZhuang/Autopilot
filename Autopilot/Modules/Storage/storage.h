@@ -1,12 +1,7 @@
-/*
- * storage.h
- *
- *  Created on: Feb. 12, 2025
- *      Author: jeffr
- */
-
 #ifndef MODULES_STORAGE_STORAGE_H_
 #define MODULES_STORAGE_STORAGE_H_
+
+// TODO: Add COBS and start byte, and different message types (log events as well)
 
 #include "plane.h"
 #include "hal.h"
