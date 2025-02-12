@@ -20,10 +20,10 @@ private:
 	FIL fil;
 
 	// Double buffering approach
-	static constexpr uint32_t buffer_len = 3000;
-	uint8_t back_buffer[buffer_len];
-	uint8_t front_buffer[buffer_len];
-	uint8_t new_buffer[buffer_len];
+	static constexpr uint32_t buffer_max_len = 3000;
+	uint8_t back_buffer[buffer_max_len];
+	uint8_t front_buffer[buffer_max_len];
+	uint8_t new_buffer[buffer_max_len];
 	bool front_buff_full = false;
 	uint32_t back_buff_last_idx = 0;
 };
