@@ -37,7 +37,7 @@ constexpr uint8_t MAX_NUM_WPTS = 100; // Maximum number of waypoints
 constexpr uint8_t TELEM_PKT_LEN = 40;
 
 // AHRS
-constexpr float AHRS_FUSION_ACC_MAX = 2 // Maximum acceleration in gs for accelerometer fusion
+constexpr float AHRS_FUSION_ACC_MAX = 2; // Maximum acceleration in gs for accelerometer fusion
 constexpr float MAG_DECL = -10.2; // Degrees, determined from online calculator
 constexpr float HARD_IRON[3] = {-46.301146, 3.866545, -71.601346};
 constexpr float SOFT_IRON[3][3] = {{1.189985, 0.015110, -0.066520},

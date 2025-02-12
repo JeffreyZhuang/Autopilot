@@ -94,7 +94,6 @@ void Autopilot::flight()
 {
 	// Test datalogging
 	_storage.read();
-	while (1);
 
 //	_ahrs.update();
 //	_navigation.execute();

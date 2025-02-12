@@ -1,6 +1,7 @@
 #include "storage.h"
 
 #include <stdio.h> // Testing, remove later
+#include <inttypes.h>
 
 Storage::Storage(Plane* plane, HAL* hal)
 {
@@ -22,12 +23,15 @@ void Storage::write()
 
 void Storage::flush()
 {
-	_hal->flush_storage_buffer();
+	if (_plane->systemMode != SystemMode::FLIGHT)
+		_hal->flush_storage_buffer();
 }
 
 void Storage::read()
 {
-	// Read 100 packets
+	printf("Start Read\n");
+
+	// Read 10 packets
 	for (int i = 0; i < 10; i++)
 	{
 		Storage_packet packet;
@@ -35,8 +39,11 @@ void Storage::read()
 		_hal->read_storage(rx_buff, sizeof(rx_buff));
 		memcpy(&packet, rx_buff, sizeof(packet));
 
-		printf("%d %f", (uint32_t)packet.time, packet.acc_z);
+		printf("%" PRIu64 " %f\n", packet.time, packet.acc_z);
 	}
+
+	printf("Done\n");
+	while (1);
 
 
 	// Keep reading single byte until start byte
