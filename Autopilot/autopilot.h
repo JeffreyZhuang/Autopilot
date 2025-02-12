@@ -6,6 +6,7 @@
 #include "Modules/Control/control.h"
 #include "Modules/Guidance/guidance.h"
 #include "Modules/Telemetry/telem.h"
+#include "Modules/Storage/storage.h"
 #include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -29,6 +30,7 @@ private:
     Control _control;
     Guidance _guidance;
     Telem _telem;
+    Storage _storage;
 
     // System mode
     void evaluate_system_mode();

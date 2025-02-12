@@ -11,6 +11,7 @@
 #include "plane.h"
 #include "hal.h"
 #include <stdint.h>
+#include <cstring>
 
 struct __attribute__((packed))Storage_packet
 {

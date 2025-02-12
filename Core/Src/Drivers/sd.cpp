@@ -49,7 +49,7 @@ void Sd::write()
 	}
 }
 
-void Sd::read()
+void Sd::read(uint8_t* rx_buff, uint16_t size)
 {
 	f_close(&fil);
 
@@ -57,41 +57,30 @@ void Sd::read()
 	if (res != FR_OK)
 	{
 		printf("Error when opening file\n");
-		while (1);
 	}
 
-	while (1)
-	{
-		Sd_packet p;
-		UINT bytes_read;
-		res = f_read(&fil, &p, sd_packet_size, &bytes_read);
-
-		// Write human readable to txt file
-
-		if (res != FR_OK || bytes_read == 0) break;
-
-		printf("%ld %f %f\n", (uint32_t)p.time, p.acc_z, p.alt);
-	}
-
-	while (1);
+	UINT bytes_read;
+	f_read(&fil, rx_buff, size, &bytes_read);
 }
 
-void Sd::append_buffer(Sd_packet p)
+void Sd::append_buffer(uint8_t* packet, uint16_t size)
 {
 	// If back_buffer is not full, add data to back_buffer
 	// If back_buffer is full and front_buffer is not full, swap back and front buffers add data to back_buffer
 	// If both buffers are full, there is no way to store the data so throw out the data
-	bool back_buff_full = back_buff_idx == buffer_len;
+	bool back_buff_full = back_buff_idx + size > buffer_len;
 
 	if (!back_buff_full)
 	{
 		// Add data to back buffer
-		back_buffer[back_buff_idx] = p;
-		back_buff_idx++;
+		for (int i = back_buff_idx; i < back_buff_idx + size; i++)
+		{
+			back_buffer[i] = packet[i];
+		}
+		back_buff_idx += size;
 	}
 	else if (back_buff_full && !front_buff_full)
 	{
-
 		// Copy back buffer to front buffer
 		memcpy(front_buffer, back_buffer, sizeof(back_buffer));
 		front_buff_full = true;
@@ -100,8 +89,11 @@ void Sd::append_buffer(Sd_packet p)
 		back_buff_idx = 0;
 
 		// Add data to back buffer
-		back_buffer[back_buff_idx] = p;
-		back_buff_idx++;
+		for (int i = 0; i < size; i++)
+		{
+			back_buffer[i] = packet[i];
+		}
+		back_buff_idx = size;
 	}
 	else if (back_buff_full && front_buff_full)
 	{

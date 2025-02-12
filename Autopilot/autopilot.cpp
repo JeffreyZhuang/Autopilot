@@ -6,7 +6,8 @@ Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->get_main_dt
 									   	   	  _navigation(hal, plane, hal->get_main_dt()),
 											  _control(hal, plane, hal->get_main_dt()),
 											  _guidance(hal, plane),
-											  _telem(hal, plane)
+											  _telem(hal, plane),
+											  _storage(plane, hal)
 {
 	_hal = hal;
 	_plane = plane;
@@ -35,12 +36,12 @@ void Autopilot::main_task()
 	evaluate_system_mode();
 
 	_telem.update();
-	_hal->write_storage_buffer();
+	_storage.write();
 }
 
 void Autopilot::logger_task()
 {
-	_hal->flush_storage_buffer();
+	_storage.flush();
 }
 
 /**

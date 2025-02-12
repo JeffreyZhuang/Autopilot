@@ -13,7 +13,9 @@ void Storage::write()
 	packet.acc_z = _plane->imu_az;
 	packet.alt = _plane->baro_alt;
 
-	_hal->write_storage_buffer(packet, sizeof(packet));
+	uint8_t data[sizeof(packet)];
+	memcpy(data, &packet, sizeof(packet));
+	_hal->write_storage_buffer(data, sizeof(packet));
 }
 
 void Storage::flush()
