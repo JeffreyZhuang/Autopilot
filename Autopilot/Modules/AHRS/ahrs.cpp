@@ -122,7 +122,7 @@ void AHRS::update()
 {
 	if (check_new_imu_data())
 	{
-		if (sqrtf(powf(_plane->imu_ax, 2) + powf(_plane->imu_ay, 2) + powf(_plane->imu_az, 2)) > 2.0f)
+		if (sqrtf(powf(_plane->imu_ax, 2) + powf(_plane->imu_ay, 2) + powf(_plane->imu_az, 2)) > AHRS_FUSION_ACC_MAX)
 		{
 			update_gyro();
 		}
