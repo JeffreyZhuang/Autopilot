@@ -27,7 +27,7 @@ void Storage::flush()
 
 void Storage::read()
 {
-	// Read 10 packets
+	// Read 100 packets
 	for (int i = 0; i < 10; i++)
 	{
 		Storage_packet packet;
