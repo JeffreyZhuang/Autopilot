@@ -8,7 +8,10 @@
  * @param hal
  * @param plane
  */
-Navigation::Navigation(HAL* hal, Plane* plane, float predict_dt) : kalman(n, m, get_a(predict_dt), get_b(predict_dt), get_q())
+Navigation::Navigation(HAL* hal, Plane* plane, float predict_dt) : kalman(n, m, get_a(predict_dt), get_b(predict_dt), get_q()),
+																   avg_baro(window_len, window_baro),
+																   avg_lat(window_len, window_lat),
+																   avg_lon(window_len, window_lon)
 {
 	_hal = hal;
 	_plane = plane;
@@ -48,14 +51,19 @@ bool Navigation::set_home()
 {
 	if (check_new_baro_data() && check_new_gnss_data() && !home_set)
 	{
-		// Set barometer home position
-		_plane->baro_offset = _plane->baro_alt;
+		avg_baro.add(_plane->baro_alt);
 
-		// Set GNSS home position
-		_plane->home_lat = _plane->gnss_lat;
-		_plane->home_lon = _plane->gnss_lon;
+		if (avg_baro.getFilled())
+		{
+			// Set barometer home position
+			_plane->baro_offset = avg_baro.getAverage();
 
-		home_set = true;
+			// Set GNSS home position
+			_plane->home_lat = _plane->gnss_lat;
+			_plane->home_lon = _plane->gnss_lon;
+
+			home_set = true;
+		}
 	}
 
 	return home_set;
@@ -95,6 +103,8 @@ void Navigation::predict_imu()
 	// Rotate inertial frame to ECF
 	Eigen::Vector3f acc_world = q * acc_inertial * g;
 	acc_world(2) += g; // Gravity correction
+
+	printf("%.2f %.2f %.2f\n", acc_world(0), acc_world(1), acc_world(2));
 
 	_plane->nav_acc_north = acc_world(0);
 	_plane->nav_acc_east = acc_world(1);

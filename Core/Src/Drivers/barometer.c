@@ -212,7 +212,6 @@ bool Barometer_getAltitude(float *alt)
 		*alt = altitude;
 		return true;
 	}
-
 	return false;
 }
 

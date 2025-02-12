@@ -4,6 +4,7 @@
 #include "hal.h"
 #include "Lib/Kalman/kalman.h"
 #include "Lib/Utils/utils.h"
+#include "Lib/MovingAverage/moving_avg.h"
 
 static constexpr int n = 6;
 static constexpr int m = 3;
@@ -24,6 +25,14 @@ private:
     HAL* _hal;
     Plane* _plane;
     Kalman kalman;
+
+    MovingAverage avg_baro;
+    MovingAverage avg_lat;
+    MovingAverage avg_lon;
+    static constexpr uint8_t window_len = 50;
+    float window_baro[window_len];
+    float window_lat[window_len];
+    float window_lon[window_len];
 
     bool home_set = false;
 
