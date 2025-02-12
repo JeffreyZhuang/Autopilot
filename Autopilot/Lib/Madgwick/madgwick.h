@@ -40,6 +40,7 @@ public:
     Madgwick(float dt, float beta);
     void update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
     void updateIMU(float gx, float gy, float gz, float ax, float ay, float az);
+    void updateGyro(float gx, float gy, float gz);
     float get_q0() { return q0; };
     float get_q1() { return q1; };
     float get_q2() { return q2; };
