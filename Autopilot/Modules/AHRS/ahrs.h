@@ -20,6 +20,7 @@ public:
     bool set_initial_state();
     void update();
 private:
+    void update_gyro();
     void update_imu();
     void update_imu_mag();
     void publish_ahrs();

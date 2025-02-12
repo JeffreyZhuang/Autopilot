@@ -154,6 +154,12 @@ void AHRS::update_imu_mag()
 	last_compass_timestamp = _plane->compass_timestamp;
 }
 
+void AHRS::update_gyro()
+{
+	filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz);
+	last_imu_timestamp = _plane->imu_timestamp;
+}
+
 void AHRS::publish_ahrs()
 {
 	_plane->ahrs_roll = filter.getRoll();
