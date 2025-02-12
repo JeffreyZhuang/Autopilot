@@ -156,6 +156,8 @@ void AHRS::update()
 
 void AHRS::mag_calibration()
 {
+	// Replace this with online mag calibration
+	// Or send to telem and do calibration GCS if thats not possible
 	if (check_new_compass_data())
 	{
 		// Send to USB for calibration

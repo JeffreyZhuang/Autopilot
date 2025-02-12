@@ -82,7 +82,7 @@ void Navigation::execute()
 
 	if (check_new_gnss_data())
 	{
-		update_gps();
+//		update_gps();
 	}
 
 	if (check_new_baro_data())
@@ -104,7 +104,8 @@ void Navigation::predict_imu()
 	Eigen::Vector3f acc_world = q * acc_inertial * g;
 	acc_world(2) += g; // Gravity correction
 
-	printf("%.2f %.2f %.2f\n", acc_world(0), acc_world(1), acc_world(2));
+//	printf("%.2f %.2f %.2f\n", acc_world(0), acc_world(1), acc_world(2));
+	printf("%.2f %.2f\n", _plane->nav_vel_north, _plane->nav_vel_east);
 
 	_plane->nav_acc_north = acc_world(0);
 	_plane->nav_acc_east = acc_world(1);
