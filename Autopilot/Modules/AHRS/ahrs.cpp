@@ -122,13 +122,21 @@ void AHRS::update()
 {
 	if (check_new_imu_data())
 	{
-		if (check_new_compass_data())
+		// If acc too high
+		if (false)
 		{
-			update_imu_mag();
+			update_gyro();
 		}
 		else
 		{
-			update_imu();
+			if (check_new_compass_data())
+			{
+				update_imu_mag();
+			}
+			else
+			{
+				update_imu();
+			}
 		}
 
 		publish_ahrs();
