@@ -158,7 +158,7 @@ void Navigation::update_gps()
 	H << 1, 0, 0, 0, 0, 0,
 		 0, 1, 0, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 2> R(10000, 10000);
+	Eigen::DiagonalMatrix<float, 2> R(100000, 100000);
 
 	kalman.update(R, H, y);
 
