@@ -41,4 +41,8 @@ void Storage::read()
 
 	// Keep reading single byte until start byte
 	// Then COBS decode and put in Storage_packet struct to read
+
+	// Actually, python script reads, this function is not needed, don't deal with the COBS decode here, do it in python
+
+	// Keep this function for now for reference when I load config from file
 }

@@ -3,7 +3,22 @@
 void Sd::initialize()
 {
 	f_mount(&fatfs, SDPath, 1);
-	FRESULT res = f_open(&fil, "data.bin", FA_WRITE | FA_READ | FA_CREATE_ALWAYS); // Don't use txt. Write code to turn into txt at end of flight.
+
+	// Create unique file name to prevent overwriting previous data
+	unsigned int file_idx = 1;
+	while (true)
+	{
+		sprintf(filename, "log%u.bin", file_idx);
+		FILINFO fno;
+		if (f_stat(filename, &fno) != FR_OK)
+		{
+			// File does not exist, so we can use this name
+			break;
+		}
+		file_idx++;
+	}
+
+	FRESULT res = f_open(&fil, filename, FA_WRITE | FA_READ | FA_CREATE_ALWAYS);
 	if (res != FR_OK)
 	{
 		printf("SD card failed. Make sure it is inserted.\n");
@@ -40,7 +55,7 @@ void Sd::read(uint8_t* rx_buff, uint16_t size)
 	{
 		f_close(&fil);
 
-		FRESULT res = f_open(&fil, "data.bin", FA_READ);
+		FRESULT res = f_open(&fil, filename, FA_READ);
 		if (res != FR_OK)
 		{
 			printf("Error when opening file\n");

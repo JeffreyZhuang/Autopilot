@@ -20,8 +20,10 @@ private:
 	FATFS fatfs;
 	FIL fil;
 
+	char filename[50];
+
 	// Double buffering approach
-	static constexpr uint32_t buffer_max_len = 2000;
+	static constexpr uint32_t buffer_max_len = 4096;
 	uint8_t back_buffer[buffer_max_len];
 	uint8_t front_buffer[buffer_max_len];
 	uint8_t new_buffer[buffer_max_len];

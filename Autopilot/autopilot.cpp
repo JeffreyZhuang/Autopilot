@@ -92,29 +92,26 @@ void Autopilot::boot()
 
 void Autopilot::flight()
 {
-	// Test datalogging
-	_storage.read();
+	_ahrs.update();
+	_navigation.execute();
 
-//	_ahrs.update();
-//	_navigation.execute();
-//
-//	if (_plane->manual_sw)
-//	{
-//		if (_plane->mode_sw)
-//		{
-//			evaluate_auto_mode();
-//		}
-//		else
-//		{
-//			_plane->manualMode = ManualMode::STABILIZED;
-//			evaluate_manual_mode();
-//		}
-//	}
-//	else
-//	{
-//		_plane->manualMode = ManualMode::MANUAL;
-//		evaluate_manual_mode();
-//	}
+	if (_plane->manual_sw)
+	{
+		if (_plane->mode_sw)
+		{
+			evaluate_auto_mode();
+		}
+		else
+		{
+			_plane->manualMode = ManualMode::STABILIZED;
+			evaluate_manual_mode();
+		}
+	}
+	else
+	{
+		_plane->manualMode = ManualMode::MANUAL;
+		evaluate_manual_mode();
+	}
 }
 
 /**
