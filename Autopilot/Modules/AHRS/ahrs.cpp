@@ -126,7 +126,7 @@ void AHRS::update()
 					 	  	    	  powf(_plane->imu_ay, 2) +
 									  powf(_plane->imu_az, 2));
 
-		if (accel_magnitude > AHRS_FUSION_ACC_MIN && accel_magnitude < AHRS_FUSION_ACC_MAX)
+		if ((accel_magnitude > AHRS_FUSION_ACC_MIN) && (accel_magnitude < AHRS_FUSION_ACC_MAX))
 		{
 			if (check_new_compass_data())
 			{

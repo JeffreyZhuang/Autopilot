@@ -18,8 +18,8 @@ Control::Control(HAL * hal, Plane * plane, float dt)
 // Read from radio and direct to servos
 void Control::update_manual()
 {
-	float rudder = _plane->rc_rudder;
-	float elevator = _plane->rc_elevator;
+	float rudder = clamp(_plane->rc_rudder, -AILERON_THROW, AILERON_THROW);
+	float elevator = clamp(_plane->rc_elevator, -ELEVATOR_THROW, ELEVATOR_THROW);
 	float throttle = _plane->rc_throttle;
 
 	if (throttle < THR_DEADZONE)
