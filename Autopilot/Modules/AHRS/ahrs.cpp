@@ -122,9 +122,9 @@ void AHRS::update()
 {
 	if (check_new_imu_data())
 	{
-		accel_magnitude = sqrtf(powf(_plane->imu_ax, 2) +
-					 	  	    powf(_plane->imu_ay, 2) +
-								powf(_plane->imu_az, 2));
+		float accel_magnitude = sqrtf(powf(_plane->imu_ax, 2) +
+					 	  	    	  powf(_plane->imu_ay, 2) +
+									  powf(_plane->imu_az, 2));
 
 		if (accel_magnitude > AHRS_FUSION_ACC_MIN && accel_magnitude < AHRS_FUSION_ACC_MAX)
 		{

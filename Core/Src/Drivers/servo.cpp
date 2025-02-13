@@ -22,17 +22,19 @@ void Servo::set_angle(uint8_t deg)
 	}
 
 	// Since 50Hz PWM frequency, the period is 20ms
-	// The servo responds for the pulse width of 1ms to 2ms
-	// Low Duty Cycle Percentage = 1ms/20ms x 100% = 5%
-	// High Duty Cycle Percentage = 2ms/20ms x 100% = 10%
+	// The servo responds for the pulse width of 0.5ms to 2.5ms
+	// Low Duty Cycle Percentage = 0.5ms/20ms x 100% = 2.5%
+	// High Duty Cycle Percentage = 2.5ms/20ms x 100% = 12.5%
 
 	// Since ARR is 1000
-	// Low Duty = 5% of 1000 = 50
-	// High Duty = 10% of 1000 = 100
+	// Low Duty = 2.5% of 1000 = 25
+	// High Duty = 12.5% of 1000 = 125
 
 	// Since servo has angles between 0 to 180 degrees
-	// Pulse value for 1 degree of rotation is (100 - 50) / 180
+	// and pulse values between 25 to 125
+	// Pulse value for 1 degree of rotation is (125 - 25) / 180
 	// Then the pulse value for the capture/compare register is
-	// 50 + deg*((100 - 50) / 180)
-	__HAL_TIM_SET_COMPARE(_tim, _channel, 50 + deg * (100 - 50) / 180);
+	// 25 + deg*((125 - 25) / 180)
+	float pulse_per_deg = (125.0f - 25.0f) / 180.0f;
+	__HAL_TIM_SET_COMPARE(_tim, _channel, 25 + deg * pulse_per_deg);
 }
