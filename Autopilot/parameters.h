@@ -1,6 +1,8 @@
 #ifndef PARAMETERS_H_
 #define PARAMETERS_H_
 
+// Need to move parameters to HAL because it changes depending on Flight or Pitl
+
 // Airspeed
 constexpr float AIRSPEED_CRUISE = 18; // Meters per second
 constexpr float AIRSPEED_LANDING = 15;
@@ -46,5 +48,7 @@ constexpr float SOFT_IRON[3][3] = {{1.189985, 0.015110, -0.066520},
 								   {-0.066520, -0.039344, 1.183604}};
 
 // Servos
+constexpr float ELEVATOR_THROW = 1; // Range of servo throw between 0 and 1
+constexpr float AILERON_THROW = 0.5; // Range of servo throw between 0 and 1
 
 #endif /* PARAMETERS_H_ */
