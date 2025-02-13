@@ -172,9 +172,5 @@ void AHRS::publish_ahrs()
 	_plane->ahrs_roll = filter.getRoll();
 	_plane->ahrs_pitch = filter.getPitch();
 	_plane->ahrs_yaw = filter.getYaw();
-	_plane->ahrs_q0 = filter.get_q0();
-	_plane->ahrs_q1 = filter.get_q1();
-	_plane->ahrs_q2 = filter.get_q2();
-	_plane->ahrs_q3 = filter.get_q3();
 	_plane->ahrs_timestamp = _hal->get_time_us();
 }

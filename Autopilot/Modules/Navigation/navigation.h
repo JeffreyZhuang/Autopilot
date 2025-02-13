@@ -58,6 +58,8 @@ private:
 	void update_baro();
 
 	void update_plane();
+
+	Eigen::Vector3f rotateToNED(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw);
 };
 
 #endif

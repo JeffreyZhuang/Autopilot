@@ -18,7 +18,7 @@ void Sd::initialize()
 		file_idx++;
 	}
 
-	FRESULT res = f_open(&fil, filename, FA_WRITE | FA_READ | FA_CREATE_ALWAYS);
+	FRESULT res = f_open(&fil, filename, FA_WRITE | FA_CREATE_NEW);
 	if (res != FR_OK)
 	{
 		printf("SD card failed. Make sure it is inserted.\n");

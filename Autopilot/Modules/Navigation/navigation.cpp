@@ -1,7 +1,5 @@
 #include <Modules/Navigation/navigation.h>
 
-// Probably kalman filter blacking out because GNSS returns NaN and that gets fed into kalman
-
 /**
  * @brief Construct a new Navigation:: Navigation object
  *
@@ -91,22 +89,44 @@ void Navigation::execute()
 	}
 }
 
+// Function to rotate IMU measurements from inertial frame to NED frame
+Eigen::Vector3f Navigation::rotateToNED(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw) {
+    // Precompute trigonometric functions
+    float cr = cosf(roll);  float sr = sinf(roll);
+    float cp = cosf(pitch); float sp = sinf(pitch);
+    float cy = cosf(yaw);   float sy = sinf(yaw);
+
+    // Construct the rotation matrix (ZYX convention: yaw -> pitch -> roll)
+    Eigen::Matrix3f R;
+    R(0, 0) = cy * cp;
+    R(0, 1) = cy * sp * sr - sy * cr;
+    R(0, 2) = cy * sp * cr + sy * sr;
+    R(1, 0) = sy * cp;
+    R(1, 1) = sy * sp * sr + cy * cr;
+    R(1, 2) = sy * sp * cr - cy * sr;
+    R(2, 0) = -sp;
+    R(2, 1) = cp * sr;
+    R(2, 2) = cp * cr;
+
+    // Rotate the measurement
+    Eigen::Vector3f ned_measurement = R * imu_measurement;
+
+    return ned_measurement;
+}
+
 void Navigation::predict_imu()
 {
 	// Get IMU data
 	Eigen::Vector3f acc_inertial(_plane->imu_ax, _plane->imu_ay, _plane->imu_az);
 	last_imu_timestamp = _plane->imu_timestamp;
 
-	// Get quaternion from AHRS
-	Eigen::Quaternionf q(_plane->ahrs_q0, _plane->ahrs_q1, _plane->ahrs_q2, _plane->ahrs_q3);
-
 	// Rotate inertial frame to ECF
-	Eigen::Vector3f acc_world = q * acc_inertial * g;
-	acc_world(2) += g; // Gravity correction
+	Eigen::Vector3f acc_ned = rotateToNED(acc_inertial * g, _plane->ahrs_roll * M_PI / 180.0f, _plane->ahrs_pitch * M_PI / 180.0f, _plane->ahrs_yaw * M_PI / 180.0f);
+	acc_ned(2) += g; // Gravity correction
 
-	_plane->nav_acc_north = acc_world(0);
-	_plane->nav_acc_east = acc_world(1);
-	_plane->nav_acc_down = acc_world(2);
+	_plane->nav_acc_north = acc_ned(0);
+	_plane->nav_acc_east = acc_ned(1);
+	_plane->nav_acc_down = acc_ned(2);
 
 	Eigen::VectorXf u(m);
 	u << _plane->nav_acc_north,

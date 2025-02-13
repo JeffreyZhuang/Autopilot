@@ -92,10 +92,6 @@ struct Plane
     float ahrs_roll = 0;
     float ahrs_pitch = 0;
     float ahrs_yaw = 0;
-    float ahrs_q0 = 0;
-    float ahrs_q1 = 0;
-    float ahrs_q2 = 0;
-    float ahrs_q3 = 0;
     uint64_t ahrs_timestamp = 0;
 
     // Rangefinder
