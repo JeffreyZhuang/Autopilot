@@ -1,12 +1,13 @@
 #include <Modules/AHRS/ahrs.h>
 
-AHRS::AHRS(HAL* hal, Plane* plane, float dt) : filter(dt, 0.01),
-											   avg_ax(window_size, window_ax),
-											   avg_ay(window_size, window_ay),
-											   avg_az(window_size, window_az),
-											   avg_mx(window_size, window_mx),
-											   avg_my(window_size, window_my),
-											   avg_mz(window_size, window_mz)
+AHRS::AHRS(HAL* hal, Plane* plane, float dt)
+	: filter(dt, 0.01),
+	  avg_ax(window_size, window_ax),
+	  avg_ay(window_size, window_ay),
+	  avg_az(window_size, window_az),
+	  avg_mx(window_size, window_mx),
+	  avg_my(window_size, window_my),
+	  avg_mz(window_size, window_mz)
 {
     _plane = plane;
     _hal = hal;

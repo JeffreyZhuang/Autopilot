@@ -51,4 +51,7 @@ constexpr float SOFT_IRON[3][3] = {{1.189985, 0.015110, -0.066520},
 constexpr float ELEVATOR_THROW = 1; // Range of servo throw between 0 and 1
 constexpr float AILERON_THROW = 0.5; // Range of servo throw between 0 and 1
 
+// Total energy control system (TECS)
+constexpr float TECS_MASS_KG = 0.4; // Mass of the plane in Kg
+
 #endif /* PARAMETERS_H_ */
