@@ -122,11 +122,11 @@ void AHRS::update()
 {
 	if (check_new_imu_data())
 	{
-		if (sqrtf(powf(_plane->imu_ax, 2) + powf(_plane->imu_ay, 2) + powf(_plane->imu_az, 2)) > AHRS_FUSION_ACC_MAX)
-		{
-			update_gyro();
-		}
-		else
+		accel_magnitude = sqrtf(powf(_plane->imu_ax, 2) +
+					 	  	    powf(_plane->imu_ay, 2) +
+								powf(_plane->imu_az, 2));
+
+		if (accel_magnitude > AHRS_FUSION_ACC_MIN && accel_magnitude < AHRS_FUSION_ACC_MAX)
 		{
 			if (check_new_compass_data())
 			{
@@ -136,6 +136,10 @@ void AHRS::update()
 			{
 				update_imu();
 			}
+		}
+		else
+		{
+			update_gyro();
 		}
 
 		publish_ahrs();
