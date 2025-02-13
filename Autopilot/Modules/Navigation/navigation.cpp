@@ -209,6 +209,7 @@ bool Navigation::check_new_baro_data()
 	return _plane->baro_timestamp > last_baro_timestamp;
 }
 
+// View in web serial plotter
 void Navigation::debug_serial()
 {
 	char tx_buff[200];
