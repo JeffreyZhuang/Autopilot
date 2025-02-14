@@ -32,8 +32,11 @@ void Tecs::update()
 	float max_error = max_kin - energy_kin;
 
 	// Calculate total energy error and energy balance
-	float error_total = err_pot + err_kin;
-	error_total = clamp(error_total, min_error, max_error);
+	_plane->tecs_error_total = err_pot + err_kin;
+	if (_plane->tecs_error_total > max_error)
+	{
+		_plane->tecs_error_total = max_error;
+	}
 
-	float error_diff = err_kin - err_pot;
+	_plane->tecs_error_diff = clamp(err_kin - err_pot, min_error, max_error);
 }

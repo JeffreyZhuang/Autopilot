@@ -143,6 +143,10 @@ struct Plane
     float elevator_setpoint = 0;
     float throttle_setpoint = 0;
     // Nevermind, have thrust and torque setpoints instead like TVC
+
+    // TECS
+    float tecs_error_total = 0;
+    float tecs_error_diff = 0;
 };
 
 #endif /* PLANE_H_ */
