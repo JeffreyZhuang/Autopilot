@@ -55,8 +55,6 @@ private:
     void update_time();
     void init_state();
 
-    static void test_static();
-
     // Scheduler
     void main_task();
 	void logger_task();
