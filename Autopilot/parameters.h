@@ -6,6 +6,8 @@
 // Airspeed
 constexpr float AIRSPEED_CRUISE = 18; // Meters per second
 constexpr float AIRSPEED_LANDING = 15;
+constexpr float TECS_MIN_SPD_MPS = 10;
+constexpr float TECS_MAX_SPD_MPS = 25;
 
 // Throttle
 constexpr float TRIM_THROTTLE = 0.1; // Steady-state cruise throttle
