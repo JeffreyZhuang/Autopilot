@@ -58,4 +58,9 @@ constexpr uint16_t THROTTLE_MAX_DUTY = 2000;
 // Total energy control system (TECS)
 constexpr float TECS_MASS_KG = 0.4; // Mass of the plane in Kg
 
+// PID
+constexpr float PTCH_KP = 0.04;
+constexpr float ROLL_KP = 0.04;
+constexpr float THR_KP = 0.01;
+
 #endif /* PARAMETERS_H_ */
