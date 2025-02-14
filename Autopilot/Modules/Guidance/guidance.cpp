@@ -69,6 +69,12 @@ void Guidance::update_landing()
 	// Follow glideslope angle
 	_plane->guidance_d_setpoint = -dist_to_land * sinf(LAND_GS_DEG * M_PI / 180.0f);
 
+	// Prevent needlessly climbing during approach
+	if (_plane->guidance_d_setpoint < _plane->waypoints[-1].alt)
+	{
+		_plane->guidance_d_setpoint = _plane->waypoints[-1].alt;
+	}
+
 	// Set track heading to runway heading
 	float trk_hdg = _plane->land_hdg * M_PI / 180.0f;
 
