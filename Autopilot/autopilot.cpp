@@ -9,7 +9,8 @@ Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->get_main_dt
 											  _control(hal, plane, hal->get_main_dt()),
 											  _guidance(hal, plane),
 											  _telem(hal, plane),
-											  _storage(plane, hal)
+											  _storage(plane, hal),
+											  _control_allocator(hal, plane)
 {
 	_hal = hal;
 	_plane = plane;
@@ -112,6 +113,8 @@ void Autopilot::flight()
 		_plane->manualMode = ManualMode::MANUAL;
 		evaluate_manual_mode();
 	}
+
+	_control_allocator.update();
 }
 
 /**
@@ -201,9 +204,9 @@ void Autopilot::flare()
 
 void Autopilot::touchdown()
 {
-	_hal->set_rudder(0);
-	_hal->set_elevator(0);
-	_hal->set_throttle(0);
+	_plane->aileron_setpoint = 0;
+	_plane->elevator_setpoint = 0;
+	_plane->throttle_setpoint = 0;
 }
 
 /**

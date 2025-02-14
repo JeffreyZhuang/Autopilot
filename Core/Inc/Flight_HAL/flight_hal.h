@@ -78,9 +78,9 @@ public:
 
 	// servos_hal.cpp
 	void init_servos();
-	void set_elevator(float deg) override;
-	void set_rudder(float deg) override;
-	void set_throttle(float throttle) override;
+	void set_elevator_duty(uint16_t duty_us) override;
+	void set_rudder_duty(uint16_t duty_us) override;
+	void set_throttle_duty(uint16_t duty_us) override;
 
 	// power_monitor_hal.cpp
 	void read_power_monitor();

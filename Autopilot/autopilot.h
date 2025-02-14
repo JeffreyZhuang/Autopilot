@@ -7,6 +7,7 @@
 #include "Modules/Guidance/guidance.h"
 #include "Modules/Telemetry/telem.h"
 #include "Modules/Storage/storage.h"
+#include "Modules/ControlAllocator/control_allocator.h"
 #include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -31,6 +32,7 @@ private:
     Guidance _guidance;
     Telem _telem;
     Storage _storage;
+    Control_allocator _control_allocator;
 
     // System mode
     void evaluate_system_mode();

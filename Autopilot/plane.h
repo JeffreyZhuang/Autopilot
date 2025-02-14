@@ -137,6 +137,12 @@ struct Plane
     // Telemetry
     uint8_t latest_packet[TELEM_PKT_LEN];
     uint8_t mode_id;
+
+    // Servos
+    float aileron_setpoint = 0; // Aileron command from -1 to 1
+    float elevator_setpoint = 0;
+    float throttle_setpoint = 0;
+    // Nevermind, have thrust and torque setpoints instead like TVC
 };
 
 #endif /* PLANE_H_ */

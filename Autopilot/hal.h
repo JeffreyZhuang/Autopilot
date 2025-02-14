@@ -29,9 +29,9 @@ public:
     virtual void toggle_led() = 0;
 
     // Control surfaces
-    virtual void set_elevator(float deg) = 0;
-    virtual void set_rudder(float deg) = 0;
-    virtual void set_throttle(float throttle) = 0;
+    virtual void set_elevator_duty(uint16_t duty_us) = 0;
+    virtual void set_rudder_duty(uint16_t duty_us) = 0;
+    virtual void set_throttle_duty(uint16_t duty_us) = 0;
 
     // Time
     virtual void delay_us(uint64_t us) = 0;

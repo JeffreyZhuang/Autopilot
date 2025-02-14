@@ -39,7 +39,7 @@ void Servo::set_angle(uint8_t deg)
 	__HAL_TIM_SET_COMPARE(_tim, _channel, 25 + deg * pulse_per_deg);
 }
 
-void Servo::set_period(uint16_t us)
+void Servo::set_duty(uint16_t us)
 {
 	// Since 50Hz PWM frequency, the period is 20000us
 	// Duty cycle percentage = us / 20000

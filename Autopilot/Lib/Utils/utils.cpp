@@ -35,3 +35,15 @@ void meters_to_lat_lon(double north, double east, double refLat, double refLon, 
     *lat = refLat + (north / earth_radius) * (180.0 / M_PI);
     *lon = refLon + (east / (earth_radius * cos(refLatRad))) * (180.0 / M_PI);
 }
+
+uint16_t map_uint16(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uint16_t out_max) {
+    // Ensure the input value is within the input range
+    if (x < in_min) {
+        x = in_min;
+    } else if (x > in_max) {
+        x = in_max;
+    }
+
+    // Calculate the scaled value
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
