@@ -16,6 +16,7 @@ public:
 	Servo(TIM_HandleTypeDef* tim, uint32_t channel);
 	void init();
 	void set_angle(uint8_t deg);
+	void set_period(uint16_t us)
 private:
 	TIM_HandleTypeDef* _tim;
 	uint32_t _channel;

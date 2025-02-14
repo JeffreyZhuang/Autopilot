@@ -38,3 +38,12 @@ void Servo::set_angle(uint8_t deg)
 	float pulse_per_deg = (125.0f - 25.0f) / 180.0f;
 	__HAL_TIM_SET_COMPARE(_tim, _channel, 25 + deg * pulse_per_deg);
 }
+
+void Servo::set_period(uint16_t us)
+{
+	// Since 50Hz PWM frequency, the period is 20000us
+	// Duty cycle percentage = us / 20000
+	// Since ARR is 1000
+	// Duty = 1000 * (us / 20000)
+	__HAL_TIM_SET_COMPARE(_tim, _channel, 1000 * (us / 20000));
+}
