@@ -26,6 +26,7 @@ constexpr float LAND_FLARE_ALT = 3; // Flare altitude
 constexpr float FLARE_SINK_RATE = 0.3;
 constexpr float FLARE_PITCH_MAX_DEG = 10; // Maximum pitch during flare
 constexpr float FLARE_TRANS_SEC = 1; // Time to transition to flare
+constexpr float TOUCHDOWN_SPD_THR = 1; // Detect touchdown when speed below this value in meters per second
 
 // Takeoff
 constexpr float TAKEOFF_ALT = 5; // Altitude that the plane will climb to during takeoff meters per second

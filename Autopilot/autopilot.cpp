@@ -198,8 +198,8 @@ void Autopilot::flare()
 	_guidance.update_flare();
 	_control.update_flare();
 
-	// Detect touchdown when altitude error exceeds 5 meters
-	if (fabs(_plane->guidance_d_setpoint - _plane->nav_pos_down) > 5)
+	// Detect touchdown when speed is below TOUCHDOWN_SPD_THR
+	if (_plane->nav_airspeed < TOUCHDOWN_SPD_THR)
 	{
 		_plane->autoMode = AutoMode::TOUCHDOWN;
 	}

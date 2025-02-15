@@ -6,10 +6,11 @@
  * @param hal
  * @param plane
  */
-Navigation::Navigation(HAL* hal, Plane* plane, float predict_dt) : kalman(n, m, get_a(predict_dt), get_b(predict_dt), get_q()),
-																   avg_baro(window_len, window_baro),
-																   avg_lat(window_len, window_lat),
-																   avg_lon(window_len, window_lon)
+Navigation::Navigation(HAL* hal, Plane* plane, float predict_dt)
+	: kalman(n, m, get_a(predict_dt), get_b(predict_dt), get_q()),
+	  avg_baro(window_len, window_baro),
+	  avg_lat(window_len, window_lat),
+	  avg_lon(window_len, window_lon)
 {
 	_hal = hal;
 	_plane = plane;
