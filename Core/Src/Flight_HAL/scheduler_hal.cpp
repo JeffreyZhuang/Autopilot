@@ -58,8 +58,3 @@ __weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 		Flight_hal::telemetry_dma_complete();
 	}
 }
-
-__weak void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
-{
-
-}
