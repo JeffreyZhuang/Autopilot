@@ -15,13 +15,11 @@ void Flight_hal::init_servos()
 
 void Flight_hal::set_elevator_duty(uint16_t duty_us)
 {
-	// deg is from -1 to 1, not degrees, need to change later
 	servo_elevator.set_duty(duty_us);
 }
 
 void Flight_hal::set_rudder_duty(uint16_t duty_us)
 {
-	// deg is from -1 to 1, not degrees, need to change later
 	servo_aileron.set_duty(duty_us);
 }
 

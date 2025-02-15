@@ -6,11 +6,16 @@ void Pitl_hal::set_main_task(void (*task)())
 
 	while (1)
 	{
-		if (get_time_us() - prev_time >= main_dt * 1000000)
+		if (get_time_us() - prev_time >= get_main_dt() * s_to_us)
 		{
 			task();
 		}
 	}
+}
+
+float Pitl_hal::get_main_dt() const
+{
+	return 0.02;
 }
 
 void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)

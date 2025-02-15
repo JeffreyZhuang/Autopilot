@@ -8,6 +8,8 @@
 #ifndef INC_PITL_HAL_H_
 #define INC_PITL_HAL_H_
 
+#include "constants.h"
+#include "Lib/Utils/utils.h"
 #include "hal.h"
 #include "mlrs_rc.h"
 #include "mlrs_telem.h"
@@ -65,9 +67,9 @@ public:
 	bool read_telem();
 
 	// Logger
-	void write_storage_buffer() {};
+	void write_storage_buffer(uint8_t* packet, uint16_t len) {};
 	void flush_storage_buffer() {};
-	void read_storage() {};
+	void read_storage(uint8_t* rx_buff, uint16_t size) {};
 
 	// Debug
 	void debug_print(char * str);
@@ -75,9 +77,9 @@ public:
 	void toggle_led();
 
 	// Servos
-	void set_elevator(float deg);
-	void set_rudder(float deg);
-	void set_throttle(float throttle);
+	void set_elevator_duty(uint16_t duty);
+	void set_rudder_duty(uint16_t duty);
+	void set_throttle_duty(uint16_t duty);
 
 	// Time
 	void delay_us(uint64_t us);
@@ -86,8 +88,8 @@ public:
 	// Scheduler
 	void set_main_task(void (*task)());
 	void set_background_task(void (*task)()) {};
-
 	void usb_rx_callback(uint8_t* Buf, uint32_t Len);
+	float get_main_dt() const;
 
 	static Pitl_hal *get_instance() { return _instance; };
 

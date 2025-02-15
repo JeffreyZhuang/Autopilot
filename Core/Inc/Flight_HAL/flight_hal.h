@@ -39,7 +39,7 @@ extern UART_HandleTypeDef huart6;
 class Flight_hal : public HAL
 {
 public:
-	Flight_hal(Plane * plane);
+	Flight_hal(Plane* plane);
 
 	void init() override;
 	void read_sensors() override;

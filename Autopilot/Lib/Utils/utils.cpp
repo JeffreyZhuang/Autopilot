@@ -36,7 +36,7 @@ void meters_to_lat_lon(double north, double east, double refLat, double refLon, 
     *lon = refLon + (east / (earth_radius * cos(refLatRad))) * (180.0 / M_PI);
 }
 
-uint16_t map_uint16(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uint16_t out_max) {
+float map(float x, float in_min, float in_max, float out_min, float out_max) {
     // Ensure the input value is within the input range
     if (x < in_min) {
         x = in_min;

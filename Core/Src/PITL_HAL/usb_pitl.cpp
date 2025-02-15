@@ -37,7 +37,7 @@ void Pitl_hal::read_pitl()
 	_plane->gnss_lon = data->lon;
 	_plane->gnss_asl = data->asl;
 	_plane->gnss_sats = 10;
-	_plane->fix_quality = 1;
+	_plane->gps_fix = true;
 	_plane->gnss_timestamp = time;
 	_plane->rangefinder_dist = data->agl;
 	_plane->rangefinder_timestamp = time;

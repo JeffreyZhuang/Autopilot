@@ -4,13 +4,12 @@
 
 Pitl_hal* Pitl_hal::_instance = nullptr;
 
-Pitl_hal::Pitl_hal(Plane* plane) : HAL(plane), mlrs_rc(&huart4), mlrs_telem(&huart6)
+Pitl_hal::Pitl_hal(Plane* plane)
+	: mlrs_rc(&huart4),
+	  mlrs_telem(&huart6)
 {
 	_plane = plane;
 	_instance = this;
-
-	main_dt = 0.02;
-	control_dt = 0.04;
 }
 
 void Pitl_hal::init()
