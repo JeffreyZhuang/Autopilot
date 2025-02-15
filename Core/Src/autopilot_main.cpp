@@ -1,7 +1,6 @@
 #include "autopilot_main.h"
 #include "autopilot.h"
 
-// Exclude Flight_HAL source folder from build if PITL is enabled
 #if PITL_ENABLE
 #include "pitl_hal.h"
 using Hal = Pitl_hal;
@@ -16,6 +15,8 @@ void autopilot_main()
 	Hal hal(&plane);
 	Autopilot autopilot(&hal, &plane);
 	autopilot.setup();
+
+	// Execute HAL on UART callback, so it will do PITL or Flight depending on whats included
 }
 
 extern "C"
