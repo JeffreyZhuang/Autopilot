@@ -35,8 +35,7 @@ void Flight_hal::set_background_task(void (*task)())
 	}
 }
 
-#if !PITL_ENABLE
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+__weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim == &htim7)
 	{
@@ -44,7 +43,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+__weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	if (huart == &huart3)
 	{
@@ -60,8 +59,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 	}
 }
 
-void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
+__weak void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
 
 }
-#endif
