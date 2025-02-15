@@ -10,9 +10,7 @@ Guidance::Guidance(HAL* hal, Plane* plane)
 
 void Guidance::init()
 {
-	// Set initial flare sink rate to glideslope sink rate
-	_gs_sink_rate = AIRSPEED_LANDING * sinf(LAND_GS_DEG * deg_to_rad);
-	_flare_sink_rate = _gs_sink_rate;
+
 }
 
 // Generate position and altitude setpoint
@@ -93,15 +91,27 @@ void Guidance::update_landing()
 
 void Guidance::update_flare()
 {
-	// Gradually decrease sink rate
-	_flare_sink_rate -= (_gs_sink_rate - FLARE_SINK_RATE) / FLARE_TRANS_SEC;
-	if (_flare_sink_rate < FLARE_SINK_RATE)
+	float time_since_flare_s = (_plane->time - _plane->flare_start_time) * us_to_s
+
+	// Calculate glideslope sink rate
+	float gs_sink_rate = AIRSPEED_LANDING * sinf(LAND_GS_DEG * deg_to_rad);
+
+	// Calculate rate of change of sink rate over FLARE_TRANS_SEC seconds
+	float sink_accel = (gs_sink_rate - FLARE_SINK_RATE) / FLARE_TRANS_SEC;
+	if (sink_accel < 0)
 	{
-		_flare_sink_rate = FLARE_SINK_RATE; // Set minimum sink rate to FLARE_SINK_RATE
+		sink_accel = 0;
+	}
+
+	// Gradually decrease sink rate based on sink_accel
+	float flare_sink_rate = gs_sink_rate - sink_accel * time_since_flare_s;
+	if (flare_sink_rate < FLARE_SINK_RATE)
+	{
+		flare_sink_rate = FLARE_SINK_RATE; // Set minimum sink rate to FLARE_SINK_RATE
 	}
 
 	// Decrease altitude setpoint at a rate of _flare_sink_rate
-	_plane->guidance_d_setpoint = _plane->flare_alt + _flare_sink_rate * (_plane->time - _plane->flare_start_time) * us_to_s;
+	_plane->guidance_d_setpoint = _plane->flare_alt + flare_sink_rate * time_since_flare_s;
 }
 
 bool Guidance::reached_last_wp()

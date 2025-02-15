@@ -19,7 +19,6 @@ constexpr float THR_DEADZONE = 0; // When throttle is set below this value, it i
 constexpr float PTCH_LIM_MAX_DEG = 15;
 constexpr float PTCH_LIM_MIN_DEG = -15;
 constexpr float ROLL_LIM_DEG = 20; // Maximum roll angle in either direction
-constexpr bool RUDDER_ONLY = false;
 
 // Autoland
 constexpr float LAND_GS_DEG = 6; // Landing glideslope angle
@@ -31,7 +30,6 @@ constexpr float FLARE_TRANS_SEC = 1; // Time to transition to flare
 // Takeoff
 constexpr float TAKEOFF_ALT = 5; // Altitude that the plane will climb to during takeoff meters per second
 constexpr float TAKEOFF_THR = 1; // Throttle set during takeoff between 0 and 1
-constexpr float TAKEOFF_AIRSPD = 10; // Rotation speed meters per second during takeoff, ignored during hand launch
 constexpr float TAKEOFF_PTCH = 10; // Pitch during takeoff
 
 // Guidance
@@ -57,9 +55,6 @@ constexpr uint16_t AILERON_MIN_DUTY = 1000;
 constexpr uint16_t AILERON_MAX_DUTY = 2000;
 constexpr uint16_t THROTTLE_MIN_DUTY = 1000;
 constexpr uint16_t THROTTLE_MAX_DUTY = 2000;
-
-// Total energy control system (TECS)
-constexpr float TECS_MASS_KG = 0.4; // Mass of the plane in Kg
 
 // PID
 constexpr float PTCH_KP = 0.04;

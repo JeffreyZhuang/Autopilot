@@ -9,6 +9,7 @@
 #define LIB_TECS_TECS_H_
 
 #include "Lib/Utils/utils.h"
+#include "constants.h"
 #include "plane.h"
 #include <math.h>
 
