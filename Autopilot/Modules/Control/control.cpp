@@ -42,7 +42,7 @@ void Control::update_stabilized()
 	_plane->throttle_setpoint = _plane->rc_throttle;
 }
 
-// Hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
+// Set throttle to TAKEOFF_THR, hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
 void Control::update_takeoff()
 {
 	_plane->pitch_setpoint = TAKEOFF_PTCH;
@@ -74,7 +74,7 @@ void Control::update_land()
 	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_error_total, 0, _dt);
 }
 
-// Set roll to 0 and track flare guidance altitude setpoints
+// Cut throttle, set roll to 0 and track flare guidance altitude setpoints
 void Control::update_flare()
 {
 	_tecs.update(AIRSPEED_LANDING, _plane->guidance_d_setpoint, 2);
