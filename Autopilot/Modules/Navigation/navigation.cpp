@@ -121,8 +121,11 @@ void Navigation::predict_imu()
 	Eigen::Vector3f acc_inertial(_plane->imu_ax, _plane->imu_ay, _plane->imu_az);
 	last_imu_timestamp = _plane->imu_timestamp;
 
-	// Rotate inertial frame to ECF
-	Eigen::Vector3f acc_ned = rotateToNED(acc_inertial * g, _plane->ahrs_roll * M_PI / 180.0f, _plane->ahrs_pitch * M_PI / 180.0f, _plane->ahrs_yaw * M_PI / 180.0f);
+	// Rotate inertial frame to NED
+	Eigen::Vector3f acc_ned = rotateToNED(acc_inertial * g,
+										  _plane->ahrs_roll * M_PI / 180.0f,
+										  _plane->ahrs_pitch * M_PI / 180.0f,
+										  _plane->ahrs_yaw * M_PI / 180.0f);
 	acc_ned(2) += g; // Gravity correction
 
 	_plane->nav_acc_north = acc_ned(0);

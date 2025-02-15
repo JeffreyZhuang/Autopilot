@@ -42,12 +42,6 @@ struct Waypoint {
  */
 struct Plane
 {
-    // Monitor
-    float batt_current = 0;
-    float batt_voltage = 0;
-    float autopilot_current = 0;
-    float autopilot_voltage = 0;
-
     // State machine
     SystemMode systemMode;
     ManualMode manualMode;
@@ -57,6 +51,12 @@ struct Plane
     uint64_t time;
     uint64_t loop_execution_time;
     uint32_t loop_iteration;
+
+    // Power Monitor
+	float batt_current = 0;
+	float batt_voltage = 0;
+	float autopilot_current = 0;
+	float autopilot_voltage = 0;
 
     // IMU
     float imu_ax = 0;
@@ -147,6 +147,10 @@ struct Plane
     // TECS
     float tecs_error_total = 0;
     float tecs_error_diff = 0;
+
+    // Control
+    float pitch_setpoint = 0;
+    float roll_setpoint = 0;
 };
 
 #endif /* PLANE_H_ */
