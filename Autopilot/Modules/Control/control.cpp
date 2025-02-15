@@ -16,7 +16,7 @@ Control::Control(HAL * hal, Plane * plane, float dt)
 	_dt = dt;
 }
 
-// Read from radio and direct to servos
+// Read from radio and send commands directly to servos
 void Control::update_manual()
 {
 	_plane->aileron_setpoint = _plane->rc_rudder;
@@ -32,16 +32,17 @@ void Control::update_manual()
 	}
 }
 
-// Pilot commands roll and pitch angles. Throttle is manual
+// Pilot commands roll and pitch angles, throttle is manual
 void Control::update_stabilized()
 {
-	_plane->roll_setpoint = _plane->rc_rudder * ROLL_LIM_DEG;
 	_plane->pitch_setpoint = _plane->rc_elevator * PTCH_LIM_MAX_DEG;
+	_plane->roll_setpoint = _plane->rc_rudder * ROLL_LIM_DEG;
 	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, _dt);
 	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, _dt);
 	_plane->throttle_setpoint = _plane->rc_throttle;
 }
 
+// Hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
 void Control::update_takeoff()
 {
 	_plane->pitch_setpoint = TAKEOFF_PTCH;
@@ -51,6 +52,7 @@ void Control::update_takeoff()
 	_plane->throttle_setpoint = TAKEOFF_THR;
 }
 
+// Track guidance altitude and heading setpoints at a speed of AIRSPEED_CUIRSE
 void Control::update_mission()
 {
 	_tecs.update(AIRSPEED_CRUISE, _plane->guidance_d_setpoint, 1);
@@ -61,6 +63,7 @@ void Control::update_mission()
 	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_error_total, 0, _dt);
 }
 
+// Track approach guidance altitude and heading setpoints at the reduced speed of AIRSPEED_LANDING
 void Control::update_land()
 {
 	_tecs.update(AIRSPEED_LANDING, _plane->guidance_d_setpoint, 1);
@@ -71,6 +74,7 @@ void Control::update_land()
 	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_error_total, 0, _dt);
 }
 
+// Set roll to 0 and track flare guidance altitude setpoints
 void Control::update_flare()
 {
 	_tecs.update(AIRSPEED_LANDING, _plane->guidance_d_setpoint, 2);
