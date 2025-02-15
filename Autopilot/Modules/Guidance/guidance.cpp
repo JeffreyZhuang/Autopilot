@@ -10,7 +10,9 @@ Guidance::Guidance(HAL* hal, Plane* plane)
 
 void Guidance::init()
 {
-
+	// Set initial flare sink rate to glideslope sink rate
+	_gs_sink_rate = AIRSPEED_LANDING * sinf(LAND_GS_DEG * deg_to_rad);
+	_flare_sink_rate = _gs_sink_rate;
 }
 
 // Generate position and altitude setpoint
@@ -91,8 +93,15 @@ void Guidance::update_landing()
 
 void Guidance::update_flare()
 {
-	// Decrease altitude setpoint at a rate of FLARE_SINK_RATE
-	_plane->guidance_d_setpoint = _plane->flare_alt + FLARE_SINK_RATE * (_plane->time - _plane->flare_start_time) * us_to_s;
+	// Gradually decrease sink rate
+	_flare_sink_rate -= (_gs_sink_rate - FLARE_SINK_RATE) / FLARE_TRANS_SEC;
+	if (_flare_sink_rate < FLARE_SINK_RATE)
+	{
+		_flare_sink_rate = FLARE_SINK_RATE; // Set minimum sink rate to FLARE_SINK_RATE
+	}
+
+	// Decrease altitude setpoint at a rate of _flare_sink_rate
+	_plane->guidance_d_setpoint = _plane->flare_alt + _flare_sink_rate * (_plane->time - _plane->flare_start_time) * us_to_s;
 }
 
 bool Guidance::reached_last_wp()

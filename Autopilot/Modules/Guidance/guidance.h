@@ -28,6 +28,8 @@ private:
 	Plane*_plane;
 
 	float kP = 1;
+	float _gs_sink_rate;
+	float _flare_sink_rate;
 };
 
 #endif /* GUIDANCE_H_ */
