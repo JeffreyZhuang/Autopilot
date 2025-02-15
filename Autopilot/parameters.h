@@ -13,7 +13,6 @@ constexpr float TECS_MAX_SPD_MPS = 25;
 constexpr float TRIM_THROTTLE = 0.1; // Steady-state cruise throttle
 constexpr float THR_MIN = 0; // Maximum throttle between 0 and 1
 constexpr float THR_MAX = 1; // Minimum throttle between 0 and 1
-constexpr float THR_DEADZONE = 0; // When throttle is set below this value, it is set to 0. This is mandatory for transitioning from boot to flight.
 
 // Attitude
 constexpr float PTCH_LIM_MAX_DEG = 15;
@@ -61,5 +60,9 @@ constexpr uint16_t THROTTLE_MAX_DUTY = 2000;
 constexpr float PTCH_KP = 0.04;
 constexpr float ROLL_KP = 0.04;
 constexpr float THR_KP = 0.01;
+
+// RC Transmitter
+constexpr uint16_t RC_IN_MAX = 1900;
+constexpr uint16_t RC_IN_MIN = 1100;
 
 #endif /* PARAMETERS_H_ */

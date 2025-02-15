@@ -8,7 +8,7 @@ Control::Control(HAL * hal, Plane * plane, float dt)
 	  pitch_controller(PTCH_KP, 0.00002, 0, 1, -1, 1, 0, false),
 	  hdg_controller(1, 0, 0, 0, -ROLL_LIM_DEG, ROLL_LIM_DEG, 0, true),
 	  alt_controller(1, 0, 0, 0, PTCH_LIM_MIN_DEG, PTCH_LIM_MAX_DEG, 0, false),
-	  speed_controller(THR_KP, 0.0001, 0, 1, 0, 1, TRIM_THROTTLE, false), // Start with P first, then add I
+	  speed_controller(THR_KP, 0.0001, 0, 1, THR_MIN, THR_MAX, TRIM_THROTTLE, false), // Start with P first, then add I
 	  _tecs(plane)
 {
 	_hal = hal;
@@ -21,15 +21,7 @@ void Control::update_manual()
 {
 	_plane->aileron_setpoint = _plane->rc_rudder;
 	_plane->elevator_setpoint = _plane->rc_elevator;
-
-	if (_plane->rc_throttle < THR_DEADZONE)
-	{
-		_plane->throttle_setpoint = 0;
-	}
-	else
-	{
-		_plane->throttle_setpoint = _plane->rc_throttle;
-	}
+	_plane->throttle_setpoint = _plane->rc_throttle;
 }
 
 // Pilot commands roll and pitch angles, throttle is manual

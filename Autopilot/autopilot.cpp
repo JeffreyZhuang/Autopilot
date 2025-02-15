@@ -86,7 +86,7 @@ void Autopilot::boot()
 
 	bool waypoints_loaded = _plane->num_waypoints > 0;
 
-	bool transmitter_safe = (_plane->rc_throttle < 0.1) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
+	bool transmitter_safe = (_plane->rc_throttle == 0) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
 
 	if (_plane->gps_fix && transmitter_safe && waypoints_loaded)
 	{

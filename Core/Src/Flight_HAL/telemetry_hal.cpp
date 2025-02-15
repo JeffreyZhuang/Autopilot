@@ -9,15 +9,12 @@ void Flight_hal::init_telem()
 
 void Flight_hal::read_rc()
 {
-	// Convert range from (1000, 2000) to (-1, 1)
-	_plane->rc_rudder = clamp(((int)mlrs_rc.rc_data[0] - 1500) / 500.0f, -1, 1);
-	_plane->rc_elevator = clamp(-((int)mlrs_rc.rc_data[1] - 1500) / 500.0f, -1, 1);
-
-	// (0, 1) range
-	_plane->rc_throttle = clamp(((int)mlrs_rc.rc_data[2] - 1000) / 1000.0f, 0, 1);
-
-	_plane->manual_sw = mlrs_rc.rc_data[4] > 1500;
-	_plane->mode_sw = mlrs_rc.rc_data[5] > 1500;
+	uint16_t midpoint = (RC_IN_MAX + RC_IN_MIN) / 2;
+	_plane->rc_rudder = map(mlrs_rc.rc_data[0], RC_IN_MIN, RC_IN_MAX, -1, 1);
+	_plane->rc_elevator = map(mlrs_rc.rc_data[1], RC_IN_MIN, RC_IN_MAX, -1, 1);
+	_plane->rc_throttle = map(mlrs_rc.rc_data[2], RC_IN_MIN, RC_IN_MAX, 0, 1);
+	_plane->manual_sw = mlrs_rc.rc_data[4] > midpoint;
+	_plane->mode_sw = mlrs_rc.rc_data[5] > midpoint;
 }
 
 void Flight_hal::transmit_telem(uint8_t tx_buff[], int len)
