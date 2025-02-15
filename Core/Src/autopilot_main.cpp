@@ -3,11 +3,11 @@
 
 // Exclude Flight_HAL source folder from build if PITL is enabled
 #if PITL_ENABLE
-	#include "pitl_hal.h"
-	using Hal = Pitl_hal;
+#include "pitl_hal.h"
+using Hal = Pitl_hal;
 #else
-	#include "Flight_HAL/flight_hal.h"
-	using Hal = Flight_hal;
+#include "Flight_HAL/flight_hal.h"
+using Hal = Flight_hal;
 #endif
 
 void autopilot_main()
