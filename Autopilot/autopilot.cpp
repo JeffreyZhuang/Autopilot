@@ -81,8 +81,9 @@ void Autopilot::boot()
 	if (_navigation.set_home())
 	{
 		_navigation.execute();
-		_navigation.debug_serial();
 	}
+
+	debug_serial();
 
 	bool waypoints_loaded = _plane->num_waypoints > 0;
 
@@ -249,4 +250,34 @@ void Autopilot::update_time()
 	_plane->loop_execution_time = time - _plane->time;
 	_plane->time = time;
 	_plane->loop_iteration++;
+}
+
+// View in web serial plotter
+void Autopilot::debug_serial()
+{
+	double gnss_north_meters, gnss_east_meters;
+	lat_lon_to_meters(_plane->home_lat,
+					  _plane->home_lon,
+					  _plane->gnss_lat,
+					  _plane->gnss_lon,
+					  &gnss_north_meters,
+					  &gnss_east_meters);
+
+	char tx_buff[200];
+	sprintf(tx_buff,
+			"%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f\n",
+			_plane->nav_acc_north,
+			_plane->nav_acc_east,
+			_plane->nav_acc_down,
+			_plane->nav_vel_north,
+			_plane->nav_vel_east,
+			_plane->nav_vel_down,
+			_plane->nav_pos_north,
+			_plane->nav_pos_east,
+			_plane->nav_pos_down,
+			gnss_north_meters,
+			gnss_east_meters,
+			-(_plane->baro_alt - _plane->baro_offset),
+			_plane->ahrs_yaw);
+	_hal->usb_print(tx_buff);
 }

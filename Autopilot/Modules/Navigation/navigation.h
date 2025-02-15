@@ -20,7 +20,6 @@ public:
 
     void execute();
     bool set_home();
-    void debug_serial();
 
 private:
     HAL* _hal;

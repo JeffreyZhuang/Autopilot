@@ -45,5 +45,5 @@ void Servo::set_duty(uint16_t us)
 	// Duty cycle percentage = us / 20000
 	// Since ARR is 1000
 	// Duty = 1000 * (us / 20000)
-	__HAL_TIM_SET_COMPARE(_tim, _channel, 1000 * (us / 20000));
+	__HAL_TIM_SET_COMPARE(_tim, _channel, 1000 * (us / 20000.0f));
 }
