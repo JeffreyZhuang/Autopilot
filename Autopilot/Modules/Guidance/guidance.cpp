@@ -91,7 +91,7 @@ void Guidance::update_landing()
 
 void Guidance::update_flare()
 {
-	float time_since_flare_s = (_plane->time - _plane->flare_start_time) * us_to_s
+	float time_since_flare_s = (_plane->time - _plane->flare_start_time) * us_to_s;
 
 	// Calculate glideslope sink rate
 	float gs_sink_rate = AIRSPEED_LANDING * sinf(LAND_GS_DEG * deg_to_rad);
