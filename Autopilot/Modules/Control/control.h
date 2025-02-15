@@ -30,10 +30,6 @@ private:
 	PID speed_controller;
 	Tecs _tecs;
 	float _dt;
-
-	// Helper functions
-	void track_roll_pitch_sp();
-	void track_tecs_alt_thr();
 };
 
 #endif /* CONTROL_H_ */
