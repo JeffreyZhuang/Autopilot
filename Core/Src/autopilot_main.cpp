@@ -16,8 +16,6 @@ void autopilot_main()
 	Hal hal(&plane);
 	Autopilot autopilot(&hal, &plane);
 	autopilot.setup();
-
-	// Execute HAL on UART callback, so it will do PITL or Flight depending on whats included
 }
 
 extern "C"
