@@ -8,8 +8,9 @@
 #ifndef GUIDANCE_H_
 #define GUIDANCE_H_
 
-#include "hal.h"
 #include "Lib/Utils/utils.h"
+#include "hal.h"
+#include "constants.h"
 #include <math.h>
 
 class Guidance
