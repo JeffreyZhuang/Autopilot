@@ -82,7 +82,7 @@ void Control::update_land()
 
 void Control::update_flare()
 {
-	// Ignore airspeed
+	// Ignore airspeed because throttle is set to 0
 	_tecs.update(AIRSPEED_LANDING, _plane->guidance_d_setpoint, 2);
 
 	// Calculate roll and pitch setpoints to reach waypoint

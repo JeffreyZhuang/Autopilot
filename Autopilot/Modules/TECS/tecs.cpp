@@ -35,6 +35,9 @@ void Tecs::update(float target_vel_mps, float target_alt_m, float wb)
 		_plane->tecs_error_total = max_error;
 	}
 
-	_plane->tecs_error_diff = (2.0 - wb) * err_kin - wb * err_pot; // If wb = 1, it will be balanced
+	// wb = 1 -> balanced
+	// wb = 2 -> only altitude
+	// wb = 0 -> only speed
+	_plane->tecs_error_diff = (2.0 - wb) * err_kin - wb * err_pot;
 	_plane->tecs_error_diff = clamp(_plane->tecs_error_diff, min_error, max_error);
 }

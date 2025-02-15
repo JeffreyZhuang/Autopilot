@@ -23,7 +23,6 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
-	Tecs _tecs;
 
 	float _dt;
 
@@ -32,6 +31,8 @@ private:
 	PID hdg_controller;
 	PID alt_controller;
 	PID speed_controller;
+
+	Tecs _tecs;
 };
 
 #endif /* CONTROL_H_ */
