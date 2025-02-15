@@ -10,8 +10,7 @@ Autopilot::Autopilot(HAL* hal, Plane* plane): _ahrs(hal, plane, hal->get_main_dt
 											  _guidance(hal, plane),
 											  _telem(hal, plane),
 											  _storage(plane, hal),
-											  _control_allocator(hal, plane),
-											  _tecs(plane)
+											  _control_allocator(hal, plane)
 {
 	_hal = hal;
 	_plane = plane;

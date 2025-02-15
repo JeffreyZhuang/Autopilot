@@ -8,7 +8,8 @@ Control::Control(HAL * hal, Plane * plane, float dt)
 	  pitch_controller(PTCH_KP, 0.00002, 0, 1, -1, 1, 0, false),
 	  hdg_controller(1, 0, 0, 0, -ROLL_LIM_DEG, ROLL_LIM_DEG, 0, true),
 	  alt_controller(1, 0, 0, 0, PTCH_LIM_MIN_DEG, PTCH_LIM_MAX_DEG, 0, false),
-	  speed_controller(THR_KP, 0.0001, 0, 1, 0, 1, TRIM_THROTTLE, false) // Start with P first, then add I
+	  speed_controller(THR_KP, 0.0001, 0, 1, 0, 1, TRIM_THROTTLE, false), // Start with P first, then add I
+	  _tecs(plane)
 {
 	_hal = hal;
 	_plane = plane;
@@ -53,6 +54,8 @@ void Control::update_takeoff()
 // Use guidance altitude and position setpoint to calculate control commands
 void Control::update_mission()
 {
+	_tecs.update(AIRSPEED_CRUISE, _plane->guidance_d_setpoint, 1);
+
 	// Calculate roll and pitch setpoints to reach waypoint
 	float roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, _dt);
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt);
@@ -65,6 +68,8 @@ void Control::update_mission()
 
 void Control::update_land()
 {
+	_tecs.update(AIRSPEED_LANDING, _plane->guidance_d_setpoint, 1);
+
 	// Calculate roll and pitch setpoints to reach waypoint
 	float roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, _dt);
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt);
@@ -77,6 +82,9 @@ void Control::update_land()
 
 void Control::update_flare()
 {
+	// Ignore airspeed
+	_tecs.update(AIRSPEED_LANDING, _plane->guidance_d_setpoint, 2);
+
 	// Calculate roll and pitch setpoints to reach waypoint
 	float roll_setpoint = 0;
 	float pitch_setpoint = -alt_controller.get_output(_plane->nav_pos_down, _plane->guidance_d_setpoint, _dt);
@@ -84,5 +92,7 @@ void Control::update_flare()
 	// Calculate control outputs to track roll and pitch setpoints
 	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, roll_setpoint, _dt);
 	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, pitch_setpoint, _dt);
+
+	// Cut the throttle
 	_plane->throttle_setpoint = 0;
 }

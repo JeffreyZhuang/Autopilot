@@ -1,10 +1,11 @@
 #ifndef CONTROL_H_
 #define CONTROL_H_
 
-#include <math.h>
-#include "hal.h"
+#include "Modules/TECS/tecs.h"
 #include "Lib/PID/pid.h"
 #include "Lib/Utils/utils.h"
+#include "hal.h"
+#include <math.h>
 
 // Calculates and sends commands to servos
 class Control
@@ -22,6 +23,7 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
+	Tecs _tecs;
 
 	float _dt;
 

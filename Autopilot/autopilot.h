@@ -8,7 +8,6 @@
 #include "Modules/Telemetry/telem.h"
 #include "Modules/Storage/storage.h"
 #include "Modules/ControlAllocator/control_allocator.h"
-#include "Modules/TECS/tecs.h"
 #include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -34,7 +33,6 @@ private:
     Telem _telem;
     Storage _storage;
     Control_allocator _control_allocator;
-    Tecs _tecs;
 
     // System mode
     void evaluate_system_mode();

@@ -5,7 +5,8 @@ Tecs::Tecs(Plane* plane)
 	_plane = plane;
 }
 
-void Tecs::update(float target_vel_mps, float target_alt_m)
+// Wb - weight balance
+void Tecs::update(float target_vel_mps, float target_alt_m, float wb)
 {
 	// Calculate current energy
 	float energy_pot = TECS_MASS_KG * 9.81 * (-_plane->nav_pos_down);
@@ -34,5 +35,6 @@ void Tecs::update(float target_vel_mps, float target_alt_m)
 		_plane->tecs_error_total = max_error;
 	}
 
-	_plane->tecs_error_diff = clamp(err_kin - err_pot, min_error, max_error);
+	_plane->tecs_error_diff = (2.0 - wb) * err_kin - wb * err_pot; // If wb = 1, it will be balanced
+	_plane->tecs_error_diff = clamp(_plane->tecs_error_diff, min_error, max_error);
 }
