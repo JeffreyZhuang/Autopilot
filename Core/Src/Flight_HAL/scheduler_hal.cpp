@@ -35,32 +35,33 @@ void Flight_hal::set_background_task(void (*task)())
 	}
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	if (htim == &htim7)
+#if !PITL_ENABLE
+	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
-		Flight_hal::main_task_callback();
+		if (htim == &htim7)
+		{
+			Flight_hal::main_task_callback();
+		}
 	}
-}
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
-{
-	if (huart == &huart3)
+	void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 	{
-		Flight_hal::gnss_dma_complete();
+		if (huart == &huart3)
+		{
+			Flight_hal::gnss_dma_complete();
+		}
+		else if (huart == &huart4)
+		{
+			Flight_hal::rc_dma_complete();
+		}
+		else if (huart == &huart6)
+		{
+			Flight_hal::telemetry_dma_complete();
+		}
 	}
-	else if (huart == &huart4)
-	{
-		Flight_hal::rc_dma_complete();
-	}
-	else if (huart == &huart6)
-	{
-		Flight_hal::telemetry_dma_complete();
-	}
-}
 
-void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
-{
-//	CDC_Transmit_FS(Buf, Len); // Placeholder
-}
+	void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
+	{
 
+	}
+#endif
