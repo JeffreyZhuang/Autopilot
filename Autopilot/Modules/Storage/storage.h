@@ -9,9 +9,8 @@
 
 struct __attribute__((packed))Storage_payload
 {
-	char c[2];
-	uint8_t loop_iteration;
-	char a = 'a';
+	uint32_t loop_iteration;
+	uint32_t time;
 };
 
 class Storage
