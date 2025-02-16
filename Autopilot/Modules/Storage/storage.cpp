@@ -39,7 +39,7 @@ void Storage::write()
 	bool back_buff_full = back_buff_last_idx == buffer_size;
 	if (!back_buff_full)
 	{
-		for (int i = 0; i < sizeof(packet); i++)
+		for (uint i = 0; i < sizeof(packet); i++)
 		{
 			back_buffer[back_buff_last_idx] = packet[i];
 			back_buff_last_idx++;
@@ -55,7 +55,7 @@ void Storage::write()
 		back_buff_last_idx = 0;
 
 		// Add packet to buffer
-		for (int i = 0; i < sizeof(packet); i++)
+		for (uint i = 0; i < sizeof(packet); i++)
 		{
 			back_buffer[back_buff_last_idx] = packet[i];
 			back_buff_last_idx++;
