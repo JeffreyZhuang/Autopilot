@@ -31,7 +31,7 @@ void Sd::write(uint8_t* tx_buff, uint16_t size)
 	if (!closed)
 	{
 		UINT bytes_written;
-		FRESULT res = f_write(&fil, tx_buff, sizeof(tx_buff), &bytes_written);
+		FRESULT res = f_write(&fil, tx_buff, size, &bytes_written);
 		if (res != FR_OK)
 		{
 			printf("Error during writing\n");
