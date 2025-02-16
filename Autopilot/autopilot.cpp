@@ -99,9 +99,6 @@ void Autopilot::boot()
 
 void Autopilot::flight()
 {
-	_storage.read(); // testing
-	while (1);
-
 	_ahrs.update();
 	_navigation.execute();
 

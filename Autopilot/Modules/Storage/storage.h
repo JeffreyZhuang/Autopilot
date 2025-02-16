@@ -11,6 +11,7 @@ struct __attribute__((packed))Storage_payload
 {
 	uint32_t loop_iteration;
 	uint32_t time;
+	float accel[3];
 };
 
 class Storage

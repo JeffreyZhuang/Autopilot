@@ -15,6 +15,9 @@ void Storage::write()
 	Storage_payload payload;
 	payload.loop_iteration = _plane->loop_iteration;
 	payload.time = _plane->time;
+	payload.accel[0] = _plane->imu_ax;
+	payload.accel[1] = _plane->imu_ay;
+	payload.accel[2] = _plane->imu_az;
 
 	// Convert struct to byte array
 	uint8_t payload_arr[sizeof(payload)];
