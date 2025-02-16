@@ -32,13 +32,53 @@ void Storage::write()
 		packet[i] = payload_cobs[i - 1];
 	}
 
-	// Write to storage
-	_hal->write_storage_buffer(packet, sizeof(packet));
+	// Double buffering:
+	// If back_buffer is not full, add data to back_buffer
+	// If back_buffer is full and front_buffer is not full, swap back and front buffers add data to back_buffer
+	// If both buffers are full, there is no way to store the data so throw out the data
+	bool back_buff_full = back_buff_last_idx == buffer_size;
+	if (!back_buff_full)
+	{
+		for (int i = 0; i < sizeof(packet); i++)
+		{
+			back_buffer[back_buff_last_idx] = packet[i];
+			back_buff_last_idx++;
+		}
+	}
+	else if (back_buff_full && !front_buff_full)
+	{
+		// Copy back buffer to front buffer
+		memcpy(front_buffer, back_buffer, buffer_size);
+		front_buff_full = true;
+
+		// Reset buffer index
+		back_buff_last_idx = 0;
+
+		// Add packet to buffer
+		for (int i = 0; i < sizeof(packet); i++)
+		{
+			back_buffer[back_buff_last_idx] = packet[i];
+			back_buff_last_idx++;
+		}
+	}
+	else
+	{
+		// Throw out data if both buffers full
+		printf("Both buffers full\n");
+	}
 }
 
 void Storage::flush()
 {
-	_hal->flush_storage_buffer();
+	if (front_buff_full)
+	{
+		printf("time: %ld, front_buffer size: %d\n", _hal->get_time_us(), sizeof(front_buffer));
+
+		_hal->write_storage_buffer(front_buffer, buffer_size);
+		front_buff_full = false;
+
+		_hal->flush_storage_buffer();
+	}
 }
 
 void Storage::read()
