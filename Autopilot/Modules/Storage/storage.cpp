@@ -15,7 +15,7 @@ void Storage::write()
 	Storage_payload payload;
 	payload.c[0] = 'h';
 	payload.c[1] = 'i';
-	payload.loop_iteration = _plane->loop_iteration;
+	payload.loop_iteration = 69;
 
 	// Convert struct to byte array
 	uint8_t payload_arr[sizeof(payload)];
@@ -86,9 +86,6 @@ void Storage::read()
 {
 	while (true)
 	{
-		Storage_payload payload;
-		uint8_t payload_cobs[sizeof(payload) + 1];
-
 		// Read storage to look for start byte
 		uint8_t start_byte[1];
 		_hal->read_storage(start_byte, sizeof(start_byte));
@@ -97,17 +94,19 @@ void Storage::read()
 		if (start_byte[0] == 0)
 		{
 			// Read payload with cobs
+			uint8_t payload_cobs[sizeof(payload) + 1];
 			_hal->read_storage(payload_cobs, sizeof(payload_cobs));
 
 			// Decode cobs
-			uint8_t payload_arr[sizeof(payload)];
+			uint8_t payload_arr[sizeof(Storage_payload)];
 			cobs_decode(payload_arr, sizeof(payload_arr), payload_cobs, sizeof(payload_cobs));
 
 			// Convert byte array into struct
+			Storage_payload payload;
 			memcpy(&payload, payload_arr, sizeof(payload));
 
 			// Print payload
-			printf("%c %c %ld\n", payload.c[0], payload.c[1], payload.loop_iteration);
+			printf("%c %c %d\n", payload.c[0], payload.c[1], payload.loop_iteration);
 		}
 	}
 }
