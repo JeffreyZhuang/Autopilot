@@ -49,10 +49,10 @@ constexpr float SOFT_IRON[3][3] = {{1.189985, 0.015110, -0.066520},
 								   {-0.066520, -0.039344, 1.183604}};
 
 // Servos
-constexpr uint16_t ELEVATOR_MIN_DUTY = 1000; // Duty cycle in us
-constexpr uint16_t ELEVATOR_MAX_DUTY = 2000;
-constexpr uint16_t AILERON_MIN_DUTY = 1000;
-constexpr uint16_t AILERON_MAX_DUTY = 2000;
+constexpr uint16_t ELEVATOR_MIN_DUTY = 500; // Duty cycle in us
+constexpr uint16_t ELEVATOR_MAX_DUTY = 2500;
+constexpr uint16_t AILERON_MIN_DUTY = 500;
+constexpr uint16_t AILERON_MAX_DUTY = 2500;
 constexpr uint16_t THROTTLE_MIN_DUTY = 1000;
 constexpr uint16_t THROTTLE_MAX_DUTY = 2000;
 
@@ -62,7 +62,7 @@ constexpr float ROLL_KP = 0.04;
 constexpr float THR_KP = 0.01;
 
 // RC Transmitter
-constexpr uint16_t RC_IN_MAX = 1900;
+constexpr uint16_t RC_IN_MAX = 1900; // Make sure values are INSIDE the range of radio, NEVER outside
 constexpr uint16_t RC_IN_MIN = 1100;
 
 #endif /* PARAMETERS_H_ */

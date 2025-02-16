@@ -11,14 +11,31 @@ Storage::Storage(Plane* plane, HAL* hal)
 
 void Storage::write()
 {
-	Storage_packet packet;
-	packet.time = _plane->time;
-	packet.acc_z = _plane->imu_az;
-	packet.alt = _plane->baro_alt;
+	// Create struct
+	Storage_payload payload;
+	payload.msg[0] = 't';
+	payload.msg[1] = 'e';
+	payload.msg[2] = 's';
+	payload.msg[3] = 't';
 
-	uint8_t data[sizeof(packet)];
-	memcpy(data, &packet, sizeof(packet));
-	_hal->write_storage_buffer(data, sizeof(packet));
+	// Convert struct to byte array
+	uint8_t payload_arr[sizeof(payload)];
+	memcpy(payload_arr, &payload, sizeof(payload));
+
+	// COBS encode
+	uint8_t payload_cobs[sizeof(payload) + 1];
+	cobs_encode(payload_cobs, sizeof(payload_cobs), payload_arr, sizeof(payload_arr));
+
+	// Add start byte to complete packet
+	uint8_t packet[sizeof(payload_cobs) + 1];
+	packet[0] = 0; // Start byte
+	for (int i = 1; i < sizeof(packet); i++) // Copy over payload to packet
+	{
+		packet[i] = payload_cobs[i - 1];
+	}
+
+	// Write to storage
+	_hal->write_storage_buffer(packet, sizeof(packet));
 }
 
 void Storage::flush()
@@ -30,19 +47,28 @@ void Storage::read()
 {
 	while (true)
 	{
-		Storage_packet packet;
-		uint8_t rx_buff[sizeof(Storage_packet)];
-		_hal->read_storage(rx_buff, sizeof(rx_buff));
-		memcpy(&packet, rx_buff, sizeof(packet));
+		Storage_payload payload;
+		uint8_t payload_cobs[sizeof(payload) + 1];
 
-		printf("%" PRIu64 " %f\n", packet.time, packet.acc_z);
+		// Read storage to look for start byte
+		uint8_t start_byte[1];
+		_hal->read_storage(start_byte, sizeof(start_byte));
+
+		// Detect start byte
+		if (start_byte[0] == 0)
+		{
+			// Read payload with cobs
+			_hal->read_storage(payload_cobs, sizeof(payload_cobs));
+
+			// Decode cobs
+			uint8_t payload_arr[sizeof(payload)];
+			cobs_decode(payload_arr, sizeof(payload_arr), payload_cobs, sizeof(payload_cobs));
+
+			// Convert byte array into struct
+			memcpy(&payload, payload_arr, sizeof(payload));
+
+			// Print payload
+			printf("%s\n", payload.msg);
+		}
 	}
-
-
-	// Keep reading single byte until start byte
-	// Then COBS decode and put in Storage_packet struct to read
-
-	// Actually, python script reads, this function is not needed, don't deal with the COBS decode here, do it in python
-
-	// Keep this function for now for reference when I load config from file
 }

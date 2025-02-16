@@ -1,18 +1,15 @@
 #ifndef MODULES_STORAGE_STORAGE_H_
 #define MODULES_STORAGE_STORAGE_H_
 
-// TODO: Add COBS and start byte
-
 #include "plane.h"
 #include "hal.h"
+#include "Lib/COBS/cobs.h"
 #include <stdint.h>
 #include <cstring>
 
-struct __attribute__((packed))Storage_packet
+struct __attribute__((packed))Storage_payload
 {
-	uint64_t time;
-	float acc_z;
-	float alt;
+	char msg[4];
 };
 
 class Storage

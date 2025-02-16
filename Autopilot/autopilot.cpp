@@ -89,6 +89,8 @@ void Autopilot::boot()
 
 	bool transmitter_safe = (_plane->rc_throttle == 0) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
 
+//	printf("%f\n", _plane->rc_throttle);
+
 	if (_plane->gps_fix && transmitter_safe && waypoints_loaded)
 	{
 		_plane->systemMode = SystemMode::FLIGHT;
@@ -97,6 +99,9 @@ void Autopilot::boot()
 
 void Autopilot::flight()
 {
+	_storage.read(); // testing
+	while (1);
+
 	_ahrs.update();
 	_navigation.execute();
 
@@ -153,7 +158,7 @@ void Autopilot::evaluate_auto_mode()
 
 void Autopilot::ready()
 {
-	if ((_plane->rc_throttle > 0.5) || (-_plane->nav_pos_down > TAKEOFF_ALT))
+	if ((_plane->rc_throttle == 1) || (-_plane->nav_pos_down > TAKEOFF_ALT))
 	{
 		_plane->autoMode = AutoMode::TAKEOFF;
 	}

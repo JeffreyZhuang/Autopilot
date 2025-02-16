@@ -53,6 +53,8 @@ void Sd::read(uint8_t* rx_buff, uint16_t size)
 {
 	if (!closed)
 	{
+		closed = true;
+
 		f_close(&fil);
 
 		FRESULT res = f_open(&fil, filename, FA_READ);
@@ -60,8 +62,6 @@ void Sd::read(uint8_t* rx_buff, uint16_t size)
 		{
 			printf("Error when opening file\n");
 		}
-
-		closed = true;
 	}
 
 	UINT bytes_read;
