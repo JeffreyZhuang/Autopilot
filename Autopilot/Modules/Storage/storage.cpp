@@ -13,8 +13,9 @@ void Storage::write()
 {
 	// Create struct
 	Storage_payload payload;
+	payload.c[0] = 'h';
+	payload.c[1] = 'i';
 	payload.loop_iteration = _plane->loop_iteration;
-	payload.time = _plane->time;
 
 	// Convert struct to byte array
 	uint8_t payload_arr[sizeof(payload)];
@@ -72,7 +73,7 @@ void Storage::flush()
 {
 	if (front_buff_full)
 	{
-		printf("time: %ld, front_buffer size: %d\n", _hal->get_time_us(), sizeof(front_buffer));
+		printf("Flushed Buffer\n");
 
 		_hal->write_storage_buffer(front_buffer, buffer_size);
 		front_buff_full = false;
@@ -106,7 +107,7 @@ void Storage::read()
 			memcpy(&payload, payload_arr, sizeof(payload));
 
 			// Print payload
-			printf("%d %d\n", payload.loop_iteration, payload.time);
+			printf("%c %c %ld\n", payload.c[0], payload.c[1], payload.loop_iteration);
 		}
 	}
 }

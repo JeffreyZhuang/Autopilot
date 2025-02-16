@@ -19,6 +19,7 @@ private:
 	FATFS fatfs;
 	FIL fil;
 	char filename[50];
+	bool closed = false;
 };
 
 //class Sd

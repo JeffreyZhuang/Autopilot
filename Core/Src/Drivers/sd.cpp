@@ -18,7 +18,7 @@ void Sd::initialize()
 		file_idx++;
 	}
 
-	FRESULT res = f_open(&fil, filename, FA_WRITE | FA_CREATE_NEW | FA_READ);
+	FRESULT res = f_open(&fil, filename, FA_WRITE | FA_CREATE_NEW);
 	if (res != FR_OK)
 	{
 		printf("SD card failed. Make sure it is inserted.\n");
@@ -28,16 +28,32 @@ void Sd::initialize()
 
 void Sd::write(uint8_t* tx_buff, uint16_t size)
 {
-	UINT bytes_written;
-	FRESULT res = f_write(&fil, tx_buff, sizeof(tx_buff), &bytes_written);
-	if (res != FR_OK)
+	if (!closed)
 	{
-		printf("Error during writing\n");
+		UINT bytes_written;
+		FRESULT res = f_write(&fil, tx_buff, sizeof(tx_buff), &bytes_written);
+		if (res != FR_OK)
+		{
+			printf("Error during writing\n");
+		}
 	}
 }
 
 void Sd::read(uint8_t* rx_buff, uint16_t size)
 {
+	if (!closed)
+	{
+		closed = true;
+
+		f_close(&fil);
+
+		FRESULT res = f_open(&fil, filename, FA_READ);
+		if (res != FR_OK)
+		{
+			printf("Error when opening file\n");
+		}
+	}
+
 	UINT bytes_read;
 	FRESULT res = f_read(&fil, rx_buff, size, &bytes_read);
 	if (res != FR_OK)
@@ -48,10 +64,13 @@ void Sd::read(uint8_t* rx_buff, uint16_t size)
 
 void Sd::flush()
 {
-	FRESULT res = f_sync(&fil);
-	if (res != FR_OK)
+	if (!closed)
 	{
-		printf("Error during sync\n");
+		FRESULT res = f_sync(&fil);
+		if (res != FR_OK)
+		{
+			printf("Error during sync\n");
+		}
 	}
 }
 
