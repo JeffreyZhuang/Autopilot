@@ -15,16 +15,28 @@ void Storage::write()
 	Storage_payload payload;
 	payload.loop_iteration = _plane->loop_iteration;
 	payload.time = _plane->time;
+	payload.gyro[0] = _plane->imu_gx;
+	payload.gyro[1] = _plane->imu_gy;
+	payload.gyro[2] = _plane->imu_gz;
 	payload.accel[0] = _plane->imu_ax;
 	payload.accel[1] = _plane->imu_ay;
 	payload.accel[2] = _plane->imu_az;
+	payload.mag_uncalib[0] = _plane->compass_mx;
+	payload.mag_uncalib[1] = _plane->compass_my;
+	payload.mag_uncalib[2] = _plane->compass_mz;
+	payload.nav_pos[0] = _plane->nav_pos_north;
+	payload.nav_pos[1] = _plane->nav_pos_east;
+	payload.nav_pos[2] = _plane->nav_pos_down;
+	payload.nav_vel[0] = _plane->nav_vel_north;
+	payload.nav_vel[1] = _plane->nav_vel_east;
+	payload.nav_vel[2] = _plane->nav_vel_down;
 
 	// Convert struct to byte array
-	uint8_t payload_arr[sizeof(payload)];
-	memcpy(payload_arr, &payload, sizeof(payload));
+	uint8_t payload_arr[payload_size];
+	memcpy(payload_arr, &payload, payload_size);
 
 	// COBS encode
-	uint8_t payload_cobs[sizeof(payload) + 1];
+	uint8_t payload_cobs[payload_size + 1];
 	cobs_encode(payload_cobs, sizeof(payload_cobs), payload_arr, sizeof(payload_arr));
 
 	// Add start byte to complete packet
