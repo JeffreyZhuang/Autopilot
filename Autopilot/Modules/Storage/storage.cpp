@@ -13,10 +13,7 @@ void Storage::write()
 {
 	// Create struct
 	Storage_payload payload;
-	payload.msg[0] = 't';
-	payload.msg[1] = 'e';
-	payload.msg[2] = 's';
-	payload.msg[3] = 't';
+	payload.loop_iteration = _plane->loop_iteration;
 
 	// Convert struct to byte array
 	uint8_t payload_arr[sizeof(payload)];
@@ -29,7 +26,7 @@ void Storage::write()
 	// Add start byte to complete packet
 	uint8_t packet[sizeof(payload_cobs) + 1];
 	packet[0] = 0; // Start byte
-	for (int i = 1; i < sizeof(packet); i++) // Copy over payload to packet
+	for (uint i = 1; i < sizeof(packet); i++) // Copy over payload to packet
 	{
 		packet[i] = payload_cobs[i - 1];
 	}
@@ -68,7 +65,7 @@ void Storage::read()
 			memcpy(&payload, payload_arr, sizeof(payload));
 
 			// Print payload
-			printf("%s\n", payload.msg);
+			printf("%ld\n", payload.loop_iteration);
 		}
 	}
 }
