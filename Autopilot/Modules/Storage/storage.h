@@ -10,6 +10,7 @@
 struct __attribute__((packed))Storage_payload
 {
 	uint32_t loop_iteration;
+	uint64_t time;
 };
 
 class Storage

@@ -14,6 +14,7 @@ void Storage::write()
 	// Create struct
 	Storage_payload payload;
 	payload.loop_iteration = _plane->loop_iteration;
+	payload.time = _plane->time;
 
 	// Convert struct to byte array
 	uint8_t payload_arr[sizeof(payload)];
@@ -65,7 +66,7 @@ void Storage::read()
 			memcpy(&payload, payload_arr, sizeof(payload));
 
 			// Print payload
-			printf("%ld\n", payload.loop_iteration);
+			printf("%d %d\n", payload.loop_iteration, payload.time);
 		}
 	}
 }
