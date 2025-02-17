@@ -1,7 +1,6 @@
 #include "autopilot_main.h"
 #include "autopilot.h"
 
-#define PITL_ENABLE false
 #if PITL_ENABLE
 #include "pitl_hal.h"
 using Hal = Pitl_hal;

@@ -35,7 +35,8 @@ void Flight_hal::set_background_task(void (*task)())
 	}
 }
 
-__weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+#if !PITL_ENABLE
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim == &htim7)
 	{
@@ -58,3 +59,4 @@ __weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 		Flight_hal::telemetry_dma_complete();
 	}
 }
+#endif

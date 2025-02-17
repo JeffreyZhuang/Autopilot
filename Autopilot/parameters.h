@@ -55,11 +55,17 @@ constexpr uint16_t AILERON_MIN_DUTY = 500;
 constexpr uint16_t AILERON_MAX_DUTY = 2500;
 constexpr uint16_t THROTTLE_MIN_DUTY = 1000;
 constexpr uint16_t THROTTLE_MAX_DUTY = 2000;
+constexpr bool REVERSE_ELEVATOR = true;
+constexpr bool REVERSE_AILERON = false;
 
 // PID
 constexpr float PTCH_KP = 0.04;
 constexpr float ROLL_KP = 0.04;
 constexpr float THR_KP = 0.01;
+
+// Kalman filter
+constexpr float BARO_R = 10000;
+constexpr float GNSS_R = 1000000;
 
 // RC Transmitter
 constexpr uint16_t RC_IN_MAX = 1900; // Make sure values are INSIDE the range of radio, NEVER outside

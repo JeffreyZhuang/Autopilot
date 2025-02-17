@@ -18,12 +18,13 @@ float Pitl_hal::get_main_dt() const
 	return 0.02;
 }
 
-__weak void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
+#if PITL_ENABLE
+void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
 	Pitl_hal::get_instance()->usb_rx_callback(Buf, Len);
 }
 
-__weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	if (huart == &huart4)
 	{
@@ -34,3 +35,4 @@ __weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 		Pitl_hal::telemetry_dma_complete();
 	}
 }
+#endif

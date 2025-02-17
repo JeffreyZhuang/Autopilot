@@ -75,7 +75,7 @@ void Storage::write()
 	else
 	{
 		// Throw out data if both buffers full
-		printf("Both buffers full\n");
+//		printf("Both buffers full\n");
 	}
 }
 
@@ -83,7 +83,7 @@ void Storage::flush()
 {
 	if (front_buff_full)
 	{
-		printf("Flushed Buffer\n");
+//		printf("Flushed Buffer\n");
 
 		_hal->write_storage_buffer(front_buffer, buffer_size);
 		front_buff_full = false;

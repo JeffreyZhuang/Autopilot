@@ -15,8 +15,8 @@ Control_allocator::Control_allocator(HAL* hal, Plane* plane)
 
 void Control_allocator::update()
 {
-	_elevator_duty = map(_plane->elevator_setpoint, -1, 1, ELEVATOR_MIN_DUTY, ELEVATOR_MAX_DUTY);
-	_aileron_duty = map(_plane->aileron_setpoint, -1, 1, AILERON_MIN_DUTY, AILERON_MAX_DUTY);
+	_elevator_duty = map(REVERSE_ELEVATOR ? -_plane->elevator_setpoint : _plane->elevator_setpoint, -1, 1, ELEVATOR_MIN_DUTY, ELEVATOR_MAX_DUTY);
+	_aileron_duty = map(REVERSE_AILERON ? -_plane->aileron_setpoint : _plane->aileron_setpoint, -1, 1, AILERON_MIN_DUTY, AILERON_MAX_DUTY);
 	_throttle_duty = map(_plane->throttle_setpoint, 0, 1, THROTTLE_MIN_DUTY, THROTTLE_MAX_DUTY);
 
 	publish_actuator_controls();
