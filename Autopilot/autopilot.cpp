@@ -254,7 +254,7 @@ void Autopilot::update_time()
 // View in web serial plotter
 void Autopilot::debug_serial()
 {
-	double gnss_north_meters, gnss_east_meters;
+	double gnss_north_meters, gnss_east_meters; // Put this in gnss_hal.cpp?
 	lat_lon_to_meters(_plane->home_lat,
 					  _plane->home_lon,
 					  _plane->gnss_lat,
