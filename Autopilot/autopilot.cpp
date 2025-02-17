@@ -1,7 +1,5 @@
 #include "autopilot.h"
 
-// TODO: Use COBS and start byte so a single missed byte doesn't corrupt the entire file.
-
 Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal, Plane* plane)
