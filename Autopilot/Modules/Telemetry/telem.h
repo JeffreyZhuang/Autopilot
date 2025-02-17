@@ -64,10 +64,12 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
+	uint8_t latest_packet[TELEM_PKT_LEN];
+	uint64_t prev_transmit_time;
+
 	void transmit();
 	void parse_telemetry();
 	void acknowledgement();
-	uint64_t prev_transmit_time;
 };
 
 #endif /* TELEM_H_ */

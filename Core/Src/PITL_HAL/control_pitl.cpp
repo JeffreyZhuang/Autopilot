@@ -2,6 +2,7 @@
 
 void Pitl_hal::set_elevator_duty(uint16_t duty)
 {
+	printf("%d\n", duty);
 	pitl_tx_packet.elevator = map(duty, ELEVATOR_MIN_DUTY, ELEVATOR_MAX_DUTY, -1, 1);
 }
 

@@ -11,8 +11,6 @@ constexpr float TECS_MAX_SPD_MPS = 25;
 
 // Throttle
 constexpr float TRIM_THROTTLE = 0.1; // Steady-state cruise throttle
-constexpr float THR_MIN = 0; // Maximum throttle between 0 and 1
-constexpr float THR_MAX = 1; // Minimum throttle between 0 and 1
 
 // Attitude
 constexpr float PTCH_LIM_MAX_DEG = 15;
@@ -40,6 +38,7 @@ constexpr uint8_t MAX_NUM_WPTS = 100; // Maximum number of waypoints
 constexpr uint8_t TELEM_PKT_LEN = 40;
 
 // AHRS
+constexpr float AHRS_BETA = 0.01; // Filter tuning gain
 constexpr float AHRS_FUSION_ACC_MIN = 0.5; // Minimum acceleration in inertial frame (g) for accelerometer fusion
 constexpr float AHRS_FUSION_ACC_MAX = 2; // Maximum acceleration in gs for accelerometer fusion
 constexpr float MAG_DECL = -10.2; // Degrees, determined from online calculator
@@ -55,7 +54,7 @@ constexpr uint16_t AILERON_MIN_DUTY = 500;
 constexpr uint16_t AILERON_MAX_DUTY = 2500;
 constexpr uint16_t THROTTLE_MIN_DUTY = 1000;
 constexpr uint16_t THROTTLE_MAX_DUTY = 2000;
-constexpr bool REVERSE_ELEVATOR = true;
+constexpr bool REVERSE_ELEVATOR = false;
 constexpr bool REVERSE_AILERON = false;
 
 // PID

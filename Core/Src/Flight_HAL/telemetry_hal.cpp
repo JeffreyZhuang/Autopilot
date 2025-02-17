@@ -22,7 +22,7 @@ void Flight_hal::transmit_telem(uint8_t tx_buff[], int len)
 	mlrs_telem.transmit(tx_buff, len);
 }
 
-bool Flight_hal::read_telem()
+bool Flight_hal::read_telem(uint8_t* rx_buff, int size)
 {
-	return mlrs_telem.read(_plane->latest_packet);
+	return mlrs_telem.read(rx_buff);
 }

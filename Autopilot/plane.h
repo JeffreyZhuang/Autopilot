@@ -46,6 +46,7 @@ struct Plane
     SystemMode systemMode;
     ManualMode manualMode;
     AutoMode autoMode;
+    uint8_t mode_id;
 
     // Time
     uint64_t time;
@@ -133,10 +134,7 @@ struct Plane
     float rc_throttle = 0;
     bool manual_sw;
     bool mode_sw;
-
-    // Telemetry
-    uint8_t latest_packet[TELEM_PKT_LEN];
-    uint8_t mode_id;
+    uint16_t rc_channels[6];
 
     // Servos
     float aileron_setpoint = 0; // Aileron command from -1 to 1

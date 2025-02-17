@@ -50,7 +50,7 @@ void Telem::transmit()
 // Send back same message
 void Telem::acknowledgement()
 {
-	_hal->transmit_telem(_plane->latest_packet, TELEM_PKT_LEN);
+	_hal->transmit_telem(latest_packet, TELEM_PKT_LEN);
 }
 
 void Telem::parse_telemetry()
@@ -59,7 +59,7 @@ void Telem::parse_telemetry()
 	uint8_t packet_no_start_byte[TELEM_PKT_LEN - 1];
 	for (int i = 0; i < TELEM_PKT_LEN - 1; i++)
 	{
-		packet_no_start_byte[i] = _plane->latest_packet[i + 1];
+		packet_no_start_byte[i] = latest_packet[i + 1];
 	}
 
 	// Decode consistent overhead byte shuffling
@@ -94,7 +94,7 @@ void Telem::update()
 {
 	// If new recieved command, send acknowledgement
 	// Otherwise send telemetry packet
-	if (_hal->read_telem())
+	if (_hal->read_telem(latest_packet, 0))
 	{
 		parse_telemetry();
 		acknowledgement();
