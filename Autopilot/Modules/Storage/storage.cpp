@@ -1,8 +1,5 @@
 #include "storage.h"
 
-#include <stdio.h> // Testing, remove later
-#include <inttypes.h>
-
 Storage::Storage(Plane* plane, HAL* hal)
 {
 	_plane = plane;
@@ -12,24 +9,23 @@ Storage::Storage(Plane* plane, HAL* hal)
 void Storage::write()
 {
 	// Create struct
-	Storage_payload payload;
-	payload.loop_iteration = _plane->loop_iteration;
-	payload.time = _plane->time;
-	payload.gyro[0] = _plane->imu_gx;
-	payload.gyro[1] = _plane->imu_gy;
-	payload.gyro[2] = _plane->imu_gz;
-	payload.accel[0] = _plane->imu_ax;
-	payload.accel[1] = _plane->imu_ay;
-	payload.accel[2] = _plane->imu_az;
-	payload.mag_uncalib[0] = _plane->compass_mx;
-	payload.mag_uncalib[1] = _plane->compass_my;
-	payload.mag_uncalib[2] = _plane->compass_mz;
-	payload.nav_pos[0] = _plane->nav_pos_north;
-	payload.nav_pos[1] = _plane->nav_pos_east;
-	payload.nav_pos[2] = _plane->nav_pos_down;
-	payload.nav_vel[0] = _plane->nav_vel_north;
-	payload.nav_vel[1] = _plane->nav_vel_east;
-	payload.nav_vel[2] = _plane->nav_vel_down;
+	Storage_payload payload = {
+		_plane->loop_iteration,
+		_plane->time,
+		{_plane->imu_gx, _plane->imu_gy, _plane->imu_gz},
+		{_plane->imu_ax, _plane->imu_ay, _plane->imu_az},
+		{_plane->compass_mx, _plane->compass_my, _plane->compass_mz},
+		{_plane->nav_pos_north, _plane->nav_pos_east, _plane->nav_pos_down},
+		{_plane->nav_vel_north, _plane->nav_vel_east, _plane->nav_vel_down},
+		_plane->baro_alt,
+		_plane->rc_rudder,
+		_plane->rc_elevator,
+		_plane->rc_throttle,
+		_plane->gnss_lat,
+		_plane->gnss_lon,
+		_plane->gps_fix,
+		_plane->mode_id
+	};
 
 	// Convert struct to byte array
 	uint8_t payload_arr[payload_size];
@@ -40,9 +36,9 @@ void Storage::write()
 	cobs_encode(payload_cobs, sizeof(payload_cobs), payload_arr, sizeof(payload_arr));
 
 	// Add start byte to complete packet
-	uint8_t packet[sizeof(payload_cobs) + 1];
+	uint8_t packet[packet_size];
 	packet[0] = 0; // Start byte
-	for (uint i = 1; i < sizeof(packet); i++) // Copy over payload to packet
+	for (uint i = 1; i < packet_size; i++) // Copy over payload to packet
 	{
 		packet[i] = payload_cobs[i - 1];
 	}
@@ -54,7 +50,7 @@ void Storage::write()
 	bool back_buff_full = back_buff_last_idx == buffer_size;
 	if (!back_buff_full)
 	{
-		for (uint i = 0; i < sizeof(packet); i++)
+		for (uint i = 0; i < packet_size; i++)
 		{
 			back_buffer[back_buff_last_idx] = packet[i];
 			back_buff_last_idx++;
@@ -70,7 +66,7 @@ void Storage::write()
 		back_buff_last_idx = 0;
 
 		// Add packet to buffer
-		for (uint i = 0; i < sizeof(packet); i++)
+		for (uint i = 0; i < packet_size; i++)
 		{
 			back_buffer[back_buff_last_idx] = packet[i];
 			back_buff_last_idx++;
@@ -102,17 +98,17 @@ void Storage::read()
 	{
 		// Read storage to look for start byte
 		uint8_t start_byte[1];
-		_hal->read_storage(start_byte, sizeof(start_byte));
+		_hal->read_storage(start_byte, 1);
 
 		// Detect start byte
 		if (start_byte[0] == 0)
 		{
 			// Read payload with cobs
-			uint8_t payload_cobs[sizeof(Storage_payload) + 1];
+			uint8_t payload_cobs[payload_size + 1];
 			_hal->read_storage(payload_cobs, sizeof(payload_cobs));
 
 			// Decode cobs
-			uint8_t payload_arr[sizeof(Storage_payload)];
+			uint8_t payload_arr[payload_size];
 			cobs_decode(payload_arr, sizeof(payload_arr), payload_cobs, sizeof(payload_cobs));
 
 			// Convert byte array into struct

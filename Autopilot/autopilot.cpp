@@ -75,26 +75,23 @@ void Autopilot::boot()
 	if (_ahrs.set_initial_state())
 	{
 		_ahrs.update();
-	}
 
-	// Set home position to first GPS fix
-	if (_navigation.set_home())
-	{
-		_navigation.execute();
+		if (_navigation.set_home())
+		{
+			_navigation.execute();
+		}
 	}
-
-	debug_serial();
 
 	bool waypoints_loaded = _plane->num_waypoints > 0;
 
 	bool transmitter_safe = (_plane->rc_throttle == 0) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
 
-//	printf("%f\n", _plane->rc_throttle);
-
 	if (_plane->gps_fix && transmitter_safe && waypoints_loaded)
 	{
 		_plane->systemMode = SystemMode::FLIGHT;
 	}
+
+	debug_serial();
 }
 
 void Autopilot::flight()
