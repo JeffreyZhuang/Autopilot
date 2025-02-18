@@ -140,7 +140,6 @@ struct Plane
     float aileron_setpoint = 0; // Aileron command from -1 to 1
     float elevator_setpoint = 0;
     float throttle_setpoint = 0;
-    // Nevermind, have thrust and torque setpoints instead like TVC
 
     // TECS
     float tecs_error_total = 0;

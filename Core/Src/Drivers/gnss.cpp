@@ -53,6 +53,7 @@ void GNSS::dma_complete()
 
 			lat = minmea_tocoord_double(&frame.latitude);
 			lon = minmea_tocoord_double(&frame.longitude);
+			alt = frame.altitude.value;
 			sats = frame.satellites_tracked;
 			fix = frame.fix_quality == 1;
 

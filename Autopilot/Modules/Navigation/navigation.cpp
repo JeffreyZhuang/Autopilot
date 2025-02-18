@@ -1,4 +1,4 @@
-#include <Modules/Navigation/navigation.h>
+#include "navigation.h"
 
 /**
  * @brief Construct a new Navigation:: Navigation object
@@ -154,15 +154,17 @@ void Navigation::update_gps()
 					  &gnss_east_meters);
 	last_gnss_timestamp = _plane->gnss_timestamp;
 
-	Eigen::VectorXf y(2);
+	Eigen::VectorXf y(3);
 	y << gnss_north_meters,
-		 gnss_east_meters;
+		 gnss_east_meters,
+		 _plane->gnss_asl;
 
-	Eigen::MatrixXf H(2, n);
+	Eigen::MatrixXf H(3, n);
 	H << 1, 0, 0, 0, 0, 0,
-		 0, 1, 0, 0, 0, 0;
+		 0, 1, 0, 0, 0, 0,
+		 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 2> R(GNSS_R, GNSS_R);
+	Eigen::DiagonalMatrix<float, 3> R(GNSS_R, GNSS_R, GNSS_ALT_R);
 
 	kalman.update(R, H, y);
 

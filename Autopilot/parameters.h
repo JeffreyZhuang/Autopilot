@@ -65,6 +65,7 @@ constexpr float THR_KP = 0.01;
 // Kalman filter
 constexpr float BARO_R = 10000;
 constexpr float GNSS_R = 1000000;
+constexpr float GNSS_ALT_R = 10000000;
 
 // RC Transmitter
 constexpr uint16_t RC_IN_MAX = 1900; // Make sure values are INSIDE the range of radio, NEVER outside

@@ -12,6 +12,7 @@ void Flight_hal::read_gnss()
 		_plane->gnss_lat = _gnss.lat;
 		_plane->gnss_lon = _gnss.lon;
 		_plane->gnss_sats = _gnss.sats;
+		_plane->gnss_asl = _gnss.alt;
 		_plane->gps_fix = _gnss.fix;
 
 		if (_plane->gps_fix)
