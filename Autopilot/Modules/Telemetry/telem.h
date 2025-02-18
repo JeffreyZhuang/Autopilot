@@ -13,6 +13,8 @@
 #include "Lib/COBS/cobs.h"
 #include "Lib/Utils/utils.h"
 
+static constexpr uint8_t TELEM_PKT_LEN = 40;
+
 struct __attribute__((packed))Telem_payload
 {
 	uint8_t payload_type = 0;

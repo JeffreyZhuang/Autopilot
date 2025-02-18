@@ -27,6 +27,7 @@ private:
     bool check_new_imu_data();
     bool check_new_compass_data();
     void apply_compass_calibration(float mag_data[3]);
+    bool is_accel_reliable();
 
     Plane* _plane;
     HAL* _hal;

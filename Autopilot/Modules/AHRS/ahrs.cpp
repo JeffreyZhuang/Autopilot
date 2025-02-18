@@ -119,15 +119,21 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 	}
 }
 
+bool AHRS::is_accel_reliable()
+{
+	float accel_magnitude = sqrtf(powf(_plane->imu_ax, 2) +
+								  powf(_plane->imu_ay, 2) +
+								  powf(_plane->imu_az, 2));
+
+	// Assuming 1g reference
+	return fabs(accel_magnitude - 1.0f) < AHRS_ACC_MAX;
+}
+
 void AHRS::update()
 {
 	if (check_new_imu_data())
 	{
-		float accel_magnitude = sqrtf(powf(_plane->imu_ax, 2) +
-					 	  	    	  powf(_plane->imu_ay, 2) +
-									  powf(_plane->imu_az, 2));
-
-		if ((accel_magnitude > AHRS_FUSION_ACC_MIN) && (accel_magnitude < AHRS_FUSION_ACC_MAX))
+		if (is_accel_reliable())
 		{
 			if (check_new_compass_data())
 			{

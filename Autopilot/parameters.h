@@ -13,15 +13,13 @@ constexpr float TECS_MAX_SPD_MPS = 25;
 constexpr float TRIM_THROTTLE = 0.1; // Steady-state cruise throttle
 
 // Attitude
-constexpr float PTCH_LIM_MAX_DEG = 15;
-constexpr float PTCH_LIM_MIN_DEG = -15;
+constexpr float PTCH_LIM_DEG = 15; // Maximum pitch in either direction
 constexpr float ROLL_LIM_DEG = 20; // Maximum roll angle in either direction
 
 // Autoland
 constexpr float LAND_GS_DEG = 6; // Landing glideslope angle
 constexpr float LAND_FLARE_ALT = 3; // Flare altitude
 constexpr float FLARE_SINK_RATE = 0.3;
-constexpr float FLARE_PITCH_MAX_DEG = 10; // Maximum pitch during flare
 constexpr float FLARE_TRANS_SEC = 1; // Time to transition to flare
 constexpr float TOUCHDOWN_SPD_THR = 1; // Detect touchdown when speed below this value in meters per second
 
@@ -32,15 +30,10 @@ constexpr float TAKEOFF_PTCH = 10; // Pitch during takeoff
 
 // Guidance
 constexpr float MIN_DIST_WP = 50; // Distance in meters from waypoint until switching to next, "radius of acceptance"
-constexpr uint8_t MAX_NUM_WPTS = 100; // Maximum number of waypoints
-
-// Radio
-constexpr uint8_t TELEM_PKT_LEN = 40;
 
 // AHRS
 constexpr float AHRS_BETA = 0.01; // Filter tuning gain
-constexpr float AHRS_FUSION_ACC_MIN = 0.5; // Minimum acceleration in inertial frame (g) for accelerometer fusion
-constexpr float AHRS_FUSION_ACC_MAX = 2; // Maximum acceleration in gs for accelerometer fusion
+constexpr float AHRS_ACC_MAX = 2; // Minimum acceleration in inertial frame (g) for accelerometer fusion
 constexpr float MAG_DECL = -10.2; // Degrees, determined from online calculator
 constexpr float HARD_IRON[3] = {-46.301146, 3.866545, -71.601346};
 constexpr float SOFT_IRON[3][3] = {{1.189985, 0.015110, -0.066520},
@@ -58,6 +51,7 @@ constexpr bool REVERSE_ELEVATOR = false;
 constexpr bool REVERSE_AILERON = false;
 
 // PID
+// Need different gains for each type of vehicle
 constexpr float PTCH_KP = 0.04;
 constexpr float ROLL_KP = 0.04;
 constexpr float THR_KP = 0.01;
@@ -70,5 +64,42 @@ constexpr float GNSS_ALT_R = 10000000;
 // RC Transmitter
 constexpr uint16_t RC_IN_MAX = 1900; // Make sure values are INSIDE the range of radio, NEVER outside
 constexpr uint16_t RC_IN_MIN = 1100;
+
+struct Parameters
+{
+	float aspd_cruise;
+	float aspd_land;
+	float tecs_min_aspd_mps;
+	float tecs_max_aspd_mps;
+	float trim_throttle;
+	float ptch_lim_deg;
+	float roll_lim_deg;
+	float land_gs_deg;
+	float land_flare_alt;
+	float flare_sink_rate;
+	float flare_trans_sec;
+	float touchdown_aspd_thresh;
+	float takeoff_alt;
+	float takeoff_thr;
+	float takeof_ptch;
+	float min_dist_wp;
+	float ahrs_beta;
+	float mag_decl;
+	float ahrs_acc_max;
+	float hard_iron[3];
+	float soft_iron[3][3];
+	uint16_t max_duty[6];
+	uint16_t min_duty[6];
+	bool rev_elevator;
+	bool rev_aileron;
+	float ptch_kp;
+	float roll_kp;
+	float thr_kp;
+	float baro_r;
+	float gnss_r;
+	float gnss_alt_r;
+	uint16_t rc_in_max;
+	uint16_t rc_in_min;
+};
 
 #endif /* PARAMETERS_H_ */
