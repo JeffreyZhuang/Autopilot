@@ -11,6 +11,7 @@
 #include "Lib/Utils/utils.h"
 #include "constants.h"
 #include "plane.h"
+#include "parameters.h"
 #include <math.h>
 
 class Tecs

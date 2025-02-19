@@ -2,6 +2,7 @@
 #define AHRS_H
 
 #include "plane.h"
+#include "parameters.h"
 #include "hal.h"
 #include "Lib/Madgwick/madgwick.h"
 #include "Lib/MovingAverage/moving_avg.h"

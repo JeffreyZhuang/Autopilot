@@ -5,6 +5,7 @@
 #include "Lib/Kalman/kalman.h"
 #include "Lib/Utils/utils.h"
 #include "Lib/MovingAverage/moving_avg.h"
+#include "parameters.h"
 
 static constexpr int n = 6;
 static constexpr int m = 3;

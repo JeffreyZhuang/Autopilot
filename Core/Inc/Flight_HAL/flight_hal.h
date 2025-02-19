@@ -11,6 +11,8 @@
 #include "sd.h"
 #include "mlrs_rc.h"
 #include "mlrs_telem.h"
+#include "Lib/Utils/utils.h"
+#include "parameters.h"
 
 extern "C"
 {

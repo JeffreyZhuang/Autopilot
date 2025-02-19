@@ -1,7 +1,7 @@
 #ifndef PARAMETERS_H_
 #define PARAMETERS_H_
 
-// Need to move parameters to HAL because it changes depending on Flight or Pitl
+#include <stdint.h>
 
 // Airspeed
 constexpr float AIRSPEED_CRUISE = 18; // Meters per second
@@ -65,41 +65,59 @@ constexpr float GNSS_ALT_R = 10000000;
 constexpr uint16_t RC_IN_MAX = 1900; // Make sure values are INSIDE the range of radio, NEVER outside
 constexpr uint16_t RC_IN_MIN = 1100;
 
+// Store in micro-SD but can be updated from GCS
 struct Parameters
 {
+	// Flight characteristics
 	float aspd_cruise;
 	float aspd_land;
 	float tecs_min_aspd_mps;
 	float tecs_max_aspd_mps;
-	float trim_throttle;
+	float throttle_cruise;
 	float ptch_lim_deg;
 	float roll_lim_deg;
+	float min_dist_wp;
+
+	// Landing
 	float land_gs_deg;
 	float land_flare_alt;
 	float flare_sink_rate;
 	float flare_trans_sec;
 	float touchdown_aspd_thresh;
+
+	// Takeoff
 	float takeoff_alt;
 	float takeoff_thr;
 	float takeof_ptch;
-	float min_dist_wp;
+
+	// Mixer
+	uint16_t max_duty[6];
+	uint16_t min_duty[6];
+	uint16_t rc_in_max;
+	uint16_t rc_in_min;
+	bool rev_elevator;
+	bool rev_aileron;
+
+	// PID
+	float ptch_kp;
+	float roll_kp;
+	float thr_kp;
+
+	// AHRS
 	float ahrs_beta;
 	float mag_decl;
 	float ahrs_acc_max;
 	float hard_iron[3];
 	float soft_iron[3][3];
-	uint16_t max_duty[6];
-	uint16_t min_duty[6];
-	bool rev_elevator;
-	bool rev_aileron;
-	float ptch_kp;
-	float roll_kp;
-	float thr_kp;
+
+	// Kalman filter
 	float baro_r;
 	float gnss_r;
 	float gnss_alt_r;
-	uint16_t rc_in_max;
-	uint16_t rc_in_min;
 };
+
+extern const Parameters* params;
+
+void initializeParameters();
 
 #endif /* PARAMETERS_H_ */

@@ -1,5 +1,4 @@
 #include "Flight_HAL/flight_hal.h"
-#include "Lib/Utils/utils.h"
 
 void Flight_hal::init_telem()
 {

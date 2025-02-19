@@ -11,6 +11,7 @@
 #include "Lib/Utils/utils.h"
 #include "hal.h"
 #include "constants.h"
+#include "parameters.h"
 #include <math.h>
 
 class Guidance

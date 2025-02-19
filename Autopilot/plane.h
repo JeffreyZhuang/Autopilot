@@ -2,7 +2,6 @@
 #define PLANE_H_
 
 #include <stdint.h>
-#include "parameters.h"
 
 /**
  * The numbers indicate the Mode ID sent to GCS

@@ -1,5 +1,4 @@
 #include "pitl_hal.h"
-#include "Lib/Utils/utils.h"
 
 void Pitl_hal::read_rc()
 {

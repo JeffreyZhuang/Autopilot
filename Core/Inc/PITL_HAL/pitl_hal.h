@@ -8,11 +8,12 @@
 #ifndef INC_PITL_HAL_H_
 #define INC_PITL_HAL_H_
 
-#include "constants.h"
-#include "Lib/Utils/utils.h"
-#include "hal.h"
 #include "mlrs_rc.h"
 #include "mlrs_telem.h"
+#include "Lib/Utils/utils.h"
+#include "hal.h"
+#include "parameters.h"
+#include "constants.h"
 
 extern "C"
 {
