@@ -2,5 +2,9 @@
 
 void initializeParameters()
 {
+	static Parameters params;
 
+	// Load
+
+	Params = &params;
 }

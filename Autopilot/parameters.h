@@ -116,7 +116,7 @@ struct Parameters
 	float gnss_alt_r;
 };
 
-extern const Parameters* params;
+extern const Parameters* Params;
 
 void initializeParameters();
 
