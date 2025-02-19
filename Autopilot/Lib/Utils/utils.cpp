@@ -15,6 +15,23 @@ float clamp(float n, float min, float max)
     return n;
 }
 
+double lat_lon_to_distance(double lat_ref, double lon_ref, double lat, double lon) {
+    double earth_radius = 6378137.0; // Earth's radius in meters
+
+    double dLat = (lat - lat_ref) * M_PI / 180.0;
+    double dLon = (lon - lon_ref) * M_PI / 180.0;
+
+    double lat1 = lat_ref * M_PI / 180.0;
+    double lat2 = lat * M_PI / 180.0;
+
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+               cos(lat1) * cos(lat2) * sin(dLon / 2) * sin(dLon / 2);
+
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return earth_radius * c; // Great-circle distance in meters
+}
+
 void lat_lon_to_meters(double lat_ref, double lon_ref, double lat, double lon, double *north, double *east) {
 	double earth_radius = 6378137.0;
 
