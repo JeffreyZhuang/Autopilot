@@ -35,6 +35,8 @@ public:
 	void write();
 	void flush();
 	void read();
+	void load_params();
+	void save_params();
 
 private:
 	Plane* _plane;

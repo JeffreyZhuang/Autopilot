@@ -122,3 +122,17 @@ void Storage::read()
 		}
 	}
 }
+
+void Storage::load_params()
+{
+
+}
+
+void Storage::save_params()
+{
+	// Write params struct to file
+	// Skip this, just use GCS?
+	// You also have to transmit params to GCS at start
+	// Save functionality
+	// If power reset mid flight, I'm dead anyways
+}

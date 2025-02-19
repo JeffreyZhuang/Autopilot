@@ -15,7 +15,15 @@ void Pitl_hal::set_main_task(void (*task)())
 
 float Pitl_hal::get_main_dt() const
 {
-	return 0.02;
+	return 0.025; // 40Hz
+}
+
+void Pitl_hal::execute_main_task()
+{
+//	if (main_task && get_time_us() - prev_time >= get_main_dt() * s_to_us)
+//	{
+//		main_task();
+//	}
 }
 
 #if PITL_ENABLE

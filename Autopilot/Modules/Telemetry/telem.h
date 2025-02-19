@@ -10,6 +10,7 @@
 
 #include <cstring>
 #include "hal.h"
+#include "parameters.h"
 #include "Lib/COBS/cobs.h"
 #include "Lib/Utils/utils.h"
 

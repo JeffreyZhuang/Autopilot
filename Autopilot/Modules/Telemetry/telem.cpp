@@ -88,6 +88,12 @@ void Telem::parse_telemetry()
 		_plane->land_lon = landing_target_payload.lon;
 		_plane->land_hdg = landing_target_payload.hdg;
 	}
+	else if (payload[0] == 4) // Parameters payload
+	{
+		// Load parameters
+		Parameters params;
+		memcpy(&params, payload, sizeof(params));
+	}
 }
 
 void Telem::update()

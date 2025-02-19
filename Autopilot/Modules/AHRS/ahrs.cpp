@@ -182,6 +182,9 @@ void AHRS::publish_ahrs()
 {
 	_plane->ahrs_roll = filter.getRoll();
 	_plane->ahrs_pitch = filter.getPitch();
-	_plane->ahrs_yaw = filter.getYaw();
+
+	// Account for magnetic declination
+	_plane->ahrs_yaw = filter.getYaw() + MAG_DECL;
+
 	_plane->ahrs_timestamp = _hal->get_time_us();
 }

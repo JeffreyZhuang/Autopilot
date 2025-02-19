@@ -88,7 +88,7 @@ struct Parameters
 	// Takeoff
 	float takeoff_alt;
 	float takeoff_thr;
-	float takeof_ptch;
+	float takeoff_ptch;
 
 	// Mixer
 	uint16_t max_duty[6];

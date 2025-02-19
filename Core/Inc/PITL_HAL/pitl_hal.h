@@ -88,6 +88,7 @@ public:
 
 	// Scheduler
 	void set_main_task(void (*task)());
+	void execute_main_task();
 	void set_background_task(void (*task)()) {};
 	void usb_rx_callback(uint8_t* Buf, uint32_t Len);
 	float get_main_dt() const;
