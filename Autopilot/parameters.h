@@ -10,7 +10,7 @@ constexpr float TECS_MIN_SPD_MPS = 10;
 constexpr float TECS_MAX_SPD_MPS = 25;
 
 // Throttle
-constexpr float TRIM_THROTTLE = 0.1; // Steady-state cruise throttle
+constexpr float THROTTLE_CRUISE = 0.1; // Steady-state cruise throttle
 
 // Attitude
 constexpr float PTCH_LIM_DEG = 15; // Maximum pitch in either direction

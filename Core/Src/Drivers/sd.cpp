@@ -26,9 +26,10 @@ void Sd::initialize()
 	}
 }
 
+// Move flush to write
 void Sd::write(uint8_t* tx_buff, uint16_t size)
 {
-	if (!closed)
+	if (!reading)
 	{
 		UINT bytes_written;
 		FRESULT res = f_write(&fil, tx_buff, size, &bytes_written);
@@ -41,9 +42,9 @@ void Sd::write(uint8_t* tx_buff, uint16_t size)
 
 void Sd::read(uint8_t* rx_buff, uint16_t size)
 {
-	if (!closed)
+	if (!reading)
 	{
-		closed = true;
+		reading = true;
 
 		f_close(&fil);
 
@@ -64,7 +65,7 @@ void Sd::read(uint8_t* rx_buff, uint16_t size)
 
 void Sd::flush()
 {
-	if (!closed)
+	if (!reading)
 	{
 		FRESULT res = f_sync(&fil);
 		if (res != FR_OK)

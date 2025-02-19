@@ -8,7 +8,7 @@ Control::Control(HAL * hal, Plane * plane, float dt)
 	  pitch_controller(PTCH_KP, 0.00002, 0, 1, -1, 1, 0, false),
 	  hdg_controller(1, 0, 0, 0, -ROLL_LIM_DEG, ROLL_LIM_DEG, 0, true),
 	  alt_controller(1, 0, 0, 0, -PTCH_LIM_DEG, PTCH_LIM_DEG, 0, false),
-	  speed_controller(THR_KP, 0.0001, 0, 1, 0, 1, TRIM_THROTTLE, false), // Start with P first, then add I
+	  speed_controller(THR_KP, 0.0001, 0, 1, 0, 1, THROTTLE_CRUISE, false), // Start with P first, then add I
 	  _tecs(plane)
 {
 	_hal = hal;
