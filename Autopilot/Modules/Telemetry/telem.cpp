@@ -128,7 +128,7 @@ void Telem::append_queue(uint8_t* packet, uint8_t size)
 {
 	// Check if message is already in queue
 	bool in_queue = false;
-	for (int i = 0; i < last_queue_idx; i++)
+	for (int i = 0; i < current_queue_idx; i++)
 	{
 		if (arrays_are_equal(queue[i], packet, size))
 		{
@@ -139,15 +139,15 @@ void Telem::append_queue(uint8_t* packet, uint8_t size)
 
 	// Add to queue if its not already present
 	// And if queue is not full
-	bool queue_full = last_queue_idx == queue_len;
+	bool queue_full = current_queue_idx == queue_len;
 	if (!in_queue && !queue_full)
 	{
-		queue[last_queue_idx] = packet;
-		last_queue_idx++;
+		memcpy(queue[current_queue_idx], packet, sizeof(packet));
+		current_queue_idx++;
 	}
 }
 
-bool Telem::arrays_are_equal(int arr1[], int arr2[], int size) {
+bool Telem::arrays_are_equal(uint8_t arr1[], uint8_t arr2[], uint8_t size) {
     for (int i = 0; i < size; i++) {
         if (arr1[i] != arr2[i]) {
             return false;

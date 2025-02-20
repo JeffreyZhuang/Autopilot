@@ -70,7 +70,7 @@ private:
 	Plane* _plane;
 
 	const uint16_t max_serial_rate = 1500; // Bytes/sec
-	const uint8_t queue_len = 200;
+	static const uint8_t queue_len = 200;
 	uint8_t latest_packet[TELEM_PKT_LEN];
 	uint64_t start_time;
 	uint16_t total_bytes_sent = 0;
@@ -82,7 +82,7 @@ private:
 	void acknowledgement();
 	void send(uint8_t* packet, uint8_t size);
 	void append_queue(uint8_t* packet, uint8_t size);
-	bool arrays_are_equal(int arr1[], int arr2[], int size);
+	bool arrays_are_equal(uint8_t arr1[], uint8_t arr2[], uint8_t size);
 };
 
 #endif /* TELEM_H_ */
