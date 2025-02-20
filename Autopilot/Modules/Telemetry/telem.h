@@ -8,11 +8,12 @@
 #ifndef TELEM_H_
 #define TELEM_H_
 
-#include <cstring>
-#include "hal.h"
-#include "parameters.h"
 #include "Lib/COBS/cobs.h"
 #include "Lib/Utils/utils.h"
+#include "hal.h"
+#include "parameters.h"
+#include <cstdio>
+#include <cstring>
 
 static constexpr uint8_t TELEM_PKT_LEN = 40;
 
@@ -67,15 +68,21 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
+
+	const uint16_t max_serial_rate = 1500; // Bytes/sec
+	const uint8_t queue_len = 200;
 	uint8_t latest_packet[TELEM_PKT_LEN];
 	uint64_t start_time;
 	uint16_t total_bytes_sent = 0;
-	const uint16_t max_serial_rate = 1500; // Bytes/sec
+	uint8_t queue[queue_len][TELEM_PKT_LEN];
+	uint8_t current_queue_idx = 0;
 
 	void transmit();
 	void parse_telemetry();
 	void acknowledgement();
 	void send(uint8_t* packet, uint8_t size);
+	void append_queue(uint8_t* packet, uint8_t size);
+	bool arrays_are_equal(int arr1[], int arr2[], int size);
 };
 
 #endif /* TELEM_H_ */

@@ -1,6 +1,6 @@
 #include "telem.h"
 
-#include <cstdio> // Temporary for printf debug
+// Need to add queue! Acknowledgement packet might get rejected and will never execute again
 
 Telem::Telem(HAL* hal, Plane* plane)
 {
@@ -8,6 +8,21 @@ Telem::Telem(HAL* hal, Plane* plane)
 	_hal = hal;
 
 	start_time = _hal->get_time_us();
+}
+
+void Telem::update()
+{
+	// If recieved command, send acknowledgement
+	// Otherwise send telemetry packet
+	if (_hal->read_telem(latest_packet, 0))
+	{
+		parse_telemetry();
+		acknowledgement();
+	}
+	else
+	{
+		transmit();
+	}
 }
 
 void Telem::transmit()
@@ -97,21 +112,6 @@ void Telem::parse_telemetry()
 	}
 }
 
-void Telem::update()
-{
-	// If new recieved command, send acknowledgement
-	// Otherwise send telemetry packet
-	if (_hal->read_telem(latest_packet, 0))
-	{
-		parse_telemetry();
-		acknowledgement();
-	}
-	else
-	{
-		transmit();
-	}
-}
-
 void Telem::send(uint8_t* packet, uint8_t size)
 {
 	uint64_t dt = _hal->get_time_us() - start_time;
@@ -122,4 +122,36 @@ void Telem::send(uint8_t* packet, uint8_t size)
 		_hal->transmit_telem(packet, size);
 		total_bytes_sent += size;
 	}
+}
+
+void Telem::append_queue(uint8_t* packet, uint8_t size)
+{
+	// Check if message is already in queue
+	bool in_queue = false;
+	for (int i = 0; i < last_queue_idx; i++)
+	{
+		if (arrays_are_equal(queue[i], packet, size))
+		{
+			in_queue = true;
+			break;
+		}
+	}
+
+	// Add to queue if its not already present
+	// And if queue is not full
+	bool queue_full = last_queue_idx == queue_len;
+	if (!in_queue && !queue_full)
+	{
+		queue[last_queue_idx] = packet;
+		last_queue_idx++;
+	}
+}
+
+bool Telem::arrays_are_equal(int arr1[], int arr2[], int size) {
+    for (int i = 0; i < size; i++) {
+        if (arr1[i] != arr2[i]) {
+            return false;
+        }
+    }
+    return true;
 }
