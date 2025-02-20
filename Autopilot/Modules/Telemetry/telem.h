@@ -68,11 +68,14 @@ private:
 	HAL* _hal;
 	Plane* _plane;
 	uint8_t latest_packet[TELEM_PKT_LEN];
-	uint64_t prev_transmit_time;
+	uint64_t start_time;
+	uint16_t total_bytes_sent = 0;
+	const uint16_t max_serial_rate = 1500; // Bytes/sec
 
 	void transmit();
 	void parse_telemetry();
 	void acknowledgement();
+	void send(uint8_t* packet, uint8_t size);
 };
 
 #endif /* TELEM_H_ */

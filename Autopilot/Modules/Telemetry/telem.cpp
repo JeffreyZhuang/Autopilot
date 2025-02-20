@@ -7,7 +7,7 @@ Telem::Telem(HAL* hal, Plane* plane)
 	_plane = plane;
 	_hal = hal;
 
-	prev_transmit_time = _hal->get_time_us();
+	start_time = _hal->get_time_us();
 }
 
 void Telem::transmit()
@@ -44,13 +44,13 @@ void Telem::transmit()
 		packet[i] = packet_no_start_byte[i - 1];
 	}
 
-	_hal->transmit_telem(packet, TELEM_PKT_LEN);
+	send(packet, TELEM_PKT_LEN);
 }
 
 // Send back same message
 void Telem::acknowledgement()
 {
-	_hal->transmit_telem(latest_packet, TELEM_PKT_LEN);
+	send(latest_packet, TELEM_PKT_LEN);
 }
 
 void Telem::parse_telemetry()
@@ -91,8 +91,9 @@ void Telem::parse_telemetry()
 	else if (payload[0] == 4) // Parameters payload
 	{
 		// Load parameters
-		Parameters params;
+		static Parameters params;
 		memcpy(&params, payload, sizeof(params));
+		Params = &params;
 	}
 }
 
@@ -104,15 +105,21 @@ void Telem::update()
 	{
 		parse_telemetry();
 		acknowledgement();
-		prev_transmit_time = _hal->get_time_us();
 	}
 	else
 	{
-		// Limit to 10Hz to prevent overflowing buffer
-		if (_hal->get_time_us() - prev_transmit_time > 100000)
-		{
-			transmit();
-			prev_transmit_time = _hal->get_time_us();
-		}
+		transmit();
+	}
+}
+
+void Telem::send(uint8_t* packet, uint8_t size)
+{
+	uint64_t dt = _hal->get_time_us() - start_time;
+	uint16_t serial_rate = (total_bytes_sent + size) / dt;
+
+	if (serial_rate < max_serial_rate)
+	{
+		_hal->transmit_telem(packet, size);
+		total_bytes_sent += size;
 	}
 }

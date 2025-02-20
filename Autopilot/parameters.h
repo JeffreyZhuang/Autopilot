@@ -118,6 +118,4 @@ struct Parameters
 
 extern const Parameters* Params;
 
-void initializeParameters();
-
 #endif /* PARAMETERS_H_ */
