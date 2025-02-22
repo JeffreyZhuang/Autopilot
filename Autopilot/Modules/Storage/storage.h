@@ -18,9 +18,7 @@ struct __attribute__((packed))Storage_payload
 	float nav_pos[3];
 	float nav_vel[3];
 	float baro_alt;
-	float rc_rudder;
-	float rc_elevator;
-	float rc_throttle;
+	uint16_t rc_channels[6];
 	double gnss_lat;
 	double gnss_lon;
 	bool gps_fix;

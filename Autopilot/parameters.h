@@ -33,7 +33,10 @@ struct Parameters
 	uint16_t min_duty[6];
 	uint16_t rc_in_max; // RC Transmitter stick max duty cycle microseconds
 	uint16_t rc_in_min; // Make sure values are INSIDE the range of radio, NEVER outside
-	bool rev_channels[6]; // Reverse channels
+	bool rev_ch[6]; // Reverse channels
+	uint8_t aileron_ch; // Channel for aileron
+	uint8_t elevator_ch; // Channel for elevator
+	uint8_t throttle_ch; // Channel for throttle
 
 	// PID
 	float ptch_kp; // Proportional gain

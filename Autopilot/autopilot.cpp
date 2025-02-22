@@ -148,7 +148,7 @@ void Autopilot::evaluate_auto_mode()
 
 void Autopilot::ready()
 {
-	if ((_plane->rc_throttle == 1) || (-_plane->nav_pos_down > TAKEOFF_ALT))
+	if ((_plane->rc_throttle == 1) || (-_plane->nav_pos_down > params.takeoff_alt))
 	{
 		_plane->autoMode = AutoMode::TAKEOFF;
 	}
@@ -158,7 +158,7 @@ void Autopilot::takeoff()
 {
 	_control.update_takeoff();
 
-	if (-_plane->nav_pos_down > TAKEOFF_ALT)
+	if (-_plane->nav_pos_down > params.takeoff_alt)
 	{
 		_plane->autoMode = AutoMode::MISSION;
 	}
@@ -181,7 +181,7 @@ void Autopilot::land()
 	_guidance.update_landing();
 	_control.update_land();
 
-	if (_plane->rangefinder_dist < LAND_FLARE_ALT)
+	if (_plane->rangefinder_dist < params.land_flare_alt)
 	{
 		_plane->autoMode = AutoMode::FLARE;
 		_plane->flare_alt = _plane->nav_pos_down;
@@ -196,7 +196,7 @@ void Autopilot::flare()
 	_control.update_flare();
 
 	// Detect touchdown when speed is below TOUCHDOWN_SPD_THR
-	if (_plane->nav_airspeed < TOUCHDOWN_SPD_THR)
+	if (_plane->nav_airspeed < params.touchdown_aspd_thresh)
 	{
 		_plane->autoMode = AutoMode::TOUCHDOWN;
 	}

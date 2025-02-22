@@ -2,12 +2,15 @@
 
 void Pitl_hal::read_rc()
 {
-	uint16_t midpoint = (params.rc_in_max + params.rc_in_min) / 2;
-	_plane->rc_rudder = map(mlrs_rc.rc_data[0], params.rc_in_min, params.rc_in_max, -1, 1);
-	_plane->rc_elevator = map(mlrs_rc.rc_data[1], params.rc_in_min, params.rc_in_max, -1, 1);
-	_plane->rc_throttle = map(mlrs_rc.rc_data[2], params.rc_in_min, params.rc_in_max, 0, 1);
-	_plane->manual_sw = mlrs_rc.rc_data[4] > midpoint;
-	_plane->mode_sw = mlrs_rc.rc_data[5] > midpoint;
+	// Does not include throttle though which should be 0 to 1
+	// Maybe use -1 to 1 instead?
+	for (int i = 0; i < 6; i++)
+	{
+		_plane->rc_channels[i] = map(mlrs_rc.rc_data[i], params.rc_in_min, params.rc_in_max, -1, 1);
+	}
+
+	_plane->manual_sw = _plane->rc_channels[4] > 0.5;
+	_plane->mode_sw = _plane->rc_channels[5] > 0.5;
 }
 
 void Pitl_hal::transmit_telem(uint8_t tx_buff[], int len)

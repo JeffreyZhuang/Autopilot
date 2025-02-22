@@ -25,8 +25,8 @@ void Tecs::update(float target_vel_mps, float target_alt_m, float wb)
 	float err_kin = target_kin - energy_kin;
 
 	// Calculate max and min kinetic energy allowed
-	float min_kin = 0.5 * powf(TECS_MIN_SPD_MPS, 2);
-	float max_kin = 0.5 * powf(TECS_MAX_SPD_MPS, 2);
+	float min_kin = 0.5 * powf(params.tecs_min_aspd_mps, 2);
+	float max_kin = 0.5 * powf(params.tecs_max_aspd_mps, 2);
 
 	// Calculate max and min errors allowed
 	float min_error = min_kin - energy_kin;

@@ -52,7 +52,7 @@ void Guidance::update_mission()
 	float err_n = tgt_wp_north - _plane->nav_pos_north;
 	float err_e = tgt_wp_east - _plane->nav_pos_east;
 	float dist_to_wp = sqrtf(powf(err_n, 2) + powf(err_e, 2));
-	if ((dist_to_wp < MIN_DIST_WP) && (_plane->waypoint_index < _plane->num_waypoints - 1))
+	if ((dist_to_wp < params.min_dist_wp) && (_plane->waypoint_index < _plane->num_waypoints - 1))
 	{
 		_plane->waypoint_index++;
 	}
@@ -67,7 +67,7 @@ void Guidance::update_landing()
 							   powf(_plane->nav_pos_east - land_east, 2));
 
 	// Follow glideslope angle
-	_plane->guidance_d_setpoint = -dist_to_land * sinf(LAND_GS_DEG * M_PI / 180.0f);
+	_plane->guidance_d_setpoint = -dist_to_land * sinf(params.land_gs_deg * M_PI / 180.0f);
 
 	// Prevent needlessly climbing during approach
 	if (_plane->guidance_d_setpoint < _plane->waypoints[-1].alt)
@@ -94,10 +94,10 @@ void Guidance::update_flare()
 	float time_since_flare_s = (_plane->time - _plane->flare_start_time) * us_to_s;
 
 	// Calculate glideslope sink rate
-	float gs_sink_rate = AIRSPEED_LANDING * sinf(LAND_GS_DEG * deg_to_rad);
+	float gs_sink_rate = params.aspd_land * sinf(params.land_gs_deg * deg_to_rad);
 
 	// Calculate rate of change of sink rate over FLARE_TRANS_SEC seconds
-	float sink_accel = (gs_sink_rate - FLARE_SINK_RATE) / FLARE_TRANS_SEC;
+	float sink_accel = (gs_sink_rate - params.flare_sink_rate) / params.flare_trans_sec;
 	if (sink_accel < 0)
 	{
 		sink_accel = 0;
@@ -105,9 +105,9 @@ void Guidance::update_flare()
 
 	// Gradually decrease sink rate based on sink_accel
 	float flare_sink_rate = gs_sink_rate - sink_accel * time_since_flare_s;
-	if (flare_sink_rate < FLARE_SINK_RATE)
+	if (flare_sink_rate < params.flare_sink_rate)
 	{
-		flare_sink_rate = FLARE_SINK_RATE; // Set minimum sink rate to FLARE_SINK_RATE
+		flare_sink_rate = params.flare_sink_rate; // Set minimum sink rate to FLARE_SINK_RATE
 	}
 
 	// Decrease altitude setpoint at a rate of _flare_sink_rate
@@ -124,7 +124,7 @@ bool Guidance::reached_last_wp()
 	float dist_to_wp = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));
 
 	// If the plane has reached the last waypoint
-	if ((_plane->waypoint_index == _plane->num_waypoints - 1) && (dist_to_wp < MIN_DIST_WP))
+	if ((_plane->waypoint_index == _plane->num_waypoints - 1) && (dist_to_wp < params.min_dist_wp))
 	{
 		mission_complete = true;
 	}

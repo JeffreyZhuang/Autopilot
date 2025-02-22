@@ -1,7 +1,7 @@
 #include <Modules/AHRS/ahrs.h>
 
 AHRS::AHRS(HAL* hal, Plane* plane, float dt)
-	: filter(dt, AHRS_BETA),
+	: filter(dt, params.ahrs_beta),
 	  avg_ax(window_size, window_ax),
 	  avg_ay(window_size, window_ay),
 	  avg_az(window_size, window_az),
@@ -107,15 +107,15 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 	// Apply hard-iron offsets
 	for (uint8_t i = 0; i < 3; i++)
 	{
-		hi_cal[i] = mag_data[i] - HARD_IRON[i];
+		hi_cal[i] = mag_data[i] - params.hard_iron[i];
 	}
 
 	// Apply soft-iron scaling
 	for (uint8_t i = 0; i < 3; i++)
 	{
-		mag_data[i] = (SOFT_IRON[i][0] * hi_cal[0]) +
-					  (SOFT_IRON[i][1] * hi_cal[1]) +
-					  (SOFT_IRON[i][2] * hi_cal[2]);
+		mag_data[i] = (params.soft_iron[i][0] * hi_cal[0]) +
+					  (params.soft_iron[i][1] * hi_cal[1]) +
+					  (params.soft_iron[i][2] * hi_cal[2]);
 	}
 }
 
@@ -126,7 +126,7 @@ bool AHRS::is_accel_reliable()
 								  powf(_plane->imu_az, 2));
 
 	// Assuming 1g reference
-	return fabs(accel_magnitude - 1.0f) < AHRS_ACC_MAX;
+	return fabs(accel_magnitude - 1.0f) < params.ahrs_acc_max;
 }
 
 void AHRS::update()
@@ -184,7 +184,7 @@ void AHRS::publish_ahrs()
 	_plane->ahrs_pitch = filter.getPitch();
 
 	// Account for magnetic declination
-	_plane->ahrs_yaw = filter.getYaw() + MAG_DECL;
+	_plane->ahrs_yaw = filter.getYaw() + params.mag_decl;
 
 	_plane->ahrs_timestamp = _hal->get_time_us();
 }

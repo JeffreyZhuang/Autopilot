@@ -127,13 +127,11 @@ struct Plane
     uint64_t flare_start_time = 0;
     float flare_alt = 0;
 
-    // RC
-    float rc_rudder = 0;
-    float rc_elevator = 0;
-    float rc_throttle = 0;
-    bool manual_sw;
+    // RC Transmitter
+    bool manual_sw; // Switch on/off
     bool mode_sw;
-    uint16_t rc_channels[6];
+    // Its ok to have RC throttle here, in mixer set RC throttle and aileron etc.
+    uint16_t rc_channels[6]; // Stick duty cycle on RC transmitter
 
     // Servos
     float aileron_setpoint = 0; // Aileron command from -1 to 1
