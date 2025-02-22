@@ -16,7 +16,7 @@ public:
 
     // Telemetry
     virtual void transmit_telem(uint8_t tx_buff[], int len) = 0;
-    virtual bool read_telem(uint8_t* rx_buff, int size) = 0;
+    virtual bool read_telem(uint8_t* rx_buff, uint8_t* size) = 0;
 
     // Logger
     virtual void write_storage_buffer(uint8_t* packet, uint16_t len) = 0;
@@ -29,9 +29,7 @@ public:
     virtual void toggle_led() = 0;
 
     // Control surfaces
-    virtual void set_elevator_duty(uint16_t duty_us) = 0;
-    virtual void set_rudder_duty(uint16_t duty_us) = 0;
-    virtual void set_throttle_duty(uint16_t duty_us) = 0;
+    virtual void set_duty(uint8_t channel, uint16_t duty_us) = 0;
 
     // Time
     virtual void delay_us(uint64_t us) = 0;

@@ -27,11 +27,12 @@ void Mlrs_telem::transmit(uint8_t tx_buff[], int len)
 	HAL_UART_Transmit(_uart, tx_buff, len, 1000);
 }
 
-bool Mlrs_telem::read(uint8_t packet[])
+bool Mlrs_telem::read(uint8_t packet[], uint8_t* size)
 {
 	if (new_packet)
 	{
 		memcpy(packet, complete_packet, sizeof(complete_packet));
+		*size = complete_packet_len;
 		new_packet = false;
 
 		return true;
@@ -46,29 +47,34 @@ void Mlrs_telem::dma_complete()
 	if (rx_buffer[0] == 0)
 	{
 		in_reading = true;
+		packet_index = 0;
 	}
 
-	if (in_reading)
+	// Detect length byte
+	if (in_reading && packet_index == 1)
 	{
-//		printf("%c%c%c%c%c%c%c%c ", BYTE_TO_BINARY(rx_buffer[0]));
+		payload_len = rx_buffer[0];
+	}
 
+	// Read payload
+	if (in_reading && packet_index > 1 && packet_index < payload_len)
+	{
 		working_packet[packet_index] = rx_buffer[0];
 		packet_index++;
 
-		if (packet_index == packet_len)
+		if (packet_index == payload_len)
 		{
 			in_reading = false;
-			packet_index = 0;
 
 			if (!new_packet)
 			{
-				for (int i = 0; i < packet_len; i++)
+				for (int i = 0; i < payload_len; i++)
 				{
 					complete_packet[i] = working_packet[i];
 				}
+				complete_packet_len = payload_len;
 
 				new_packet = true;
-//				printf("\n");
 			}
 		}
 	}

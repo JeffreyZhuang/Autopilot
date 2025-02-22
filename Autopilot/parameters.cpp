@@ -1,3 +1,3 @@
 #include "parameters.h"
 
-const Parameters* Params = nullptr;
+Parameters params;

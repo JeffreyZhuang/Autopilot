@@ -45,9 +45,7 @@ struct Pitl_rx_packet
 // The mixer is in charge of choosing between rudder and aileron
 struct Pitl_tx_packet
 {
-	float aileron;
-	float elevator;
-	float throttle;
+	float value[3];
 };
 
 // Processor in the loop using USB
@@ -65,7 +63,7 @@ public:
 	static void rc_dma_complete() { _instance->mlrs_rc.dma_complete(); }
 	static void telemetry_dma_complete() { _instance->mlrs_telem.dma_complete(); }
 	void transmit_telem(uint8_t tx_buff[], int len);
-	bool read_telem(uint8_t* rx_buff, int size) override;
+	bool read_telem(uint8_t* rx_buff, uint8_t* size) override;
 
 	// Logger
 	void write_storage_buffer(uint8_t* packet, uint16_t len) {};
@@ -78,9 +76,7 @@ public:
 	void toggle_led();
 
 	// Servos
-	void set_elevator_duty(uint16_t duty);
-	void set_rudder_duty(uint16_t duty);
-	void set_throttle_duty(uint16_t duty);
+	void set_duty(uint8_t channel, uint16_t duty_us) override;
 
 	// Time
 	void delay_us(uint64_t us);

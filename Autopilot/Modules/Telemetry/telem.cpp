@@ -14,7 +14,8 @@ void Telem::update()
 {
 	// If recieved command, send acknowledgement
 	// Otherwise send telemetry packet
-	if (_hal->read_telem(latest_packet, 0))
+	uint8_t read_size;
+	if (_hal->read_telem(latest_packet, &read_size))
 	{
 		parse_telemetry();
 		acknowledgement();
@@ -106,9 +107,13 @@ void Telem::parse_telemetry()
 	else if (payload[0] == 4) // Parameters payload
 	{
 		// Load parameters
-		static Parameters params;
-		memcpy(&params, payload, sizeof(params));
-		Params = &params;
+//		static Parameters params;
+//		memcpy(&params, payload, sizeof(params));
+//		Params = &params;
+	}
+	else
+	{
+		// Unrecognized command
 	}
 }
 
@@ -142,7 +147,7 @@ void Telem::append_queue(uint8_t* packet, uint8_t size)
 	bool queue_full = current_queue_idx == queue_len;
 	if (!in_queue && !queue_full)
 	{
-		memcpy(queue[current_queue_idx], packet, sizeof(packet));
+		memcpy(queue[current_queue_idx], packet, size);
 		current_queue_idx++;
 	}
 }
