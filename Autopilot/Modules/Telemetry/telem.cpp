@@ -138,6 +138,8 @@ bool Telem::parse_packet()
 			// Copy parameters
 			memcpy(&params, payload, sizeof(params));
 
+			printf("Parameters set\n");
+
 			return true;
 		}
 	}

@@ -42,7 +42,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
-__weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	if (huart == &huart3)
 	{
@@ -56,5 +56,10 @@ __weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 	{
 		Flight_hal::telemetry_dma_complete();
 	}
+}
+
+void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
+{
+
 }
 #endif

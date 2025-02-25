@@ -1,7 +1,7 @@
 #ifndef INC_AUTOPILOT_MAIN_H_
 #define INC_AUTOPILOT_MAIN_H_
 
-#define PITL_ENABLE true
+#define PITL_ENABLE false
 
 #ifdef __cplusplus
 extern "C"
