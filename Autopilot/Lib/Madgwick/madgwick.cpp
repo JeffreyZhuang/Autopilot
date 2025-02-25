@@ -28,8 +28,7 @@
 //-------------------------------------------------------------------------------------------
 // AHRS algorithm update
 
-Madgwick::Madgwick(float dt, float beta) {
-	_beta = beta;
+Madgwick::Madgwick(float dt) {
 	q0 = 1.0f;
 	q1 = 0.0f;
 	q2 = 0.0f;
@@ -43,6 +42,11 @@ void Madgwick::set_state(float q0_, float q1_, float q2_, float q3_)
 	q1 = q1_;
 	q2 = q2_;
 	q3 = q3_;
+}
+
+void Madgwick::set_beta(float beta)
+{
+	_beta = beta;
 }
 
 void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) {

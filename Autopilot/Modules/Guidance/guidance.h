@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "parameters.h"
 #include <math.h>
+#include <cstdio>
 
 class Guidance
 {

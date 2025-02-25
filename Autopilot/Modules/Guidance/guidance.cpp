@@ -1,7 +1,5 @@
 #include "guidance.h"
 
-#include <cstdio> // For testing, remove later
-
 Guidance::Guidance(HAL* hal, Plane* plane)
 {
 	_hal = hal;

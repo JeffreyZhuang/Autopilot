@@ -1,7 +1,7 @@
-#include <Modules/AHRS/ahrs.h>
+#include "ahrs.h"
 
 AHRS::AHRS(HAL* hal, Plane* plane, float dt)
-	: filter(dt, params.ahrs_beta),
+	: filter(dt),
 	  avg_ax(window_size, window_ax),
 	  avg_ay(window_size, window_ay),
 	  avg_az(window_size, window_az),
@@ -131,6 +131,8 @@ bool AHRS::is_accel_reliable()
 
 void AHRS::update()
 {
+	filter.set_beta(params.ahrs_beta);
+
 	if (check_new_imu_data())
 	{
 		if (is_accel_reliable())
