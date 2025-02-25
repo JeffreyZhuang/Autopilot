@@ -3,6 +3,14 @@
 
 #include "stm32f4xx_hal.h"
 #include <cstring>
+#include <cstdio>
+
+enum class Mlrs_telem_mode
+{
+	DETECTING_START,
+	DETECTING_LEN,
+	READING_PAYLOAD
+};
 
 class Mlrs_telem
 {
@@ -16,14 +24,15 @@ private:
 	UART_HandleTypeDef* _uart;
 	uint8_t rx_buffer[1];
 
-	static constexpr uint8_t max_packet_len = 40;
+	Mlrs_telem_mode mode = Mlrs_telem_mode::DETECTING_START;
+
+	static constexpr uint16_t max_packet_len = 255 + 3; // Payload + Header (Start byte, length byte, COBS byte)
 	uint8_t complete_packet[max_packet_len];
 	uint8_t working_packet[max_packet_len];
-	uint8_t complete_packet_len = 0;
-	uint8_t payload_len = 0;
-	uint8_t packet_index = 0;
+	uint8_t wrking_pkt_idx = 0;
+	uint8_t packet_len = 0;
+	bool in_pkt = false;
 	bool new_packet = false;
-	bool in_reading = false;
 };
 
 #endif /* INC_DRIVERS_MLRS_TELEM_H_ */

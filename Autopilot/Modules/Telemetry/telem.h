@@ -8,11 +8,9 @@
 #include <cstdio>
 #include <cstring>
 
-static constexpr uint8_t TELEM_PKT_LEN = 40;
-
 struct __attribute__((packed))Telem_payload
 {
-	uint8_t payload_type = 0;
+	uint8_t payload_type;
 	int16_t roll;
 	int16_t pitch;
 	uint16_t yaw;
@@ -24,8 +22,10 @@ struct __attribute__((packed))Telem_payload
 	uint8_t wp_idx;
 	uint8_t gps_sats;
 	bool gps_fix;
-	uint8_t empty[15];
 };
+
+// Payload + Header (Start byte, length byte, COBS byte)
+static constexpr uint16_t telem_packet_len = sizeof(Telem_payload) + 3;
 
 struct __attribute__((packed))Waypoint_payload
 {
@@ -34,7 +34,6 @@ struct __attribute__((packed))Waypoint_payload
 	float lat;
 	float lon;
 	float alt;
-	uint8_t empty[24];
 };
 
 struct __attribute__((packed))Landing_target_payload
@@ -43,15 +42,18 @@ struct __attribute__((packed))Landing_target_payload
 	float lat;
 	float lon;
 	float hdg;
-	uint8_t empty[25];
 };
 
 struct __attribute__((packed))Command_payload
 {
 	uint8_t payload_type;
 	uint8_t command;
-	uint8_t empty[36];
 };
+
+static constexpr uint8_t CMD_MSG_ID = 1;
+static constexpr uint8_t WPT_MSG_ID = 1;
+static constexpr uint8_t LND_TGT_MSG_ID = 1;
+static constexpr uint8_t PARAMS_MSG_ID = 1;
 
 class Telem
 {
@@ -62,20 +64,19 @@ private:
 	HAL* _hal;
 	Plane* _plane;
 
-	const uint16_t max_serial_rate = 1500; // Bytes/sec
-	static const uint8_t queue_len = 200;
-	uint8_t latest_packet[TELEM_PKT_LEN];
-	uint64_t start_time;
-	uint16_t total_bytes_sent = 0;
-	uint8_t queue[queue_len][TELEM_PKT_LEN];
-	uint8_t current_queue_idx = 0;
+	// Payload + Header (Start byte, length byte, COBS byte)
+	static constexpr uint16_t max_packet_len = 255 + 3;
+	uint8_t latest_packet[max_packet_len];
+	uint8_t latest_pkt_len = 0;
 
-	void transmit();
-	void parse_telemetry();
-	void acknowledgement();
-	void send(uint8_t* packet, uint8_t size);
-	void append_queue(uint8_t* packet, uint8_t size);
-	bool arrays_are_equal(uint8_t arr1[], uint8_t arr2[], uint8_t size);
+	uint64_t start_time = 0; // Time of first transmission
+	const uint16_t max_serial_rate = 1500; // Bytes per sec
+	uint16_t total_bytes_sent = 0; // Need to deal with overflow...
+
+	void transmit_telem();
+	void parse_packet();
+	void ack();
+	bool compare_telem_payload(const struct Telem_payload *a, const struct Telem_payload *b);
 };
 
 #endif /* TELEM_H_ */
