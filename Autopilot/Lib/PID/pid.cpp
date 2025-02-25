@@ -1,25 +1,20 @@
 #include "pid.h"
 
-PID::PID(float kP,
-		 float kI,
-		 float kD,
-		 float integral_limit,
-		 float output_min,
-		 float output_max,
-		 float trim,
-		 bool normalize_180)
+PID::PID(bool normalize_180, float dt)
 {
-    _kP = kP;
-    _kI = kI;
-    _kD = kD;
-    _integral_limit = integral_limit; // Limit for entire integral term
-    _output_min = output_min;
-    _output_max = output_max;
-    _trim = trim;
     _normalize_180 = normalize_180;
+    _dt = dt;
 }
 
-float PID::get_output(float state, float setpoint, float dt)
+float PID::get_output(float state,
+					  float setpoint,
+					  float kP,
+					  float kI,
+					  float kD,
+					  float integral_limit,
+					  float output_min,
+					  float output_max,
+					  float trim)
 {
     float error = setpoint - state;
     if (_normalize_180)
@@ -27,17 +22,17 @@ float PID::get_output(float state, float setpoint, float dt)
     	error = normalize_angle(error);
     }
 
-    if (_kI != 0)
+    if (kI != 0)
     {
-    	_integral += error * dt;
-    	_integral = clamp(_integral, -_integral_limit / _kI, _integral_limit / _kI);
+    	_integral += error * _dt;
+    	_integral = clamp(_integral, -integral_limit / kI, integral_limit / kI);
     }
 
-    float derivative = (error - _prev_error) / dt;
+    float derivative = (error - _prev_error) / _dt;
     _prev_error = error;
 
-    float output = _trim + _kP * error + _kI * _integral + _kD * derivative;
-    output = clamp(output, _output_min, _output_max);
+    float output = trim + kP * error + kI * _integral + kD * derivative;
+    output = clamp(output, output_min, output_max);
 
     return output;
 }
@@ -63,11 +58,15 @@ float PID::clamp(float n, float min, float max)
 }
 
 float PID::normalize_angle(float angle) {
-    while (angle >= 180.0) {
+    while (angle >= 180.0)
+    {
         angle -= 360.0f;
     }
-    while (angle < -180.0) {
+
+    while (angle < -180.0)
+    {
         angle += 360.0f;
     }
+
     return angle;
 }

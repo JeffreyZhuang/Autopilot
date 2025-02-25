@@ -16,11 +16,16 @@ void Telem::update()
 {
 	if (_hal->read_telem(latest_packet, &latest_pkt_len))
 	{
-		parse_packet();
-		ack();
+		if (parse_packet())
+		{
+			ack();
+		}
 	}
 
-	transmit_telem();
+	if (params.set)
+	{
+		transmit_telem();
+	}
 }
 
 void Telem::transmit_telem()
@@ -76,7 +81,7 @@ void Telem::ack()
 	total_bytes_sent += sizeof(latest_packet);
 }
 
-void Telem::parse_packet()
+bool Telem::parse_packet()
 {
 	// Remove start and length byte
 	uint8_t packet_cobs[latest_pkt_len - 2];
@@ -95,6 +100,8 @@ void Telem::parse_packet()
 		Command_payload command_payload;
 		memcpy(&command_payload, payload, sizeof(Command_payload));
 		printf("%d\n", command_payload.command);
+
+		return true;
 	}
 	else if (msg_id == WPT_MSG_ID)
 	{
@@ -103,6 +110,8 @@ void Telem::parse_packet()
 
 		_plane->num_waypoints = waypoint_payload.waypoint_index + 1;
 		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.lat, waypoint_payload.lon, waypoint_payload.alt};
+
+		return true;
 	}
 	else if (msg_id == LND_TGT_MSG_ID)
 	{
@@ -111,23 +120,33 @@ void Telem::parse_packet()
 		_plane->land_lat = landing_target_payload.lat;
 		_plane->land_lon = landing_target_payload.lon;
 		_plane->land_hdg = landing_target_payload.hdg;
+
+		return true;
 	}
 	else if (msg_id == PARAMS_MSG_ID)
 	{
-		// Remove message ID
-		uint8_t params_arr[sizeof(params)];
-		for (uint i = 0; i < sizeof(params_arr); i++)
+		// Update if parameters haven't been set yet
+		if (!params.set)
 		{
-			params_arr[i] = payload[i + 1];
-		}
+			// Remove message ID
+			uint8_t params_arr[sizeof(params)];
+			for (uint i = 0; i < sizeof(params_arr); i++)
+			{
+				params_arr[i] = payload[i + 1];
+			}
 
-		// Copy parameters
-		memcpy(&params, payload, sizeof(params));
+			// Copy parameters
+			memcpy(&params, payload, sizeof(params));
+
+			return true;
+		}
 	}
 	else
 	{
 		// Unrecognized command
 	}
+
+	return false;
 }
 
 bool Telem::compare_telem_payload(const struct Telem_payload *a, const struct Telem_payload *b) {

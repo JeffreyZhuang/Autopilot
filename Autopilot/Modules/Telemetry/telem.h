@@ -74,7 +74,7 @@ private:
 	uint64_t total_bytes_sent = 0; // Need to deal with overflow...
 
 	void transmit_telem();
-	void parse_packet();
+	bool parse_packet();
 	void ack();
 	bool compare_telem_payload(const struct Telem_payload *a, const struct Telem_payload *b);
 };
