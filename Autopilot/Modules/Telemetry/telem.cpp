@@ -33,7 +33,7 @@ void Telem::update()
 void Telem::transmit_telem()
 {
 	// Limit serial rate through radio
-	uint64_t (dt = _hal->get_time_us() - start_time) * us_to_s;
+	float dt = (_hal->get_time_us() - start_time) * us_to_s;
 	uint16_t serial_rate = (total_bytes_sent + telem_packet_len) / dt;
 	if (serial_rate < max_serial_rate)
 	{
