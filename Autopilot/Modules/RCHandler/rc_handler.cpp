@@ -11,7 +11,7 @@ void Rc_handler::rc_update()
 	uint16_t rc_input[16];
 	_hal->get_rc_input(rc_input, 16);
 
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		if (i == params.throttle_ch)
 		{
@@ -23,6 +23,6 @@ void Rc_handler::rc_update()
 		}
 	}
 
-	_plane->manual_sw = _plane->rc_in_norm[4] > 0.5;
-	_plane->mode_sw = _plane->rc_in_norm[5] > 0.5;
+	_plane->manual_sw = _plane->rc_in_norm[params.manual_sw_ch] > 0.5;
+	_plane->mode_sw = _plane->rc_in_norm[params.mode_sw_ch] > 0.5;
 }

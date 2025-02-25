@@ -6,6 +6,9 @@
 // Store in micro-SD but can be updated from GCS
 struct Parameters
 {
+	// If parameters have been set
+	bool set = false;
+
 	// Flight characteristics
 	float aspd_cruise; // Meters per second
 	float aspd_land;
@@ -37,6 +40,10 @@ struct Parameters
 	uint8_t aileron_ch; // Channel for aileron
 	uint8_t elevator_ch; // Channel for elevator
 	uint8_t throttle_ch; // Channel for throttle
+
+	// RC Transmitter
+	uint8_t manual_sw_ch;
+	uint8_t mode_sw_ch;
 
 	// PID
 	float ptch_kp; // Proportional gain
