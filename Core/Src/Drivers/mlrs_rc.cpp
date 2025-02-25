@@ -1,14 +1,4 @@
-#include <mlrs_rc.h>
-
-#define BYTE_TO_BINARY(byte)  \
-  ((byte) & 0x80 ? '1' : '0'), \
-  ((byte) & 0x40 ? '1' : '0'), \
-  ((byte) & 0x20 ? '1' : '0'), \
-  ((byte) & 0x10 ? '1' : '0'), \
-  ((byte) & 0x08 ? '1' : '0'), \
-  ((byte) & 0x04 ? '1' : '0'), \
-  ((byte) & 0x02 ? '1' : '0'), \
-  ((byte) & 0x01 ? '1' : '0')
+#include "mlrs_rc.h"
 
 Mlrs_rc::Mlrs_rc(UART_HandleTypeDef* uart)
 {
@@ -17,34 +7,28 @@ Mlrs_rc::Mlrs_rc(UART_HandleTypeDef* uart)
 
 void Mlrs_rc::setup()
 {
-	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
+	HAL_UART_Receive_DMA(_uart, _rx_buffer, 1);
 }
 
 void Mlrs_rc::dma_complete()
 {
-//	printf("%c%c%c%c%c%c%c%c ", BYTE_TO_BINARY(rx_buffer[0]));
-
-	frame[frame_idx++] = rx_buffer[0];
-
-	if (frame_idx == frame_len)
+	if (SBus_ParseByte(_rx_buffer[0]) == SBUS_FRAME_READY)
 	{
-		for (int i = 0; i < frame_len; i++)
-		{
-			SBus_ParseByte(frame[i]);
-		}
-
 		SBus_DecodeFrame();
 
-		for (int i = 0; i < num_channels; i++)
+		for (int i = 0; i < 16; i++)
 		{
-			rc_data[i] = SBus_GetChannel(i);
-//			printf("%d ", rc_data[i]);
+			_rc_data[i] = SBus_GetChannel(i);
 		}
-
-//		printf("\n");
-
-		frame_idx = 0;
 	}
 
-	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
+	HAL_UART_Receive_DMA(_uart, _rx_buffer, 1);
+}
+
+void Mlrs_rc::get_rc_data(uint16_t out[], int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		out[i] = _rc_data[i];
+	}
 }

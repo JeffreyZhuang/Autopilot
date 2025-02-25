@@ -18,7 +18,7 @@ void Storage::write()
 		{_plane->nav_pos_north, _plane->nav_pos_east, _plane->nav_pos_down},
 		{_plane->nav_vel_north, _plane->nav_vel_east, _plane->nav_vel_down},
 		_plane->baro_alt,
-		{_plane->rc_channels[0], _plane->rc_channels[1], _plane->rc_channels[2], _plane->rc_channels[3], _plane->rc_channels[4], _plane->rc_channels[5]},
+		{_plane->rc_in_norm[0], _plane->rc_in_norm[1], _plane->rc_in_norm[2], _plane->rc_in_norm[3], _plane->rc_in_norm[4], _plane->rc_in_norm[5]},
 		_plane->gnss_lat,
 		_plane->gnss_lon,
 		_plane->gps_fix,

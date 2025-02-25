@@ -8,6 +8,7 @@
 #include "Modules/Telemetry/telem.h"
 #include "Modules/Storage/storage.h"
 #include "Modules/ControlAllocator/control_allocator.h"
+#include "Modules/RCHandler/rc_handler.h"
 #include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -33,6 +34,7 @@ private:
     Telem _telem;
     Storage _storage;
     Control_allocator _control_allocator;
+    Rc_handler _rc_handler;
 
     // System mode
     void evaluate_system_mode();

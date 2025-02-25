@@ -1,8 +1,6 @@
 #include "Flight_HAL/flight_hal.h"
 
-// https://barenakedembedded.com/how-to-use-cpp-with-stm32-hal/
-
-Flight_hal* Flight_hal::_instance = nullptr; // Can I just move this to class?
+Flight_hal* Flight_hal::_instance = nullptr;
 
 Flight_hal::Flight_hal(Plane * plane) : _imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),
 										_ina219(&hi2c1, 0.01),
@@ -34,5 +32,4 @@ void Flight_hal::read_sensors()
 	read_compass();
 	read_gnss();
 	read_power_monitor();
-	read_rc();
 }

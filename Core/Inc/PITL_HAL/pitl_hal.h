@@ -54,7 +54,6 @@ public:
 	void init();
 
 	void read_sensors();
-	void read_rc();
 	void read_pitl();
 
 	// Telemetry
@@ -62,6 +61,7 @@ public:
 	static void telemetry_dma_complete() { _instance->mlrs_telem.dma_complete(); }
 	void transmit_telem(uint8_t tx_buff[], int len);
 	bool read_telem(uint8_t* rx_buff, uint8_t* size) override;
+	void get_rc_input(uint16_t duty[], int size) override;
 
 	// Logger
 	void write_storage_buffer(uint8_t* packet, uint16_t len) {};

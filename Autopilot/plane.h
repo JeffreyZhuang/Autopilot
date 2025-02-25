@@ -131,10 +131,10 @@ struct Plane
     bool manual_sw; // Switch on/off
     bool mode_sw;
     // Its ok to have RC throttle here, in mixer set RC throttle and aileron etc.
-    uint16_t rc_channels[6]; // RC transmitter stick values, -1 to 1
+    uint16_t rc_in_norm[6]; // Normalized RC transmitter stick input, -1 to 1
 
-    // Servos
-    float aileron_setpoint = 0; // Aileron command from -1 to 1
+    // Control commands from -1 to 1
+    float aileron_setpoint = 0;
     float elevator_setpoint = 0;
     float throttle_setpoint = 0;
 

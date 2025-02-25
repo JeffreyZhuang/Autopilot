@@ -20,6 +20,5 @@ void Pitl_hal::init()
 
 void Pitl_hal::read_sensors()
 {
-	read_rc();
 	read_pitl();
 }

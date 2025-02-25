@@ -18,16 +18,11 @@ public:
 	Mlrs_rc(UART_HandleTypeDef* uart);
 	void setup();
 	void dma_complete();
-
-	static constexpr int num_channels = 6;
-	uint16_t rc_data[num_channels];
+	void get_rc_data(uint16_t out[], int size);
 private:
 	UART_HandleTypeDef* _uart;
-	uint8_t rx_buffer[1];
-
-	static constexpr int frame_len = 25;
-	uint8_t frame[frame_len];
-	int frame_idx = 0;
+	uint8_t _rx_buffer[1];
+	uint16_t _rc_data[16];
 };
 
 #endif /* INC_DRIVERS_MLRS_RC_H_ */
