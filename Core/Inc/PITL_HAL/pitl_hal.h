@@ -41,8 +41,6 @@ struct Pitl_rx_packet
 	float agl;
 };
 
-// Use aileron instead of rudder. Afterwards I just set aileron command directly to rudder.
-// The mixer is in charge of choosing between rudder and aileron
 struct Pitl_tx_packet
 {
 	float value[3];
@@ -71,16 +69,16 @@ public:
 	void read_storage(uint8_t* rx_buff, uint16_t size) {};
 
 	// Debug
-	void debug_print(char * str);
-	void usb_print(char * str) {}; // Removed because USB reserved for PITL
+	void debug_print(char * str) override;
+	void usb_print(char * str) override {}; // Removed because USB reserved for PITL
 	void toggle_led();
 
 	// Servos
 	void set_duty(uint8_t channel, uint16_t duty_us) override;
 
 	// Time
-	void delay_us(uint64_t us);
-	uint64_t get_time_us();
+	void delay_us(uint64_t us) override;
+	uint64_t get_time_us() override;
 
 	// Scheduler
 	void set_main_task(void (*task)());

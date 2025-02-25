@@ -131,7 +131,7 @@ struct Plane
     bool manual_sw; // Switch on/off
     bool mode_sw;
     // Its ok to have RC throttle here, in mixer set RC throttle and aileron etc.
-    uint16_t rc_channels[6]; // Stick duty cycle on RC transmitter
+    uint16_t rc_channels[6]; // RC transmitter stick values, -1 to 1
 
     // Servos
     float aileron_setpoint = 0; // Aileron command from -1 to 1

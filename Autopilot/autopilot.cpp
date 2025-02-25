@@ -81,7 +81,7 @@ void Autopilot::boot()
 	}
 
 	bool waypoints_loaded = _plane->num_waypoints > 0;
-	bool transmitter_safe = (_plane->rc_throttle == 0) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
+	bool transmitter_safe = (_plane->rc_channels[params.throttle_ch] == 0) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
 	if (_plane->gps_fix && transmitter_safe && waypoints_loaded)
 	{
 		_plane->systemMode = SystemMode::FLIGHT;
@@ -148,7 +148,7 @@ void Autopilot::evaluate_auto_mode()
 
 void Autopilot::ready()
 {
-	if ((_plane->rc_throttle == 1) || (-_plane->nav_pos_down > params.takeoff_alt))
+	if ((_plane->rc_channels[params.throttle_ch] == 1) || (-_plane->nav_pos_down > params.takeoff_alt))
 	{
 		_plane->autoMode = AutoMode::TAKEOFF;
 	}

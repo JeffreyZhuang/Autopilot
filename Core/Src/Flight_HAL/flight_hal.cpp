@@ -9,8 +9,8 @@ Flight_hal::Flight_hal(Plane * plane) : _imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAU
 										_gnss(&huart3),
 										mlrs_rc(&huart4),
 										mlrs_telem(&huart6),
-										servo_elevator(&htim3, TIM_CHANNEL_1),
-										servo_aileron(&htim2, TIM_CHANNEL_1)
+										servo1(&htim3, TIM_CHANNEL_1),
+										servo2(&htim2, TIM_CHANNEL_1)
 {
 	_instance = this;
 	_plane = plane;

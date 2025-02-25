@@ -1,10 +1,3 @@
-/*
- * telem.h
- *
- *  Created on: Jan 28, 2025
- *      Author: jeffr
- */
-
 #ifndef TELEM_H_
 #define TELEM_H_
 

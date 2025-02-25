@@ -109,8 +109,8 @@ private:
 	Sd _sd;
 	Mlrs_rc mlrs_rc;
 	Mlrs_telem mlrs_telem;
-	Servo servo_elevator;
-	Servo servo_aileron;
+	Servo servo1;
+	Servo servo2;
 
 	// scheduler_hal.cpp
 	void (*main_task)() = nullptr;

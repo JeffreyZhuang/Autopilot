@@ -9,8 +9,8 @@
 
 void Flight_hal::init_servos()
 {
-	servo_elevator.init();
-	servo_aileron.init();
+	servo1.init();
+	servo2.init();
 }
 
 void Flight_hal::set_duty(uint8_t channel, uint16_t duty_us)
@@ -18,10 +18,10 @@ void Flight_hal::set_duty(uint8_t channel, uint16_t duty_us)
 	switch (channel)
 	{
 	case 0:
-		servo_aileron.set_duty(duty_us);
+		servo1.set_duty(duty_us);
 		break;
 	case 1:
-		servo_elevator.set_duty(duty_us);
+		servo2.set_duty(duty_us);
 		break;
 	case 2:
 		break;
