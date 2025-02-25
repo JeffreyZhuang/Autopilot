@@ -16,6 +16,8 @@ void Telem::update()
 {
 	if (_hal->read_telem(latest_packet, &latest_pkt_len))
 	{
+		printf("Recv pkt: %d\n", latest_pkt_len);
+
 		if (parse_packet())
 		{
 			ack();
@@ -77,8 +79,8 @@ void Telem::transmit_telem()
 void Telem::ack()
 {
 	// Do not use queue and send directly because this is priority
-	_hal->transmit_telem(latest_packet, sizeof(latest_packet));
-	total_bytes_sent += sizeof(latest_packet);
+	_hal->transmit_telem(latest_packet, latest_pkt_len);
+	total_bytes_sent += latest_pkt_len;
 }
 
 bool Telem::parse_packet()
@@ -95,6 +97,7 @@ bool Telem::parse_packet()
 	cobs_decode(payload, sizeof(payload), packet_cobs, sizeof(packet_cobs));
 
 	uint8_t msg_id = payload[0];
+	printf("msg_id: %d\n", msg_id);
 	if (msg_id == CMD_MSG_ID)
 	{
 		Command_payload command_payload;

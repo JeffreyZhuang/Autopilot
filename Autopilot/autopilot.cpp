@@ -26,6 +26,8 @@ void Autopilot::setup()
 	_ahrs.setup();
 	_guidance.init();
 
+	printf("Start\n");
+
 	// Start tasks
 	_hal->set_main_task(&Autopilot::static_main_task);
 	_hal->set_background_task(&Autopilot::static_logger_task);

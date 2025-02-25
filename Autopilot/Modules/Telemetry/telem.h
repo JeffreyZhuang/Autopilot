@@ -51,9 +51,9 @@ struct __attribute__((packed))Command_payload
 };
 
 static constexpr uint8_t CMD_MSG_ID = 1;
-static constexpr uint8_t WPT_MSG_ID = 1;
-static constexpr uint8_t LND_TGT_MSG_ID = 1;
-static constexpr uint8_t PARAMS_MSG_ID = 1;
+static constexpr uint8_t WPT_MSG_ID = 2;
+static constexpr uint8_t LND_TGT_MSG_ID = 3;
+static constexpr uint8_t PARAMS_MSG_ID = 4;
 
 class Telem
 {
