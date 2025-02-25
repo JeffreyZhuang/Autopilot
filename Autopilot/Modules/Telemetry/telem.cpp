@@ -37,6 +37,8 @@ void Telem::transmit_telem()
 	uint16_t serial_rate = (total_bytes_sent + telem_packet_len) / dt;
 	if (serial_rate < max_serial_rate)
 	{
+		printf("Serial rate: %d\n", serial_rate);
+
 		// Create struct
 		Telem_payload payload = {
 			0,
@@ -97,7 +99,6 @@ bool Telem::parse_packet()
 	cobs_decode(payload, sizeof(payload), packet_cobs, sizeof(packet_cobs));
 
 	uint8_t msg_id = payload[0];
-	printf("msg_id: %d\n", msg_id);
 	if (msg_id == CMD_MSG_ID)
 	{
 		Command_payload command_payload;
