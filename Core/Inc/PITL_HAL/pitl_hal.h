@@ -60,8 +60,8 @@ public:
 	static void rc_dma_complete() { _instance->mlrs_rc.dma_complete(); }
 	static void telemetry_dma_complete() { _instance->mlrs_telem.dma_complete(); }
 	void transmit_telem(uint8_t tx_buff[], int len);
-	bool read_telem(uint8_t* rx_buff, uint8_t* size) override;
-	void get_rc_input(uint16_t duty[], int size) override;
+	bool read_telem(uint8_t rx_buff[], uint16_t* size) override;
+	void get_rc_input(uint16_t duty[], uint8_t num_channels) override;
 
 	// Logger
 	void write_storage_buffer(uint8_t* packet, uint16_t len) {};

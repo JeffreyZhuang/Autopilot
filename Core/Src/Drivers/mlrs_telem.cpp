@@ -16,7 +16,7 @@ void Mlrs_telem::transmit(uint8_t tx_buff[], int len)
 }
 
 // Get latest packet and the size of the packet
-bool Mlrs_telem::read(uint8_t packet[], uint8_t* size)
+bool Mlrs_telem::read(uint8_t packet[], uint16_t* size)
 {
 	if (new_packet)
 	{

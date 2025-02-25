@@ -19,7 +19,7 @@ public:
 	void setup();
 	void transmit(uint8_t tx_buff[], int len);
 	void dma_complete();
-	bool read(uint8_t packet[], uint8_t* size);
+	bool read(uint8_t packet[], uint16_t* size);
 private:
 	UART_HandleTypeDef* _uart;
 	uint8_t rx_buffer[1];
