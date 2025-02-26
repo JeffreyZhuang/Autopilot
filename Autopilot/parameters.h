@@ -14,8 +14,8 @@ struct __attribute__((packed))Parameters
 
 	// Flight characteristics
 	float aspd_cruise; // Meters per second
-	float aspd_land;
-	float tecs_min_aspd_mps;
+	float aspd_land; // Landing airspeed
+	float tecs_min_aspd_mps; // Minimum airspeed meters per second
 	float tecs_max_aspd_mps;
 	float throttle_cruise; // Steady-state cruise throttle
 	float ptch_lim_deg; // Maximum pitch in either direction

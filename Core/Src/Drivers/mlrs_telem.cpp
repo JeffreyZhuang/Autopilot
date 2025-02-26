@@ -43,6 +43,7 @@ void Mlrs_telem::dma_complete()
 		if (wrking_pkt_idx == 1)
 		{
 			packet_len = rx_buffer[0] + 3; // Add 3 because header
+			printf("mlrs pkt_len: %d\n", packet_len);
 		}
 
 		// Append new byte to working buffer

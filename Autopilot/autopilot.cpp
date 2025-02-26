@@ -47,7 +47,7 @@ void Autopilot::main_task()
 		_storage.write();
 	}
 
-	printf("%d\n", sizeof(params));
+//	printf("%d\n", sizeof(params));
 
 	_telem.update();
 }

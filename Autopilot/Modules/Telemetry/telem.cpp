@@ -99,6 +99,7 @@ bool Telem::parse_packet()
 	uint8_t payload[latest_pkt_len - 3]; // Subtract 3 since removed start, length, and COBS byte
 	cobs_decode(payload, sizeof(payload), packet_cobs, sizeof(packet_cobs));
 
+	// Add code to make sure payload length is correct
 	uint8_t msg_id = payload[0];
 	if (msg_id == CMD_MSG_ID)
 	{
@@ -132,9 +133,9 @@ bool Telem::parse_packet()
 	{
 		// Update if parameters haven't been set yet
 		// And make sure payload length correct
-		uint16_t payload_len = latest_pkt_len - 3;
+		uint16_t payload_len = latest_pkt_len - 3; // Subtract header
 		printf("Payload len: %d %d", payload_len, sizeof(params));
-		if (!params.set && payload_len == sizeof(params))
+		if (!params.set && payload_len - 1 == sizeof(params)) // Subtract one because message ID byte
 		{
 			// Remove message ID
 			uint8_t params_arr[sizeof(params)];
@@ -144,7 +145,7 @@ bool Telem::parse_packet()
 			}
 
 			// Copy parameters
-			memcpy(&params, payload, sizeof(params));
+			memcpy(&params, params_arr, sizeof(params));
 
 			printf("Parameters set\n");
 
