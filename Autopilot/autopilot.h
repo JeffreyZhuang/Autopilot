@@ -2,13 +2,13 @@
 #define AUTOPILOT_H
 
 #include <Modules/Mixer/mixer.h>
+#include <Modules/RC/rc_handler.h>
 #include "Modules/AHRS/ahrs.h"
 #include "Modules/Navigation/navigation.h"
 #include "Modules/Control/control.h"
 #include "Modules/Guidance/guidance.h"
 #include "Modules/Telemetry/telem.h"
 #include "Modules/Storage/storage.h"
-#include "Modules/RCHandler/rc_handler.h"
 #include "hal.h"
 #include <stdint.h>
 #include <stdio.h>

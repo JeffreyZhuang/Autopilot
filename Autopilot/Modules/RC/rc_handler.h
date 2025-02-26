@@ -1,5 +1,5 @@
-#ifndef MODULES_RCHANDLER_RC_HANDLER_H_
-#define MODULES_RCHANDLER_RC_HANDLER_H_
+#ifndef MODULES_RC_RC_HANDLER_H_
+#define MODULES_RC_RC_HANDLER_H_
 
 #include "Lib/Utils/utils.h"
 #include "parameters.h"
@@ -17,4 +17,4 @@ private:
 	Plane* _plane;
 };
 
-#endif /* MODULES_RCHANDLER_RC_HANDLER_H_ */
+#endif /* MODULES_RC_RC_HANDLER_H_ */
