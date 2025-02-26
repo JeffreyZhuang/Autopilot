@@ -43,7 +43,9 @@ struct Pitl_rx_packet
 
 struct Pitl_tx_packet
 {
-	float value[3];
+	float aileron;
+	float elevator;
+	float throttle;
 };
 
 // Processor in the loop using USB
