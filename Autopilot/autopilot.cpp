@@ -36,14 +36,18 @@ void Autopilot::setup()
 // High priority
 void Autopilot::main_task()
 {
-	update_time();
-	_hal->read_sensors();
-	_rc_handler.rc_update();
+	if (params.set)
+	{
+		update_time();
+		_hal->read_sensors();
+		_rc_handler.rc_update();
 
-	evaluate_system_mode();
+		evaluate_system_mode();
+
+		_storage.write();
+	}
 
 	_telem.update();
-	_storage.write();
 }
 
 // Runs at a lower priority
@@ -85,8 +89,8 @@ void Autopilot::boot()
 	}
 
 	bool waypoints_loaded = _plane->num_waypoints > 0;
-	bool transmitter_safe = (_plane->rc_in_norm[params.throttle_ch] == 0) && (_plane->manual_sw == false) && (_plane->mode_sw == false);
-	if (_plane->gps_fix && transmitter_safe && waypoints_loaded)
+	bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 && !_plane->manual_sw && !_plane->mode_sw;
+	if (_plane->gps_fix && transmitter_safe && waypoints_loaded && _plane->tx_connected)
 	{
 		_plane->systemMode = SystemMode::FLIGHT;
 	}

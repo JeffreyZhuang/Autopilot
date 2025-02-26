@@ -6,6 +6,9 @@
 #include "hal.h"
 #include "plane.h"
 
+// Transmitter is detected if value higher than this
+static constexpr uint16_t tx_detect_min_duty = 500;
+
 class Rc_handler
 {
 public:

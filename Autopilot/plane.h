@@ -128,6 +128,7 @@ struct Plane
     float flare_alt = 0;
 
     // RC Transmitter
+    bool tx_connected = false;
     bool manual_sw; // Switch on/off
     bool mode_sw;
     uint16_t rc_in_norm[16]; // Normalized RC transmitter stick input, -1 to 1

@@ -10,8 +10,6 @@ void Telem::update()
 {
 	if (_hal->read_telem(latest_packet, &latest_pkt_len))
 	{
-		printf("Recv pkt: %d\n", latest_pkt_len);
-
 		if (parse_packet())
 		{
 			ack();
@@ -36,6 +34,7 @@ void Telem::transmit(uint8_t packet[], uint16_t size)
 	}
 }
 
+// The timer approach fails when disconnecting GCS and then connecting again
 void Telem::transmit_telem()
 {
 	// Limit serial rate through radio
@@ -43,8 +42,6 @@ void Telem::transmit_telem()
 	uint16_t serial_rate = (total_bytes_sent + telem_packet_len) / dt;
 	if (serial_rate < max_serial_rate)
 	{
-		printf("Serial rate: %d\n", serial_rate);
-
 		// Create struct
 		Telem_payload payload = {
 			0,
