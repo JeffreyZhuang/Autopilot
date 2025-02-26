@@ -5,6 +5,7 @@
 #include "parameters.h"
 #include "hal.h"
 #include "plane.h"
+#include <stdio.h>
 
 class Rc_handler
 {

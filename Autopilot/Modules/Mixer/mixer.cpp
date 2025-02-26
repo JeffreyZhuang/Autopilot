@@ -1,4 +1,4 @@
-#include "control_allocator.h"
+#include <Modules/Mixer/mixer.h>
 
 Control_allocator::Control_allocator(HAL* hal, Plane* plane)
 {

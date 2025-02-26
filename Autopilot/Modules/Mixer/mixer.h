@@ -1,5 +1,5 @@
-#ifndef MODULES_CONTROLALLOCATOR_CONTROL_ALLOCATOR_H_
-#define MODULES_CONTROLALLOCATOR_CONTROL_ALLOCATOR_H_
+#ifndef MODULES_MIXER_MIXER_H_
+#define MODULES_MIXER_MIXER_H_
 
 #include "Lib/Utils/utils.h"
 #include "hal.h"
@@ -20,4 +20,4 @@ private:
 	uint16_t _throttle_duty = 0;
 };
 
-#endif /* MODULES_CONTROLALLOCATOR_CONTROL_ALLOCATOR_H_ */
+#endif /* MODULES_MIXER_MIXER_H_ */

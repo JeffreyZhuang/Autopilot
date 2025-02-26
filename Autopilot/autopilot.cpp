@@ -82,8 +82,6 @@ void Autopilot::boot()
 {
 	if (_ahrs.set_initial_state())
 	{
-		printf("%f %f\n", _plane->imu_az, _plane->ahrs_pitch);
-
 		_ahrs.update();
 
 		if (_navigation.set_home())
