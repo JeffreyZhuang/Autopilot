@@ -4,12 +4,6 @@ Telem::Telem(HAL* hal, Plane* plane)
 {
 	_plane = plane;
 	_hal = hal;
-
-	// Track time of first transmit
-	if (start_time == 0)
-	{
-		start_time = _hal->get_time_us();
-	}
 }
 
 void Telem::update()
@@ -27,6 +21,18 @@ void Telem::update()
 	if (params.set)
 	{
 		transmit_telem();
+	}
+}
+
+void Telem::transmit(uint8_t packet[], uint16_t size)
+{
+	_hal->transmit_telem(packet, size);
+	total_bytes_sent += size;
+
+	// Track time of first transmit
+	if (start_time == 0)
+	{
+		start_time = _hal->get_time_us();
 	}
 }
 
@@ -72,8 +78,7 @@ void Telem::transmit_telem()
 			packet[i + 2] = packet_cobs[i];
 		}
 
-		_hal->transmit_telem(packet, sizeof(packet));
-		total_bytes_sent += sizeof(packet);
+		transmit(packet, sizeof(packet));
 	}
 }
 
@@ -81,8 +86,7 @@ void Telem::transmit_telem()
 void Telem::ack()
 {
 	// Do not use queue and send directly because this is priority
-	_hal->transmit_telem(latest_packet, latest_pkt_len);
-	total_bytes_sent += latest_pkt_len;
+	transmit(latest_packet, latest_pkt_len);
 }
 
 bool Telem::parse_packet()
