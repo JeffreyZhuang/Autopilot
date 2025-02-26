@@ -131,7 +131,10 @@ bool Telem::parse_packet()
 	else if (msg_id == PARAMS_MSG_ID)
 	{
 		// Update if parameters haven't been set yet
-		if (!params.set)
+		// And make sure payload length correct
+		uint16_t payload_len = latest_pkt_len - 3;
+		printf("Payload len: %d %d", payload_len, sizeof(params));
+		if (!params.set && payload_len == sizeof(params))
 		{
 			// Remove message ID
 			uint8_t params_arr[sizeof(params)];
@@ -154,19 +157,4 @@ bool Telem::parse_packet()
 	}
 
 	return false;
-}
-
-bool Telem::compare_telem_payload(const struct Telem_payload *a, const struct Telem_payload *b) {
-    return (a->payload_type == b->payload_type &&
-            a->roll == b->roll &&
-            a->pitch == b->pitch &&
-            a->yaw == b->yaw &&
-            a->alt == b->alt &&
-            a->spd == b->spd &&
-            a->lat == b->lat &&
-            a->lon == b->lon &&
-            a->mode_id == b->mode_id &&
-            a->wp_idx == b->wp_idx &&
-            a->gps_sats == b->gps_sats &&
-            a->gps_fix == b->gps_fix);
 }

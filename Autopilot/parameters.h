@@ -3,8 +3,11 @@
 
 #include <stdint.h>
 
+// Transmitter is detected if value higher than this
+constexpr uint16_t TX_DETECT_MIN_DUTY = 500;
+
 // Store in micro-SD but can be updated from GCS
-struct Parameters
+struct __attribute__((packed))Parameters
 {
 	// If parameters have been set
 	bool set = false;

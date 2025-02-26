@@ -47,6 +47,8 @@ void Autopilot::main_task()
 		_storage.write();
 	}
 
+	printf("%d\n", sizeof(params));
+
 	_telem.update();
 }
 
@@ -80,6 +82,8 @@ void Autopilot::boot()
 {
 	if (_ahrs.set_initial_state())
 	{
+		printf("%f %f\n", _plane->imu_az, _plane->ahrs_pitch);
+
 		_ahrs.update();
 
 		if (_navigation.set_home())

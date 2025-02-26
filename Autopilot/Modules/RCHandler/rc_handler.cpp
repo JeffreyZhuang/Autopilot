@@ -26,5 +26,5 @@ void Rc_handler::rc_update()
 	_plane->manual_sw = _plane->rc_in_norm[params.manual_sw_ch] > 0.5;
 	_plane->mode_sw = _plane->rc_in_norm[params.mode_sw_ch] > 0.5;
 
-	_plane->tx_connected = rc_input[0] > tx_detect_min_duty;
+	_plane->tx_connected = rc_input[0] > TX_DETECT_MIN_DUTY;
 }

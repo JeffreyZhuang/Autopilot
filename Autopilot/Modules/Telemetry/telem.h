@@ -78,7 +78,6 @@ private:
 	void transmit_telem(); // Transmit telemetry packet
 	bool parse_packet();
 	void ack();
-	bool compare_telem_payload(const struct Telem_payload *a, const struct Telem_payload *b);
 };
 
 #endif /* TELEM_H_ */

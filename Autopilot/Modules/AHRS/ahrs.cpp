@@ -23,8 +23,13 @@ bool AHRS::set_initial_state()
 {
 	if (check_new_imu_data() && check_new_compass_data() && !initial_state_set)
 	{
+		printf("acc_max:%f\n", params.ahrs_acc_max);
 		float mag_data[3] = {_plane->compass_mx, _plane->compass_my, _plane->compass_mz};
+		printf("mxraw: %f\n", mag_data[0]);
+
 		apply_compass_calibration(mag_data);
+
+		printf("magx: %f\n", mag_data[0]);
 
 		avg_ax.add(-_plane->imu_ax);
 		avg_ay.add(-_plane->imu_ay);
@@ -108,11 +113,14 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 	for (uint8_t i = 0; i < 3; i++)
 	{
 		hi_cal[i] = mag_data[i] - params.hard_iron[i];
+		printf("%f\n", params.hard_iron[i]);
 	}
 
 	// Apply soft-iron scaling
 	for (uint8_t i = 0; i < 3; i++)
 	{
+		printf("%f\n", params.soft_iron[i][0]);
+
 		mag_data[i] = (params.soft_iron[i][0] * hi_cal[0]) +
 					  (params.soft_iron[i][1] * hi_cal[1]) +
 					  (params.soft_iron[i][2] * hi_cal[2]);
