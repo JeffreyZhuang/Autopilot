@@ -1,7 +1,7 @@
 #include "ahrs.h"
 
-AHRS::AHRS(HAL* hal, Plane* plane, float dt)
-	: filter(dt),
+AHRS::AHRS(HAL* hal, Plane* plane)
+	: filter(hal->get_main_dt()),
 	  avg_ax(window_size, window_ax),
 	  avg_ay(window_size, window_ay),
 	  avg_az(window_size, window_az),
@@ -11,7 +11,6 @@ AHRS::AHRS(HAL* hal, Plane* plane, float dt)
 {
     _plane = plane;
     _hal = hal;
-    _dt = dt;
 }
 
 void AHRS::setup()

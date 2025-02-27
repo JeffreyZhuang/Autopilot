@@ -1,13 +1,7 @@
 #include "navigation.h"
 
-/**
- * @brief Construct a new Navigation:: Navigation object
- *
- * @param hal
- * @param plane
- */
-Navigation::Navigation(HAL* hal, Plane* plane, float predict_dt)
-	: kalman(n, m, get_a(predict_dt), get_b(predict_dt), get_q()),
+Navigation::Navigation(HAL* hal, Plane* plane)
+	: kalman(n, m, get_a(), get_b(), get_q()),
 	  avg_baro(window_len, window_baro),
 	  avg_lat(window_len, window_lat),
 	  avg_lon(window_len, window_lon)
@@ -16,8 +10,10 @@ Navigation::Navigation(HAL* hal, Plane* plane, float predict_dt)
 	_plane = plane;
 }
 
-Eigen::MatrixXf Navigation::get_a(float dt)
+Eigen::MatrixXf Navigation::get_a()
 {
+	float dt = _hal->get_main_dt();
+
 	Eigen::MatrixXf A(n, n);
 	A << 1, 0, 0, dt, 0, 0,
 		 0, 1, 0, 0, dt, 0,
@@ -25,11 +21,14 @@ Eigen::MatrixXf Navigation::get_a(float dt)
 		 0, 0, 0, 1, 0, 0,
 		 0, 0, 0, 0, 1, 0,
 		 0, 0, 0, 0, 0, 1;
+
 	return A;
 }
 
-Eigen::MatrixXf Navigation::get_b(float dt)
+Eigen::MatrixXf Navigation::get_b()
 {
+	float dt = _hal->get_main_dt();
+
 	Eigen::MatrixXf B(n, m);
 	B << 0.5*dt*dt, 0, 0,
 		 0, 0.5*dt*dt, 0,
@@ -37,31 +36,42 @@ Eigen::MatrixXf Navigation::get_b(float dt)
 	     dt, 0, 0,
 		 0, dt, 0,
 		 0, 0, dt;
+
 	return B;
 }
 
 Eigen::MatrixXf Navigation::get_q()
 {
 	Eigen::DiagonalMatrix<float, n> Q(1, 1, 1, 1, 1, 1);
+
 	return Q;
 }
 
 bool Navigation::set_home()
 {
-	if (check_new_baro_data() && check_new_gnss_data() && !home_set)
+	if (!home_set)
 	{
-		avg_baro.add(_plane->baro_alt);
-
-		if (avg_baro.getFilled())
+		if (check_new_gnss_data())
 		{
-			// Set barometer home position
-			_plane->baro_offset = avg_baro.getAverage();
-
 			// Set GNSS home position
 			_plane->home_lat = _plane->gnss_lat;
 			_plane->home_lon = _plane->gnss_lon;
+		}
 
-			home_set = true;
+		if (check_new_baro_data())
+		{
+			avg_baro.add(_plane->baro_alt);
+		}
+
+		if (check_new_baro_data() && check_new_gnss_data())
+		{
+			if (avg_baro.getFilled())
+			{
+				// Set barometer home position
+				_plane->baro_offset = avg_baro.getAverage();
+
+				home_set = true;
+			}
 		}
 	}
 

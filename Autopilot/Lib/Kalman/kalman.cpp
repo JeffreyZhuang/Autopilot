@@ -1,13 +1,16 @@
 #include "kalman.h"
 
-Kalman::Kalman(int n, int m, Eigen::MatrixXf A, Eigen::MatrixXf B, Eigen::MatrixXf Q)
+Kalman::Kalman(int n,
+			   int m,
+			   Eigen::MatrixXf A,
+			   Eigen::MatrixXf B,
+			   Eigen::MatrixXf Q)
 {
 	_n = n;
 	_m = m;
 	_A_mat = A;
 	_B_mat = B;
 	_Q_mat = Q;
-
 	_P_mat = Eigen::MatrixXf::Zero(n, n);
 	_x = Eigen::MatrixXf::Zero(n, 1);
 }

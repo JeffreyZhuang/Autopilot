@@ -72,7 +72,7 @@ private:
 
 	uint64_t start_time = 0; // Time of first transmission
 	const uint16_t max_serial_rate = 1500; // Bytes per sec
-	uint64_t total_bytes_sent = 0; // Need to deal with overflow...
+	uint16_t total_bytes_sent = 0; // Need to deal with overflow...
 
 	void transmit(uint8_t packet[], uint16_t size); // Transmit UART
 	void transmit_telem(); // Transmit telemetry packet

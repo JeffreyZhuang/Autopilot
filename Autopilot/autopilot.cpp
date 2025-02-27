@@ -3,13 +3,13 @@
 Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal, Plane* plane)
-	: _ahrs(hal, plane, hal->get_main_dt()),
-	  _navigation(hal, plane, hal->get_main_dt()),
-	  _control(hal, plane, hal->get_main_dt()),
+	: _ahrs(hal, plane),
+	  _navigation(hal, plane),
+	  _control(hal, plane),
 	  _guidance(hal, plane),
 	  _telem(hal, plane),
 	  _storage(plane, hal),
-	  _control_allocator(hal, plane),
+	  _mixer(hal, plane),
 	  _rc_handler(hal, plane)
 {
 	_hal = hal;
@@ -121,7 +121,7 @@ void Autopilot::flight()
 		evaluate_manual_mode();
 	}
 
-	_control_allocator.update();
+	_mixer.update();
 }
 
 /**

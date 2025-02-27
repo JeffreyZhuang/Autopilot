@@ -1,11 +1,11 @@
 #ifndef AHRS_H
 #define AHRS_H
 
+#include <Lib/MovingAvg/moving_avg.h>
 #include "plane.h"
 #include "parameters.h"
 #include "hal.h"
 #include "Lib/Madgwick/madgwick.h"
-#include "Lib/MovingAverage/moving_avg.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -16,7 +16,7 @@
 class AHRS
 {
 public:
-    AHRS(HAL* hal, Plane* plane, float dt);
+    AHRS(HAL* hal, Plane* plane);
     void setup();
     bool set_initial_state();
     void update();
@@ -51,7 +51,6 @@ private:
 
 	bool initial_state_set = false;
 
-    float _dt;
     uint64_t last_imu_timestamp = 0;
     uint64_t last_compass_timestamp = 0;
 };

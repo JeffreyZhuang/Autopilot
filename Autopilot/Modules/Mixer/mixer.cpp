@@ -1,13 +1,13 @@
 #include <Modules/Mixer/mixer.h>
 
-Control_allocator::Control_allocator(HAL* hal, Plane* plane)
+Mixer::Mixer(HAL* hal, Plane* plane)
 {
 	_hal = hal;
 	_plane = plane;
 }
 
 // Convert control setpoints into duty cycle values
-void Control_allocator::update()
+void Mixer::update()
 {
 	_elevator_duty = map(params.rev_ch[params.elevator_ch] ? -_plane->elevator_setpoint : _plane->elevator_setpoint,
 						 -1,

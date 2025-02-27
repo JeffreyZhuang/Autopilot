@@ -11,7 +11,7 @@
 class Control
 {
 public:
-	Control(HAL* hal, Plane* plane, float dt);
+	Control(HAL* hal, Plane* plane);
 
 	void update_manual();
 	void update_stabilized();
@@ -29,7 +29,6 @@ private:
 	PID alt_controller;
 	PID speed_controller;
 	Tecs _tecs;
-	float _dt;
 };
 
 #endif /* CONTROL_H_ */

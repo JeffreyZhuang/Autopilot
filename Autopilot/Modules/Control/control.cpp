@@ -3,7 +3,7 @@
 #include <cstdio>
 
 // Use PI controller for pitch and roll, then your integral term is the servo misalignment
-Control::Control(HAL * hal, Plane * plane, float dt)
+Control::Control(HAL * hal, Plane * plane)
 	: roll_controller(false, hal->get_main_dt()),
 	  pitch_controller(false, hal->get_main_dt()),
 	  hdg_controller(true, hal->get_main_dt()),
@@ -13,7 +13,6 @@ Control::Control(HAL * hal, Plane * plane, float dt)
 {
 	_hal = hal;
 	_plane = plane;
-	_dt = dt;
 }
 
 // Read from radio and send commands directly to servos

@@ -1,10 +1,10 @@
 #ifndef NAVIGATION_H
 #define NAVIGATION_H
 
+#include <Lib/MovingAvg/moving_avg.h>
 #include "hal.h"
 #include "Lib/Kalman/kalman.h"
 #include "Lib/Utils/utils.h"
-#include "Lib/MovingAverage/moving_avg.h"
 #include "parameters.h"
 
 static constexpr int n = 6;
@@ -17,7 +17,7 @@ static constexpr int m = 3;
 class Navigation
 {
 public:
-    Navigation(HAL* hal, Plane* plane, float predict_dt);
+    Navigation(HAL* hal, Plane* plane);
 
     void execute();
     bool set_home();
@@ -44,8 +44,8 @@ private:
     const float g = 9.80665;
 
     // Kalman
-    Eigen::MatrixXf get_a(float dt);
-    Eigen::MatrixXf get_b(float dt);
+    Eigen::MatrixXf get_a();
+    Eigen::MatrixXf get_b();
     Eigen::MatrixXf get_q();
 
 	bool check_new_imu_data();

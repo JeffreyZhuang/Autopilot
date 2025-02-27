@@ -14,16 +14,11 @@
 #include <stdio.h>
 #include <cstring>
 
-/**
- * @brief Autopilot
- */
 class Autopilot
 {
 public:
 	Autopilot(HAL* hal, Plane* plane);
-
     void setup();
-
 private:
     HAL* _hal;
     Plane* _plane;
@@ -33,7 +28,7 @@ private:
     Guidance _guidance;
     Telem _telem;
     Storage _storage;
-    Control_allocator _control_allocator;
+    Mixer _mixer;
     Rc_handler _rc_handler;
 
     // System mode
