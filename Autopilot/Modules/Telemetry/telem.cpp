@@ -58,6 +58,8 @@ void Telem::transmit_telem()
 			_plane->gps_fix
 		};
 
+//		printf("%f\n", _plane->nav_pos_down);
+
 		// Convert struct to byte array
 		uint8_t payload_arr[sizeof(Telem_payload)];
 		memcpy(payload_arr, &payload, sizeof(Telem_payload));

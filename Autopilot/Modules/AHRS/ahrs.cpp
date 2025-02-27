@@ -186,11 +186,8 @@ void AHRS::publish_ahrs()
 	_plane->ahrs_pitch = filter.getPitch();
 
 	// Account for magnetic declination
-	_plane->ahrs_yaw = filter.getYaw() + params.mag_decl;
-	if (_plane->ahrs_yaw < 0)
-	{
-		_plane->ahrs_yaw = 360.0f - _plane->ahrs_yaw;
-	}
+	// Keep between 0 and 360 degrees
+	_plane->ahrs_yaw = fmod(filter.getYaw() + params.mag_decl + 360.0f, 360.0f);
 
 	_plane->ahrs_timestamp = _hal->get_time_us();
 }

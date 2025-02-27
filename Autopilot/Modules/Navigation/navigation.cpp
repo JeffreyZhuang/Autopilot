@@ -144,7 +144,7 @@ void Navigation::predict_imu()
 
 void Navigation::update_gps()
 {
-	// Conver lat/lon to meters
+	// Convert lat/lon to meters
 	double gnss_north_meters, gnss_east_meters;
 	lat_lon_to_meters(_plane->home_lat,
 					  _plane->home_lon,
@@ -157,7 +157,7 @@ void Navigation::update_gps()
 	Eigen::VectorXf y(3);
 	y << gnss_north_meters,
 		 gnss_east_meters,
-		 _plane->gnss_asl;
+		 -_plane->gnss_asl;
 
 	Eigen::MatrixXf H(3, n);
 	H << 1, 0, 0, 0, 0, 0,
