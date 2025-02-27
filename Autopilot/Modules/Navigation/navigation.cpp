@@ -100,31 +100,6 @@ void Navigation::execute()
 	}
 }
 
-// Function to rotate IMU measurements from inertial frame to NED frame
-Eigen::Vector3f Navigation::rotateToNED(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw) {
-    // Precompute trigonometric functions
-    float cr = cosf(roll);  float sr = sinf(roll);
-    float cp = cosf(pitch); float sp = sinf(pitch);
-    float cy = cosf(yaw);   float sy = sinf(yaw);
-
-    // Construct the rotation matrix (ZYX convention: yaw -> pitch -> roll)
-    Eigen::Matrix3f R;
-    R(0, 0) = cy * cp;
-    R(0, 1) = cy * sp * sr - sy * cr;
-    R(0, 2) = cy * sp * cr + sy * sr;
-    R(1, 0) = sy * cp;
-    R(1, 1) = sy * sp * sr + cy * cr;
-    R(1, 2) = sy * sp * cr - cy * sr;
-    R(2, 0) = -sp;
-    R(2, 1) = cp * sr;
-    R(2, 2) = cp * cr;
-
-    // Rotate the measurement
-    Eigen::Vector3f ned_measurement = R * imu_measurement;
-
-    return ned_measurement;
-}
-
 void Navigation::predict_imu()
 {
 	// Get IMU data
@@ -132,22 +107,17 @@ void Navigation::predict_imu()
 	last_imu_timestamp = _plane->imu_timestamp;
 
 	// Rotate inertial frame to NED
-	Eigen::Vector3f acc_ned = rotateToNED(acc_inertial * g,
-										  _plane->ahrs_roll * M_PI / 180.0f,
-										  _plane->ahrs_pitch * M_PI / 180.0f,
-										  _plane->ahrs_yaw * M_PI / 180.0f);
+	Eigen::Vector3f acc_ned = inertial_to_ned(acc_inertial * g,
+										  _plane->ahrs_roll * deg_to_rad,
+										  _plane->ahrs_pitch * deg_to_rad,
+										  _plane->ahrs_yaw * deg_to_rad);
 	acc_ned(2) += g; // Gravity correction
 
 	_plane->nav_acc_north = acc_ned(0);
 	_plane->nav_acc_east = acc_ned(1);
 	_plane->nav_acc_down = acc_ned(2);
 
-	Eigen::VectorXf u(m);
-	u << _plane->nav_acc_north,
-		 _plane->nav_acc_east,
-		 _plane->nav_acc_down;
-
-	kalman.predict(u);
+	kalman.predict(acc_ned);
 
 	update_plane();
 }
@@ -167,7 +137,7 @@ void Navigation::update_gps()
 	Eigen::VectorXf y(3);
 	y << gnss_north_meters,
 		 gnss_east_meters,
-		 -_plane->gnss_asl;
+		 -_plane->gnss_asl; // Need to subtract offset!
 
 	Eigen::MatrixXf H(3, n);
 	H << 1, 0, 0, 0, 0, 0,
@@ -223,4 +193,29 @@ bool Navigation::check_new_gnss_data()
 bool Navigation::check_new_baro_data()
 {
 	return _plane->baro_timestamp > last_baro_timestamp;
+}
+
+// Function to rotate IMU measurements from inertial frame to NED frame
+Eigen::Vector3f Navigation::inertial_to_ned(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw) {
+    // Precompute trigonometric functions
+    float cr = cosf(roll);  float sr = sinf(roll);
+    float cp = cosf(pitch); float sp = sinf(pitch);
+    float cy = cosf(yaw);   float sy = sinf(yaw);
+
+    // Construct the rotation matrix (ZYX convention: yaw -> pitch -> roll)
+    Eigen::Matrix3f R;
+    R(0, 0) = cy * cp;
+    R(0, 1) = cy * sp * sr - sy * cr;
+    R(0, 2) = cy * sp * cr + sy * sr;
+    R(1, 0) = sy * cp;
+    R(1, 1) = sy * sp * sr + cy * cr;
+    R(1, 2) = sy * sp * cr - cy * sr;
+    R(2, 0) = -sp;
+    R(2, 1) = cp * sr;
+    R(2, 2) = cp * cr;
+
+    // Rotate the measurement
+    Eigen::Vector3f ned_measurement = R * imu_measurement;
+
+    return ned_measurement;
 }
