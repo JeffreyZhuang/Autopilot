@@ -47,8 +47,6 @@ void Autopilot::main_task()
 		_storage.write();
 	}
 
-//	printf("%d\n", sizeof(params));
-
 	_telem.update();
 }
 
@@ -87,14 +85,14 @@ void Autopilot::boot()
 		if (_navigation.set_home())
 		{
 			_navigation.execute();
-		}
-	}
 
-	bool waypoints_loaded = _plane->num_waypoints > 0;
-	bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 && !_plane->manual_sw && !_plane->mode_sw;
-	if (_plane->gps_fix && transmitter_safe && waypoints_loaded && _plane->tx_connected)
-	{
-		_plane->systemMode = SystemMode::FLIGHT;
+			bool waypoints_loaded = _plane->num_waypoints > 0;
+			bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 && !_plane->manual_sw && !_plane->mode_sw;
+			if (_plane->gps_fix && transmitter_safe && waypoints_loaded && _plane->tx_connected)
+			{
+				_plane->systemMode = SystemMode::FLIGHT;
+			}
+		}
 	}
 
 	debug_serial();

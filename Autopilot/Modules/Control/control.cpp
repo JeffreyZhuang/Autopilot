@@ -29,8 +29,8 @@ void Control::update_stabilized()
 {
 	_plane->pitch_setpoint = _plane->rc_in_norm[params.elevator_ch] * params.ptch_lim_deg;
 	_plane->roll_setpoint = _plane->rc_in_norm[params.aileron_ch] * params.roll_lim_deg;
-	_plane->aileron_setpoint = roll_controller.get_output(params.roll_kp, 0, 0, 0, -1, 1, 0, _plane->ahrs_roll, _plane->roll_setpoint);
-	_plane->elevator_setpoint = pitch_controller.get_output(params.ptch_kp, 0.00002, 0, 1, -1, 1, 0, _plane->ahrs_pitch, _plane->pitch_setpoint);
+	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, 0, 0, 0, -1, 1, 0);
+	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, 0.00002, 0, 1, -1, 1, 0);
 	_plane->throttle_setpoint = _plane->rc_in_norm[params.throttle_ch];
 }
 
@@ -39,8 +39,8 @@ void Control::update_takeoff()
 {
 	_plane->pitch_setpoint = params.takeoff_ptch;
 	_plane->roll_setpoint = 0;
-	_plane->aileron_setpoint = roll_controller.get_output(params.roll_kp, 0, 0, 0, -1, 1, 0, _plane->ahrs_roll, _plane->roll_setpoint);
-	_plane->elevator_setpoint = pitch_controller.get_output(params.ptch_kp, 0.00002, 0, 1, -1, 1, 0, _plane->ahrs_pitch, _plane->pitch_setpoint);
+	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, 0, 0, 0, -1, 1, 0);
+	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, 0.00002, 0, 1, -1, 1, 0);
 	_plane->throttle_setpoint = params.takeoff_thr;
 }
 

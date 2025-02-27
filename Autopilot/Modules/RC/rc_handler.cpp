@@ -10,7 +10,6 @@ void Rc_handler::rc_update()
 {
 	uint16_t rc_input[16];
 	_hal->get_rc_input(rc_input, 16);
-	printf("rc:%d\n", rc_input[0]);
 
 	for (int i = 0; i < 16; i++)
 	{
