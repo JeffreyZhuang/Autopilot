@@ -189,7 +189,7 @@ void AHRS::publish_ahrs()
 	_plane->ahrs_yaw = filter.getYaw() + params.mag_decl;
 	if (_plane->ahrs_yaw < 0)
 	{
-		_plane->ahrs_yaw -= 360.0f;
+		_plane->ahrs_yaw = 360.0f - _plane->ahrs_yaw;
 	}
 
 	_plane->ahrs_timestamp = _hal->get_time_us();
