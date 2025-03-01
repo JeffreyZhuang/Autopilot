@@ -6,6 +6,7 @@
 #include "Lib/Utils/utils.h"
 #include "hal.h"
 #include <math.h>
+#include <cstdio>
 
 // Calculates and sends commands to servos
 class Control

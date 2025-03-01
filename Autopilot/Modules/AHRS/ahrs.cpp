@@ -11,6 +11,7 @@ AHRS::AHRS(HAL* hal, Plane* plane)
 {
     _plane = plane;
     _hal = hal;
+    printf("ahrs constr\n");
 }
 
 void AHRS::setup()

@@ -74,8 +74,6 @@ void Autopilot::evaluate_system_mode()
 	}
 }
 
-// Set initial state only once, and then update AHRS normally so you have time for filter to converge
-// Then check for filter converge before moving out of boot
 void Autopilot::boot()
 {
 	if (_ahrs.set_initial_state())

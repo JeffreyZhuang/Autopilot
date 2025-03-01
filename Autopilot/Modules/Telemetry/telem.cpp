@@ -102,25 +102,28 @@ bool Telem::parse_packet()
 	uint8_t payload[latest_pkt_len - 3]; // Subtract 3 since removed start, length, and COBS byte
 	cobs_decode(payload, sizeof(payload), packet_cobs, sizeof(packet_cobs));
 
-	// Add code to make sure payload length is correct
+	uint16_t payload_len = latest_pkt_len - 3; // Subtract header
 	uint8_t msg_id = payload[0];
 	if (msg_id == CMD_MSG_ID)
 	{
 		Command_payload command_payload;
 		memcpy(&command_payload, payload, sizeof(Command_payload));
-		printf("%d\n", command_payload.command);
+		printf("Command: %d\n", command_payload.command);
 
 		return true;
 	}
 	else if (msg_id == WPT_MSG_ID)
 	{
-		Waypoint_payload waypoint_payload;
-		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
+		if (payload_len == sizeof(Waypoint_payload))
+		{
+			Waypoint_payload waypoint_payload;
+			memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
 
-		_plane->num_waypoints = waypoint_payload.waypoint_index + 1;
-		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.lat, waypoint_payload.lon, waypoint_payload.alt};
+			_plane->num_waypoints = waypoint_payload.waypoint_index + 1;
+			_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.lat, waypoint_payload.lon, waypoint_payload.alt};
 
-		return true;
+			return true;
+		}
 	}
 	else if (msg_id == LND_TGT_MSG_ID)
 	{
@@ -136,8 +139,6 @@ bool Telem::parse_packet()
 	{
 		// Update if parameters haven't been set yet
 		// And make sure payload length correct
-		uint16_t payload_len = latest_pkt_len - 3; // Subtract header
-		printf("Payload len: %d %d", payload_len, sizeof(params));
 		if (!params.set && payload_len - 1 == sizeof(params)) // Subtract one because message ID byte
 		{
 			// Remove message ID

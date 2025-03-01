@@ -1,19 +1,18 @@
 #include "navigation.h"
 
 Navigation::Navigation(HAL* hal, Plane* plane)
-	: kalman(n, m, get_a(), get_b(), get_q()),
+	: kalman(n, m, get_a(hal->get_main_dt()), get_b(hal->get_main_dt()), get_q()),
 	  avg_baro(window_len, window_baro),
 	  avg_lat(window_len, window_lat),
 	  avg_lon(window_len, window_lon)
 {
 	_hal = hal;
 	_plane = plane;
+	printf("Nav init\n");
 }
 
-Eigen::MatrixXf Navigation::get_a()
+Eigen::MatrixXf Navigation::get_a(float dt)
 {
-	float dt = _hal->get_main_dt();
-
 	Eigen::MatrixXf A(n, n);
 	A << 1, 0, 0, dt, 0, 0,
 		 0, 1, 0, 0, dt, 0,
@@ -25,10 +24,8 @@ Eigen::MatrixXf Navigation::get_a()
 	return A;
 }
 
-Eigen::MatrixXf Navigation::get_b()
+Eigen::MatrixXf Navigation::get_b(float dt)
 {
-	float dt = _hal->get_main_dt();
-
 	Eigen::MatrixXf B(n, m);
 	B << 0.5*dt*dt, 0, 0,
 		 0, 0.5*dt*dt, 0,

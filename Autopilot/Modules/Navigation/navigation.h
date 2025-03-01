@@ -1,11 +1,13 @@
 #ifndef NAVIGATION_H
 #define NAVIGATION_H
 
-#include <Lib/MovingAvg/moving_avg.h>
-#include "hal.h"
+#include "Lib/MovingAvg/moving_avg.h"
 #include "Lib/Kalman/kalman.h"
 #include "Lib/Utils/utils.h"
+#include "hal.h"
 #include "parameters.h"
+#include "constants.h"
+#include <stdio.h>
 
 static constexpr int n = 6;
 static constexpr int m = 3;
@@ -42,8 +44,8 @@ private:
 	void update_plane();
 
     // Kalman
-    Eigen::MatrixXf get_a();
-    Eigen::MatrixXf get_b();
+    Eigen::MatrixXf get_a(float dt);
+    Eigen::MatrixXf get_b(float dt);
     Eigen::MatrixXf get_q();
 
 	bool check_new_imu_data();

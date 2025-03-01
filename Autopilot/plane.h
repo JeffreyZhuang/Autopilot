@@ -139,8 +139,10 @@ struct Plane
     float throttle_setpoint = 0;
 
     // TECS
-    float tecs_error_total = 0;
-    float tecs_error_diff = 0;
+    float tecs_energy_total_setpoint = 0;
+	float tecs_energy_total = 0;
+	float tecs_energy_diff_setpoint = 0;
+	float tecs_energy_diff = 0;
 
     // Control
     float pitch_setpoint = 0;

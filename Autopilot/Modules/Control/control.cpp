@@ -1,7 +1,5 @@
 #include "control.h"
 
-#include <cstdio>
-
 // Use PI controller for pitch and roll, then your integral term is the servo misalignment
 Control::Control(HAL * hal, Plane * plane)
 	: roll_controller(false, hal->get_main_dt()),
@@ -46,33 +44,36 @@ void Control::update_takeoff()
 // Track guidance altitude and heading setpoints at a speed of AIRSPEED_CUIRSE
 void Control::update_mission()
 {
-	printf("%f %f\n", _plane->tecs_error_diff, _plane->tecs_error_total);
-
 	_tecs.update(params.aspd_cruise, _plane->guidance_d_setpoint, 1);
-	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_error_diff, 0, 0.01, 0, 0, 0, -params.ptch_lim_deg, params.ptch_lim_deg, 0);
+	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_energy_diff, _plane->tecs_energy_diff_setpoint, 0.1, 0, 0, 0, -params.ptch_lim_deg, params.ptch_lim_deg, 0);
+	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_energy_total, _plane->tecs_energy_total_setpoint, params.thr_kp, 0.01, 0, 1, 0, 1, params.throttle_cruise);
+
 	_plane->roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, 1, 0, 0, 0, -params.roll_lim_deg, params.roll_lim_deg, 0);
 	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, 0, 0, 0, -1, 1, 0);
 	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, 0.00002, 0, 1, -1, 1, 0);
-	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_error_total, 0, params.thr_kp, 0.0001, 0, 1, 0, 1, params.throttle_cruise);
+
+	printf("Control %.2f %.2f %.2f\n", _plane->tecs_energy_diff, _plane->tecs_energy_diff_setpoint, _plane->throttle_setpoint);
 }
 
 // Track approach guidance altitude and heading setpoints at the reduced speed of AIRSPEED_LANDING
 void Control::update_land()
 {
 	_tecs.update(params.aspd_land, _plane->guidance_d_setpoint, 1);
-	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_error_diff, 0, 1, 0, 0, 0, -params.ptch_lim_deg, params.ptch_lim_deg, 0);
+	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_energy_diff, _plane->tecs_energy_diff_setpoint, 0.1, 0, 0, 0, -params.ptch_lim_deg, params.ptch_lim_deg, 0);
 	_plane->roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, 1, 0, 0, 0, -params.roll_lim_deg, params.roll_lim_deg, 0);
 	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, 0, 0, 0, -1, 1, 0);
 	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, 0.00002, 0, 1, -1, 1, 0);
-	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_error_total, 0, params.thr_kp, 0.0001, 0, 1, 0, 1, params.throttle_cruise);
+	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_energy_total, _plane->tecs_energy_total_setpoint, params.thr_kp, 0.0, 0, 0, 0, 1, params.throttle_cruise);
 }
 
 // Cut throttle, set roll to 0 and track flare guidance altitude setpoints
 void Control::update_flare()
 {
+	float flare_min_ptch_deg = 0;
+
 	_tecs.update(params.aspd_land, _plane->guidance_d_setpoint, 2);
 	_plane->roll_setpoint = 0;
-	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_error_diff, 0, 1, 0, 0, 0, -params.ptch_lim_deg, params.ptch_lim_deg, 0);
+	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_energy_diff, _plane->tecs_energy_diff_setpoint, 0.1, 0, 0, 0, flare_min_ptch_deg, params.ptch_lim_deg, 0);
 	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, 0, 0, 0, -1, 1, 0);
 	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, 0.00002, 0, 1, -1, 1, 0);
 	_plane->throttle_setpoint = 0;

@@ -4,6 +4,7 @@ Guidance::Guidance(HAL* hal, Plane* plane)
 {
 	_hal = hal;
 	_plane = plane;
+	printf("Guidance constr\n");
 }
 
 void Guidance::init()
@@ -15,11 +16,15 @@ void Guidance::init()
 // Detect when setpoint reached and switch to next setpoint
 void Guidance::update_mission()
 {
-	double tgt_wp_north, tgt_wp_east, prev_wp_north, prev_wp_east;
-
-	// Determine target waypoint
+	// Calculate target waypoint position
+	double tgt_wp_north, tgt_wp_east;
 	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
-	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, target_wp.lat, target_wp.lon, &tgt_wp_north, &tgt_wp_east);
+	lat_lon_to_meters(_plane->home_lat,
+					  _plane->home_lon,
+					  target_wp.lat,
+					  target_wp.lon,
+					  &tgt_wp_north,
+					  &tgt_wp_east);
 	_plane->guidance_d_setpoint = target_wp.alt;
 
 	// Determine previous waypoint
@@ -30,9 +35,18 @@ void Guidance::update_mission()
 	}
 	else
 	{
+		// If there is no previous waypoint, use home position as prev waypoint
 		prev_wp = Waypoint{_plane->home_lat, _plane->home_lon, 0};
 	}
-	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, prev_wp.lat, prev_wp.lon, &prev_wp_north, &prev_wp_east);
+
+	// Calculate previous waypoint position
+	double prev_wp_north, prev_wp_east;
+	lat_lon_to_meters(_plane->home_lat,
+					  _plane->home_lon,
+					  prev_wp.lat,
+					  prev_wp.lon,
+					  &prev_wp_north,
+					  &prev_wp_east);
 
 	// Calculate track heading
 	float trk_hdg = atan2f(tgt_wp_east - prev_wp_east, tgt_wp_north - prev_wp_north);
@@ -41,7 +55,7 @@ void Guidance::update_mission()
 	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - tgt_wp_east) - sinf(trk_hdg) * (_plane->nav_pos_north - tgt_wp_north);
 
 	// Calculate heading setpoint
-	_plane->guidance_hdg_setpoint = trk_hdg * 180.0f / M_PI + clamp(kP * (0 - xte), -90, 90);
+	_plane->guidance_hdg_setpoint = trk_hdg * rad_to_deg + clamp(kP * (0 - xte), -90, 90);
 	if (_plane->guidance_hdg_setpoint < 0) {
 		_plane->guidance_hdg_setpoint += 360.0;
 	}
@@ -65,23 +79,24 @@ void Guidance::update_landing()
 							   powf(_plane->nav_pos_east - land_east, 2));
 
 	// Follow glideslope angle
-	_plane->guidance_d_setpoint = -dist_to_land * sinf(params.land_gs_deg * M_PI / 180.0f);
+	_plane->guidance_d_setpoint = -dist_to_land * sinf(params.land_gs_deg * deg_to_rad);
 
 	// Prevent needlessly climbing during approach
+	// Don't target an altitude higher than the final waypoint
 	if (_plane->guidance_d_setpoint < _plane->waypoints[-1].alt)
 	{
 		_plane->guidance_d_setpoint = _plane->waypoints[-1].alt;
 	}
 
 	// Set track heading to runway heading
-	float trk_hdg = _plane->land_hdg * M_PI / 180.0f;
+	float trk_hdg = _plane->land_hdg * deg_to_rad;
 
 	// Calculate cross track error
 	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - land_east) -
 				sinf(trk_hdg) * (_plane->nav_pos_north - land_north);
 
 	// Calculate heading setpoint
-	_plane->guidance_hdg_setpoint = trk_hdg * 180.0f / M_PI + clamp(kP * (0 - xte), -90, 90);
+	_plane->guidance_hdg_setpoint = trk_hdg * rad_to_deg + clamp(kP * (0 - xte), -90, 90);
 	if (_plane->guidance_hdg_setpoint < 0) {
 		_plane->guidance_hdg_setpoint += 360.0;
 	}
@@ -89,26 +104,45 @@ void Guidance::update_landing()
 
 void Guidance::update_flare()
 {
+	// Glideslope altitude divided by horizontal distance
+	float initial_slope = tanf(params.land_gs_deg * deg_to_rad);
+
+	// Initial Slope = Altitude / Horizontal distance from landing point
+	// Horizontal distance = Altitude / Initial slope
+	float initial_dist = params.land_flare_alt / initial_slope;
+
+
+
+
+
+
+
+
+
+
+
 	float time_since_flare_s = (_plane->time - _plane->flare_start_time) * us_to_s;
 
-	// Calculate glideslope sink rate
-	float gs_sink_rate = params.aspd_land * sinf(params.land_gs_deg * deg_to_rad);
+	// Estimate initial sink rate from glideslope
+	float flare_initial_sinkrate = params.aspd_land * sinf(params.land_gs_deg * deg_to_rad);
 
-	// Calculate rate of change of sink rate over FLARE_TRANS_SEC seconds
-	float sink_accel = (gs_sink_rate - params.flare_sink_rate) / params.flare_trans_sec;
+	// Calculate sink acceleration
+	// Acceleration = (Initial Sink Rate - Final Sink Rate) / Flare Transition Time
+	float sink_accel = (flare_initial_sinkrate - params.flare_sink_rate) / params.flare_trans_sec;
 	if (sink_accel < 0)
 	{
 		sink_accel = 0;
 	}
 
-	// Gradually decrease sink rate based on sink_accel
-	float flare_sink_rate = gs_sink_rate - sink_accel * time_since_flare_s;
-	if (flare_sink_rate < params.flare_sink_rate)
+	// Decrease sink rate over time based on sink_accel
+	float flare_sink_rate = flare_initial_sinkrate - sink_accel * time_since_flare_s;
+	if (flare_sink_rate > params.flare_sink_rate)
 	{
 		flare_sink_rate = params.flare_sink_rate; // Set minimum sink rate to FLARE_SINK_RATE
 	}
 
 	// Decrease altitude setpoint at a rate of _flare_sink_rate
+	// THis is wrong because not avg!
 	_plane->guidance_d_setpoint = _plane->flare_alt + flare_sink_rate * time_since_flare_s;
 }
 
