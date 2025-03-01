@@ -12,9 +12,9 @@ Tecs::Tecs(Plane* plane)
 void Tecs::update(float target_vel_mps, float target_alt_m, float wb)
 {
 	// Calculate specific energy
-	// Pe = gh
-	// Ke = 1/2 v^2
-	// Ignore mass since they cancel out when computing energy ratios
+	// SPe = gh
+	// SKe = 1/2 v^2
+	// Ignore mass since its the energy ratio that matters
 	float energy_pot = g * (-_plane->nav_pos_down);
 	float energy_kin = 0.5 * powf(_plane->nav_airspeed, 2);
 	float energy_total = energy_pot + energy_kin;
@@ -30,7 +30,7 @@ void Tecs::update(float target_vel_mps, float target_alt_m, float wb)
 	float max_kin = 0.5 * powf(params.tecs_max_aspd_mps, 2);
 	target_total = clamp(target_total, energy_pot + min_kin, energy_pot + max_kin);
 
-	// Compute energy difference setpoints and measurements
+	// Compute energy difference setpoint and measurement
 	float energy_diff_setpoint = wb * target_pot - (2.0 - wb) * target_kin;
 	float energy_diff = wb * energy_pot - (2.0 - wb) * energy_kin;
 

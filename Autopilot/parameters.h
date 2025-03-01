@@ -48,10 +48,17 @@ struct __attribute__((packed))Parameters
 	uint8_t manual_sw_ch;
 	uint8_t mode_sw_ch;
 
-	// PID
-	float ptch_kp; // Proportional gain
+	// PID gains
+	float ptch_kp;
+	float ptch_ki;
 	float roll_kp;
+	float roll_ki;
 	float thr_kp;
+	float thr_ki;
+	float alt_kp;
+	float alt_ki;
+	float hdg_kp;
+	float hdg_ki;
 
 	// AHRS
 	float ahrs_beta; // Madwick filter gain
