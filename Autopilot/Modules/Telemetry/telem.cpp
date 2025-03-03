@@ -120,26 +120,20 @@ bool Telem::parse_packet()
 			memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
 
 			_plane->num_waypoints = waypoint_payload.waypoint_index + 1;
-			_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.lat, waypoint_payload.lon, waypoint_payload.alt};
+			_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.waypoint_type,
+																			waypoint_payload.lat,
+																			waypoint_payload.lon,
+																			waypoint_payload.alt};
 
 			return true;
 		}
 	}
-	else if (msg_id == LND_TGT_MSG_ID)
-	{
-		Landing_target_payload landing_target_payload;
-		memcpy(&landing_target_payload, payload, sizeof(Landing_target_payload));
-		_plane->land_lat = landing_target_payload.lat;
-		_plane->land_lon = landing_target_payload.lon;
-		_plane->land_hdg = landing_target_payload.hdg;
-
-		return true;
-	}
 	else if (msg_id == PARAMS_MSG_ID)
 	{
-		// Update if parameters haven't been set yet
-		// And make sure payload length correct
-		if (!params.set && payload_len - 1 == sizeof(params)) // Subtract one because message ID byte
+		// Make sure payload length correct
+		// Subtract one from length because message ID byte
+		// Only set parameters if its in boot mode, not in flight
+		if (_plane->systemMode == SystemMode::BOOT && payload_len - 1 == sizeof(params))
 		{
 			// Remove message ID
 			uint8_t params_arr[sizeof(params)];

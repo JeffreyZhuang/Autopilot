@@ -30,7 +30,14 @@ enum class AutoMode
 	TOUCHDOWN = 9
 };
 
+enum class Waypoint_type : uint8_t
+{
+	WAYPOINT,
+	LAND
+};
+
 struct Waypoint {
+	Waypoint_type type;
 	double lat;
 	double lon;
 	double alt;
@@ -121,9 +128,6 @@ struct Plane
     float guidance_d_setpoint = 0;
 
     // Landing
-    float land_hdg = 0;
-    float land_lat = 0;
-    float land_lon = 0;
     uint64_t flare_start_time = 0;
     float flare_alt = 0;
 

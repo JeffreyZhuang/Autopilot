@@ -32,17 +32,10 @@ struct __attribute__((packed))Waypoint_payload
 {
 	uint8_t payload_type;
 	uint8_t waypoint_index;
+	Waypoint_type waypoint_type;
 	float lat;
 	float lon;
 	float alt;
-};
-
-struct __attribute__((packed))Landing_target_payload
-{
-	uint8_t payload_type;
-	float lat;
-	float lon;
-	float hdg;
 };
 
 struct __attribute__((packed))Command_payload
@@ -53,7 +46,6 @@ struct __attribute__((packed))Command_payload
 
 static constexpr uint8_t CMD_MSG_ID = 1;
 static constexpr uint8_t WPT_MSG_ID = 2;
-static constexpr uint8_t LND_TGT_MSG_ID = 3;
 static constexpr uint8_t PARAMS_MSG_ID = 4;
 
 class Telem

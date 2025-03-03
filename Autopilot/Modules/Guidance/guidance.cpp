@@ -4,7 +4,6 @@ Guidance::Guidance(HAL* hal, Plane* plane)
 {
 	_hal = hal;
 	_plane = plane;
-	printf("Guidance constr\n");
 }
 
 void Guidance::init()
@@ -16,17 +15,6 @@ void Guidance::init()
 // Detect when setpoint reached and switch to next setpoint
 void Guidance::update_mission()
 {
-	// Calculate target waypoint position
-	double tgt_wp_north, tgt_wp_east;
-	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
-	lat_lon_to_meters(_plane->home_lat,
-					  _plane->home_lon,
-					  target_wp.lat,
-					  target_wp.lon,
-					  &tgt_wp_north,
-					  &tgt_wp_east);
-	_plane->guidance_d_setpoint = target_wp.alt;
-
 	// Determine previous waypoint
 	Waypoint prev_wp;
 	if (_plane->waypoint_index > 0)
@@ -36,7 +24,7 @@ void Guidance::update_mission()
 	else
 	{
 		// If there is no previous waypoint, use home position as prev waypoint
-		prev_wp = Waypoint{_plane->home_lat, _plane->home_lon, 0};
+		prev_wp = Waypoint{Waypoint_type::WAYPOINT, _plane->home_lat, _plane->home_lon, params.takeoff_alt};
 	}
 
 	// Calculate previous waypoint position
@@ -47,6 +35,16 @@ void Guidance::update_mission()
 					  prev_wp.lon,
 					  &prev_wp_north,
 					  &prev_wp_east);
+
+	// Calculate target waypoint position
+	double tgt_wp_north, tgt_wp_east;
+	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
+	lat_lon_to_meters(_plane->home_lat,
+					  _plane->home_lon,
+					  target_wp.lat,
+					  target_wp.lon,
+					  &tgt_wp_north,
+					  &tgt_wp_east);
 
 	// Calculate track heading
 	float trk_hdg = atan2f(tgt_wp_east - prev_wp_east, tgt_wp_north - prev_wp_north);
@@ -60,10 +58,18 @@ void Guidance::update_mission()
 		_plane->guidance_hdg_setpoint += 360.0;
 	}
 
+	// Linearly interpolate altitude setpoint
+	float dist_prev_plane = sqrtf(powf(_plane->nav_pos_north - prev_wp_north, 2) + powf(_plane->nav_pos_east - prev_wp_east, 2));
+	float dist_prev_tgt = sqrtf(powf(tgt_wp_north - prev_wp_north, 2) + powf(tgt_wp_east - prev_wp_east, 2));
+	float progress = dist_prev_plane / dist_prev_tgt;
+	if (progress > 1)
+	{
+		progress = 1;
+	}
+	_plane->guidance_d_setpoint = prev_wp.alt + progress * (target_wp.alt - prev_wp.alt);
+
 	// Calculate distance to waypoint to determine if waypoint reached
-	float err_n = tgt_wp_north - _plane->nav_pos_north;
-	float err_e = tgt_wp_east - _plane->nav_pos_east;
-	float dist_to_wp = sqrtf(powf(err_n, 2) + powf(err_e, 2));
+	float dist_to_wp = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));
 	if ((dist_to_wp < params.min_dist_wp) && (_plane->waypoint_index < _plane->num_waypoints - 1))
 	{
 		_plane->waypoint_index++;
@@ -72,13 +78,40 @@ void Guidance::update_mission()
 
 void Guidance::update_landing()
 {
-	double land_north, land_east;
-	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, _plane->land_lat, _plane->land_lon, &land_north, &land_east);
+	// Calculate previous waypoint position
+	Waypoint prev_wp = _plane->waypoints[_plane->waypoint_index - 1];
+	double prev_wp_north, prev_wp_east;
+	lat_lon_to_meters(_plane->home_lat,
+					  _plane->home_lon,
+					  prev_wp.lat,
+					  prev_wp.lon,
+					  &prev_wp_north,
+					  &prev_wp_east);
 
-	float dist_to_land = sqrtf(powf(_plane->nav_pos_north - land_north, 2) +
-							   powf(_plane->nav_pos_east - land_east, 2));
+	// Calculate target waypoint position
+	double tgt_wp_north, tgt_wp_east;
+	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
+	lat_lon_to_meters(_plane->home_lat,
+					  _plane->home_lon,
+					  target_wp.lat,
+					  target_wp.lon,
+					  &tgt_wp_north,
+					  &tgt_wp_east);
+
+	// Calculate track heading
+	float trk_hdg = atan2f(tgt_wp_east - prev_wp_east, tgt_wp_north - prev_wp_north);
+
+	// Calculate cross track error
+	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - tgt_wp_east) - sinf(trk_hdg) * (_plane->nav_pos_north - tgt_wp_north);
+
+	// Calculate heading setpoint
+	_plane->guidance_hdg_setpoint = trk_hdg * rad_to_deg + clamp(kP * (0 - xte), -90, 90);
+	if (_plane->guidance_hdg_setpoint < 0) {
+		_plane->guidance_hdg_setpoint += 360.0;
+	}
 
 	// Follow glideslope angle
+	float dist_to_land = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));
 	_plane->guidance_d_setpoint = -dist_to_land * sinf(params.land_gs_deg * deg_to_rad);
 
 	// Prevent needlessly climbing during approach
@@ -86,19 +119,6 @@ void Guidance::update_landing()
 	if (_plane->guidance_d_setpoint < _plane->waypoints[-1].alt)
 	{
 		_plane->guidance_d_setpoint = _plane->waypoints[-1].alt;
-	}
-
-	// Set track heading to runway heading
-	float trk_hdg = _plane->land_hdg * deg_to_rad;
-
-	// Calculate cross track error
-	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - land_east) -
-				sinf(trk_hdg) * (_plane->nav_pos_north - land_north);
-
-	// Calculate heading setpoint
-	_plane->guidance_hdg_setpoint = trk_hdg * rad_to_deg + clamp(kP * (0 - xte), -90, 90);
-	if (_plane->guidance_hdg_setpoint < 0) {
-		_plane->guidance_hdg_setpoint += 360.0;
 	}
 }
 
@@ -144,6 +164,17 @@ void Guidance::update_flare()
 	// Decrease altitude setpoint at a rate of _flare_sink_rate
 	// THis is wrong because not avg!
 	_plane->guidance_d_setpoint = _plane->flare_alt + flare_sink_rate * time_since_flare_s;
+}
+
+bool Guidance::reached_wp(Waypoint wp)
+{
+	double wp_north, wp_east;
+	lat_lon_to_meters(_plane->home_lat,
+					  _plane->home_lon,
+					  wp.lat,					  wp.lon,					  &wp_north,					  &wp_east);
+	float dist = sqrtf(powf(_plane->nav_pos_north - wp_north, 2) +
+					   powf(_plane->nav_pos_east - wp_east, 2));
+	return dist < params.min_dist_wp;
 }
 
 bool Guidance::reached_last_wp()

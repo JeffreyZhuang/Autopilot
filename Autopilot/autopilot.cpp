@@ -175,7 +175,7 @@ void Autopilot::mission()
 	_guidance.update_mission();
 	_control.update_mission();
 
-	if (_guidance.reached_last_wp())
+	if (_plane->waypoints[_plane->waypoint_index].type == Waypoint_type::LAND)
 	{
 		_plane->autoMode = AutoMode::LAND;
 	}
