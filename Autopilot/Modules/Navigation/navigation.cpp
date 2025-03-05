@@ -88,22 +88,23 @@ void Navigation::update()
 
 void Navigation::update_running()
 {
-	if (check_new_ahrs_data())
+	if (check_new_ahrs_data() && check_new_imu_data())
 	{
-		if (check_new_imu_data())
-		{
-			predict_imu();
-		}
+		last_ahrs_timestamp = _plane->ahrs_timestamp;
+		last_imu_timestamp = _plane->imu_timestamp;
+		predict_imu();
+	}
 
-		if (check_new_gnss_data())
-		{
-			update_gps();
-		}
+	if (check_new_gnss_data())
+	{
+		last_gnss_timestamp = _plane->gnss_timestamp;
+		update_gps();
+	}
 
-		if (check_new_baro_data())
-		{
-			update_baro();
-		}
+	if (check_new_baro_data())
+	{
+		last_baro_timestamp = _plane->baro_timestamp;
+		update_baro();
 	}
 }
 
@@ -111,7 +112,6 @@ void Navigation::predict_imu()
 {
 	// Get IMU data
 	Eigen::Vector3f acc_inertial(_plane->imu_ax, _plane->imu_ay, _plane->imu_az);
-	last_imu_timestamp = _plane->imu_timestamp;
 
 	// Rotate inertial frame to NED
 	Eigen::Vector3f acc_ned = inertial_to_ned(acc_inertial * g,
@@ -139,7 +139,6 @@ void Navigation::update_gps()
 					  _plane->gnss_lon,
 					  &gnss_north_meters,
 					  &gnss_east_meters);
-	last_gnss_timestamp = _plane->gnss_timestamp;
 
 	Eigen::VectorXf y(3);
 	y << gnss_north_meters,
@@ -162,7 +161,6 @@ void Navigation::update_baro()
 {
 	Eigen::VectorXf y(1);
 	y << -(_plane->baro_alt - _plane->baro_offset); // Multiply by -1 to put in correct coordinate system
-	last_baro_timestamp = _plane->baro_timestamp;
 
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;

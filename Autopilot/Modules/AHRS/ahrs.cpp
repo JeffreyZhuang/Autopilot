@@ -11,7 +11,6 @@ AHRS::AHRS(HAL* hal, Plane* plane)
 {
     _plane = plane;
     _hal = hal;
-    printf("ahrs constr\n");
 }
 
 void AHRS::setup()
@@ -106,10 +105,12 @@ void AHRS::update_running()
 {
 	if (check_new_imu_data())
 	{
+		last_imu_timestamp = _plane->imu_timestamp;
 		if (is_accel_reliable())
 		{
 			if (check_new_compass_data())
 			{
+				last_compass_timestamp = _plane->compass_timestamp;
 				update_imu_mag();
 			}
 			else
@@ -130,7 +131,6 @@ void AHRS::update_imu()
 {
 	filter.updateIMU(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
 	                 -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az);
-	last_imu_timestamp = _plane->imu_timestamp;
 }
 
 void AHRS::update_imu_mag()
@@ -141,14 +141,11 @@ void AHRS::update_imu_mag()
 	filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
 				  -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az,
 				  -mag_data[0], -mag_data[1], -mag_data[2]);
-	last_imu_timestamp = _plane->imu_timestamp;
-	last_compass_timestamp = _plane->compass_timestamp;
 }
 
 void AHRS::update_gyro()
 {
 	filter.updateGyro(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz);
-	last_imu_timestamp = _plane->imu_timestamp;
 }
 
 void AHRS::publish_ahrs()

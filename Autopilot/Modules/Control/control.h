@@ -1,7 +1,7 @@
 #ifndef CONTROL_H_
 #define CONTROL_H_
 
-#include "Modules/TECS/tecs.h"
+#include "Lib/TECS/tecs.h"
 #include "Lib/PID/pid.h"
 #include "Lib/Utils/utils.h"
 #include "hal.h"
