@@ -6,10 +6,9 @@
 // Transmitter is detected if value higher than this
 constexpr uint16_t TX_DETECT_MIN_DUTY = 500;
 
-// Store in micro-SD but can be updated from GCS
 struct __attribute__((packed))Parameters
 {
-	// If parameters have been set
+	// Flag to check if parameters have been set
 	bool set = false;
 
 	// Flight characteristics

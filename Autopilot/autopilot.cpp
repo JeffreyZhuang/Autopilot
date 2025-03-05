@@ -21,13 +21,9 @@ Autopilot::Autopilot(HAL* hal, Plane* plane)
 void Autopilot::setup()
 {
 	init_state();
-
 	_hal->init();
-
 	_ahrs.setup();
 	_guidance.init();
-
-	printf("Start\n");
 
 	// Start tasks
 	_hal->set_main_task(&Autopilot::static_main_task);

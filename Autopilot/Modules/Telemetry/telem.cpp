@@ -16,7 +16,7 @@ void Telem::update()
 		}
 	}
 
-	if (params.set)
+	if (_plane->system_mode != System_mode::CONFIG)
 	{
 		transmit_telem();
 	}
@@ -104,7 +104,7 @@ bool Telem::parse_packet()
 
 	uint16_t payload_len = latest_pkt_len - 3; // Subtract header
 	uint8_t msg_id = payload[0];
-	if (msg_id == CMD_MSG_ID)
+	if (msg_id == CMD_MSG_ID && payload_len == sizeof(Command_payload))
 	{
 		Command_payload command_payload;
 		memcpy(&command_payload, payload, sizeof(Command_payload));
@@ -112,48 +112,36 @@ bool Telem::parse_packet()
 
 		return true;
 	}
-	else if (msg_id == WPT_MSG_ID)
+	else if (msg_id == WPT_MSG_ID && payload_len == sizeof(Waypoint_payload))
 	{
-		if (payload_len == sizeof(Waypoint_payload))
-		{
-			Waypoint_payload waypoint_payload;
-			memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
+		Waypoint_payload waypoint_payload;
+		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
 
-			_plane->num_waypoints = waypoint_payload.waypoint_index + 1;
-			_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.waypoint_type,
-																			waypoint_payload.lat,
-																			waypoint_payload.lon,
-																			waypoint_payload.alt};
+		_plane->num_waypoints = waypoint_payload.waypoint_index + 1;
+		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.waypoint_type,
+																		waypoint_payload.lat,
+																		waypoint_payload.lon,
+																		waypoint_payload.alt};
 
-			return true;
-		}
+		return true;
 	}
-	else if (msg_id == PARAMS_MSG_ID)
+	else if (msg_id == PARAMS_MSG_ID &&
+			 _plane->system_mode == System_mode::CONFIG &&
+			 payload_len - 1 == sizeof(params))
 	{
-		// Make sure payload length correct
-		// Subtract one from length because message ID byte
-		// Only set parameters if its in boot mode, not in flight
-		if (_plane->system_mode == System_mode::CONFIG &&
-			payload_len - 1 == sizeof(params))
+		// Remove message ID
+		uint8_t params_arr[sizeof(params)];
+		for (uint i = 0; i < sizeof(params_arr); i++)
 		{
-			// Remove message ID
-			uint8_t params_arr[sizeof(params)];
-			for (uint i = 0; i < sizeof(params_arr); i++)
-			{
-				params_arr[i] = payload[i + 1];
-			}
-
-			// Copy parameters
-			memcpy(&params, params_arr, sizeof(params));
-
-			printf("Parameters set\n");
-
-			return true;
+			params_arr[i] = payload[i + 1];
 		}
-	}
-	else
-	{
-		// Unrecognized command
+
+		// Copy parameters
+		memcpy(&params, params_arr, sizeof(params));
+
+		printf("Parmeters set");
+
+		return true;
 	}
 
 	return false;
