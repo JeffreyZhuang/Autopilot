@@ -11,6 +11,44 @@ void Guidance::init()
 
 }
 
+void Guidance::update()
+{
+	if (_plane->system_mode == System_mode::FLIGHT)
+	{
+		switch (_plane->flight_mode)
+		{
+		case Flight_mode::MANUAL:
+			handle_manual_mode();
+			break;
+		case Flight_mode::AUTO:
+			handle_auto_mode();
+			break;
+		}
+	}
+}
+
+void Guidance::handle_manual_mode()
+{
+	update_mission();
+}
+
+void Guidance::handle_auto_mode()
+{
+	switch (_plane->auto_mode)
+	{
+	case Auto_mode::TAKEOFF:
+	case Auto_mode::MISSION:
+		update_mission();
+		break;
+	case Auto_mode::LAND:
+		update_landing();
+		break;
+	case Auto_mode::FLARE:
+		update_flare();
+		break;
+	}
+}
+
 // Generate position and altitude setpoint
 // Detect when setpoint reached and switch to next setpoint
 void Guidance::update_mission()

@@ -10,7 +10,8 @@ Autopilot::Autopilot(HAL* hal, Plane* plane)
 	  _telem(hal, plane),
 	  _storage(plane, hal),
 	  _mixer(hal, plane),
-	  _rc_handler(hal, plane)
+	  _rc_handler(hal, plane),
+	  _commander(hal, plane)
 {
 	_hal = hal;
 	_plane = plane;
@@ -36,20 +37,19 @@ void Autopilot::setup()
 // High priority
 void Autopilot::main_task()
 {
-	if (params.set)
-	{
-		update_time();
-		_hal->read_sensors();
-		_rc_handler.rc_update();
-		_ahrs.update();
-		_navigation.update();
-
-		evaluate_system_mode();
-
-		_storage.write();
-	}
-
+	update_time();
+	_hal->read_sensors();
+	_rc_handler.rc_update();
+	_ahrs.update();
+	_navigation.update();
+	_commander.update();
+	_guidance.update();
+	_control.update();
+	_mixer.update();
+	_storage.write();
 	_telem.update();
+
+	debug_serial();
 }
 
 // Runs at a lower priority
@@ -59,173 +59,14 @@ void Autopilot::logger_task()
 }
 
 /**
- * System Modes
- */
-void Autopilot::evaluate_system_mode()
-{
-	_plane->mode_id = static_cast<uint8_t>(_plane->systemMode);
-
-	switch (_plane->systemMode)
-	{
-	case SystemMode::BOOT:
-		boot();
-		break;
-	case SystemMode::FLIGHT:
-		flight();
-		break;
-	}
-}
-
-void Autopilot::boot()
-{
-	bool waypoints_loaded = _plane->num_waypoints > 0;
-	bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 && !_plane->manual_sw && !_plane->mode_sw;
-
-	if (_ahrs.is_converged() &&
-		_navigation.is_converged() &&
-		transmitter_safe &&
-		waypoints_loaded &&
-		_plane->tx_connected)
-	{
-		_plane->systemMode = SystemMode::FLIGHT;
-	}
-
-	debug_serial();
-}
-
-void Autopilot::flight()
-{
-	if (_plane->manual_sw)
-	{
-		if (_plane->mode_sw)
-		{
-			evaluate_auto_mode();
-		}
-		else
-		{
-			_plane->manualMode = ManualMode::STABILIZED;
-			evaluate_manual_mode();
-		}
-	}
-	else
-	{
-		_plane->manualMode = ManualMode::MANUAL;
-		evaluate_manual_mode();
-	}
-
-	_mixer.update();
-}
-
-/**
- * Auto Modes
- */
-void Autopilot::evaluate_auto_mode()
-{
-	_plane->mode_id = static_cast<uint8_t>(_plane->autoMode);
-
-	switch (_plane->autoMode)
-	{
-	case AutoMode::TAKEOFF:
-		takeoff();
-		break;
-	case AutoMode::MISSION:
-		mission();
-		break;
-	case AutoMode::LAND:
-		land();
-		break;
-	case AutoMode::FLARE:
-		flare();
-		break;
-	case AutoMode::TOUCHDOWN:
-		touchdown();
-		break;
-	}
-}
-
-void Autopilot::takeoff()
-{
-	_control.update_takeoff();
-
-	if (-_plane->nav_pos_down > params.takeoff_alt)
-	{
-		_plane->autoMode = AutoMode::MISSION;
-	}
-}
-
-void Autopilot::mission()
-{
-	_guidance.update_mission();
-	_control.update_mission();
-
-	if (_plane->waypoints[_plane->waypoint_index].type == Waypoint_type::LAND)
-	{
-		_plane->autoMode = AutoMode::LAND;
-	}
-}
-
-// Glide path to runway
-void Autopilot::land()
-{
-	_guidance.update_landing();
-	_control.update_land();
-
-	if (_plane->rangefinder_dist < params.land_flare_alt)
-	{
-		_plane->autoMode = AutoMode::FLARE;
-		_plane->flare_alt = _plane->nav_pos_down;
-		_plane->flare_start_time = _plane->time;
-	}
-}
-
-// Lower descent rate below altitude threshold
-void Autopilot::flare()
-{
-	_guidance.update_flare();
-	_control.update_flare();
-
-	// Detect touchdown when speed is below TOUCHDOWN_SPD_THR
-	if (_plane->nav_airspeed < params.touchdown_aspd_thresh)
-	{
-		_plane->autoMode = AutoMode::TOUCHDOWN;
-	}
-}
-
-void Autopilot::touchdown()
-{
-	_plane->aileron_setpoint = 0;
-	_plane->elevator_setpoint = 0;
-	_plane->throttle_setpoint = 0;
-}
-
-/**
- * Manual Modes
- */
-void Autopilot::evaluate_manual_mode()
-{
-	_plane->mode_id = static_cast<uint8_t>(_plane->manualMode);
-
-	_guidance.update_mission();
-
-	switch (_plane->manualMode)
-	{
-	case ManualMode::MANUAL:
-		_control.update_manual();
-		break;
-	case ManualMode::STABILIZED:
-		_control.update_stabilized();
-		break;
-	}
-}
-
-/**
  * Helper functions
  */
 void Autopilot::init_state()
 {
-	_plane->systemMode = SystemMode::BOOT;
-	_plane->manualMode = ManualMode::MANUAL;
-	_plane->autoMode = AutoMode::TAKEOFF;
+	_plane->system_mode = System_mode::CONFIG;
+	_plane->flight_mode = Flight_mode::MANUAL;
+	_plane->manual_mode = Manual_mode::DIRECT;
+	_plane->auto_mode = Auto_mode::TAKEOFF;
 }
 
 void Autopilot::update_time()
@@ -239,7 +80,7 @@ void Autopilot::update_time()
 // View in web serial plotter
 void Autopilot::debug_serial()
 {
-	double gnss_north_meters, gnss_east_meters; // Put this in gnss_hal.cpp?
+	double gnss_north_meters, gnss_east_meters;
 	lat_lon_to_meters(_plane->home_lat,
 					  _plane->home_lon,
 					  _plane->gnss_lat,

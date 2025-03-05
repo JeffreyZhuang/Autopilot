@@ -14,12 +14,7 @@ class Control
 public:
 	Control(HAL* hal, Plane* plane);
 
-	void update_manual();
-	void update_stabilized();
-	void update_takeoff();
-	void update_mission();
-	void update_land();
-	void update_flare();
+	void update();
 
 private:
 	HAL* _hal;
@@ -30,6 +25,17 @@ private:
 	PID alt_controller;
 	PID speed_controller;
 	Tecs _tecs;
+
+	void handle_manual_mode();
+	void handle_auto_mode();
+
+	void update_direct();
+	void update_stabilized();
+	void update_takeoff();
+	void update_mission();
+	void update_land();
+	void update_flare();
+	void update_touchdown();
 };
 
 #endif /* CONTROL_H_ */

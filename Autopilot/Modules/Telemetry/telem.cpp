@@ -52,7 +52,7 @@ void Telem::transmit_telem()
 			(uint16_t)(_plane->nav_airspeed * 10),
 			(float)_plane->gnss_lat,
 			(float)_plane->gnss_lon,
-			_plane->mode_id,
+			static_cast<uint8_t>(_plane->flight_mode),
 			_plane->waypoint_index,
 			_plane->gnss_sats,
 			_plane->gps_fix
@@ -133,7 +133,8 @@ bool Telem::parse_packet()
 		// Make sure payload length correct
 		// Subtract one from length because message ID byte
 		// Only set parameters if its in boot mode, not in flight
-		if (_plane->systemMode == SystemMode::BOOT && payload_len - 1 == sizeof(params))
+		if (_plane->system_mode == System_mode::CONFIG &&
+			payload_len - 1 == sizeof(params))
 		{
 			// Remove message ID
 			uint8_t params_arr[sizeof(params)];

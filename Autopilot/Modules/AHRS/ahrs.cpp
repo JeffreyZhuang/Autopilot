@@ -158,6 +158,7 @@ void AHRS::publish_ahrs()
 	_plane->ahrs_yaw = fmod(filter.getYaw() + params.mag_decl + 360.0f, 360.0f);
 
 	_plane->ahrs_timestamp = _hal->get_time_us();
+	_plane->ahrs_converged = ahrs_state == Ahrs_state::RUNNING;
 }
 
 void AHRS::apply_compass_calibration(float mag_data[3])
@@ -198,9 +199,4 @@ bool AHRS::check_new_imu_data()
 bool AHRS::check_new_compass_data()
 {
     return _plane->compass_timestamp > last_compass_timestamp;
-}
-
-bool AHRS::is_converged()
-{
-	return ahrs_state == Ahrs_state::RUNNING;
 }

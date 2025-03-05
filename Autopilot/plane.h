@@ -3,30 +3,32 @@
 
 #include <stdint.h>
 
-/**
- * The numbers indicate the Mode ID sent to GCS
- * Make sure elements from all enums have different values
- * Cross reference with documentation
- */
-enum class SystemMode
+enum class System_mode
 {
-	BOOT = 0,
-	FLIGHT = 1,
+	CONFIG,
+	STARTUP,
+	FLIGHT
 };
 
-enum class ManualMode
+enum class Flight_mode
 {
-	MANUAL = 2,
-	STABILIZED = 3,
+	AUTO,
+	MANUAL
 };
 
-enum class AutoMode
+enum class Auto_mode
 {
-	TAKEOFF = 5,
-	MISSION = 6,
-	LAND = 7,
-	FLARE = 8,
-	TOUCHDOWN = 9
+	TAKEOFF,
+	MISSION,
+	LAND,
+	FLARE,
+	TOUCHDOWN
+};
+
+enum class Manual_mode
+{
+	DIRECT,
+	STABILIZED
 };
 
 enum class Waypoint_type : uint8_t
@@ -48,10 +50,10 @@ struct Waypoint {
 struct Plane
 {
     // State machine
-    SystemMode systemMode;
-    ManualMode manualMode;
-    AutoMode autoMode;
-    uint8_t mode_id;
+	System_mode system_mode;
+    Flight_mode flight_mode;
+    Auto_mode auto_mode;
+    Manual_mode manual_mode;
 
     // Time
     uint64_t time;
@@ -95,6 +97,7 @@ struct Plane
     uint64_t gnss_timestamp = 0;
 
     // AHRS
+    bool ahrs_converged = false;
     float ahrs_roll = 0;
     float ahrs_pitch = 0;
     float ahrs_yaw = 0;
@@ -105,6 +108,7 @@ struct Plane
     uint64_t rangefinder_timestamp = 0;
 
     // Navigation
+    bool nav_converged = false;
     float nav_pos_north = 0;
     float nav_pos_east = 0;
     float nav_pos_down = 0;

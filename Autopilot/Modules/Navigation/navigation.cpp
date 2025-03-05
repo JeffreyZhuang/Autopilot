@@ -183,6 +183,7 @@ void Navigation::update_plane()
 	_plane->nav_vel_down = est(5, 0);
 	_plane->nav_airspeed = sqrtf(powf(_plane->nav_vel_north, 2) + powf(_plane->nav_vel_east, 2));
 	_plane->nav_timestamp = _hal->get_time_us();
+	_plane->nav_converged = nav_state == Nav_state::RUNNING;
 }
 
 bool Navigation::check_new_imu_data()
@@ -228,9 +229,4 @@ Eigen::Vector3f Navigation::inertial_to_ned(const Eigen::Vector3f& imu_measureme
     Eigen::Vector3f ned_measurement = R * imu_measurement;
 
     return ned_measurement;
-}
-
-bool Navigation::is_converged()
-{
-	return nav_state == Nav_state::RUNNING;
 }

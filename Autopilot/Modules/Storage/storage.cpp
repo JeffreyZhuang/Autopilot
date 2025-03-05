@@ -22,7 +22,7 @@ void Storage::write()
 		_plane->gnss_lat,
 		_plane->gnss_lon,
 		_plane->gps_fix,
-		_plane->mode_id
+		static_cast<uint8_t>(_plane->flight_mode)
 	};
 
 	// Convert struct to byte array

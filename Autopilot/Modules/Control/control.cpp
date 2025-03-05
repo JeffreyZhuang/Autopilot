@@ -13,8 +13,59 @@ Control::Control(HAL * hal, Plane * plane)
 	_plane = plane;
 }
 
+void Control::update()
+{
+	if (_plane->system_mode == System_mode::FLIGHT)
+	{
+		switch (_plane->flight_mode)
+		{
+		case Flight_mode::MANUAL:
+			handle_manual_mode();
+			break;
+		case Flight_mode::AUTO:
+			handle_auto_mode();
+			break;
+		}
+	}
+}
+
+void Control::handle_manual_mode()
+{
+	switch (_plane->manual_mode)
+	{
+	case Manual_mode::DIRECT:
+		update_direct();
+		break;
+	case Manual_mode::STABILIZED:
+		update_stabilized();
+		break;
+	}
+}
+
+void Control::handle_auto_mode()
+{
+	switch (_plane->auto_mode)
+	{
+	case Auto_mode::TAKEOFF:
+		update_takeoff();
+		break;
+	case Auto_mode::MISSION:
+		update_mission();
+		break;
+	case Auto_mode::LAND:
+		update_land();
+		break;
+	case Auto_mode::FLARE:
+		update_flare();
+		break;
+	case Auto_mode::TOUCHDOWN:
+		update_touchdown();
+		break;
+	}
+}
+
 // Read from radio and send commands directly to servos
-void Control::update_manual()
+void Control::update_direct()
 {
 	_plane->aileron_setpoint = _plane->rc_in_norm[params.aileron_ch];
 	_plane->elevator_setpoint = _plane->rc_in_norm[params.elevator_ch];
@@ -71,5 +122,12 @@ void Control::update_flare()
 	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, 0, 0, 0, -1, 1, 0);
 	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, 0.00002, 0, 1, -1, 1, 0);
 	_plane->roll_setpoint = 0;
+	_plane->throttle_setpoint = 0;
+}
+
+void Control::update_touchdown()
+{
+	_plane->aileron_setpoint = 0;
+	_plane->elevator_setpoint = 0;
 	_plane->throttle_setpoint = 0;
 }

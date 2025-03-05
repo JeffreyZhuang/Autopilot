@@ -26,7 +26,6 @@ class Navigation
 public:
     Navigation(HAL* hal, Plane* plane);
     void update();
-    bool is_converged();
 private:
     HAL* _hal;
     Plane* _plane;
