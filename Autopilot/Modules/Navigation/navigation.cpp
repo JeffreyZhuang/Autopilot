@@ -8,7 +8,6 @@ Navigation::Navigation(HAL* hal, Plane* plane)
 {
 	_hal = hal;
 	_plane = plane;
-	printf("Nav init\n");
 }
 
 Eigen::MatrixXf Navigation::get_a(float dt)
@@ -44,56 +43,67 @@ Eigen::MatrixXf Navigation::get_q()
 	return Q;
 }
 
-bool Navigation::set_home()
+void Navigation::update_initialization()
 {
-	if (!home_set)
+	if (check_new_gnss_data())
 	{
-		if (check_new_gnss_data())
-		{
-			// Set GNSS home position
-			_plane->home_lat = _plane->gnss_lat;
-			_plane->home_lon = _plane->gnss_lon;
-		}
-
-		if (check_new_baro_data())
-		{
-			avg_baro.add(_plane->baro_alt);
-		}
-
-		if (check_new_baro_data() && check_new_gnss_data())
-		{
-			if (avg_baro.getFilled())
-			{
-				// Set barometer home position
-				_plane->baro_offset = avg_baro.getAverage();
-
-				home_set = true;
-			}
-		}
+		// Set GNSS home position
+		_plane->home_lat = _plane->gnss_lat;
+		_plane->home_lon = _plane->gnss_lon;
 	}
 
-	return home_set;
+	if (check_new_baro_data())
+	{
+		avg_baro.add(_plane->baro_alt);
+	}
+
+	if (check_new_baro_data() && check_new_gnss_data())
+	{
+		if (avg_baro.getFilled())
+		{
+			// Set barometer home position
+			_plane->baro_offset = avg_baro.getAverage();
+
+			nav_state = Nav_state::RUNNING;
+		}
+	}
 }
 
 /**
  * @brief Update navigation
  *
  */
-void Navigation::execute()
+void Navigation::update()
 {
-	if (check_new_imu_data())
+	switch (nav_state)
 	{
-		predict_imu();
+	case Nav_state::INITIALIZATION:
+		update_initialization();
+		break;
+	case Nav_state::RUNNING:
+		update_running();
+		break;
 	}
+}
 
-	if (check_new_gnss_data())
+void Navigation::update_running()
+{
+	if (check_new_ahrs_data())
 	{
-		update_gps();
-	}
+		if (check_new_imu_data())
+		{
+			predict_imu();
+		}
 
-	if (check_new_baro_data())
-	{
-		update_baro();
+		if (check_new_gnss_data())
+		{
+			update_gps();
+		}
+
+		if (check_new_baro_data())
+		{
+			update_baro();
+		}
 	}
 }
 
@@ -192,6 +202,11 @@ bool Navigation::check_new_baro_data()
 	return _plane->baro_timestamp > last_baro_timestamp;
 }
 
+bool Navigation::check_new_ahrs_data()
+{
+	return _plane->ahrs_timestamp > last_ahrs_timestamp;
+}
+
 // Function to rotate IMU measurements from inertial frame to NED frame
 Eigen::Vector3f Navigation::inertial_to_ned(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw) {
     // Precompute trigonometric functions
@@ -215,4 +230,9 @@ Eigen::Vector3f Navigation::inertial_to_ned(const Eigen::Vector3f& imu_measureme
     Eigen::Vector3f ned_measurement = R * imu_measurement;
 
     return ned_measurement;
+}
+
+bool Navigation::is_converged()
+{
+	return nav_state == Nav_state::RUNNING;
 }

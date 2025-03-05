@@ -41,6 +41,8 @@ void Autopilot::main_task()
 		update_time();
 		_hal->read_sensors();
 		_rc_handler.rc_update();
+		_ahrs.update();
+		_navigation.update();
 
 		evaluate_system_mode();
 
@@ -76,20 +78,16 @@ void Autopilot::evaluate_system_mode()
 
 void Autopilot::boot()
 {
-	if (_ahrs.set_initial_state())
+	if (_ahrs.is_converged() && _navigation.is_converged())
 	{
-		_ahrs.update();
-
-		if (_navigation.set_home())
+		bool waypoints_loaded = _plane->num_waypoints > 0;
+		bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 && !_plane->manual_sw && !_plane->mode_sw;
+		if (_plane->gps_fix &&
+			transmitter_safe &&
+			waypoints_loaded &&
+			_plane->tx_connected)
 		{
-			_navigation.execute();
-
-			bool waypoints_loaded = _plane->num_waypoints > 0;
-			bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 && !_plane->manual_sw && !_plane->mode_sw;
-			if (_plane->gps_fix && transmitter_safe && waypoints_loaded && _plane->tx_connected)
-			{
-				_plane->systemMode = SystemMode::FLIGHT;
-			}
+			_plane->systemMode = SystemMode::FLIGHT;
 		}
 	}
 
@@ -98,9 +96,6 @@ void Autopilot::boot()
 
 void Autopilot::flight()
 {
-	_ahrs.update();
-	_navigation.execute();
-
 	if (_plane->manual_sw)
 	{
 		if (_plane->mode_sw)
@@ -131,9 +126,6 @@ void Autopilot::evaluate_auto_mode()
 
 	switch (_plane->autoMode)
 	{
-	case AutoMode::READY:
-		ready();
-		break;
 	case AutoMode::TAKEOFF:
 		takeoff();
 		break;
@@ -149,14 +141,6 @@ void Autopilot::evaluate_auto_mode()
 	case AutoMode::TOUCHDOWN:
 		touchdown();
 		break;
-	}
-}
-
-void Autopilot::ready()
-{
-	if ((_plane->rc_in_norm[params.throttle_ch] == 1) || (-_plane->nav_pos_down > params.takeoff_alt))
-	{
-		_plane->autoMode = AutoMode::TAKEOFF;
 	}
 }
 
@@ -242,7 +226,7 @@ void Autopilot::init_state()
 {
 	_plane->systemMode = SystemMode::BOOT;
 	_plane->manualMode = ManualMode::MANUAL;
-	_plane->autoMode = AutoMode::READY;
+	_plane->autoMode = AutoMode::TAKEOFF;
 }
 
 void Autopilot::update_time()

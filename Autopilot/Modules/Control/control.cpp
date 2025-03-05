@@ -31,14 +31,14 @@ void Control::update_stabilized()
 	_plane->throttle_setpoint = _plane->rc_in_norm[params.throttle_ch];
 }
 
-// Set throttle to TAKEOFF_THR, hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
+// Manual throttle, hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
 void Control::update_takeoff()
 {
 	_plane->pitch_setpoint = params.takeoff_ptch;
 	_plane->roll_setpoint = 0;
 	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, params.roll_ki, 0, 0, -1, 1, 0);
 	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, params.ptch_ki, 0, 1, -1, 1, 0);
-	_plane->throttle_setpoint = params.takeoff_thr;
+	_plane->throttle_setpoint = _plane->rc_in_norm[params.throttle_ch];
 }
 
 // Track guidance altitude and heading setpoints at a speed of AIRSPEED_CUIRSE

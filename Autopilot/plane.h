@@ -22,7 +22,6 @@ enum class ManualMode
 
 enum class AutoMode
 {
-	READY = 4,
 	TAKEOFF = 5,
 	MISSION = 6,
 	LAND = 7,

@@ -19,9 +19,24 @@ void AHRS::setup()
 
 }
 
-bool AHRS::set_initial_state()
+void AHRS::update()
 {
-	if (check_new_imu_data() && check_new_compass_data() && !initial_state_set)
+	filter.set_beta(params.ahrs_beta);
+
+	switch (ahrs_state)
+	{
+	case Ahrs_state::INITIALIZATION:
+		update_initialization();
+		break;
+	case Ahrs_state::RUNNING:
+		update_running();
+		break;
+	}
+}
+
+void AHRS::update_initialization()
+{
+	if (check_new_imu_data() && check_new_compass_data())
 	{
 		float mag_data[3] = {_plane->compass_mx, _plane->compass_my, _plane->compass_mz};
 		apply_compass_calibration(mag_data);
@@ -82,57 +97,13 @@ bool AHRS::set_initial_state()
 
 			filter.set_state(q0, q1, q2, q3); // Set initial state
 
-			initial_state_set = true;
+			ahrs_state = Ahrs_state::RUNNING;
 		}
 	}
-
-	return initial_state_set;
 }
 
-bool AHRS::check_new_imu_data()
+void AHRS::update_running()
 {
-    return _plane->imu_timestamp > last_imu_timestamp;
-}
-
-bool AHRS::check_new_compass_data()
-{
-    return _plane->compass_timestamp > last_compass_timestamp;
-}
-
-void AHRS::apply_compass_calibration(float mag_data[3])
-{
-	// Storage for hard-iron calibrated magnetometer data
-	float hi_cal[3];
-
-	// Apply hard-iron offsets
-	for (uint8_t i = 0; i < 3; i++)
-	{
-		hi_cal[i] = mag_data[i] - params.hard_iron[i];
-	}
-
-	// Apply soft-iron scaling
-	for (uint8_t i = 0; i < 3; i++)
-	{
-		mag_data[i] = (params.soft_iron[i][0] * hi_cal[0]) +
-					  (params.soft_iron[i][1] * hi_cal[1]) +
-					  (params.soft_iron[i][2] * hi_cal[2]);
-	}
-}
-
-bool AHRS::is_accel_reliable()
-{
-	float accel_magnitude = sqrtf(powf(_plane->imu_ax, 2) +
-								  powf(_plane->imu_ay, 2) +
-								  powf(_plane->imu_az, 2));
-
-	// Assuming 1g reference
-	return fabs(accel_magnitude - 1.0f) < params.ahrs_acc_max;
-}
-
-void AHRS::update()
-{
-	filter.set_beta(params.ahrs_beta);
-
 	if (check_new_imu_data())
 	{
 		if (is_accel_reliable())
@@ -190,4 +161,49 @@ void AHRS::publish_ahrs()
 	_plane->ahrs_yaw = fmod(filter.getYaw() + params.mag_decl + 360.0f, 360.0f);
 
 	_plane->ahrs_timestamp = _hal->get_time_us();
+}
+
+void AHRS::apply_compass_calibration(float mag_data[3])
+{
+	// Storage for hard-iron calibrated magnetometer data
+	float hi_cal[3];
+
+	// Apply hard-iron offsets
+	for (uint8_t i = 0; i < 3; i++)
+	{
+		hi_cal[i] = mag_data[i] - params.hard_iron[i];
+	}
+
+	// Apply soft-iron scaling
+	for (uint8_t i = 0; i < 3; i++)
+	{
+		mag_data[i] = (params.soft_iron[i][0] * hi_cal[0]) +
+					  (params.soft_iron[i][1] * hi_cal[1]) +
+					  (params.soft_iron[i][2] * hi_cal[2]);
+	}
+}
+
+bool AHRS::is_accel_reliable()
+{
+	float accel_magnitude = sqrtf(powf(_plane->imu_ax, 2) +
+								  powf(_plane->imu_ay, 2) +
+								  powf(_plane->imu_az, 2));
+
+	// Assuming 1g reference
+	return fabs(accel_magnitude - 1.0f) < params.ahrs_acc_max;
+}
+
+bool AHRS::check_new_imu_data()
+{
+    return _plane->imu_timestamp > last_imu_timestamp;
+}
+
+bool AHRS::check_new_compass_data()
+{
+    return _plane->compass_timestamp > last_compass_timestamp;
+}
+
+bool AHRS::is_converged()
+{
+	return ahrs_state == Ahrs_state::RUNNING;
 }

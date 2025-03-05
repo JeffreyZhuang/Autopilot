@@ -1,13 +1,19 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include <Lib/MovingAvg/moving_avg.h>
+#include "Lib/MovingAvg/moving_avg.h"
 #include "plane.h"
 #include "parameters.h"
 #include "hal.h"
 #include "Lib/Madgwick/madgwick.h"
 #include <stdio.h>
 #include <math.h>
+
+enum class Ahrs_state
+{
+	INITIALIZATION,
+	RUNNING
+};
 
 /**
  * @brief Attitude Heading Reference System
@@ -18,9 +24,11 @@ class AHRS
 public:
     AHRS(HAL* hal, Plane* plane);
     void setup();
-    bool set_initial_state();
     void update();
+    bool is_converged();
 private:
+    void update_initialization();
+    void update_running();
     void update_gyro();
     void update_imu();
     void update_imu_mag();
@@ -34,6 +42,7 @@ private:
     HAL* _hal;
 
     Madgwick filter;
+    Ahrs_state ahrs_state = Ahrs_state::INITIALIZATION;
 
     static constexpr size_t window_size = 100;
     float window_ax[window_size];
@@ -48,8 +57,6 @@ private:
     MovingAverage avg_mx;
 	MovingAverage avg_my;
 	MovingAverage avg_mz;
-
-	bool initial_state_set = false;
 
     uint64_t last_imu_timestamp = 0;
     uint64_t last_compass_timestamp = 0;

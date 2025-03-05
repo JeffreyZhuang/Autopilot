@@ -31,7 +31,6 @@ struct __attribute__((packed))Parameters
 
 	// Takeoff
 	float takeoff_alt; // Altitude to detect when takeoff is complete meters
-	float takeoff_thr; // Throttle set during takeoff between 0 and 1
 	float takeoff_ptch; // Pitch during takeoff
 
 	// Mixer
