@@ -78,17 +78,16 @@ void Autopilot::evaluate_system_mode()
 
 void Autopilot::boot()
 {
-	if (_ahrs.is_converged() && _navigation.is_converged())
+	bool waypoints_loaded = _plane->num_waypoints > 0;
+	bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 && !_plane->manual_sw && !_plane->mode_sw;
+
+	if (_ahrs.is_converged() &&
+		_navigation.is_converged() &&
+		transmitter_safe &&
+		waypoints_loaded &&
+		_plane->tx_connected)
 	{
-		bool waypoints_loaded = _plane->num_waypoints > 0;
-		bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 && !_plane->manual_sw && !_plane->mode_sw;
-		if (_plane->gps_fix &&
-			transmitter_safe &&
-			waypoints_loaded &&
-			_plane->tx_connected)
-		{
-			_plane->systemMode = SystemMode::FLIGHT;
-		}
+		_plane->systemMode = SystemMode::FLIGHT;
 	}
 
 	debug_serial();
