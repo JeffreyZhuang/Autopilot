@@ -67,60 +67,60 @@ void Control::handle_auto_mode()
 // Read from radio and send commands directly to servos
 void Control::update_direct()
 {
-	_plane->aileron_setpoint = _plane->rc_in_norm[params.aileron_ch];
-	_plane->elevator_setpoint = _plane->rc_in_norm[params.elevator_ch];
-	_plane->throttle_setpoint = _plane->rc_in_norm[params.throttle_ch];
+	_plane->aileron_setpoint = _plane->rc_in_norm[get_params()->aileron_ch];
+	_plane->elevator_setpoint = _plane->rc_in_norm[get_params()->elevator_ch];
+	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
 }
 
 // Pilot commands roll and pitch angles, throttle is manual
 void Control::update_stabilized()
 {
-	_plane->pitch_setpoint = _plane->rc_in_norm[params.elevator_ch] * params.ptch_lim_deg;
-	_plane->roll_setpoint = _plane->rc_in_norm[params.aileron_ch] * params.roll_lim_deg;
-	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, 0, 0, 0, -1, 1, 0);
-	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, 0.00002, 0, 1, -1, 1, 0);
-	_plane->throttle_setpoint = _plane->rc_in_norm[params.throttle_ch];
+	_plane->pitch_setpoint = _plane->rc_in_norm[get_params()->elevator_ch] * get_params()->ptch_lim_deg;
+	_plane->roll_setpoint = _plane->rc_in_norm[get_params()->aileron_ch] * get_params()->roll_lim_deg;
+	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, get_params()->roll_kp, 0, 0, 0, -1, 1, 0);
+	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, get_params()->ptch_kp, 0.00002, 0, 1, -1, 1, 0);
+	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
 }
 
 // Manual throttle, hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
 void Control::update_takeoff()
 {
-	_plane->pitch_setpoint = params.takeoff_ptch;
+	_plane->pitch_setpoint = get_params()->takeoff_ptch;
 	_plane->roll_setpoint = 0;
-	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, params.roll_ki, 0, 0, -1, 1, 0);
-	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, params.ptch_ki, 0, 1, -1, 1, 0);
-	_plane->throttle_setpoint = _plane->rc_in_norm[params.throttle_ch];
+	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, get_params()->roll_kp, get_params()->roll_ki, 0, 0, -1, 1, 0);
+	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, get_params()->ptch_kp, get_params()->ptch_ki, 0, 1, -1, 1, 0);
+	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
 }
 
 // Track guidance altitude and heading setpoints at a speed of AIRSPEED_CUIRSE
 void Control::update_mission()
 {
-	_tecs.update(params.aspd_cruise, _plane->guidance_d_setpoint, 1);
-	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_energy_diff, _plane->tecs_energy_diff_setpoint, params.alt_kp, params.alt_ki, 0, 10, -params.ptch_lim_deg, params.ptch_lim_deg, 0);
-	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_energy_total, _plane->tecs_energy_total_setpoint, params.thr_kp, params.thr_ki, 0, 1, 0, 1, params.throttle_cruise);
-	_plane->roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, params.hdg_kp, params.hdg_ki, 0, 0, -params.roll_lim_deg, params.roll_lim_deg, 0);
-	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, params.roll_ki, 0, 0, -1, 1, 0);
-	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, params.ptch_ki, 0, 1, -1, 1, 0);
+	_tecs.update(get_params()->aspd_cruise, _plane->guidance_d_setpoint, 1);
+	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_energy_diff, _plane->tecs_energy_diff_setpoint, get_params()->alt_kp, get_params()->alt_ki, 0, 10, -get_params()->ptch_lim_deg, get_params()->ptch_lim_deg, 0);
+	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_energy_total, _plane->tecs_energy_total_setpoint, get_params()->thr_kp, get_params()->thr_ki, 0, 1, 0, 1, get_params()->throttle_cruise);
+	_plane->roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, get_params()->hdg_kp, get_params()->hdg_ki, 0, 0, -get_params()->roll_lim_deg, get_params()->roll_lim_deg, 0);
+	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, get_params()->roll_kp, get_params()->roll_ki, 0, 0, -1, 1, 0);
+	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, get_params()->ptch_kp, get_params()->ptch_ki, 0, 1, -1, 1, 0);
 }
 
 // Track approach guidance altitude and heading setpoints at the reduced speed of AIRSPEED_LANDING
 void Control::update_land()
 {
-	_tecs.update(params.aspd_land, _plane->guidance_d_setpoint, 1);
-	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_energy_diff, _plane->tecs_energy_diff_setpoint, params.alt_kp, params.alt_ki, 0, 10, -params.ptch_lim_deg, params.ptch_lim_deg, 0);
-	_plane->roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, 1, 0, 0, 0, -params.roll_lim_deg, params.roll_lim_deg, 0);
-	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, 0, 0, 0, -1, 1, 0);
-	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, params.ptch_ki, 0, 1, -1, 1, 0);
-	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_energy_total, _plane->tecs_energy_total_setpoint, params.thr_kp, 0.0, 0, 0, 0, 1, params.throttle_cruise);
+	_tecs.update(get_params()->aspd_land, _plane->guidance_d_setpoint, 1);
+	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_energy_diff, _plane->tecs_energy_diff_setpoint, get_params()->alt_kp, get_params()->alt_ki, 0, 10, -get_params()->ptch_lim_deg, get_params()->ptch_lim_deg, 0);
+	_plane->roll_setpoint = hdg_controller.get_output(_plane->ahrs_yaw, _plane->guidance_hdg_setpoint, 1, 0, 0, 0, -get_params()->roll_lim_deg, get_params()->roll_lim_deg, 0);
+	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, get_params()->roll_kp, 0, 0, 0, -1, 1, 0);
+	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, get_params()->ptch_kp, get_params()->ptch_ki, 0, 1, -1, 1, 0);
+	_plane->throttle_setpoint = speed_controller.get_output(_plane->tecs_energy_total, _plane->tecs_energy_total_setpoint, get_params()->thr_kp, 0.0, 0, 0, 0, 1, get_params()->throttle_cruise);
 }
 
 // Cut throttle, set roll to 0 and track flare guidance altitude setpoints
 void Control::update_flare()
 {
-	_tecs.update(params.aspd_land, _plane->guidance_d_setpoint, 2);
-	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_energy_diff, _plane->tecs_energy_diff_setpoint, params.alt_kp, params.alt_ki, 0, 10, -params.ptch_lim_deg, params.ptch_lim_deg, 0);
-	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, params.roll_kp, 0, 0, 0, -1, 1, 0);
-	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, params.ptch_kp, 0.00002, 0, 1, -1, 1, 0);
+	_tecs.update(get_params()->aspd_land, _plane->guidance_d_setpoint, 2);
+	_plane->pitch_setpoint = alt_controller.get_output(_plane->tecs_energy_diff, _plane->tecs_energy_diff_setpoint, get_params()->alt_kp, get_params()->alt_ki, 0, 10, -get_params()->ptch_lim_deg, get_params()->ptch_lim_deg, 0);
+	_plane->aileron_setpoint = roll_controller.get_output(_plane->ahrs_roll, _plane->roll_setpoint, get_params()->roll_kp, 0, 0, 0, -1, 1, 0);
+	_plane->elevator_setpoint = pitch_controller.get_output(_plane->ahrs_pitch, _plane->pitch_setpoint, get_params()->ptch_kp, 0.00002, 0, 1, -1, 1, 0);
 	_plane->roll_setpoint = 0;
 	_plane->throttle_setpoint = 0;
 }

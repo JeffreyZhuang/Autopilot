@@ -150,7 +150,7 @@ void Navigation::update_gps()
 		 0, 1, 0, 0, 0, 0,
 		 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 3> R(params.gnss_r, params.gnss_r, params.gnss_alt_r);
+	Eigen::DiagonalMatrix<float, 3> R(get_params()->gnss_r, get_params()->gnss_r, get_params()->gnss_alt_r);
 
 	kalman.update(R, H, y);
 
@@ -165,7 +165,7 @@ void Navigation::update_baro()
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 1> R(params.baro_r);
+	Eigen::DiagonalMatrix<float, 1> R(get_params()->baro_r);
 
 	kalman.update(R, H, y);
 

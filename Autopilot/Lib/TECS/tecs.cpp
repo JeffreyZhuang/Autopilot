@@ -26,8 +26,8 @@ void Tecs::update(float target_vel_mps, float target_alt_m, float wb)
 
 	// Clamp total energy setpoint within allowed airspeed range
 	// Prevent stall/overspeed
-	float min_kin = 0.5 * powf(params.tecs_min_aspd_mps, 2);
-	float max_kin = 0.5 * powf(params.tecs_max_aspd_mps, 2);
+	float min_kin = 0.5 * powf(get_params()->tecs_min_aspd_mps, 2);
+	float max_kin = 0.5 * powf(get_params()->tecs_max_aspd_mps, 2);
 	target_total = clamp(target_total, energy_pot + min_kin, energy_pot + max_kin);
 
 	// Compute energy difference setpoint and measurement

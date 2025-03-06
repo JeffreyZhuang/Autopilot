@@ -62,7 +62,7 @@ void Guidance::update_mission()
 	else
 	{
 		// If there is no previous waypoint, use home position as prev waypoint
-		prev_wp = Waypoint{Waypoint_type::WAYPOINT, _plane->home_lat, _plane->home_lon, params.takeoff_alt};
+		prev_wp = Waypoint{Waypoint_type::WAYPOINT, _plane->home_lat, _plane->home_lon, get_params()->takeoff_alt};
 	}
 
 	// Calculate previous waypoint position
@@ -108,7 +108,7 @@ void Guidance::update_mission()
 
 	// Calculate distance to waypoint to determine if waypoint reached
 	float dist_to_wp = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));
-	if ((dist_to_wp < params.min_dist_wp) && (_plane->waypoint_index < _plane->num_waypoints - 1))
+	if ((dist_to_wp < get_params()->min_dist_wp) && (_plane->waypoint_index < _plane->num_waypoints - 1))
 	{
 		_plane->waypoint_index++;
 	}
@@ -150,7 +150,7 @@ void Guidance::update_landing()
 
 	// Follow glideslope angle
 	float dist_to_land = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));
-	_plane->guidance_d_setpoint = -dist_to_land * sinf(params.land_gs_deg * deg_to_rad);
+	_plane->guidance_d_setpoint = -dist_to_land * sinf(get_params()->land_gs_deg * deg_to_rad);
 
 	// Prevent needlessly climbing during approach
 	// Don't target an altitude higher than the final waypoint
@@ -163,11 +163,11 @@ void Guidance::update_landing()
 void Guidance::update_flare()
 {
 	// Glideslope altitude divided by horizontal distance
-	float initial_slope = tanf(params.land_gs_deg * deg_to_rad);
+	float initial_slope = tanf(get_params()->land_gs_deg * deg_to_rad);
 
 	// Initial Slope = Altitude / Horizontal distance from landing point
 	// Horizontal distance = Altitude / Initial slope
-	float initial_dist = params.land_flare_alt / initial_slope;
+	float initial_dist = get_params()->land_flare_alt / initial_slope;
 
 
 
@@ -182,11 +182,11 @@ void Guidance::update_flare()
 	float time_since_flare_s = (_plane->time - _plane->flare_start_time) * us_to_s;
 
 	// Estimate initial sink rate from glideslope
-	float flare_initial_sinkrate = params.aspd_land * sinf(params.land_gs_deg * deg_to_rad);
+	float flare_initial_sinkrate = get_params()->aspd_land * sinf(get_params()->land_gs_deg * deg_to_rad);
 
 	// Calculate sink acceleration
 	// Acceleration = (Initial Sink Rate - Final Sink Rate) / Flare Transition Time
-	float sink_accel = (flare_initial_sinkrate - params.flare_sink_rate) / params.flare_trans_sec;
+	float sink_accel = (flare_initial_sinkrate - get_params()->flare_sink_rate) / get_params()->flare_trans_sec;
 	if (sink_accel < 0)
 	{
 		sink_accel = 0;
@@ -194,9 +194,9 @@ void Guidance::update_flare()
 
 	// Decrease sink rate over time based on sink_accel
 	float flare_sink_rate = flare_initial_sinkrate - sink_accel * time_since_flare_s;
-	if (flare_sink_rate > params.flare_sink_rate)
+	if (flare_sink_rate > get_params()->flare_sink_rate)
 	{
-		flare_sink_rate = params.flare_sink_rate; // Set minimum sink rate to FLARE_SINK_RATE
+		flare_sink_rate = get_params()->flare_sink_rate; // Set minimum sink rate to FLARE_SINK_RATE
 	}
 
 	// Decrease altitude setpoint at a rate of _flare_sink_rate
@@ -212,7 +212,7 @@ bool Guidance::reached_wp(Waypoint wp)
 					  wp.lat,					  wp.lon,					  &wp_north,					  &wp_east);
 	float dist = sqrtf(powf(_plane->nav_pos_north - wp_north, 2) +
 					   powf(_plane->nav_pos_east - wp_east, 2));
-	return dist < params.min_dist_wp;
+	return dist < get_params()->min_dist_wp;
 }
 
 bool Guidance::reached_last_wp()
@@ -225,7 +225,7 @@ bool Guidance::reached_last_wp()
 	float dist_to_wp = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));
 
 	// If the plane has reached the last waypoint
-	if ((_plane->waypoint_index == _plane->num_waypoints - 1) && (dist_to_wp < params.min_dist_wp))
+	if ((_plane->waypoint_index == _plane->num_waypoints - 1) && (dist_to_wp < get_params()->min_dist_wp))
 	{
 		mission_complete = true;
 	}

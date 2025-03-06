@@ -2,9 +2,7 @@
 #define PARAMETERS_H_
 
 #include <stdint.h>
-
-// Transmitter is detected if value higher than this
-constexpr uint16_t TX_DETECT_MIN_DUTY = 500;
+#include <cstring>
 
 struct __attribute__((packed))Parameters
 {
@@ -71,6 +69,7 @@ struct __attribute__((packed))Parameters
 	float gnss_alt_r;
 };
 
-extern Parameters params;
+const Parameters* get_params();
+void set_params(const Parameters* params);
 
 #endif /* PARAMETERS_H_ */

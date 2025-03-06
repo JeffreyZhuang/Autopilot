@@ -7,6 +7,8 @@
 #include "plane.h"
 #include <stdio.h>
 
+constexpr uint16_t TX_DETECT_MIN_DUTY = 500; // Transmitter is detected if value higher than this
+
 class Rc_handler
 {
 public:

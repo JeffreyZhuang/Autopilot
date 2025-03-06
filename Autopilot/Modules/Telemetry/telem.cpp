@@ -127,17 +127,21 @@ bool Telem::parse_packet()
 	}
 	else if (msg_id == PARAMS_MSG_ID &&
 			 _plane->system_mode == System_mode::CONFIG &&
-			 payload_len - 1 == sizeof(params))
+			 payload_len - 1 == sizeof(Parameters))
 	{
 		// Remove message ID
-		uint8_t params_arr[sizeof(params)];
+		uint8_t params_arr[sizeof(Parameters)];
 		for (uint i = 0; i < sizeof(params_arr); i++)
 		{
 			params_arr[i] = payload[i + 1];
 		}
 
-		// Copy parameters
-		memcpy(&params, params_arr, sizeof(params));
+		// Create Parameters struct from bytes
+		Parameters temp_params;
+		memcpy(&temp_params, params_arr, sizeof(Parameters));
+
+		// Set parameters
+		set_params(&temp_params);
 
 		printf("Parmeters set");
 

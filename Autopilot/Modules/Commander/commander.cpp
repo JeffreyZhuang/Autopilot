@@ -88,7 +88,7 @@ void Commander::handle_auto_mode()
 
 void Commander::update_config()
 {
-	if (params.set)
+	if (get_params()->set)
 	{
 		_plane->system_mode = System_mode::STARTUP;
 	}
@@ -97,7 +97,7 @@ void Commander::update_config()
 void Commander::update_startup()
 {
 	bool waypoints_loaded = _plane->num_waypoints > 0;
-	bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 &&
+	bool transmitter_safe = _plane->rc_in_norm[get_params()->throttle_ch] == 0 &&
 							!_plane->manual_sw && !_plane->mode_sw;
 	if (_plane->ahrs_converged &&
 		_plane->nav_converged &&
@@ -111,7 +111,7 @@ void Commander::update_startup()
 
 void Commander::update_takeoff()
 {
-	if (-_plane->nav_pos_down > params.takeoff_alt)
+	if (-_plane->nav_pos_down > get_params()->takeoff_alt)
 	{
 		_plane->auto_mode = Auto_mode::MISSION;
 	}
@@ -127,7 +127,7 @@ void Commander::update_mission()
 
 void Commander::update_land()
 {
-	if (_plane->rangefinder_dist < params.land_flare_alt)
+	if (_plane->rangefinder_dist < get_params()->land_flare_alt)
 	{
 		_plane->auto_mode = Auto_mode::FLARE;
 		_plane->flare_alt = _plane->nav_pos_down;
@@ -138,7 +138,7 @@ void Commander::update_land()
 void Commander::update_flare()
 {
 	// Detect touchdown when speed is below TOUCHDOWN_SPD_THR
-	if (_plane->nav_airspeed < params.touchdown_aspd_thresh)
+	if (_plane->nav_airspeed < get_params()->touchdown_aspd_thresh)
 	{
 		_plane->auto_mode = Auto_mode::TOUCHDOWN;
 	}
