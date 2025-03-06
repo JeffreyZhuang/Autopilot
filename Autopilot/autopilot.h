@@ -40,9 +40,9 @@ private:
 
     // Scheduler
     void main_task();
-	void logger_task();
+	void background_task();
     static void static_main_task() { _instance->main_task(); }
-    static void static_logger_task() { _instance->logger_task(); }
+    static void static_background_task() { _instance->background_task(); }
 
     static Autopilot* _instance;
 };

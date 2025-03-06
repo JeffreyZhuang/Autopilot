@@ -16,6 +16,9 @@ private:
 	uint16_t _elevator_duty = 0;
 	uint16_t _aileron_duty = 0;
 	uint16_t _throttle_duty = 0;
+	void update_config();
+	void update_startup();
+	void update_flight();
 };
 
 #endif /* MODULES_MIXER_MIXER_H_ */

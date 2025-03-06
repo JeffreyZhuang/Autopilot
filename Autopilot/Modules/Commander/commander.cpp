@@ -97,8 +97,8 @@ void Commander::update_config()
 void Commander::update_startup()
 {
 	bool waypoints_loaded = _plane->num_waypoints > 0;
-	bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 && !_plane->manual_sw && !_plane->mode_sw;
-
+	bool transmitter_safe = _plane->rc_in_norm[params.throttle_ch] == 0 &&
+							!_plane->manual_sw && !_plane->mode_sw;
 	if (_plane->ahrs_converged &&
 		_plane->nav_converged &&
 		transmitter_safe &&

@@ -27,10 +27,9 @@ void Autopilot::setup()
 
 	// Start tasks
 	_hal->set_main_task(&Autopilot::static_main_task);
-	_hal->set_background_task(&Autopilot::static_logger_task);
+	_hal->set_background_task(&Autopilot::static_background_task);
 }
 
-// High priority
 void Autopilot::main_task()
 {
 	update_time();
@@ -48,8 +47,7 @@ void Autopilot::main_task()
 	debug_serial();
 }
 
-// Runs at a lower priority
-void Autopilot::logger_task()
+void Autopilot::background_task()
 {
 	_storage.flush();
 }
