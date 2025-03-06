@@ -8,24 +8,6 @@ Commander::Commander(HAL* hal, Plane* plane)
 
 void Commander::update()
 {
-	if (_plane->mode_sw)
-	{
-		_plane->manual_mode = Manual_mode::DIRECT;
-	}
-	else
-	{
-		_plane->manual_mode = Manual_mode::STABILIZED;
-	}
-
-	if (_plane->manual_sw)
-	{
-		_plane->flight_mode = Flight_mode::AUTO;
-	}
-	else
-	{
-		_plane->flight_mode = Flight_mode::MANUAL;
-	}
-
 	switch (_plane->system_mode)
 	{
 	case System_mode::CONFIG:
@@ -42,6 +24,24 @@ void Commander::update()
 
 void Commander::handle_flight_mode()
 {
+	if (_plane->manual_sw)
+	{
+		_plane->flight_mode = Flight_mode::AUTO;
+	}
+	else
+	{
+		_plane->flight_mode = Flight_mode::MANUAL;
+	}
+
+	if (_plane->mode_sw)
+	{
+		_plane->manual_mode = Manual_mode::STABILIZED;
+	}
+	else
+	{
+		_plane->manual_mode = Manual_mode::DIRECT;
+	}
+
 	switch (_plane->flight_mode)
 	{
 	case Flight_mode::MANUAL:

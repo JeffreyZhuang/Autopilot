@@ -20,12 +20,12 @@ Autopilot::Autopilot(HAL* hal, Plane* plane)
 
 void Autopilot::setup()
 {
+	printf("Autopilot: Setup\n");
+
 	init_state();
 	_hal->init();
 	_ahrs.setup();
 	_guidance.init();
-
-	// Start tasks
 	_hal->start_main_task(&Autopilot::static_main_task);
 	_hal->start_background_task(&Autopilot::static_background_task);
 }
@@ -43,7 +43,6 @@ void Autopilot::main_task()
 	_mixer.update();
 	_storage.write();
 	_telem.update();
-
 	debug_serial();
 }
 

@@ -52,7 +52,7 @@ void Telem::transmit_telem()
 			(uint16_t)(_plane->nav_airspeed * 10),
 			(float)_plane->gnss_lat,
 			(float)_plane->gnss_lon,
-			static_cast<uint8_t>(_plane->flight_mode),
+			get_current_state(),
 			_plane->waypoint_index,
 			_plane->gnss_sats,
 			_plane->gps_fix
@@ -99,11 +99,14 @@ bool Telem::parse_packet()
 	}
 
 	// Decode consistent overhead byte shuffling
-	uint8_t payload[latest_pkt_len - 3]; // Subtract 3 since removed start, length, and COBS byte
+	uint8_t payload[latest_pkt_len - 3]; // Subtract 3 since removed header
 	cobs_decode(payload, sizeof(payload), packet_cobs, sizeof(packet_cobs));
 
 	uint16_t payload_len = latest_pkt_len - 3; // Subtract header
 	uint8_t msg_id = payload[0];
+	printf("Telem msg_id: %d\n", msg_id);
+	printf("Telem payload_len: %d\n", payload_len);
+	printf("Telem params len: %d\n", sizeof(Parameters));
 	if (msg_id == CMD_MSG_ID && payload_len == sizeof(Command_payload))
 	{
 		Command_payload command_payload;
@@ -118,10 +121,12 @@ bool Telem::parse_packet()
 		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
 
 		_plane->num_waypoints = waypoint_payload.waypoint_index + 1;
-		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){waypoint_payload.waypoint_type,
-																		waypoint_payload.lat,
-																		waypoint_payload.lon,
-																		waypoint_payload.alt};
+		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){
+			waypoint_payload.waypoint_type,
+			waypoint_payload.lat,
+			waypoint_payload.lon,
+			waypoint_payload.alt
+		};
 
 		return true;
 	}
@@ -149,4 +154,51 @@ bool Telem::parse_packet()
 	}
 
 	return false;
+}
+
+// Returns unique state identifier
+// Returns 255 if unknown state
+uint8_t Telem::get_current_state()
+{
+    switch (_plane->system_mode)
+    {
+	case System_mode::CONFIG:
+		return 0;
+	case System_mode::STARTUP:
+		return 1;
+	case System_mode::FLIGHT:
+		switch (_plane->flight_mode)
+		{
+		case Flight_mode::AUTO:
+			switch (_plane->auto_mode)
+			{
+			case Auto_mode::TAKEOFF:
+				return 2;
+			case Auto_mode::MISSION:
+				return 3;
+			case Auto_mode::LAND:
+				return 4;
+			case Auto_mode::FLARE:
+				return 5;
+			case Auto_mode::TOUCHDOWN:
+				return 6;
+			default:
+				return 255;
+			}
+		case Flight_mode::MANUAL:
+			switch (_plane->manual_mode)
+			{
+				case Manual_mode::DIRECT:
+					return 7;
+				case Manual_mode::STABILIZED:
+					return 8;
+				default:
+					return 255;
+			}
+		default:
+			return 255;
+		}
+	default:
+		return 255;
+    }
 }

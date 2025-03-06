@@ -20,7 +20,6 @@ struct __attribute__((packed))Parameters
 	float min_dist_wp; // Distance in meters from waypoint until switching to next
 
 	// Landing
-	float land_gs_deg; // Approach glideslope angle
 	float land_flare_alt; // Flare altitude
 	float flare_sink_rate; // Meters per second
 	float flare_trans_sec; // Time to transition to flare

@@ -70,6 +70,7 @@ private:
 	void transmit_telem(); // Transmit telemetry packet
 	bool parse_packet();
 	void ack();
+	uint8_t get_current_state();
 };
 
 #endif /* TELEM_H_ */
