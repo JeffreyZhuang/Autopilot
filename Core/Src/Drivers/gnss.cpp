@@ -5,7 +5,7 @@
  *      Author: jeffr
  */
 
-#include <gnss.h>
+#include "gnss.h"
 
 GNSS::GNSS(UART_HandleTypeDef* uart)
 {
