@@ -20,16 +20,19 @@ void AHRS::setup()
 
 void AHRS::update()
 {
-	filter.set_beta(get_params()->ahrs_beta);
-
-	switch (ahrs_state)
+	if (_plane->system_mode != System_mode::CONFIG)
 	{
-	case Ahrs_state::INITIALIZATION:
-		update_initialization();
-		break;
-	case Ahrs_state::RUNNING:
-		update_running();
-		break;
+		filter.set_beta(get_params()->ahrs_beta);
+
+		switch (ahrs_state)
+		{
+		case Ahrs_state::INITIALIZATION:
+			update_initialization();
+			break;
+		case Ahrs_state::RUNNING:
+			update_running();
+			break;
+		}
 	}
 }
 

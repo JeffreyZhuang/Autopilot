@@ -23,6 +23,7 @@ struct __attribute__((packed))Telem_payload
 	uint8_t wp_idx;
 	uint8_t gps_sats;
 	bool gps_fix;
+	int16_t alt_setpoint;
 };
 
 // Payload + Header (Start byte, length byte, COBS byte)

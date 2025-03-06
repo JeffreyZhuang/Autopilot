@@ -63,6 +63,10 @@ public:
 	void init_compass();
 	void read_compass();
 
+	// rangefinder_hal.cpp
+	void init_rangefinder();
+	void read_rangefinder();
+
 	// logger_hal.cpp
 	void init_logger();
 	void write_storage_buffer(uint8_t* packet, uint16_t len) override;

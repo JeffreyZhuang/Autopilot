@@ -57,15 +57,15 @@ void Navigation::update_initialization()
 		avg_baro.add(_plane->baro_alt);
 	}
 
-	if (check_new_baro_data() && check_new_gnss_data())
+	if (check_new_baro_data() &&
+		check_new_gnss_data() &&
+		avg_baro.getFilled() &&
+		_plane->ahrs_converged)
 	{
-		if (avg_baro.getFilled())
-		{
-			// Set barometer home position
-			_plane->baro_offset = avg_baro.getAverage();
+		// Set barometer home position
+		_plane->baro_offset = avg_baro.getAverage();
 
-			nav_state = Nav_state::RUNNING;
-		}
+		nav_state = Nav_state::RUNNING;
 	}
 }
 
@@ -75,19 +75,24 @@ void Navigation::update_initialization()
  */
 void Navigation::update()
 {
-	switch (nav_state)
+	if (_plane->system_mode != System_mode::CONFIG)
 	{
-	case Nav_state::INITIALIZATION:
-		update_initialization();
-		break;
-	case Nav_state::RUNNING:
-		update_running();
-		break;
+		switch (nav_state)
+		{
+		case Nav_state::INITIALIZATION:
+			update_initialization();
+			break;
+		case Nav_state::RUNNING:
+			update_running();
+			break;
+		}
 	}
 }
 
 void Navigation::update_running()
 {
+	printf("Nav: %f\n", _plane->nav_pos_down);
+
 	if (check_new_ahrs_data() && check_new_imu_data())
 	{
 		last_ahrs_timestamp = _plane->ahrs_timestamp;

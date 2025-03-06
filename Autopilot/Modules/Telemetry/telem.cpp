@@ -55,7 +55,8 @@ void Telem::transmit_telem()
 			get_current_state(),
 			_plane->waypoint_index,
 			_plane->gnss_sats,
-			_plane->gps_fix
+			_plane->gps_fix,
+			(int16_t)(-_plane->guidance_d_setpoint * 10)
 		};
 
 		// Convert struct to byte array

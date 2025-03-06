@@ -26,20 +26,20 @@ void Commander::handle_flight_mode()
 {
 	if (_plane->manual_sw)
 	{
-		_plane->flight_mode = Flight_mode::AUTO;
-	}
-	else
-	{
-		_plane->flight_mode = Flight_mode::MANUAL;
-	}
-
-	if (_plane->mode_sw)
-	{
-		_plane->manual_mode = Manual_mode::STABILIZED;
+		if (_plane->mode_sw)
+		{
+			_plane->manual_mode = Manual_mode::STABILIZED;
+			_plane->flight_mode = Flight_mode::MANUAL;
+		}
+		else
+		{
+			_plane->flight_mode = Flight_mode::AUTO;
+		}
 	}
 	else
 	{
 		_plane->manual_mode = Manual_mode::DIRECT;
+		_plane->flight_mode = Flight_mode::MANUAL;
 	}
 
 	switch (_plane->flight_mode)

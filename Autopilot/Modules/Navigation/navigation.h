@@ -40,10 +40,12 @@ private:
     float window_baro[window_len];
     float window_lat[window_len];
     float window_lon[window_len];
+
     uint64_t last_imu_timestamp = 0;
     uint64_t last_gnss_timestamp = 0;
     uint64_t last_baro_timestamp = 0;
     uint64_t last_ahrs_timestamp = 0;
+    uint64_t last_rangefinder_timestamp = 0;
 
     void update_initialization();
     void update_running();
@@ -62,6 +64,7 @@ private:
 	bool check_new_baro_data();
 	bool check_new_gnss_data();
 	bool check_new_ahrs_data();
+	bool check_new_rangefinder_data();
 	Eigen::Vector3f inertial_to_ned(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw);
 };
 

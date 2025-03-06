@@ -5,7 +5,6 @@ Cxof::Cxof(UART_HandleTypeDef* uart)
 	_uart = uart;
 }
 
-
 void Cxof::setup()
 {
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
@@ -36,4 +35,6 @@ void Cxof::dma_complete()
 			frame_started = false;
 		}
 	}
+
+	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
 }
