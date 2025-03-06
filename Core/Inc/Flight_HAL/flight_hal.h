@@ -94,8 +94,8 @@ public:
 	static void telemetry_dma_complete() { _instance->mlrs_telem.dma_complete(); }
 
 	// scheduler_hal.cpp
-	void set_main_task(void (*task)()) override;
-	void set_background_task(void (*task)()) override;
+	void start_main_task(void (*task)()) override;
+	void start_background_task(void (*task)()) override;
 	float get_main_dt() const override;
 	void execute_main_task();
 	static void main_task_callback() { _instance->execute_main_task(); }

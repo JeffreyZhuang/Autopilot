@@ -1,6 +1,6 @@
 #include "pitl_hal.h"
 
-void Pitl_hal::set_main_task(void (*task)())
+void Pitl_hal::start_main_task(void (*task)())
 {
 	uint64_t prev_time = get_time_us();
 

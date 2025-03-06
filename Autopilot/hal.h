@@ -37,8 +37,8 @@ public:
     virtual uint64_t get_time_us() = 0;
 
     // Scheduler
-    virtual void set_main_task(void (*task)()) = 0;
-    virtual void set_background_task(void (*task)()) = 0;
+    virtual void start_main_task(void (*task)()) = 0;
+    virtual void start_background_task(void (*task)()) = 0;
     virtual float get_main_dt() const = 0;
 
     virtual ~HAL() {}

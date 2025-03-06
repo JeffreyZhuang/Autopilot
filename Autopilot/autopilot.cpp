@@ -26,8 +26,8 @@ void Autopilot::setup()
 	_guidance.init();
 
 	// Start tasks
-	_hal->set_main_task(&Autopilot::static_main_task);
-	_hal->set_background_task(&Autopilot::static_background_task);
+	_hal->start_main_task(&Autopilot::static_main_task);
+	_hal->start_background_task(&Autopilot::static_background_task);
 }
 
 void Autopilot::main_task()

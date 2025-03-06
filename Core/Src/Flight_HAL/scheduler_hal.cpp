@@ -1,6 +1,6 @@
 #include "Flight_HAL/flight_hal.h"
 
-void Flight_hal::set_main_task(void (*task)())
+void Flight_hal::start_main_task(void (*task)())
 {
 	main_task = task;
 
@@ -23,7 +23,7 @@ float Flight_hal::get_main_dt() const
 	return 0.01;
 }
 
-void Flight_hal::set_background_task(void (*task)())
+void Flight_hal::start_background_task(void (*task)())
 {
 	background_task = task;
 
