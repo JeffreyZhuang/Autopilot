@@ -7,9 +7,13 @@ void Flight_hal::init_rangefinder()
 
 void Flight_hal::read_rangefinder()
 {
-	float flow_x = cxof.result.x - _plane->imu_gx;
-	float flow_y = cxof.result.y - _plane->imu_gy;
-	float flow_mag = sqrtf(flow_x*flow_x + flow_y*flow_y);
-	_plane->rangefinder_dist = _plane->nav_airspeed / flow_mag;
-	_plane->rangefinder_timestamp = get_time_us();
+	Cxof_frame result;
+	if (cxof.read(&result))
+	{
+		float flow_x = result.x - _plane->imu_gx * M_PI / 180.0f;
+		float flow_y = result.y - _plane->imu_gy * M_PI / 180.0f;
+		float flow_mag = sqrtf(flow_x*flow_x + flow_y*flow_y);
+		_plane->rangefinder_dist = _plane->nav_airspeed / flow_mag;
+		_plane->rangefinder_timestamp = get_time_us();
+	}
 }

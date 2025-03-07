@@ -10,6 +10,17 @@ void Cxof::setup()
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
 }
 
+bool Cxof::read(Cxof_frame *frame)
+{
+	if (new_data)
+	{
+		*frame = result;
+		new_data = false;
+		return true;
+	}
+	return false;
+}
+
 void Cxof::dma_complete()
 {
 	uint8_t byte = rx_buffer[0];
@@ -24,11 +35,12 @@ void Cxof::dma_complete()
 		working_frame[frame_idx] = byte;
 		frame_idx++;
 
-		if (frame_idx == CXOF_FRAME_LEN - 1)
+		if (frame_idx == CXOF_FRAME_LEN)
 		{
-			if (byte == CXOF_FOOTER)
+			if (byte == CXOF_FOOTER && !new_data)
 			{
 				memcpy(&result, working_frame, sizeof(Cxof_frame));
+				new_data = true;
 			}
 
 			frame_idx = 0;

@@ -25,14 +25,16 @@ class Cxof
 public:
 	Cxof(UART_HandleTypeDef* uart);
 	void setup();
+	bool read(Cxof_frame* frame);
 	void dma_complete();
-	Cxof_frame result;
 private:
 	UART_HandleTypeDef* _uart;
 	uint8_t rx_buffer[1];
 	uint8_t working_frame[CXOF_FRAME_LEN];
 	uint8_t frame_idx;
 	bool frame_started = false;
+	bool new_data = false;
+	Cxof_frame result;
 };
 
 #endif /* INC_DRIVERS_CXOF_H_ */

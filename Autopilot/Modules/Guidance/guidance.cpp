@@ -192,7 +192,7 @@ void Guidance::update_flare()
 	Waypoint appr_wp = _plane->waypoints[_plane->waypoint_index - 1];
 	float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon, appr_wp.lat, appr_wp.lon);
 	float glideslope_angle = atan2f(land_wp.alt - appr_wp.alt, dist_land_appr);
-	float initial_sink_rate = _plane->nav_airspeed * sinf(glideslope_angle);
+	float initial_sink_rate = get_params()->aspd_land * sinf(glideslope_angle);
 	float final_sink_rate = get_params()->flare_sink_rate;
 
 	float time_since_flare = (_plane->time - flare_start_time) * us_to_s;
