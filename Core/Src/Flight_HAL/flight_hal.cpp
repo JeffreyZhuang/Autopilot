@@ -2,13 +2,15 @@
 
 Flight_hal* Flight_hal::_instance = nullptr;
 
-Flight_hal::Flight_hal(Plane * plane) : _imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),
-										_ina219(&hi2c1, 0.01),
-										_gnss(&huart3),
-										mlrs_rc(&huart4),
-										mlrs_telem(&huart6),
-										servo1(&htim3, TIM_CHANNEL_1),
-										servo2(&htim2, TIM_CHANNEL_1)
+Flight_hal::Flight_hal(Plane * plane) :
+	_imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),
+	_ina219(&hi2c1, 0.01),
+	_gnss(&huart3),
+	mlrs_rc(&huart4),
+	mlrs_telem(&huart6),
+	servo1(&htim3, TIM_CHANNEL_1),
+	servo2(&htim2, TIM_CHANNEL_1),
+	cxof(&huart1)
 {
 	_instance = this;
 	_plane = plane;

@@ -44,7 +44,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
-	if (huart == &huart3)
+	if (huart == &huart1)
+	{
+		Flight_hal::rangefinder_dma_complete();
+	}
+	else if (huart == &huart3)
 	{
 		Flight_hal::gnss_dma_complete();
 	}

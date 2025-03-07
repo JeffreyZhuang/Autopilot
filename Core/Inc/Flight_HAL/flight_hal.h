@@ -11,6 +11,7 @@
 #include "sd.h"
 #include "mlrs_rc.h"
 #include "mlrs_telem.h"
+#include "cxof.h"
 #include "Lib/Utils/utils.h"
 #include "parameters.h"
 
@@ -34,6 +35,7 @@ extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim7;
 
+extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart6;
@@ -66,6 +68,7 @@ public:
 	// rangefinder_hal.cpp
 	void init_rangefinder();
 	void read_rangefinder();
+	static void rangefinder_dma_complete() { _instance->rangefinder_dma_complete(); }
 
 	// logger_hal.cpp
 	void init_logger();
@@ -115,6 +118,7 @@ private:
 	Mlrs_telem mlrs_telem;
 	Servo servo1;
 	Servo servo2;
+	Cxof cxof;
 
 	// scheduler_hal.cpp
 	void (*main_task)() = nullptr;
