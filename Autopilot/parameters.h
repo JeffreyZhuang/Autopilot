@@ -21,7 +21,7 @@ struct __attribute__((packed))Parameters
 
 	// Landing
 	float land_flare_alt; // Flare altitude
-	float flare_sink_rate; // Meters per second
+	float flare_sink_rate; // Target sink rate for flare, meters per second
 	float flare_trans_sec; // Time to transition to flare
 	float touchdown_aspd_thresh; // Detect touchdown when speed below this value in meters per second
 

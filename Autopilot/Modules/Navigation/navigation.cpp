@@ -91,8 +91,6 @@ void Navigation::update()
 
 void Navigation::update_running()
 {
-	printf("Nav: %f\n", _plane->nav_pos_down);
-
 	if (check_new_ahrs_data() && check_new_imu_data())
 	{
 		last_ahrs_timestamp = _plane->ahrs_timestamp;

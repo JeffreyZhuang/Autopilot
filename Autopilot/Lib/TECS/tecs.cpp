@@ -6,9 +6,9 @@ Tecs::Tecs(Plane* plane)
 }
 
 // wb: weight balance
-// wb = 0: only altitude
+// wb = 0: only spd
 // wb = 1: balanced
-// wb = 2: only speed
+// wb = 2: only alt
 void Tecs::update(float target_vel_mps, float target_alt_m, float wb)
 {
 	// Calculate specific energy

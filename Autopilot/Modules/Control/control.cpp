@@ -94,9 +94,9 @@ void Control::update_stabilized()
 		_plane->ahrs_pitch,
 		_plane->pitch_setpoint,
 		get_params()->ptch_kp,
-		0.00002,
 		0,
-		1,
+		0,
+		0,
 		-1,
 		1,
 		0
@@ -113,7 +113,7 @@ void Control::update_takeoff()
 		_plane->ahrs_roll,
 		_plane->roll_setpoint,
 		get_params()->roll_kp,
-		get_params()->roll_ki,
+		0,
 		0,
 		0,
 		-1,
@@ -125,9 +125,9 @@ void Control::update_takeoff()
 		_plane->ahrs_pitch,
 		_plane->pitch_setpoint,
 		get_params()->ptch_kp,
-		get_params()->ptch_ki,
 		0,
-		1,
+		0,
+		0,
 		-1,
 		1,
 		0
@@ -147,7 +147,7 @@ void Control::update_mission()
 		get_params()->alt_kp,
 		get_params()->alt_ki,
 		0,
-		10,
+		get_params()->ptch_lim_deg,
 		-get_params()->ptch_lim_deg,
 		get_params()->ptch_lim_deg,
 		0
@@ -181,7 +181,7 @@ void Control::update_mission()
 		_plane->ahrs_roll,
 		_plane->roll_setpoint,
 		get_params()->roll_kp,
-		get_params()->roll_ki,
+		0,
 		0,
 		0,
 		-1,
@@ -193,9 +193,9 @@ void Control::update_mission()
 		_plane->ahrs_pitch,
 		_plane->pitch_setpoint,
 		get_params()->ptch_kp,
-		get_params()->ptch_ki,
 		0,
-		1,
+		0,
+		0,
 		-1,
 		1,
 		0
@@ -213,7 +213,7 @@ void Control::update_land()
 		get_params()->alt_kp,
 		get_params()->alt_ki,
 		0,
-		10,
+		get_params()->ptch_lim_deg,
 		-get_params()->ptch_lim_deg,
 		get_params()->ptch_lim_deg,
 		0
@@ -247,9 +247,9 @@ void Control::update_land()
 	    _plane->ahrs_pitch,
 	    _plane->pitch_setpoint,
 	    get_params()->ptch_kp,
-	    get_params()->ptch_ki,
 	    0,
-	    1,
+	    0,
+	    0,
 	    -1,
 	    1,
 	    0
@@ -272,7 +272,7 @@ void Control::update_land()
 void Control::update_flare()
 {
 	_tecs.update(
-	    get_params()->aspd_land,
+	    get_params()->tecs_min_aspd_mps,
 	    _plane->guidance_d_setpoint,
 	    2
 	);
@@ -283,7 +283,7 @@ void Control::update_flare()
 	    get_params()->alt_kp,
 	    get_params()->alt_ki,
 	    0,
-	    10,
+		get_params()->ptch_lim_deg,
 	    -get_params()->ptch_lim_deg,
 	    get_params()->ptch_lim_deg,
 	    0
@@ -305,9 +305,9 @@ void Control::update_flare()
 	    _plane->ahrs_pitch,
 	    _plane->pitch_setpoint,
 	    get_params()->ptch_kp,
-	    0.00002,
 	    0,
-	    1,
+	    0,
+	    0,
 	    -1,
 	    1,
 	    0

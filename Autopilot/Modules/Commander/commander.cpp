@@ -24,23 +24,7 @@ void Commander::update()
 
 void Commander::handle_flight_mode()
 {
-	if (_plane->manual_sw)
-	{
-		if (_plane->mode_sw)
-		{
-			_plane->manual_mode = Manual_mode::STABILIZED;
-			_plane->flight_mode = Flight_mode::MANUAL;
-		}
-		else
-		{
-			_plane->flight_mode = Flight_mode::AUTO;
-		}
-	}
-	else
-	{
-		_plane->manual_mode = Manual_mode::DIRECT;
-		_plane->flight_mode = Flight_mode::MANUAL;
-	}
+	handle_switches();
 
 	switch (_plane->flight_mode)
 	{
@@ -83,6 +67,29 @@ void Commander::handle_auto_mode()
 	case Auto_mode::TOUCHDOWN:
 		update_touchdown();
 		break;
+	}
+}
+
+void Commander::handle_switches()
+{
+	// Manual switch overrides Mode switch and toggles between manual
+	if (_plane->manual_sw)
+	{
+		// Mode switch toggles between stabilized and auto
+		if (_plane->mode_sw)
+		{
+			_plane->flight_mode = Flight_mode::AUTO;
+		}
+		else
+		{
+			_plane->manual_mode = Manual_mode::STABILIZED;
+			_plane->flight_mode = Flight_mode::MANUAL;
+		}
+	}
+	else
+	{
+		_plane->manual_mode = Manual_mode::DIRECT;
+		_plane->flight_mode = Flight_mode::MANUAL;
 	}
 }
 

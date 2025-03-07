@@ -32,6 +32,8 @@ void Autopilot::setup()
 
 void Autopilot::main_task()
 {
+	printf("Time: %d\n", (uint32_t)_plane->time);
+
 	update_time();
 	_hal->read_sensors();
 	_rc_handler.rc_update();

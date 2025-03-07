@@ -13,11 +13,10 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
-
 	void handle_flight_mode();
 	void handle_manual_mode();
 	void handle_auto_mode();
-
+	void handle_switches();
 	void update_config();
 	void update_startup();
 	void update_takeoff();
