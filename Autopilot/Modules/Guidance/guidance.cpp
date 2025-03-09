@@ -96,7 +96,7 @@ void Guidance::update_mission()
 	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - tgt_wp_east) - sinf(trk_hdg) * (_plane->nav_pos_north - tgt_wp_north);
 
 	// Calculate heading setpoint
-	_plane->guidance_hdg_setpoint = trk_hdg * rad_to_deg + clamp(kP * (0 - xte), -90, 90);
+	_plane->guidance_hdg_setpoint = (trk_hdg + atanf(kP * (0 - xte))) * rad_to_deg;
 	if (_plane->guidance_hdg_setpoint < 0) {
 		_plane->guidance_hdg_setpoint += 360.0;
 	}
@@ -104,12 +104,16 @@ void Guidance::update_mission()
 	// Linearly interpolate altitude setpoint
 	float dist_prev_plane = sqrtf(powf(_plane->nav_pos_north - prev_wp_north, 2) + powf(_plane->nav_pos_east - prev_wp_east, 2));
 	float dist_prev_tgt = sqrtf(powf(tgt_wp_north - prev_wp_north, 2) + powf(tgt_wp_east - prev_wp_east, 2));
-	float progress = dist_prev_plane / dist_prev_tgt;
-	if (progress > 1)
+	float progress = clamp(dist_prev_plane / dist_prev_tgt, 0, 1);
+	if (_plane->waypoint_index > 0)
 	{
-		progress = 1;
+		_plane->guidance_d_setpoint = last_altitude_setpoint + progress * (target_wp.alt - last_altitude_setpoint);
 	}
-	_plane->guidance_d_setpoint = prev_wp.alt + progress * (target_wp.alt - prev_wp.alt);
+	else
+	{
+		_plane->guidance_d_setpoint = prev_wp.alt + progress * (target_wp.alt - prev_wp.alt);
+	}
+	last_altitude_setpoint = _plane->guidance_d_setpoint;
 
 	// Calculate distance to waypoint to determine if waypoint reached
 	float dist_to_wp = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));
@@ -164,7 +168,7 @@ void Guidance::update_landing()
 	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - tgt_wp_east) - sinf(trk_hdg) * (_plane->nav_pos_north - tgt_wp_north);
 
 	// Calculate heading setpoint
-	_plane->guidance_hdg_setpoint = trk_hdg * rad_to_deg + clamp(kP * (0 - xte), -90, 90);
+	_plane->guidance_hdg_setpoint = (trk_hdg + atanf(kP * (0 - xte))) * rad_to_deg;
 	if (_plane->guidance_hdg_setpoint < 0) {
 		_plane->guidance_hdg_setpoint += 360.0;
 	}
@@ -172,11 +176,7 @@ void Guidance::update_landing()
 	// Linearly interpolate altitude setpoint
 	float dist_prev_plane = sqrtf(powf(_plane->nav_pos_north - prev_wp_north, 2) + powf(_plane->nav_pos_east - prev_wp_east, 2));
 	float dist_prev_tgt = sqrtf(powf(tgt_wp_north - prev_wp_north, 2) + powf(tgt_wp_east - prev_wp_east, 2));
-	float progress = dist_prev_plane / dist_prev_tgt;
-	if (progress > 1)
-	{
-		progress = 1;
-	}
+	float progress = clamp(dist_prev_plane / dist_prev_tgt, 0, 1);
 	_plane->guidance_d_setpoint = prev_wp.alt + progress * (target_wp.alt - prev_wp.alt);
 }
 
@@ -184,6 +184,7 @@ void Guidance::update_flare()
 {
 	if (!flare_initialized)
 	{
+		_plane->guidance_d_setpoint = -get_params()->land_flare_alt;
 		flare_start_time = _plane->time;
 		flare_initialized = true;
 	}
@@ -192,11 +193,10 @@ void Guidance::update_flare()
 	Waypoint appr_wp = _plane->waypoints[_plane->waypoint_index - 1];
 	float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon, appr_wp.lat, appr_wp.lon);
 	float glideslope_angle = atan2f(land_wp.alt - appr_wp.alt, dist_land_appr);
-	float initial_sink_rate = get_params()->aspd_land * sinf(glideslope_angle);
-	float final_sink_rate = get_params()->flare_sink_rate;
-
 	float time_since_flare = (_plane->time - flare_start_time) * us_to_s;
 	float progress = clamp(time_since_flare / get_params()->flare_trans_sec, 0, 1);
+	float initial_sink_rate = get_params()->aspd_land * sinf(glideslope_angle);
+	float final_sink_rate = get_params()->flare_sink_rate;
 	float sink_rate = initial_sink_rate + (final_sink_rate - initial_sink_rate) * progress;
 
 	_plane->guidance_d_setpoint += sink_rate * _hal->get_main_dt();
