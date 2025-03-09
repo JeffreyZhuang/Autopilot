@@ -10,7 +10,7 @@ Flight_hal::Flight_hal(Plane * plane) :
 	mlrs_telem(&huart6),
 	servo1(&htim3, TIM_CHANNEL_1),
 	servo2(&htim2, TIM_CHANNEL_1),
-	cxof(&huart1)
+	cxof(&huart2)
 {
 	_instance = this;
 	_plane = plane;

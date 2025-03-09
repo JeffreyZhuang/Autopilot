@@ -61,7 +61,7 @@ void Guidance::update_mission()
 	}
 	else
 	{
-		// If there is no previous waypoint, use home position as prev waypoint
+		// If there is no previous waypoint, use home position
 		prev_wp = Waypoint{
 			Waypoint_type::WAYPOINT,
 			_plane->home_lat,
