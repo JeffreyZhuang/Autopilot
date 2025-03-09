@@ -11,7 +11,6 @@ class Tecs
 {
 public:
 	Tecs(Plane* plane);
-
 	void update(float target_vel_mps, float target_alt_m, float wb);
 private:
 	Plane* _plane;

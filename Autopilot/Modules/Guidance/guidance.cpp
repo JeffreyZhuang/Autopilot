@@ -128,7 +128,7 @@ void Guidance::update_flare()
 {
 	if (!flare_initialized)
 	{
-		_plane->guidance_d_setpoint = -get_params()->land_flare_alt;
+//		_plane->guidance_d_setpoint = -get_params()->land_flare_alt;
 		flare_start_time = _plane->time;
 		flare_initialized = true;
 	}
