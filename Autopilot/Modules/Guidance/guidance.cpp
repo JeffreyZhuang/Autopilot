@@ -104,6 +104,15 @@ void Guidance::update_mission()
 	// Linearly interpolate altitude setpoint
 	float dist_prev_plane = sqrtf(powf(_plane->nav_pos_north - prev_wp_north, 2) + powf(_plane->nav_pos_east - prev_wp_east, 2));
 	float dist_prev_tgt = sqrtf(powf(tgt_wp_north - prev_wp_north, 2) + powf(tgt_wp_east - prev_wp_east, 2));
+	dist_prev_plane -= get_params()->min_dist_wp;
+	if (_plane->waypoint_index != _plane->num_waypoints - 1)
+	{
+		dist_prev_tgt -= get_params()->min_dist_wp * 2;
+	}
+	else
+	{
+		dist_prev_tgt -= get_params()->min_dist_wp;
+	}
 	float progress = clamp(dist_prev_plane / dist_prev_tgt, 0, 1);
 	_plane->guidance_d_setpoint = prev_wp.alt + progress * (target_wp.alt - prev_wp.alt);
 

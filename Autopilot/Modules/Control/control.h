@@ -8,14 +8,11 @@
 #include <math.h>
 #include <cstdio>
 
-// Calculates and sends commands to servos
 class Control
 {
 public:
 	Control(HAL* hal, Plane* plane);
-
 	void update();
-
 private:
 	HAL* _hal;
 	Plane* _plane;
@@ -25,10 +22,8 @@ private:
 	PID alt_controller;
 	PID speed_controller;
 	Tecs _tecs;
-
 	void handle_manual_mode();
 	void handle_auto_mode();
-
 	void update_direct();
 	void update_stabilized();
 	void update_takeoff();
@@ -36,6 +31,8 @@ private:
 	void update_land();
 	void update_flare();
 	void update_touchdown();
+	void control_roll_ptch();
+	void control_alt_spd_hdg();
 };
 
 #endif /* CONTROL_H_ */

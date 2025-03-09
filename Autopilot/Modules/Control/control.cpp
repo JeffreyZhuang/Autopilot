@@ -79,28 +79,7 @@ void Control::update_stabilized()
 			get_params()->ptch_lim_deg;
 	_plane->roll_setpoint = _plane->rc_in_norm[get_params()->aileron_ch] *
 			get_params()->roll_lim_deg;
-	_plane->aileron_setpoint = roll_controller.get_output(
-		_plane->ahrs_roll,
-		_plane->roll_setpoint,
-		get_params()->roll_kp,
-		0,
-		0,
-		0,
-		-1,
-		1,
-		0
-	);
-	_plane->elevator_setpoint = pitch_controller.get_output(
-		_plane->ahrs_pitch,
-		_plane->pitch_setpoint,
-		get_params()->ptch_kp,
-		get_params()->ptch_ki,
-		0,
-		1,
-		-1,
-		1,
-		0
-	);
+	control_roll_ptch();
 	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
 }
 
@@ -120,7 +99,6 @@ void Control::update_takeoff()
 		1,
 		0
 	);
-
 	_plane->elevator_setpoint = pitch_controller.get_output(
 		_plane->ahrs_pitch,
 		_plane->pitch_setpoint,
@@ -132,7 +110,6 @@ void Control::update_takeoff()
 		1,
 		0
 	);
-
 	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
 }
 
@@ -140,43 +117,51 @@ void Control::update_takeoff()
 void Control::update_mission()
 {
 	_tecs.update(get_params()->aspd_cruise, _plane->guidance_d_setpoint, 1);
+	control_alt_spd_hdg();
+	control_roll_ptch();
+}
 
+// Track approach guidance altitude and heading setpoints at the reduced speed of AIRSPEED_LANDING
+void Control::update_land()
+{
+	_tecs.update(get_params()->aspd_land, _plane->guidance_d_setpoint, 1);
+	control_alt_spd_hdg();
+	control_roll_ptch();
+}
+
+// Cut throttle, set roll to 0 and track flare guidance altitude setpoints
+void Control::update_flare()
+{
+	_tecs.update(
+	    get_params()->tecs_min_aspd_mps,
+	    _plane->guidance_d_setpoint,
+	    2
+	);
 	_plane->pitch_setpoint = alt_controller.get_output(
-		_plane->tecs_energy_diff,
-		_plane->tecs_energy_diff_setpoint,
-		get_params()->alt_kp,
-		get_params()->alt_ki,
-		0,
+	    _plane->tecs_energy_diff,
+	    _plane->tecs_energy_diff_setpoint,
+	    get_params()->alt_kp,
+	    get_params()->alt_ki,
+	    0,
 		get_params()->ptch_lim_deg,
-		-get_params()->ptch_lim_deg,
-		get_params()->ptch_lim_deg,
-		0
+	    -get_params()->ptch_lim_deg,
+	    get_params()->ptch_lim_deg,
+	    0
 	);
+	_plane->roll_setpoint = 0;
+	_plane->throttle_setpoint = 0;
+	control_roll_ptch();
+}
 
-	_plane->throttle_setpoint = speed_controller.get_output(
-		_plane->tecs_energy_total,
-		_plane->tecs_energy_total_setpoint,
-		get_params()->thr_kp,
-		get_params()->thr_ki,
-		0,
-		1,
-		0,
-		1,
-		get_params()->throttle_cruise
-	);
+void Control::update_touchdown()
+{
+	_plane->aileron_setpoint = 0;
+	_plane->elevator_setpoint = 0;
+	_plane->throttle_setpoint = 0;
+}
 
-	_plane->roll_setpoint = hdg_controller.get_output(
-		_plane->ahrs_yaw,
-		_plane->guidance_hdg_setpoint,
-		get_params()->hdg_kp,
-		get_params()->hdg_ki,
-		0,
-		0,
-		-get_params()->roll_lim_deg,
-		get_params()->roll_lim_deg,
-		0
-	);
-
+void Control::control_roll_ptch()
+{
 	_plane->aileron_setpoint = roll_controller.get_output(
 		_plane->ahrs_roll,
 		_plane->roll_setpoint,
@@ -188,7 +173,6 @@ void Control::update_mission()
 		1,
 		0
 	);
-
 	_plane->elevator_setpoint = pitch_controller.get_output(
 		_plane->ahrs_pitch,
 		_plane->pitch_setpoint,
@@ -202,11 +186,8 @@ void Control::update_mission()
 	);
 }
 
-// Track approach guidance altitude and heading setpoints at the reduced speed of AIRSPEED_LANDING
-void Control::update_land()
+void Control::control_alt_spd_hdg()
 {
-	_tecs.update(get_params()->aspd_land, _plane->guidance_d_setpoint, 1);
-
 	_plane->pitch_setpoint = alt_controller.get_output(
 		_plane->tecs_energy_diff,
 		_plane->tecs_energy_diff_setpoint,
@@ -218,108 +199,26 @@ void Control::update_land()
 		get_params()->ptch_lim_deg,
 		0
 	);
-
-	_plane->roll_setpoint = hdg_controller.get_output(
-	    _plane->ahrs_yaw,
-	    _plane->guidance_hdg_setpoint,
-	    get_params()->hdg_kp,
-	    0,
-	    0,
-	    0,
-	    -get_params()->roll_lim_deg,
-	    get_params()->roll_lim_deg,
-	    0
-	);
-
-	_plane->aileron_setpoint = roll_controller.get_output(
-	    _plane->ahrs_roll,
-	    _plane->roll_setpoint,
-	    get_params()->roll_kp,
-	    0,
-	    0,
-	    0,
-	    -1,
-	    1,
-	    0
-	);
-
-	_plane->elevator_setpoint = pitch_controller.get_output(
-	    _plane->ahrs_pitch,
-	    _plane->pitch_setpoint,
-	    get_params()->ptch_kp,
-	    get_params()->ptch_ki,
-	    0,
-	    1,
-	    -1,
-	    1,
-	    0
-	);
-
 	_plane->throttle_setpoint = speed_controller.get_output(
-	    _plane->tecs_energy_total,
-	    _plane->tecs_energy_total_setpoint,
-	    get_params()->thr_kp,
-	    0.0,
-	    0,
-	    0,
-	    0,
-	    1,
-	    get_params()->throttle_cruise
+		_plane->tecs_energy_total,
+		_plane->tecs_energy_total_setpoint,
+		get_params()->thr_kp,
+		get_params()->thr_ki,
+		0,
+		1,
+		0,
+		1,
+		get_params()->throttle_cruise
 	);
-}
-
-// Cut throttle, set roll to 0 and track flare guidance altitude setpoints
-void Control::update_flare()
-{
-	_tecs.update(
-	    get_params()->tecs_min_aspd_mps,
-	    _plane->guidance_d_setpoint,
-	    2
+	_plane->roll_setpoint = hdg_controller.get_output(
+		_plane->ahrs_yaw,
+		_plane->guidance_hdg_setpoint,
+		get_params()->hdg_kp,
+		get_params()->hdg_ki,
+		0,
+		get_params()->roll_lim_deg,
+		-get_params()->roll_lim_deg,
+		get_params()->roll_lim_deg,
+		0
 	);
-
-	_plane->pitch_setpoint = alt_controller.get_output(
-	    _plane->tecs_energy_diff,
-	    _plane->tecs_energy_diff_setpoint,
-	    get_params()->alt_kp,
-	    get_params()->alt_ki,
-	    0,
-		get_params()->ptch_lim_deg,
-	    -get_params()->ptch_lim_deg,
-	    get_params()->ptch_lim_deg,
-	    0
-	);
-
-	_plane->aileron_setpoint = roll_controller.get_output(
-	    _plane->ahrs_roll,
-	    _plane->roll_setpoint,
-	    get_params()->roll_kp,
-	    0,
-	    0,
-	    0,
-	    -1,
-	    1,
-	    0
-	);
-
-	_plane->elevator_setpoint = pitch_controller.get_output(
-	    _plane->ahrs_pitch,
-	    _plane->pitch_setpoint,
-	    get_params()->ptch_kp,
-	    get_params()->ptch_ki,
-	    0,
-	    1,
-	    -1,
-	    1,
-	    0
-	);
-
-	_plane->roll_setpoint = 0;
-	_plane->throttle_setpoint = 0;
-}
-
-void Control::update_touchdown()
-{
-	_plane->aileron_setpoint = 0;
-	_plane->elevator_setpoint = 0;
-	_plane->throttle_setpoint = 0;
 }
