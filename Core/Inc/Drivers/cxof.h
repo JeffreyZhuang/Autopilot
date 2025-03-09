@@ -3,17 +3,18 @@
 
 #include "stm32f4xx_hal.h"
 #include <cstring>
+#include <stdio.h>
 
 #define CXOF_HEADER         (uint8_t)0xFE
 #define CXOF_FOOTER         (uint8_t)0xAA
 #define CXOF_FRAME_LEN                  9
 
-struct Cxof_frame
+struct  __attribute__((packed))Cxof_frame
 {
 	uint8_t header;
 	uint8_t len;
-	uint16_t x;
-	uint16_t y;
+	int16_t x;
+	int16_t y;
 	uint8_t checksum;
 	uint8_t surface_quality;
 	uint8_t footer;

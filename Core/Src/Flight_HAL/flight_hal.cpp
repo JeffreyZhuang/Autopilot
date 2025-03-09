@@ -25,6 +25,7 @@ void Flight_hal::init()
 	init_logger();
 	init_telem();
 	init_servos();
+	init_rangefinder();
 }
 
 void Flight_hal::read_sensors()
@@ -34,4 +35,5 @@ void Flight_hal::read_sensors()
 	read_compass();
 	read_gnss();
 	read_power_monitor();
+	read_rangefinder();
 }

@@ -68,7 +68,7 @@ public:
 	// rangefinder_hal.cpp
 	void init_rangefinder();
 	void read_rangefinder();
-	static void rangefinder_dma_complete() { _instance->rangefinder_dma_complete(); }
+	static void rangefinder_dma_complete() { _instance->cxof.dma_complete(); }
 
 	// logger_hal.cpp
 	void init_logger();
