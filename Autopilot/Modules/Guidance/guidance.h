@@ -26,7 +26,6 @@ private:
 	void handle_manual_mode();
 	void handle_auto_mode();
 	void update_mission();
-	void update_landing();
 	void update_flare();
 };
 
