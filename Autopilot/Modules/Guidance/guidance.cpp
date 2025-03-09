@@ -44,6 +44,8 @@ void Guidance::handle_auto_mode()
 	case Auto_mode::FLARE:
 		update_flare();
 		break;
+	case Auto_mode::TOUCHDOWN:
+		break;
 	}
 }
 
@@ -94,7 +96,7 @@ void Guidance::update_mission()
 	float xte = cosf(trk_hdg) * (_plane->nav_pos_east - tgt_wp_east) - sinf(trk_hdg) * (_plane->nav_pos_north - tgt_wp_north);
 
 	// Calculate heading setpoint
-	_plane->guidance_hdg_setpoint = (trk_hdg + atanf(kP * (0 - xte))) * rad_to_deg;
+	_plane->guidance_hdg_setpoint = (trk_hdg + atanf(get_params()->guidance_kp * (0 - xte))) * rad_to_deg;
 	if (_plane->guidance_hdg_setpoint < 0) {
 		_plane->guidance_hdg_setpoint += 360.0;
 	}
@@ -103,15 +105,7 @@ void Guidance::update_mission()
 	float dist_prev_plane = sqrtf(powf(_plane->nav_pos_north - prev_wp_north, 2) + powf(_plane->nav_pos_east - prev_wp_east, 2));
 	float dist_prev_tgt = sqrtf(powf(tgt_wp_north - prev_wp_north, 2) + powf(tgt_wp_east - prev_wp_east, 2));
 	float progress = clamp(dist_prev_plane / dist_prev_tgt, 0, 1);
-	if (_plane->waypoint_index > 0)
-	{
-		_plane->guidance_d_setpoint = last_altitude_setpoint + progress * (target_wp.alt - last_altitude_setpoint);
-	}
-	else
-	{
-		_plane->guidance_d_setpoint = prev_wp.alt + progress * (target_wp.alt - prev_wp.alt);
-	}
-	last_altitude_setpoint = _plane->guidance_d_setpoint;
+	_plane->guidance_d_setpoint = prev_wp.alt + progress * (target_wp.alt - prev_wp.alt);
 
 	// Calculate distance to waypoint to determine if waypoint reached
 	float dist_to_wp = sqrtf(powf(tgt_wp_north - _plane->nav_pos_north, 2) + powf(tgt_wp_east - _plane->nav_pos_east, 2));

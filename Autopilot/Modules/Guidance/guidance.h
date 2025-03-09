@@ -19,10 +19,8 @@ public:
 private:
 	HAL* _hal;
 	Plane*_plane;
-	float kP = 1;
 	bool flare_initialized = false;
 	uint64_t flare_start_time = 0;
-	float last_altitude_setpoint = 0;
 	void handle_manual_mode();
 	void handle_auto_mode();
 	void update_mission();

@@ -19,6 +19,9 @@ struct __attribute__((packed))Parameters
 	float roll_lim_deg; // Maximum roll angle in either direction
 	float min_dist_wp; // Distance in meters from waypoint until switching to next
 
+	// Guidance
+	float guidance_kp;
+
 	// Landing
 	float land_flare_alt; // Flare altitude
 	float flare_sink_rate; // Target sink rate for flare, meters per second
