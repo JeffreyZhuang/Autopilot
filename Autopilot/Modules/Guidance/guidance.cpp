@@ -70,6 +70,8 @@ void Guidance::update_mission()
 		_plane->guidance_hdg_setpoint += 360.0; // Transform range from [-180, 180] to [0, 360]
 	}
 
+	// WRONG, I NEED TO REDO ALONG TRACK DISTANCE WHEN NOT
+
 	// Compute along-track distance (projected aircraft position onto path)
 	float vec_north = tgt_north - prev_north;
 	float vec_east = tgt_east - prev_east;
@@ -79,18 +81,36 @@ void Guidance::update_mission()
 	float along_track_dist = proj_factor * vec_norm;
 
 	// Linearly interpolate altitude setpoint
-	if (along_track_dist > 0 && _plane->waypoint_index > 1)
+	if (along_track_dist > 0 || _plane->waypoint_index == 0)
 	{
 		// Interpolate between previous and target waypoint
 		_plane->guidance_d_setpoint = lerp(0, prev_wp.alt, vec_norm, target_wp.alt, along_track_dist);
 	}
 	else
 	{
-		Waypoint prev_prev_wp = _plane->waypoints[_plane->waypoint_index - 2];
-		float dist = lat_lon_to_distance(prev_prev_wp.lat, prev_prev_wp.lon, prev_wp.lat, prev_wp.lon);
+		Waypoint prev_prev_wp;
+		if (_plane->waypoint_index > 1)
+		{
+			prev_prev_wp = _plane->waypoints[_plane->waypoint_index - 2];
+		}
+		else
+		{
+			prev_prev_wp = Waypoint{ Waypoint_type::WAYPOINT, _plane->home_lat, _plane->home_lon, -get_params()->takeoff_alt };
+		}
+
+		double prev_prev_north, prev_prev_east;
+		lat_lon_to_meters(_plane->home_lat, _plane->home_lon, prev_prev_wp.lat, prev_prev_wp.lon, &prev_prev_north, &prev_prev_east);
+
+		// Compute along-track distance (projected aircraft position onto path)
+		vec_north = prev_north - prev_prev_north;
+		vec_east = prev_east - prev_prev_east;
+		vec_norm = sqrtf(vec_north * vec_north + vec_east * vec_east);
+		proj_factor = ((_plane->nav_pos_north - prev_prev_north) * vec_north +
+							 (_plane->nav_pos_east - prev_prev_east) * vec_east) / (vec_norm * vec_norm);
+		along_track_dist = proj_factor * vec_norm;
 
 		// Interpolate between previous waypoint and the one before that
-		_plane->guidance_d_setpoint = lerp(0, prev_prev_wp.alt, dist, prev_wp.alt, dist - along_track_dist);
+		_plane->guidance_d_setpoint = lerp(0, prev_prev_wp.alt, vec_norm, prev_wp.alt, along_track_dist);
 	}
 
 	// Calculate distance to waypoint to determine if waypoint reached
