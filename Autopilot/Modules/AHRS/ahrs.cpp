@@ -13,11 +13,6 @@ AHRS::AHRS(HAL* hal, Plane* plane)
     _hal = hal;
 }
 
-void AHRS::setup()
-{
-
-}
-
 void AHRS::update()
 {
 	if (_plane->system_mode != System_mode::CONFIG)

@@ -23,7 +23,6 @@ class AHRS
 {
 public:
     AHRS(HAL* hal, Plane* plane);
-    void setup();
     void update();
     bool is_converged();
 private:
