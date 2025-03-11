@@ -131,11 +131,7 @@ void Control::update_land()
 // Cut throttle, set roll to 0 and track flare guidance altitude setpoints
 void Control::update_flare()
 {
-	_tecs.update(
-	    get_params()->tecs_min_aspd_mps,
-	    _plane->guidance_d_setpoint,
-	    2
-	);
+	_tecs.update(0, _plane->guidance_d_setpoint, 2);
 	_plane->pitch_setpoint = alt_controller.get_output(
 	    _plane->tecs_energy_diff,
 	    _plane->tecs_energy_diff_setpoint,

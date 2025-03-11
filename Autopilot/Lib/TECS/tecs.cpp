@@ -35,8 +35,8 @@ void Tecs::update(float target_vel_mps, float target_alt_m, float wb)
 	float energy_diff = wb * energy_pot - (2.0 - wb) * energy_kin;
 
 	// Clamp energy balance within allowed range
-	float min_diff = wb * energy_pot - (2.0f - wb) * max_kin;
-	float max_diff = wb * energy_pot - (2.0f - wb) * min_kin;
+	float min_diff = wb * target_pot - (2.0f - wb) * max_kin;
+	float max_diff = wb * target_pot - (2.0f - wb) * min_kin;
 	energy_diff_setpoint = clamp(energy_diff_setpoint, min_diff, max_diff);
 
 	_plane->tecs_energy_total_setpoint = target_total;
