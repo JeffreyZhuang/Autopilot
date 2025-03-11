@@ -130,10 +130,6 @@ struct Plane
     float guidance_hdg_setpoint = 0;
     float guidance_d_setpoint = 0;
 
-    // Landing
-    uint64_t flare_start_time = 0;
-    float flare_alt = 0;
-
     // RC Transmitter
     bool tx_connected = false;
     bool manual_sw; // Switch on/off

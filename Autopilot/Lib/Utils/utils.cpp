@@ -71,10 +71,6 @@ float lerp(float x0, float y0, float x1, float y1, float x) {
         return 0.0f;
     }
 
-    // Clamp x within [x0, x1]
-	if (x < x0) x = x0;
-	if (x > x1) x = x1;
-
     // Calculate the interpolated value y
     float y = y0 + (x - x0) * (y1 - y0) / (x1 - x0);
     return y;

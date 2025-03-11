@@ -17,9 +17,6 @@ public:
 private:
 	HAL* _hal;
 	Plane*_plane;
-	bool flare_initialized = false;
-	uint64_t flare_start_time = 0;
-	float flare_initial_sink_rate = 0;
 
 	void handle_auto_mode();
 	void update_mission();

@@ -95,7 +95,7 @@ void Commander::handle_switches()
 
 void Commander::update_config()
 {
-	if (get_params()->set)
+	if (are_params_set())
 	{
 		_plane->system_mode = System_mode::STARTUP;
 	}
@@ -134,11 +134,9 @@ void Commander::update_mission()
 
 void Commander::update_land()
 {
-	if (_plane->rangefinder_dist < get_params()->land_flare_alt)
+	if (-_plane->nav_pos_down < get_params()->flare_alt)
 	{
 		_plane->auto_mode = Auto_mode::FLARE;
-		_plane->flare_alt = _plane->nav_pos_down;
-		_plane->flare_start_time = _plane->time;
 	}
 }
 

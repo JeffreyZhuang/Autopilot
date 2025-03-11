@@ -1,12 +1,11 @@
 #include "control.h"
 
-// Use PI controller for pitch and roll, then your integral term is the servo misalignment
 Control::Control(HAL * hal, Plane * plane)
 	: roll_controller(false, hal->get_main_dt()),
 	  pitch_controller(false, hal->get_main_dt()),
 	  hdg_controller(true, hal->get_main_dt()),
 	  alt_controller(false, hal->get_main_dt()),
-	  speed_controller(false, hal->get_main_dt()), // Start with P first, then add I
+	  speed_controller(false, hal->get_main_dt()),
 	  _tecs(plane)
 {
 	_hal = hal;
@@ -166,9 +165,9 @@ void Control::control_roll_ptch()
 		_plane->ahrs_roll,
 		_plane->roll_setpoint,
 		get_params()->roll_kp,
+		get_params()->roll_ki,
 		0,
-		0,
-		0,
+		1,
 		-1,
 		1,
 		0

@@ -6,9 +6,6 @@
 
 struct __attribute__((packed))Parameters
 {
-	// Flag to check if parameters have been set
-	bool set = false;
-
 	// Flight characteristics
 	float aspd_cruise; // Meters per second
 	float aspd_land; // Landing airspeed
@@ -20,12 +17,11 @@ struct __attribute__((packed))Parameters
 	float min_dist_wp; // Distance in meters from waypoint until switching to next
 
 	// Guidance
-	float guidance_kp;
+	float guidance_kp; // Proportional guidance law gain
 
 	// Landing
-	float land_flare_alt; // Flare altitude
+	float flare_alt; // Altitude to start flare
 	float flare_sink_rate; // Target sink rate for flare, meters per second
-	float flare_trans_sec; // Time to transition to flare
 	float touchdown_aspd_thresh; // Detect touchdown when speed below this value in meters per second
 
 	// Takeoff
@@ -37,7 +33,7 @@ struct __attribute__((packed))Parameters
 	uint16_t min_duty[6];
 	uint16_t rc_in_max; // RC Transmitter stick max duty cycle microseconds
 	uint16_t rc_in_min; // Make sure values are INSIDE the range of radio, NEVER outside
-	bool rev_ch[6]; // Reverse channels
+	bool rev_ch[6]; // Reverse output PWM channels
 	uint8_t aileron_ch; // Channel for aileron
 	uint8_t elevator_ch; // Channel for elevator
 	uint8_t throttle_ch; // Channel for throttle
@@ -59,7 +55,7 @@ struct __attribute__((packed))Parameters
 	float hdg_ki;
 
 	// AHRS
-	float ahrs_beta; // Madwick filter gain
+	float ahrs_beta; // Madgwick filter gain
 	float mag_decl; // Declination in degrees, determined from online calculator
 	float ahrs_acc_max; // Max acceleration in units of g to enable sensor fusion
 	float hard_iron[3];
@@ -73,5 +69,6 @@ struct __attribute__((packed))Parameters
 
 const Parameters* get_params();
 void set_params(const Parameters* params);
+bool are_params_set();
 
 #endif /* PARAMETERS_H_ */

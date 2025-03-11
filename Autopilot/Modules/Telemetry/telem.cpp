@@ -149,8 +149,6 @@ bool Telem::parse_packet()
 		// Set parameters
 		set_params(&temp_params);
 
-		printf("Parmeters set");
-
 		return true;
 	}
 

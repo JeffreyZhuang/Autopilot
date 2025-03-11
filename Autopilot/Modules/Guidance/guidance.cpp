@@ -67,10 +67,8 @@ void Guidance::update_mission()
 	// Calculate heading setpoint using proportional guidance law
 	_plane->guidance_hdg_setpoint = (trk_hdg + atanf(get_params()->guidance_kp * -xte)) * rad_to_deg;
 	if (_plane->guidance_hdg_setpoint < 0) {
-		_plane->guidance_hdg_setpoint += 360.0; // Transform range from [-180, 180] to [0, 360]
+		_plane->guidance_hdg_setpoint += 360.0; // Normalize to [0, 360] range
 	}
-
-	// WRONG, I NEED TO REDO ALONG TRACK DISTANCE WHEN NOT
 
 	// Compute along-track distance (projected aircraft position onto path)
 	float vec_north = tgt_north - prev_north;
@@ -80,7 +78,7 @@ void Guidance::update_mission()
 						 (_plane->nav_pos_east - prev_east) * vec_east) / (vec_norm * vec_norm);
 	float along_track_dist = proj_factor * vec_norm;
 
-	// Linearly interpolate altitude setpoint
+	// Interpolate altitude setpoints
 	if (along_track_dist > 0 || _plane->waypoint_index == 0)
 	{
 		// Interpolate between previous and target waypoint
@@ -88,15 +86,10 @@ void Guidance::update_mission()
 	}
 	else
 	{
-		Waypoint prev_prev_wp;
-		if (_plane->waypoint_index > 1)
-		{
-			prev_prev_wp = _plane->waypoints[_plane->waypoint_index - 2];
-		}
-		else
-		{
-			prev_prev_wp = Waypoint{ Waypoint_type::WAYPOINT, _plane->home_lat, _plane->home_lon, -get_params()->takeoff_alt };
-		}
+		// Use the waypoint before the previous one, or fallback to home
+		Waypoint prev_prev_wp = (_plane->waypoint_index > 1) ?
+			_plane->waypoints[_plane->waypoint_index - 2] :
+			Waypoint{ Waypoint_type::WAYPOINT, _plane->home_lat, _plane->home_lon, -get_params()->takeoff_alt };
 
 		double prev_prev_north, prev_prev_east;
 		lat_lon_to_meters(_plane->home_lat, _plane->home_lon, prev_prev_wp.lat, prev_prev_wp.lon, &prev_prev_north, &prev_prev_east);
@@ -113,35 +106,38 @@ void Guidance::update_mission()
 		_plane->guidance_d_setpoint = lerp(0, prev_prev_wp.alt, vec_norm, prev_wp.alt, along_track_dist);
 	}
 
-	// Calculate distance to waypoint to determine if waypoint reached
+	// Check distance to waypoint to determine if waypoint reached
 	float dist_to_wp = sqrtf(rel_north*rel_north + rel_east*rel_east);
 	if ((dist_to_wp < get_params()->min_dist_wp) && (_plane->waypoint_index < _plane->num_waypoints - 1))
 	{
-		_plane->waypoint_index++;
+		_plane->waypoint_index++; // Move to next waypoint
 	}
 }
 
 void Guidance::update_flare()
 {
-	if (!flare_initialized)
-	{
-		const Waypoint& land_wp = _plane->waypoints[_plane->waypoint_index];
-		const Waypoint& appr_wp = _plane->waypoints[_plane->waypoint_index - 1];
+	// Get the landing waypoint and the approach waypoint
+	const Waypoint& land_wp = _plane->waypoints[_plane->waypoint_index];
+	const Waypoint& appr_wp = _plane->waypoints[_plane->waypoint_index - 1];
 
-		// Compute glideslope and initial sink rate
-		float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon, appr_wp.lat, appr_wp.lon);
-		float glideslope_angle = atan2f(land_wp.alt - appr_wp.alt, dist_land_appr);
-		flare_initial_sink_rate = get_params()->aspd_land * sinf(glideslope_angle);
+	// Calculate the horizontal distance between the landing and approach waypoints
+	float dist_land_appr = lat_lon_to_distance(
+		land_wp.lat, land_wp.lon,
+		appr_wp.lat, appr_wp.lon
+	);
 
-		// Initialize flare timing
-		flare_start_time = _plane->time;
-		flare_initialized = true;
-	}
+	// Calculate the glideslope angle based on the altitude difference and horizontal distance
+	float glideslope_angle = atan2f(
+		land_wp.alt - appr_wp.alt,
+		dist_land_appr
+	);
 
-	// Compute smooth sink rate transition
-	float time_since_flare = (_plane->time - flare_start_time) * us_to_s;
-	float sink_rate = lerp(0, flare_initial_sink_rate, get_params()->flare_trans_sec, get_params()->flare_sink_rate, time_since_flare);
+	// Calculate the initial sink rate during flare based on the glideslope angle and landing airspeed
+	float flare_initial_sink_rate = get_params()->aspd_land * sinf(glideslope_angle);
 
-	// Update altitude setpoint
+	// Linearly interpolate the sink rate based on the current altitude and flare parameters
+	float sink_rate = lerp(get_params()->flare_alt, flare_initial_sink_rate, 0, get_params()->flare_sink_rate, clamp(-_plane->nav_pos_down, 0, get_params()->flare_alt));
+
+	// Update the guidance setpoint with the calculated sink rate
 	_plane->guidance_d_setpoint += sink_rate * _hal->get_main_dt();
 }
