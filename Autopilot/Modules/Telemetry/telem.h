@@ -31,7 +31,6 @@ struct __attribute__((packed))Waypoint_payload
 	uint8_t payload_type;
 	uint8_t waypoint_index;
 	uint8_t total_waypoints;
-	Waypoint_type waypoint_type;
 	float lat;
 	float lon;
 	float alt;

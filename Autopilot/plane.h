@@ -31,14 +31,7 @@ enum class Manual_mode
 	STABILIZED
 };
 
-enum class Waypoint_type : uint8_t
-{
-	WAYPOINT,
-	LAND
-};
-
 struct Waypoint {
-	Waypoint_type type;
 	float lat;
 	float lon;
 	float alt;
@@ -124,7 +117,7 @@ struct Plane
     uint64_t nav_timestamp = 0;
 
     // Guidance
-    uint8_t waypoint_index = 0;
+    uint8_t waypoint_index = 1; // Skip home waypoint
     uint8_t num_waypoints = 0;
 	Waypoint waypoints[100]; // 100 max waypoints
     float guidance_hdg_setpoint = 0;

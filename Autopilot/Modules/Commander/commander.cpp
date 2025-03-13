@@ -126,7 +126,7 @@ void Commander::update_takeoff()
 
 void Commander::update_mission()
 {
-	if (_plane->waypoints[_plane->waypoint_index].type == Waypoint_type::LAND)
+	if (_plane->waypoint_index == _plane->num_waypoints - 1)
 	{
 		_plane->auto_mode = Auto_mode::LAND;
 	}

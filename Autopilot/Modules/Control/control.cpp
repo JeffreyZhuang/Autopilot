@@ -74,17 +74,18 @@ void Control::update_direct()
 // Pilot commands roll and pitch angles, throttle is manual
 void Control::update_stabilized()
 {
-	_plane->pitch_setpoint = _plane->rc_in_norm[get_params()->elevator_ch] *
-			get_params()->ptch_lim_deg;
-	_plane->roll_setpoint = _plane->rc_in_norm[get_params()->aileron_ch] *
-			get_params()->roll_lim_deg;
-	control_roll_ptch();
+	float pitch_limit = 20;
+	float roll_limit = 30;
 	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
+	_plane->pitch_setpoint = _plane->rc_in_norm[get_params()->elevator_ch] * pitch_limit;
+	_plane->roll_setpoint = _plane->rc_in_norm[get_params()->aileron_ch] * roll_limit;
+	control_roll_ptch();
 }
 
 // Manual throttle, hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
 void Control::update_takeoff()
 {
+	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
 	_plane->pitch_setpoint = get_params()->takeoff_ptch;
 	_plane->roll_setpoint = 0;
 	_plane->aileron_setpoint = roll_controller.get_output(
@@ -109,7 +110,6 @@ void Control::update_takeoff()
 		1,
 		0
 	);
-	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
 }
 
 // Track guidance altitude and heading setpoints at a speed of AIRSPEED_CUIRSE

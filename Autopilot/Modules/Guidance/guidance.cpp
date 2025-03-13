@@ -46,7 +46,7 @@ void Guidance::update_mission()
 	// Determine previous waypoint or fallback to home position
 	Waypoint prev_wp = (_plane->waypoint_index > 0) ?
 		_plane->waypoints[_plane->waypoint_index - 1] :
-		Waypoint{ Waypoint_type::WAYPOINT, _plane->home_lat, _plane->home_lon, -get_params()->takeoff_alt };
+		Waypoint{_plane->home_lat, _plane->home_lon, -get_params()->takeoff_alt};
 
 	// Get target waypoint
 	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
@@ -89,7 +89,7 @@ void Guidance::update_mission()
 		// Use the waypoint before the previous one, or fallback to home
 		Waypoint prev_prev_wp = (_plane->waypoint_index > 1) ?
 			_plane->waypoints[_plane->waypoint_index - 2] :
-			Waypoint{ Waypoint_type::WAYPOINT, _plane->home_lat, _plane->home_lon, -get_params()->takeoff_alt };
+			Waypoint{_plane->home_lat, _plane->home_lon, -get_params()->takeoff_alt};
 
 		double prev_prev_north, prev_prev_east;
 		lat_lon_to_meters(_plane->home_lat, _plane->home_lon, prev_prev_wp.lat, prev_prev_wp.lon, &prev_prev_north, &prev_prev_east);

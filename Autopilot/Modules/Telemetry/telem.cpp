@@ -126,7 +126,6 @@ bool Telem::parse_packet()
 
 		_plane->num_waypoints = waypoint_payload.total_waypoints;
 		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){
-			waypoint_payload.waypoint_type,
 			waypoint_payload.lat,
 			waypoint_payload.lon,
 			waypoint_payload.alt
