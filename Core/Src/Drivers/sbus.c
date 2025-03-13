@@ -23,7 +23,7 @@
  */
 
 #include <stdint.h>
-#include "sbus.h"
+#include "Drivers/sbus.h"
 
 static uint8_t inFrame = 0U;
 static uint8_t frame[SBUS_FRAME_SIZE] = {0x00U};

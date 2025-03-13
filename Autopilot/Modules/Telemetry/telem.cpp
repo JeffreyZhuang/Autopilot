@@ -10,7 +10,7 @@ void Telem::update()
 {
 	if (_hal->read_telem(latest_packet, &latest_pkt_len))
 	{
-		if (parse_packet())
+		if (validate_packet() && parse_packet())
 		{
 			ack();
 		}
@@ -22,53 +22,41 @@ void Telem::update()
 	}
 }
 
-void Telem::transmit(uint8_t packet[], uint16_t size)
+void Telem::transmit_packet(uint8_t packet[], uint16_t size)
 {
+	bytes_since_last_tlm_transmit += size;
 	_hal->transmit_telem(packet, size);
-	total_bytes_sent += size;
-
-	// Track time of first transmit
-	if (start_time == 0)
-	{
-		start_time = _hal->get_time_us();
-	}
 }
 
-// The timer approach fails when disconnecting GCS and then connecting again
 void Telem::transmit_telem()
 {
-	// Limit serial rate through radio
-	float dt = (_hal->get_time_us() - start_time) * us_to_s;
-	uint16_t serial_rate = (total_bytes_sent + telem_packet_len) / dt;
-	if (serial_rate < max_serial_rate)
+	// Limit data rate through radio
+	float sec_since_last_tlm_transmit = (_hal->get_time_us() - last_tlm_transmit_time) * us_to_s;
+
+	uint16_t byte_rate = 0;
+	if (sec_since_last_tlm_transmit != 0) // Prevent divide by zero
 	{
-		// Create struct
-		Telem_payload payload = {
-			0,
-			(int16_t)(_plane->ahrs_roll * 100),
-			(int16_t)(_plane->ahrs_pitch * 100),
-			(uint16_t)(_plane->ahrs_yaw * 10),
-			(int16_t)(-_plane->nav_pos_down * 10),
-			(uint16_t)(_plane->nav_airspeed * 10),
-			(float)_plane->gnss_lat,
-			(float)_plane->gnss_lon,
-			get_current_state(),
-			_plane->waypoint_index,
-			_plane->gnss_sats,
-			_plane->gps_fix,
-			(int16_t)(-_plane->guidance_d_setpoint * 10)
-		};
+		byte_rate = (bytes_since_last_tlm_transmit + TLM_PKT_LEN) / sec_since_last_tlm_transmit;
+	}
+
+	if (byte_rate < MAX_BYTE_RATE)
+	{
+		bytes_since_last_tlm_transmit = 0;
+		last_tlm_transmit_time = _hal->get_time_us();
+
+		// Construct telemetry packet
+		Telem_payload payload = create_telem_payload();
 
 		// Convert struct to byte array
 		uint8_t payload_arr[sizeof(Telem_payload)];
 		memcpy(payload_arr, &payload, sizeof(Telem_payload));
 
-		// Consistent overhead byte stuffing
+		// Encode with COBS
 		uint8_t packet_cobs[sizeof(Telem_payload) + 1]; // Add 1 for COBS byte
 		cobs_encode(packet_cobs, sizeof(packet_cobs), payload_arr, sizeof(Telem_payload));
 
-		// Add start and length bytes to beginning of packet
-		uint8_t packet[telem_packet_len]; // Add 3 for start byte, length byte, and COBS byte
+		// Construct final packet
+		uint8_t packet[TLM_PKT_LEN];
 		packet[0] = 0; // Start byte
 		packet[1] = sizeof(Telem_payload); // Length byte
 		for (uint i = 0; i < sizeof(packet_cobs); i++)
@@ -76,18 +64,44 @@ void Telem::transmit_telem()
 			packet[i + 2] = packet_cobs[i];
 		}
 
-		total_bytes_sent = 0;
-		start_time = _hal->get_time_us();
-
-		transmit(packet, sizeof(packet));
+		transmit_packet(packet, sizeof(packet));
 	}
+}
+
+Telem_payload Telem::create_telem_payload()
+{
+	Telem_payload payload = {
+		TELEM_MSG_ID,
+		(int16_t)(_plane->ahrs_roll * 100),
+		(int16_t)(_plane->ahrs_pitch * 100),
+		(uint16_t)(_plane->ahrs_yaw * 10),
+		(int16_t)(-_plane->nav_pos_down * 10),
+		(uint16_t)(_plane->nav_airspeed * 10),
+		(float)_plane->gnss_lat,
+		(float)_plane->gnss_lon,
+		get_current_state(),
+		_plane->waypoint_index,
+		_plane->gnss_sats,
+		_plane->gps_fix,
+		(int16_t)(-_plane->guidance_d_setpoint * 10)
+	};
+
+	return payload;
+}
+
+// Ensure packet length is valid before parsing
+bool Telem::validate_packet()
+{
+	if (latest_pkt_len < 3) return false; // Prevent underflow in decoding
+	if (latest_pkt_len > 255) return false; // Prevent buffer overflow
+	return true;
 }
 
 // Send back same message for acknowledgement
 void Telem::ack()
 {
 	// Do not use queue and send directly because this is priority
-	transmit(latest_packet, latest_pkt_len);
+	transmit_packet(latest_packet, latest_pkt_len);
 }
 
 bool Telem::parse_packet()
@@ -105,23 +119,12 @@ bool Telem::parse_packet()
 
 	uint16_t payload_len = latest_pkt_len - 3; // Subtract header
 	uint8_t msg_id = payload[0];
-	printf("Telem msg_id: %d\n", msg_id);
-	printf("Telem payload_len: %d\n", payload_len);
-	printf("Telem params len: %d\n", sizeof(Parameters));
-	if (msg_id == CMD_MSG_ID && payload_len == sizeof(Command_payload))
-	{
-		Command_payload command_payload;
-		memcpy(&command_payload, payload, sizeof(Command_payload));
-		printf("Command: %d\n", command_payload.command);
-
-		return true;
-	}
-	else if (msg_id == WPT_MSG_ID && payload_len == sizeof(Waypoint_payload))
+	if (msg_id == WPT_MSG_ID && payload_len == sizeof(Waypoint_payload))
 	{
 		Waypoint_payload waypoint_payload;
 		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
 
-		_plane->num_waypoints = waypoint_payload.waypoint_index + 1;
+		_plane->num_waypoints = waypoint_payload.total_waypoints;
 		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){
 			waypoint_payload.waypoint_type,
 			waypoint_payload.lat,
@@ -133,25 +136,16 @@ bool Telem::parse_packet()
 	}
 	else if (msg_id == PARAMS_MSG_ID &&
 			 _plane->system_mode == System_mode::CONFIG &&
-			 payload_len - 1 == sizeof(Parameters))
+			 payload_len == sizeof(Params_payload))
 	{
-		// Remove message ID
-		uint8_t params_arr[sizeof(Parameters)];
-		for (uint i = 0; i < sizeof(params_arr); i++)
-		{
-			params_arr[i] = payload[i + 1];
-		}
-
-		// Create Parameters struct from bytes
-		Parameters temp_params;
-		memcpy(&temp_params, params_arr, sizeof(Parameters));
+		Params_payload params_payload;
+		memcpy(&params_payload, payload, sizeof(Params_payload));
 
 		// Set parameters
-		set_params(&temp_params);
+		set_params(&params_payload.params);
 
 		return true;
 	}
-
 	return false;
 }
 
@@ -181,8 +175,6 @@ uint8_t Telem::get_current_state()
 				return 5;
 			case Auto_mode::TOUCHDOWN:
 				return 6;
-			default:
-				return 255;
 			}
 		case Flight_mode::MANUAL:
 			switch (_plane->manual_mode)
@@ -191,13 +183,9 @@ uint8_t Telem::get_current_state()
 					return 7;
 				case Manual_mode::STABILIZED:
 					return 8;
-				default:
-					return 255;
 			}
-		default:
-			return 255;
 		}
-	default:
-		return 255;
     }
+
+    return 255;
 }

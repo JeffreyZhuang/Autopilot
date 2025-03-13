@@ -1,24 +1,24 @@
 #ifndef INC_FLIGHT_HAL_H_
 #define INC_FLIGHT_HAL_H_
 
-#include "servo.h"
-#include "hal.h"
-#include "plane.h"
-#include "gnss.h"
-#include "icm42688p.h"
-#include "ina219.h"
-#include "mlx90393.h"
-#include "sd.h"
-#include "mlrs_rc.h"
-#include "mlrs_telem.h"
-#include "cxof.h"
+#include "Drivers/servo.h"
+#include "Drivers/gnss.h"
+#include "Drivers/icm42688p.h"
+#include "Drivers/ina219.h"
+#include "Drivers/mlx90393.h"
+#include "Drivers/sd.h"
+#include "Drivers/mlrs_rc.h"
+#include "Drivers/mlrs_telem.h"
+#include "Drivers/cxof.h"
 #include "Lib/Utils/utils.h"
 #include "parameters.h"
+#include "hal.h"
+#include "plane.h"
 
 extern "C"
 {
 #include "usbd_cdc_if.h"
-#include "barometer.h"
+#include "Drivers/barometer.h"
 }
 
 extern I2C_HandleTypeDef hi2c1;

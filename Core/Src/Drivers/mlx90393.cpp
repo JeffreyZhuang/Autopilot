@@ -15,7 +15,7 @@
 
   MIT license, all text above must be included in any redistribution
  *****************************************************************************/
-#include <mlx90393.h>
+#include <Drivers/mlx90393.h>
 
 /**
  * Instantiates a new Adafruit_MLX90393 class instance

@@ -1,4 +1,4 @@
-#include "pitl_hal.h"
+#include "PITL_HAL/pitl_hal.h"
 
 // PITL uses aileron for channel 0, elevator for channel 1, and throttle for channel 2
 // and a duty cycle from 1000 to 2000 us

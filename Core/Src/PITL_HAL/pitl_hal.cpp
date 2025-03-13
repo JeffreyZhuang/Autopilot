@@ -1,4 +1,4 @@
-#include "pitl_hal.h"
+#include "PITL_HAL/pitl_hal.h"
 
 // ardupilot/libraries/SITL/SITL.h
 

@@ -39,9 +39,9 @@ enum class Waypoint_type : uint8_t
 
 struct Waypoint {
 	Waypoint_type type;
-	double lat;
-	double lon;
-	double alt;
+	float lat;
+	float lon;
+	float alt;
 };
 
 /**
@@ -119,8 +119,8 @@ struct Plane
     float nav_acc_east = 0;
     float nav_acc_down = 0;
     float nav_airspeed = 0;
-    double home_lat = 0;
-	double home_lon = 0;
+    float home_lat = 0;
+	float home_lon = 0;
     uint64_t nav_timestamp = 0;
 
     // Guidance

@@ -2,7 +2,7 @@
 #include "autopilot.h"
 
 #if PITL_ENABLE
-#include "pitl_hal.h"
+#include "PITL_HAL/pitl_hal.h"
 using Hal = Pitl_hal;
 #else
 #include "Flight_HAL/flight_hal.h"
