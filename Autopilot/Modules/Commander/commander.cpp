@@ -95,7 +95,7 @@ void Commander::handle_switches()
 
 void Commander::update_config()
 {
-	if (are_params_set())
+	if (are_params_set() && _plane->waypoints_loaded)
 	{
 		_plane->system_mode = System_mode::STARTUP;
 	}
@@ -103,14 +103,12 @@ void Commander::update_config()
 
 void Commander::update_startup()
 {
-	bool waypoints_loaded = _plane->num_waypoints > 0;
 	bool transmitter_safe = _plane->rc_in_norm[get_params()->throttle_ch] == 0 &&
 							!_plane->manual_sw && !_plane->mode_sw;
 	if (_plane->ahrs_converged &&
 		_plane->nav_converged &&
-		transmitter_safe &&
-		waypoints_loaded &&
-		_plane->tx_connected)
+		_plane->tx_connected &&
+		transmitter_safe)
 	{
 		_plane->system_mode = System_mode::FLIGHT;
 	}

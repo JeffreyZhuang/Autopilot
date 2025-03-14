@@ -20,7 +20,9 @@ class Autopilot
 {
 public:
 	Autopilot(HAL* hal, Plane* plane);
+
     void setup();
+
 private:
     HAL* _hal;
     Plane* _plane;

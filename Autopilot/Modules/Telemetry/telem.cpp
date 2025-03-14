@@ -92,8 +92,8 @@ Telem_payload Telem::create_telem_payload()
 // Ensure packet length is valid before parsing
 bool Telem::validate_packet()
 {
-	if (latest_pkt_len < 3) return false; // Prevent underflow in decoding
-	if (latest_pkt_len > 255) return false; // Prevent buffer overflow
+	if (latest_pkt_len < HEADER_LEN) return false; // Prevent underflow in decoding
+	if (latest_pkt_len > MAX_PKT_LEN) return false; // Prevent buffer overflow
 	return true;
 }
 
@@ -106,23 +106,30 @@ void Telem::ack()
 
 bool Telem::parse_packet()
 {
-	// Remove start and length byte
-	uint8_t packet_cobs[latest_pkt_len - 2];
-	for (uint i = 0; i < sizeof(packet_cobs); i++)
+	uint16_t payload_len = latest_pkt_len - HEADER_LEN;
+
+	// Remove start and length byte from packet
+	uint8_t payload_cobs[payload_len + 1]; // Add 1 for COBS byte
+	for (uint i = 0; i < sizeof(payload_cobs); i++)
 	{
-		packet_cobs[i] = latest_packet[i + 2];
+		payload_cobs[i] = latest_packet[i + 2]; // Add 2 to ignore start and length byte
 	}
 
 	// Decode consistent overhead byte shuffling
-	uint8_t payload[latest_pkt_len - 3]; // Subtract 3 since removed header
-	cobs_decode(payload, sizeof(payload), packet_cobs, sizeof(packet_cobs));
+	uint8_t payload[payload_len];
+	cobs_decode(payload, sizeof(payload), payload_cobs, sizeof(payload_cobs));
 
-	uint16_t payload_len = latest_pkt_len - 3; // Subtract header
+	// Determine type of payload from message ID
 	uint8_t msg_id = payload[0];
 	if (msg_id == WPT_MSG_ID && payload_len == sizeof(Waypoint_payload))
 	{
 		Waypoint_payload waypoint_payload;
 		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
+
+		if (waypoint_payload.waypoint_index == waypoint_payload.total_waypoints - 1)
+		{
+			_plane->waypoints_loaded = true;
+		}
 
 		if (waypoint_payload.waypoint_index == 0)
 		{

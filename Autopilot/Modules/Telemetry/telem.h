@@ -48,8 +48,9 @@ static constexpr uint8_t WPT_MSG_ID = 1;
 static constexpr uint8_t PARAMS_MSG_ID = 2;
 
 // Packet length constants
-static constexpr uint16_t TLM_PKT_LEN = sizeof(Telem_payload) + 3; // Add header
-static constexpr uint16_t MAX_PKT_LEN = 255 + 3;
+static constexpr uint8_t HEADER_LEN = 3;
+static constexpr uint16_t MAX_PKT_LEN = 255 + HEADER_LEN;
+static constexpr uint16_t TLM_PKT_LEN = sizeof(Telem_payload) + HEADER_LEN;
 static constexpr uint16_t MAX_BYTE_RATE = 1500; // Bytes per sec
 
 class Telem

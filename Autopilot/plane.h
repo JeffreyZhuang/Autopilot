@@ -143,6 +143,8 @@ struct Plane
     // Control
     float pitch_setpoint = 0;
     float roll_setpoint = 0;
+
+    bool waypoints_loaded = false;
 };
 
 #endif /* PLANE_H_ */

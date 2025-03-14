@@ -43,8 +43,6 @@ void Tecs::update_flare()
 	calculate(0, _plane->guidance_d_setpoint, 2);
 }
 
-
-
 // wb: weight balance
 // wb = 0: only spd
 // wb = 1: balanced
