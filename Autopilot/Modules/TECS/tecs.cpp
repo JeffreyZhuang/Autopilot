@@ -5,11 +5,51 @@ Tecs::Tecs(Plane* plane)
 	_plane = plane;
 }
 
+void Tecs::update()
+{
+	if (_plane->system_mode == System_mode::FLIGHT &&
+		_plane->flight_mode == Flight_mode::AUTO)
+	{
+		switch (_plane->auto_mode)
+		{
+		case Auto_mode::TAKEOFF:
+		case Auto_mode::MISSION:
+			update_mission();
+			break;
+		case Auto_mode::LAND:
+			update_land();
+			break;
+		case Auto_mode::FLARE:
+			update_flare();
+			break;
+		case Auto_mode::TOUCHDOWN:
+			break;
+		}
+	}
+}
+
+void Tecs::update_mission()
+{
+	calculate(get_params()->aspd_cruise, _plane->guidance_d_setpoint, 1);
+}
+
+void Tecs::update_land()
+{
+	calculate(get_params()->aspd_land, _plane->guidance_d_setpoint, 1);
+}
+
+void Tecs::update_flare()
+{
+	calculate(0, _plane->guidance_d_setpoint, 2);
+}
+
+
+
 // wb: weight balance
 // wb = 0: only spd
 // wb = 1: balanced
 // wb = 2: only alt
-void Tecs::update(float target_vel_mps, float target_alt_m, float wb)
+void Tecs::calculate(float target_vel_mps, float target_alt_m, float wb)
 {
 	// Calculate specific energy
 	// SPe = gh

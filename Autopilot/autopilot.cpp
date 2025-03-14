@@ -11,7 +11,8 @@ Autopilot::Autopilot(HAL* hal, Plane* plane)
 	  _storage(plane, hal),
 	  _mixer(hal, plane),
 	  _rc_handler(hal, plane),
-	  _commander(hal, plane)
+	  _commander(hal, plane),
+	  _tecs(plane)
 {
 	_hal = hal;
 	_plane = plane;
@@ -36,6 +37,7 @@ void Autopilot::main_task()
 	_navigation.update();
 	_commander.update();
 	_guidance.update();
+	_tecs.update();
 	_control.update();
 	_mixer.update();
 	_storage.write();

@@ -8,7 +8,8 @@ Guidance::Guidance(HAL* hal, Plane* plane)
 
 void Guidance::update()
 {
-	if (_plane->system_mode == System_mode::FLIGHT)
+	if (_plane->system_mode == System_mode::FLIGHT &&
+		_plane->auto_mode != Auto_mode::TOUCHDOWN)
 	{
 		switch (_plane->flight_mode)
 		{
@@ -43,10 +44,8 @@ void Guidance::handle_auto_mode()
 // Detect when waypoint reached and switch to next waypoint
 void Guidance::update_mission()
 {
-	// Determine previous waypoint or fallback to home position
-	Waypoint prev_wp = (_plane->waypoint_index > 0) ?
-		_plane->waypoints[_plane->waypoint_index - 1] :
-		Waypoint{_plane->home_lat, _plane->home_lon, -get_params()->takeoff_alt};
+	// Determine previous waypoint
+	Waypoint prev_wp = _plane->waypoints[_plane->waypoint_index - 1];
 
 	// Get target waypoint
 	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
@@ -70,40 +69,50 @@ void Guidance::update_mission()
 		_plane->guidance_hdg_setpoint += 360.0; // Normalize to [0, 360] range
 	}
 
-	// Compute along-track distance (projected aircraft position onto path)
-	float vec_north = tgt_north - prev_north;
-	float vec_east = tgt_east - prev_east;
-	float vec_norm = sqrtf(vec_north * vec_north + vec_east * vec_east);
-	float proj_factor = ((_plane->nav_pos_north - prev_north) * vec_north +
-						 (_plane->nav_pos_east - prev_east) * vec_east) / (vec_norm * vec_norm);
-	float along_track_dist = proj_factor * vec_norm;
-
-	// Interpolate altitude setpoints
-	if (along_track_dist > 0 || _plane->waypoint_index == 0)
+	// Determine altitude setpoint
+	if (_plane->waypoint_index == 1)
 	{
-		// Interpolate between previous and target waypoint
-		_plane->guidance_d_setpoint = lerp(0, prev_wp.alt, vec_norm, target_wp.alt, along_track_dist);
+		_plane->guidance_d_setpoint = _plane->waypoints[1].alt;
 	}
 	else
 	{
-		// Use the waypoint before the previous one, or fallback to home
-		Waypoint prev_prev_wp = (_plane->waypoint_index > 1) ?
-			_plane->waypoints[_plane->waypoint_index - 2] :
-			Waypoint{_plane->home_lat, _plane->home_lon, -get_params()->takeoff_alt};
-
-		double prev_prev_north, prev_prev_east;
-		lat_lon_to_meters(_plane->home_lat, _plane->home_lon, prev_prev_wp.lat, prev_prev_wp.lon, &prev_prev_north, &prev_prev_east);
-
 		// Compute along-track distance (projected aircraft position onto path)
-		vec_north = prev_north - prev_prev_north;
-		vec_east = prev_east - prev_prev_east;
-		vec_norm = sqrtf(vec_north * vec_north + vec_east * vec_east);
-		proj_factor = ((_plane->nav_pos_north - prev_prev_north) * vec_north +
-							 (_plane->nav_pos_east - prev_prev_east) * vec_east) / (vec_norm * vec_norm);
-		along_track_dist = proj_factor * vec_norm;
+		float vec_north = tgt_north - prev_north;
+		float vec_east = tgt_east - prev_east;
+		float vec_norm = sqrtf(vec_north * vec_north + vec_east * vec_east);
+		float proj_factor = ((_plane->nav_pos_north - prev_north) * vec_north +
+							 (_plane->nav_pos_east - prev_east) * vec_east) / (vec_norm * vec_norm);
+		float along_track_dist = proj_factor * vec_norm;
 
-		// Interpolate between previous waypoint and the one before that
-		_plane->guidance_d_setpoint = lerp(0, prev_prev_wp.alt, vec_norm, prev_wp.alt, along_track_dist);
+		// Interpolate altitude setpoints
+		if (along_track_dist > 0)
+		{
+			// Interpolate between previous and target waypoint
+			_plane->guidance_d_setpoint = lerp(0, prev_wp.alt, vec_norm, target_wp.alt, along_track_dist);
+		}
+		else if (_plane->waypoint_index == 2)
+		{
+			_plane->guidance_d_setpoint = _plane->waypoints[1].alt;
+		}
+		else
+		{
+			// Use the waypoint before the previous one
+			Waypoint prev_prev_wp = _plane->waypoints[_plane->waypoint_index - 2];
+
+			double prev_prev_north, prev_prev_east;
+			lat_lon_to_meters(_plane->home_lat, _plane->home_lon, prev_prev_wp.lat, prev_prev_wp.lon, &prev_prev_north, &prev_prev_east);
+
+			// Compute along-track distance (projected aircraft position onto path)
+			vec_north = prev_north - prev_prev_north;
+			vec_east = prev_east - prev_prev_east;
+			vec_norm = sqrtf(vec_north * vec_north + vec_east * vec_east);
+			proj_factor = ((_plane->nav_pos_north - prev_prev_north) * vec_north +
+								 (_plane->nav_pos_east - prev_prev_east) * vec_east) / (vec_norm * vec_norm);
+			along_track_dist = proj_factor * vec_norm;
+
+			// Interpolate between previous waypoint and the one before that
+			_plane->guidance_d_setpoint = lerp(0, prev_prev_wp.alt, vec_norm, prev_wp.alt, along_track_dist);
+		}
 	}
 
 	// Check distance to waypoint to determine if waypoint reached
@@ -136,7 +145,11 @@ void Guidance::update_flare()
 	float flare_initial_sink_rate = get_params()->aspd_land * sinf(glideslope_angle);
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
-	float sink_rate = lerp(get_params()->flare_alt, flare_initial_sink_rate, 0, get_params()->flare_sink_rate, clamp(-_plane->nav_pos_down, 0, get_params()->flare_alt));
+	float sink_rate = lerp(get_params()->flare_alt,
+						   flare_initial_sink_rate,
+						   0,
+						   get_params()->flare_sink_rate,
+						   clamp(-_plane->nav_pos_down, 0, get_params()->flare_alt));
 
 	// Update the guidance setpoint with the calculated sink rate
 	_plane->guidance_d_setpoint += sink_rate * _hal->get_main_dt();

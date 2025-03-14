@@ -10,6 +10,7 @@
 #include "Modules/Telemetry/telem.h"
 #include "Modules/Storage/storage.h"
 #include "Modules/Commander/commander.h"
+#include "Modules/TECS/tecs.h"
 #include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -32,6 +33,7 @@ private:
     Mixer _mixer;
     Rc_handler _rc_handler;
     Commander _commander;
+    Tecs _tecs;
 
     // Helper functions
     void update_time();

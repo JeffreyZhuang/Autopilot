@@ -5,8 +5,7 @@ Control::Control(HAL * hal, Plane * plane)
 	  pitch_controller(false, hal->get_main_dt()),
 	  hdg_controller(true, hal->get_main_dt()),
 	  alt_controller(false, hal->get_main_dt()),
-	  speed_controller(false, hal->get_main_dt()),
-	  _tecs(plane)
+	  speed_controller(false, hal->get_main_dt())
 {
 	_hal = hal;
 	_plane = plane;
@@ -115,7 +114,6 @@ void Control::update_takeoff()
 // Track guidance altitude and heading setpoints at a speed of AIRSPEED_CUIRSE
 void Control::update_mission()
 {
-	_tecs.update(get_params()->aspd_cruise, _plane->guidance_d_setpoint, 1);
 	control_alt_spd_hdg();
 	control_roll_ptch();
 }
@@ -123,7 +121,6 @@ void Control::update_mission()
 // Track approach guidance altitude and heading setpoints at the reduced speed of AIRSPEED_LANDING
 void Control::update_land()
 {
-	_tecs.update(get_params()->aspd_land, _plane->guidance_d_setpoint, 1);
 	control_alt_spd_hdg();
 	control_roll_ptch();
 }
@@ -131,7 +128,6 @@ void Control::update_land()
 // Cut throttle, set roll to 0 and track flare guidance altitude setpoints
 void Control::update_flare()
 {
-	_tecs.update(0, _plane->guidance_d_setpoint, 2);
 	_plane->pitch_setpoint = alt_controller.get_output(
 	    _plane->tecs_energy_diff,
 	    _plane->tecs_energy_diff_setpoint,

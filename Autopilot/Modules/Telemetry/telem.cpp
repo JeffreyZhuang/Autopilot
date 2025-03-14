@@ -124,6 +124,12 @@ bool Telem::parse_packet()
 		Waypoint_payload waypoint_payload;
 		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
 
+		if (waypoint_payload.waypoint_index == 0)
+		{
+			_plane->home_lat = waypoint_payload.lat;
+			_plane->home_lon = waypoint_payload.lon;
+		}
+
 		_plane->num_waypoints = waypoint_payload.total_waypoints;
 		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){
 			waypoint_payload.lat,

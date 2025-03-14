@@ -45,13 +45,6 @@ Eigen::MatrixXf Navigation::get_q()
 
 void Navigation::update_initialization()
 {
-	if (check_new_gnss_data())
-	{
-		// Set GNSS home position
-		_plane->home_lat = _plane->gnss_lat;
-		_plane->home_lon = _plane->gnss_lon;
-	}
-
 	if (check_new_baro_data())
 	{
 		avg_baro.add(_plane->baro_alt);
