@@ -19,14 +19,13 @@ public:
     // Sensors
     void read_sensors()
     {
-    	switch (_hal_mode)
+    	if (_hal_mode == Hal_mode::FLIGHT)
     	{
-    	case Hal_mode::FLIGHT:
     		read_sensors_flight();
-    		break;
-    	case Hal_mode::HITL:
+    	}
+    	else if (_hal_mode == Hal_mode::HITL)
+    	{
     		read_sensors_hitl();
-    		break;
     	}
     }
 
@@ -53,14 +52,38 @@ public:
     }
 
     // Control surfaces
-    virtual void set_ail_pwm(uint16_t duty_us) = 0;
-    virtual void set_ele_pwm(uint16_t duty_us) = 0;
-    virtual void set_rud_pwm(uint16_t duty_us) = 0;
-    virtual void set_thr_pwm(uint16_t duty_us) = 0;
-    virtual void set_aux1_pwm(uint16_t duty_us) = 0;
-    virtual void set_aux2_pwm(uint16_t duty_us) = 0;
-    virtual void set_aux3_pwm(uint16_t duty_us) = 0;
-    virtual void set_aux4_pwm(uint16_t duty_us) = 0;
+    void set_pwm(uint16_t ail_duty,
+				 uint16_t ele_duty,
+				 uint16_t rud_duty,
+				 uint16_t thr_duty,
+				 uint16_t aux1_duty,
+				 uint16_t aux2_duty,
+				 uint16_t aux3_duty,
+				 uint16_t aux4_duty)
+    {
+    	if (_hal_mode == Hal_mode::FLIGHT)
+    	{
+    		set_pwm_flight(ail_duty,
+    					   ele_duty,
+						   rud_duty,
+						   thr_duty,
+						   aux1_duty,
+						   aux2_duty,
+						   aux3_duty,
+						   aux4_duty);
+    	}
+    	else if (_hal_mode == Hal_mode::HITL)
+    	{
+    		set_pwm_hitl(ail_duty,
+					     ele_duty,
+					     rud_duty,
+					     thr_duty,
+					     aux1_duty,
+					     aux2_duty,
+					     aux3_duty,
+					     aux4_duty);
+    	}
+    }
 
     // Time
     virtual void delay_us(uint64_t us) = 0;
@@ -82,6 +105,23 @@ private:
 
     virtual void read_sensors_flight() = 0;
     virtual void read_sensors_hitl() = 0;
+
+    virtual void set_pwm_flight(uint16_t ail_duty,
+   				 	 	 	 	uint16_t ele_duty,
+								uint16_t rud_duty,
+								uint16_t thr_duty,
+								uint16_t aux1_duty,
+								uint16_t aux2_duty,
+								uint16_t aux3_duty,
+								uint16_t aux4_duty) = 0;
+    virtual void set_pwm_hitl(uint16_t ail_duty,
+       				 	 	  uint16_t ele_duty,
+    						  uint16_t rud_duty,
+    						  uint16_t thr_duty,
+    						  uint16_t aux1_duty,
+    						  uint16_t aux2_duty,
+    					 	  uint16_t aux3_duty,
+    						  uint16_t aux4_duty) = 0;
 
     virtual void usb_print_flight(char* str) = 0;
 };

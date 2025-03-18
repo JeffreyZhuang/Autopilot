@@ -6,26 +6,32 @@ void Flight_hal::init_servos()
 	servo2.init();
 }
 
-void Flight_hal::set_ail_pwm(uint16_t duty_us)
+void Flight_hal::set_pwm_hitl(uint16_t ail_duty,
+		  uint16_t ele_duty,
+		  uint16_t rud_duty,
+		  uint16_t thr_duty,
+		  uint16_t aux1_duty,
+		  uint16_t aux2_duty,
+		  uint16_t aux3_duty,
+		  uint16_t aux4_duty)
 {
-	servo1.set_duty(duty_us);
+	Hitl_tx_packet hitl_tx_packet{ail_duty, ele_duty, rud_duty, thr_duty};
 
-	hitl_tx_packet.ail_duty = duty_us;
+	// Transmit control commands
+	uint8_t txBuf[sizeof(Hitl_tx_packet)];
+	memcpy(txBuf, &hitl_tx_packet, sizeof(Hitl_tx_packet));
+	CDC_Transmit_FS(txBuf, sizeof(txBuf));
 }
 
-void Flight_hal::set_ele_pwm(uint16_t duty_us)
+void Flight_hal::set_pwm_flight(uint16_t ail_duty,
+		  uint16_t ele_duty,
+		  uint16_t rud_duty,
+		  uint16_t thr_duty,
+		  uint16_t aux1_duty,
+		  uint16_t aux2_duty,
+		  uint16_t aux3_duty,
+		  uint16_t aux4_duty)
 {
-	servo2.set_duty(duty_us);
-
-	hitl_tx_packet.ele_duty = duty_us;
-}
-
-void Flight_hal::set_rud_pwm(uint16_t duty_us)
-{
-	hitl_tx_packet.rud_duty = duty_us;
-}
-
-void Flight_hal::set_thr_pwm(uint16_t duty_us)
-{
-	hitl_tx_packet.thr_duty = duty_us;
+	servo1.set_duty(ail_duty);
+	servo2.set_duty(ele_duty);
 }

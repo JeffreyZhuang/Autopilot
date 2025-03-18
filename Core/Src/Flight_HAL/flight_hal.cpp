@@ -77,9 +77,4 @@ void Flight_hal::read_sensors_hitl()
 	_plane->gnss_sats = 10;
 	_plane->gps_fix = true;
 	_plane->gnss_timestamp = time;
-
-	// Transmit control commands
-	uint8_t txBuf[sizeof(Hitl_tx_packet)];
-	memcpy(txBuf, &hitl_tx_packet, sizeof(Hitl_tx_packet));
-	CDC_Transmit_FS(txBuf, sizeof(txBuf));
 }

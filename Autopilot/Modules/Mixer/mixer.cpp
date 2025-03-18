@@ -26,12 +26,12 @@ void Mixer::update()
 
 void Mixer::update_config()
 {
-	_hal->set_thr_pwm(0);
+	_hal->set_pwm(0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 void Mixer::update_startup()
 {
-	_hal->set_thr_pwm(get_params()->pwm_min_thr);
+	_hal->set_pwm(0, 0, 0, get_params()->pwm_min_thr, 0, 0, 0, 0);
 }
 
 void Mixer::update_flight()
@@ -54,8 +54,5 @@ void Mixer::update_flight()
 		 1,
 		 get_params()->pwm_min_thr,
 		 get_params()->pwm_max_thr);
-
-	_hal->set_ail_pwm(_aileron_duty);
-	_hal->set_ele_pwm(_elevator_duty);
-	_hal->set_thr_pwm(_throttle_duty);
+	_hal->set_pwm(_aileron_duty, _elevator_duty, 0, _throttle_duty, 0, 0, 0, 0);
 }

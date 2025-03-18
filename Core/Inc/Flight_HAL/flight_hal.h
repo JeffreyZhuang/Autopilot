@@ -106,14 +106,6 @@ public:
 
 	// servos_hal.cpp
 	void init_servos();
-	void set_ail_pwm(uint16_t duty_us) override;
-	void set_ele_pwm(uint16_t duty_us) override;
-	void set_rud_pwm(uint16_t duty_us) override;
-	void set_thr_pwm(uint16_t duty_us) override;
-	void set_aux1_pwm(uint16_t duty_us) {};
-	void set_aux2_pwm(uint16_t duty_us) {};
-	void set_aux3_pwm(uint16_t duty_us) {};
-	void set_aux4_pwm(uint16_t duty_us) {};
 
 	// power_monitor_hal.cpp
 	void read_power_monitor();
@@ -156,8 +148,24 @@ private:
 	void read_sensors_flight() override;
 	void read_sensors_hitl() override;
 
+	void set_pwm_flight(uint16_t ail_duty,
+						uint16_t ele_duty,
+						uint16_t rud_duty,
+						uint16_t thr_duty,
+						uint16_t aux1_duty,
+						uint16_t aux2_duty,
+						uint16_t aux3_duty,
+						uint16_t aux4_duty) override;
+	void set_pwm_hitl(uint16_t ail_duty,
+					  uint16_t ele_duty,
+					  uint16_t rud_duty,
+					  uint16_t thr_duty,
+					  uint16_t aux1_duty,
+					  uint16_t aux2_duty,
+					  uint16_t aux3_duty,
+					  uint16_t aux4_duty) override;
+
 	// HITL USB Double Buffering
-	Hitl_tx_packet hitl_tx_packet{0, 0, 0, 0};
 	Hitl_rx_packet* usb_buff1;
 	Hitl_rx_packet* usb_buff2;
 	bool buff1_active = true;
