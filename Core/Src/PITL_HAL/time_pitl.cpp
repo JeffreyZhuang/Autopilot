@@ -1,6 +1,6 @@
 #include "PITL_HAL/pitl_hal.h"
 
-uint64_t Pitl_hal::get_time_us(void)
+uint64_t Pitl_hal::get_time_us() const
 {
     return __HAL_TIM_GET_COUNTER(&htim5) * 10;
 }

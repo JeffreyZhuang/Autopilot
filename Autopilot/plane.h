@@ -96,9 +96,10 @@ struct Plane
     float ahrs_yaw = 0;
     uint64_t ahrs_timestamp = 0;
 
-    // Rangefinder
-    float rangefinder_dist = 0;
-    uint64_t rangefinder_timestamp = 0;
+    // Optical flow
+    int16_t of_x = 0;
+    int16_t of_y = 0;
+    uint64_t of_timestamp = 0;
 
     // Navigation
     bool nav_converged = false;

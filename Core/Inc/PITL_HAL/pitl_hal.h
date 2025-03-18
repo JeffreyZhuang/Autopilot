@@ -1,10 +1,3 @@
-/*
- * pitl_hal.h
- *
- *  Created on: Dec. 30, 2024
- *      Author: jeffr
- */
-
 #ifndef INC_PITL_HAL_H_
 #define INC_PITL_HAL_H_
 
@@ -36,9 +29,10 @@ struct Pitl_rx_packet
 	float my;
 	float mz;
 	float asl;
-	float lat;
-	float lon;
-	float agl;
+	int32_t lat;
+	int32_t lon;
+	uint16_t of_x;
+	uint16_t of_y;
 };
 
 struct Pitl_tx_packet
@@ -88,7 +82,7 @@ public:
 
 	// Time
 	void delay_us(uint64_t us) override;
-	uint64_t get_time_us() override;
+	uint64_t get_time_us() const override;
 
 	// Scheduler
 	void start_main_task(void (*task)());

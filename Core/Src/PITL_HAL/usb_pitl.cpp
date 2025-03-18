@@ -39,8 +39,6 @@ void Pitl_hal::read_pitl()
 	_plane->gnss_sats = 10;
 	_plane->gps_fix = true;
 	_plane->gnss_timestamp = time;
-	_plane->rangefinder_dist = data->agl;
-	_plane->rangefinder_timestamp = time;
 
 	// Transmit control commands
 	uint8_t txBuf[sizeof(Pitl_tx_packet)];

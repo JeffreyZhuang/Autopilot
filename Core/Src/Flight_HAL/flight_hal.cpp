@@ -28,7 +28,7 @@ void Flight_hal::init()
 	init_rangefinder();
 }
 
-void Flight_hal::read_sensors()
+void Flight_hal::read_sensors_flight()
 {
 	read_imu();
 	read_baro();

@@ -40,13 +40,39 @@ extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart6;
 
+struct Hitl_rx_packet
+{
+	float ax;
+	float ay;
+	float az;
+	float gx;
+	float gy;
+	float gz;
+	float mx;
+	float my;
+	float mz;
+	float asl;
+	int32_t lat;
+	int32_t lon;
+	uint16_t of_x;
+	uint16_t of_y;
+};
+
+struct Hitl_tx_packet
+{
+	uint16_t ail_duty;
+	uint16_t ele_duty;
+	uint16_t rud_duty;
+	uint16_t thr_duty;
+};
+
 class Flight_hal : public HAL
 {
 public:
 	Flight_hal(Plane* plane);
 
 	void init() override;
-	void read_sensors() override;
+	void read_sensors_flight() override;
 
 	// imu_hal.cpp
 	void init_imu();
@@ -83,7 +109,7 @@ public:
 
 	// time_hal.cpp
 	void delay_us(uint64_t) override;
-	uint64_t get_time_us() override;
+	uint64_t get_time_us() const override;
 
 	// servos_hal.cpp
 	void init_servos();
@@ -107,12 +133,17 @@ public:
 	static void rc_dma_complete() { _instance->mlrs_rc.dma_complete(); }
 	static void telemetry_dma_complete() { _instance->mlrs_telem.dma_complete(); }
 
+	// USB
+	void usb_rx_callback(uint8_t* Buf, uint32_t Len);
+
 	// scheduler_hal.cpp
 	void start_main_task(void (*task)()) override;
 	void start_background_task(void (*task)()) override;
 	float get_main_dt() const override;
 	void execute_main_task();
 	static void main_task_callback() { _instance->execute_main_task(); }
+
+	static Flight_hal *get_instance() { return _instance; };
 
 private:
 	Plane* _plane;
@@ -126,6 +157,14 @@ private:
 	Servo servo1;
 	Servo servo2;
 	Cxof cxof;
+
+	// HITL USB Double Buffering
+	Hitl_tx_packet hitl_tx_packet{0, 0, 0, 0};
+	Hitl_rx_packet* usb_buff1;
+	Hitl_rx_packet* usb_buff2;
+	bool buff1_active = true;
+	bool buff1_ready = false;
+	bool buff2_ready = false;
 
 	// scheduler_hal.cpp
 	void (*main_task)() = nullptr;

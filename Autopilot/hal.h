@@ -3,16 +3,27 @@
 
 #include "plane.h"
 
-/**
- * @brief Hardware abstraction layer
- */
+enum class Hal_mode
+{
+	FLIGHT,
+	HITL
+};
+
 class HAL
 {
 public:
+	virtual ~HAL() = default;
+
     virtual void init() = 0;
 
     // Sensors
-    virtual void read_sensors() = 0;
+    void read_sensors()
+    {
+    	if (_hal_mode == Hal_mode::FLIGHT)
+    	{
+    		read_sensors_flight();
+    	}
+    }
 
     // Telemetry
     virtual void transmit_telem(uint8_t tx_buff[], int len) = 0;
@@ -41,14 +52,23 @@ public:
 
     // Time
     virtual void delay_us(uint64_t us) = 0;
-    virtual uint64_t get_time_us() = 0;
+    virtual uint64_t get_time_us() const = 0;
 
     // Scheduler
     virtual void start_main_task(void (*task)()) = 0;
     virtual void start_background_task(void (*task)()) = 0;
     virtual float get_main_dt() const = 0;
 
-    virtual ~HAL() {}
+    // HITL
+    void enable_hitl() noexcept
+    {
+    	_hal_mode = Hal_mode::HITL;
+    }
+
+private:
+    Hal_mode _hal_mode = Hal_mode::FLIGHT;
+
+    virtual void read_sensors_flight() = 0;
 };
 
 #endif
