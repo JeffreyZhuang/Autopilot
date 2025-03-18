@@ -35,14 +35,8 @@ public:
     void usb_print(char* str);
 
     // Control surfaces
-    void set_pwm(uint16_t ail_duty,
-				 uint16_t ele_duty,
-				 uint16_t rud_duty,
-				 uint16_t thr_duty,
-				 uint16_t aux1_duty,
-				 uint16_t aux2_duty,
-				 uint16_t aux3_duty,
-				 uint16_t aux4_duty);
+    void set_pwm(uint16_t ail_duty, uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
+				 uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty, uint16_t aux4_duty);
 
     // Time
     virtual void delay_us(uint64_t us) = 0;
