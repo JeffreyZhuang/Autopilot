@@ -91,6 +91,9 @@ struct __attribute__((packed))Parameters
 	float baro_r; // Variance
 	float gnss_r;
 	float gnss_alt_r;
+
+	// HITL
+	bool enable_hitl;
 };
 
 const Parameters* get_params();

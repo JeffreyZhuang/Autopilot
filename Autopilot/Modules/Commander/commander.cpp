@@ -97,6 +97,11 @@ void Commander::update_config()
 {
 	if (are_params_set() && _plane->waypoints_loaded)
 	{
+		if (get_params()->enable_hitl)
+		{
+			_hal->enable_hitl();
+		}
+
 		_plane->system_mode = System_mode::STARTUP;
 	}
 }

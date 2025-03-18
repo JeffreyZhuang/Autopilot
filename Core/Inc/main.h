@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <autopilot_main.h>
+#include "autopilot_main.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
