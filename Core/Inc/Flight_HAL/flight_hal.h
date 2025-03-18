@@ -25,11 +25,6 @@ extern I2C_HandleTypeDef hi2c1;
 
 extern SPI_HandleTypeDef hspi1;
 
-extern SD_HandleTypeDef hsd;
-
-extern DMA_HandleTypeDef hdma_sdio_rx;
-extern DMA_HandleTypeDef hdma_sdio_tx;
-
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim5;
