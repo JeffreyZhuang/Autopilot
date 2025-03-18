@@ -65,9 +65,9 @@ void Control::handle_auto_mode()
 // Read from radio and send commands directly to servos
 void Control::update_direct()
 {
-	_plane->aileron_setpoint = _plane->rc_in_norm[get_params()->aileron_ch];
-	_plane->elevator_setpoint = _plane->rc_in_norm[get_params()->elevator_ch];
-	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
+	_plane->aileron_setpoint = _plane->rc_ail_norm;
+	_plane->elevator_setpoint = _plane->rc_ele_norm;
+	_plane->throttle_setpoint = _plane->rc_thr_norm;
 }
 
 // Pilot commands roll and pitch angles, throttle is manual
@@ -75,16 +75,16 @@ void Control::update_stabilized()
 {
 	float pitch_limit = 20;
 	float roll_limit = 30;
-	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
-	_plane->pitch_setpoint = _plane->rc_in_norm[get_params()->elevator_ch] * pitch_limit;
-	_plane->roll_setpoint = _plane->rc_in_norm[get_params()->aileron_ch] * roll_limit;
+	_plane->throttle_setpoint = _plane->rc_thr_norm;
+	_plane->pitch_setpoint = _plane->rc_ele_norm * pitch_limit;
+	_plane->roll_setpoint = _plane->rc_ail_norm * roll_limit;
 	control_roll_ptch();
 }
 
 // Manual throttle, hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
 void Control::update_takeoff()
 {
-	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
+	_plane->throttle_setpoint = _plane->rc_thr_norm;
 	_plane->pitch_setpoint = get_params()->takeoff_ptch;
 	_plane->roll_setpoint = 0;
 

@@ -30,7 +30,14 @@ public:
     virtual void toggle_led() = 0;
 
     // Control surfaces
-    virtual void set_duty(uint8_t channel, uint16_t duty_us) = 0;
+    virtual void set_ail_pwm(uint16_t duty_us) = 0;
+    virtual void set_ele_pwm(uint16_t duty_us) = 0;
+    virtual void set_rud_pwm(uint16_t duty_us) = 0;
+    virtual void set_thr_pwm(uint16_t duty_us) = 0;
+    virtual void set_aux1_pwm(uint16_t duty_us) = 0;
+    virtual void set_aux2_pwm(uint16_t duty_us) = 0;
+    virtual void set_aux3_pwm(uint16_t duty_us) = 0;
+    virtual void set_aux4_pwm(uint16_t duty_us) = 0;
 
     // Time
     virtual void delay_us(uint64_t us) = 0;

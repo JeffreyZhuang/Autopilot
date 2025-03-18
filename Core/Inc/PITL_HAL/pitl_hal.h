@@ -43,9 +43,10 @@ struct Pitl_rx_packet
 
 struct Pitl_tx_packet
 {
-	float aileron;
-	float elevator;
-	float throttle;
+	float ail;
+	float ele;
+	float rud;
+	float thr;
 };
 
 // Processor in the loop using USB
@@ -76,7 +77,14 @@ public:
 	void toggle_led();
 
 	// Servos
-	void set_duty(uint8_t channel, uint16_t duty_us) override;
+	void set_ail_pwm(uint16_t duty_us) override;
+	void set_ele_pwm(uint16_t duty_us) override;
+	void set_rud_pwm(uint16_t duty_us) override;
+	void set_thr_pwm(uint16_t duty_us) override;
+	void set_aux1_pwm(uint16_t duty_us) override {};
+	void set_aux2_pwm(uint16_t duty_us) override {};
+	void set_aux3_pwm(uint16_t duty_us) override {};
+	void set_aux4_pwm(uint16_t duty_us) override {};
 
 	// Time
 	void delay_us(uint64_t us) override;
@@ -99,7 +107,7 @@ private:
 	Mlrs_telem mlrs_telem;
 
 	// USB
-	Pitl_tx_packet pitl_tx_packet{0, 0, 0};
+	Pitl_tx_packet pitl_tx_packet{0, 0, 0, 0};
 	Pitl_rx_packet* usb_buff1;
 	Pitl_rx_packet* usb_buff2;
 	bool buff1_active = true;

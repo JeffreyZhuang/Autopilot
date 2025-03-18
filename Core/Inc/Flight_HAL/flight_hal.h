@@ -87,7 +87,14 @@ public:
 
 	// servos_hal.cpp
 	void init_servos();
-	void set_duty(uint8_t channel, uint16_t duty_us) override;
+	void set_ail_pwm(uint16_t duty_us) override;
+	void set_ele_pwm(uint16_t duty_us) override;
+	void set_rud_pwm(uint16_t duty_us) = 0;
+	void set_thr_pwm(uint16_t duty_us) override;
+	void set_aux1_pwm(uint16_t duty_us) = 0;
+	void set_aux2_pwm(uint16_t duty_us) = 0;
+	void set_aux3_pwm(uint16_t duty_us) = 0;
+	void set_aux4_pwm(uint16_t duty_us) = 0;
 
 	// power_monitor_hal.cpp
 	void read_power_monitor();

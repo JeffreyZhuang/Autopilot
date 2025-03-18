@@ -165,18 +165,20 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 	float hi_cal[3];
 
 	// Apply hard-iron offsets
-	for (uint8_t i = 0; i < 3; i++)
-	{
-		hi_cal[i] = mag_data[i] - get_params()->hard_iron[i];
-	}
+	hi_cal[0] = mag_data[0] - get_params()->hard_iron_x;
+	hi_cal[1] = mag_data[1] - get_params()->hard_iron_y;
+	hi_cal[2] = mag_data[2] - get_params()->hard_iron_z;
 
 	// Apply soft-iron scaling
-	for (uint8_t i = 0; i < 3; i++)
-	{
-		mag_data[i] = (get_params()->soft_iron[i][0] * hi_cal[0]) +
-					  (get_params()->soft_iron[i][1] * hi_cal[1]) +
-					  (get_params()->soft_iron[i][2] * hi_cal[2]);
-	}
+	mag_data[0] = (get_params()->soft_iron_xx * hi_cal[0]) +
+				  (get_params()->soft_iron_xy * hi_cal[1]) +
+				  (get_params()->soft_iron_xz * hi_cal[2]);
+	mag_data[1] = (get_params()->soft_iron_yx * hi_cal[0]) +
+				  (get_params()->soft_iron_yy * hi_cal[1]) +
+				  (get_params()->soft_iron_yz * hi_cal[2]);
+	mag_data[2] = (get_params()->soft_iron_zx * hi_cal[0]) +
+				  (get_params()->soft_iron_zy * hi_cal[1]) +
+				  (get_params()->soft_iron_zz * hi_cal[2]);
 }
 
 bool AHRS::is_accel_reliable()

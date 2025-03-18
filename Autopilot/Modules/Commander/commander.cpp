@@ -73,10 +73,10 @@ void Commander::handle_auto_mode()
 void Commander::handle_switches()
 {
 	// Manual switch overrides Mode switch and toggles between manual
-	if (_plane->manual_sw)
+	if (_plane->rc_man_sw)
 	{
 		// Mode switch toggles between stabilized and auto
-		if (_plane->mode_sw)
+		if (_plane->rc_mod_sw)
 		{
 			_plane->flight_mode = Flight_mode::AUTO;
 		}
@@ -103,8 +103,9 @@ void Commander::update_config()
 
 void Commander::update_startup()
 {
-	bool transmitter_safe = _plane->rc_in_norm[get_params()->throttle_ch] == 0 &&
-							!_plane->manual_sw && !_plane->mode_sw;
+	bool transmitter_safe = _plane->rc_thr_norm == 0 &&
+							!_plane->rc_man_sw &&
+							!_plane->rc_mod_sw;
 	if (_plane->ahrs_converged &&
 		_plane->nav_converged &&
 		_plane->tx_connected &&

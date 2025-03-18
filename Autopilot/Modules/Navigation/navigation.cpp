@@ -114,7 +114,7 @@ void Navigation::predict_imu()
 										  _plane->ahrs_roll * DEG_TO_RAD,
 										  _plane->ahrs_pitch * DEG_TO_RAD,
 										  _plane->ahrs_yaw * DEG_TO_RAD);
-	acc_ned(2) += g; // Gravity correction
+	acc_ned(2) += G; // Gravity correction
 
 	_plane->nav_acc_north = acc_ned(0);
 	_plane->nav_acc_east = acc_ned(1);
