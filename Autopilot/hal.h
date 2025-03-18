@@ -42,8 +42,15 @@ public:
 
     // Debug
     virtual void debug_print(char* str) = 0;
-    virtual void usb_print(char* str) = 0;
     virtual void toggle_led() = 0;
+    void usb_print(char* str)
+    {
+    	// USB reserved for HITL
+    	if (_hal_mode == Hal_mode::FLIGHT)
+    	{
+    		usb_print_flight(str);
+    	}
+    }
 
     // Control surfaces
     virtual void set_ail_pwm(uint16_t duty_us) = 0;
@@ -75,6 +82,8 @@ private:
 
     virtual void read_sensors_flight() = 0;
     virtual void read_sensors_hitl() = 0;
+
+    virtual void usb_print_flight(char* str) = 0;
 };
 
 #endif

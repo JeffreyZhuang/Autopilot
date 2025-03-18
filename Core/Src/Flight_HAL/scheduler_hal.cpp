@@ -33,7 +33,6 @@ void Flight_hal::start_background_task(void (*task)())
 	}
 }
 
-#if !PITL_ENABLE
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim == &htim7)
@@ -46,7 +45,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	if (huart == &huart2)
 	{
-		Flight_hal::rangefinder_dma_complete();
+		Flight_hal::of_dma_complete();
 	}
 	else if (huart == &huart3)
 	{
@@ -66,5 +65,3 @@ void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
 	Flight_hal::get_instance()->usb_rx_callback(Buf, Len);
 }
-
-#endif

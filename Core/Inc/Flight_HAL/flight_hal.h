@@ -90,10 +90,10 @@ public:
 	void init_compass();
 	void read_compass();
 
-	// rangefinder_hal.cpp
-	void init_rangefinder();
-	void read_rangefinder();
-	static void rangefinder_dma_complete() { _instance->cxof.dma_complete(); }
+	// optical_flow_hal.cpp
+	void init_of();
+	void read_of();
+	static void of_dma_complete() { _instance->cxof.dma_complete(); }
 
 	// logger_hal.cpp
 	void init_logger();
@@ -103,7 +103,6 @@ public:
 
 	// debug_hal.cpp
 	void debug_print(char * str) override;
-	void usb_print(char * str) override;
 	void toggle_led() override;
 
 	// time_hal.cpp
@@ -156,6 +155,8 @@ private:
 	Servo servo1;
 	Servo servo2;
 	Cxof cxof;
+
+	void usb_print_flight(char * str) override;
 
 	void read_sensors_flight() override;
 	void read_sensors_hitl() override;

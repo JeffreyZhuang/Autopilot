@@ -1,11 +1,11 @@
 #include "Flight_HAL/flight_hal.h"
 
-void Flight_hal::init_rangefinder()
+void Flight_hal::init_of()
 {
 	cxof.setup();
 }
 
-void Flight_hal::read_rangefinder()
+void Flight_hal::read_of()
 {
 	Cxof_frame result;
 	if (cxof.read(&result))

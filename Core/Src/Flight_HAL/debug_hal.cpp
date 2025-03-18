@@ -5,7 +5,7 @@ void Flight_hal::debug_print(char * str)
 	printf(str);
 }
 
-void Flight_hal::usb_print(char * str)
+void Flight_hal::usb_print_flight(char * str)
 {
 	CDC_Transmit_FS((uint8_t*)str, strlen(str));
 }

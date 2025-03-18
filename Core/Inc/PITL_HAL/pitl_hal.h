@@ -67,7 +67,7 @@ public:
 
 	// Debug
 	void debug_print(char * str) override;
-	void usb_print(char * str) override {}; // Removed because USB reserved for PITL
+	void usb_print_flight(char * str) override {}; // Removed because USB reserved for PITL
 	void toggle_led();
 
 	// Servos
