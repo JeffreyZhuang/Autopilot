@@ -17,17 +17,7 @@ public:
     virtual void init() = 0;
 
     // Sensors
-    void read_sensors()
-    {
-    	if (_hal_mode == Hal_mode::FLIGHT)
-    	{
-    		read_sensors_flight();
-    	}
-    	else if (_hal_mode == Hal_mode::HITL)
-    	{
-    		read_sensors_hitl();
-    	}
-    }
+    void read_sensors();
 
     // Telemetry
     virtual void transmit_telem(uint8_t tx_buff[], int len) = 0;
@@ -42,14 +32,7 @@ public:
     // Debug
     virtual void debug_print(char* str) = 0;
     virtual void toggle_led() = 0;
-    void usb_print(char* str)
-    {
-    	// USB reserved for HITL
-    	if (_hal_mode == Hal_mode::FLIGHT)
-    	{
-    		usb_print_flight(str);
-    	}
-    }
+    void usb_print(char* str);
 
     // Control surfaces
     void set_pwm(uint16_t ail_duty,
@@ -59,31 +42,7 @@ public:
 				 uint16_t aux1_duty,
 				 uint16_t aux2_duty,
 				 uint16_t aux3_duty,
-				 uint16_t aux4_duty)
-    {
-    	if (_hal_mode == Hal_mode::FLIGHT)
-    	{
-    		set_pwm_flight(ail_duty,
-    					   ele_duty,
-						   rud_duty,
-						   thr_duty,
-						   aux1_duty,
-						   aux2_duty,
-						   aux3_duty,
-						   aux4_duty);
-    	}
-    	else if (_hal_mode == Hal_mode::HITL)
-    	{
-    		set_pwm_hitl(ail_duty,
-					     ele_duty,
-					     rud_duty,
-					     thr_duty,
-					     aux1_duty,
-					     aux2_duty,
-					     aux3_duty,
-					     aux4_duty);
-    	}
-    }
+				 uint16_t aux4_duty);
 
     // Time
     virtual void delay_us(uint64_t us) = 0;
@@ -95,10 +54,7 @@ public:
     virtual float get_main_dt() const = 0;
 
     // HITL
-    void enable_hitl() noexcept
-    {
-    	_hal_mode = Hal_mode::HITL;
-    }
+    void enable_hitl() noexcept;
 
 private:
     Hal_mode _hal_mode = Hal_mode::FLIGHT;
