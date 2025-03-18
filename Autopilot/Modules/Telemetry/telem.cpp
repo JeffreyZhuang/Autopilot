@@ -31,12 +31,12 @@ void Telem::transmit_packet(uint8_t packet[], uint16_t size)
 void Telem::transmit_telem()
 {
 	// Limit data rate through radio
-	float sec_since_last_tlm_transmit = (_hal->get_time_us() - last_tlm_transmit_time) * us_to_s;
+	float sec_since_last_tlm_transmit = (_hal->get_time_us() - last_tlm_transmit_time) * US_TO_S;
 
 	uint16_t byte_rate = 0;
 	if (sec_since_last_tlm_transmit != 0) // Prevent divide by zero
 	{
-		byte_rate = (bytes_since_last_tlm_transmit + TLM_PKT_LEN) / sec_since_last_tlm_transmit;
+		byte_rate = bytes_since_last_tlm_transmit / sec_since_last_tlm_transmit;
 	}
 
 	if (byte_rate < MAX_BYTE_RATE)
@@ -56,7 +56,7 @@ void Telem::transmit_telem()
 		cobs_encode(packet_cobs, sizeof(packet_cobs), payload_arr, sizeof(Telem_payload));
 
 		// Construct final packet
-		uint8_t packet[TLM_PKT_LEN];
+		uint8_t packet[sizeof(Telem_payload) + HEADER_LEN];
 		packet[0] = 0; // Start byte
 		packet[1] = sizeof(Telem_payload); // Length byte
 		for (uint i = 0; i < sizeof(packet_cobs); i++)

@@ -1,7 +1,7 @@
 #ifndef CONTROL_H_
 #define CONTROL_H_
 
-#include "Lib/PID/pid.h"
+#include "Lib/PIControl/PI_control.h"
 #include "Lib/Utils/utils.h"
 #include "hal.h"
 #include "parameters.h"
@@ -18,11 +18,11 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
-	PID roll_controller;
-	PID pitch_controller;
-	PID hdg_controller;
-	PID alt_controller;
-	PID speed_controller;
+	PI_control roll_controller;
+	PI_control pitch_controller;
+	PI_control hdg_controller;
+	PI_control alt_controller;
+	PI_control speed_controller;
 
 	void handle_manual_mode();
 	void handle_auto_mode();

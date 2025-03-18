@@ -87,11 +87,12 @@ void Control::update_takeoff()
 	_plane->throttle_setpoint = _plane->rc_in_norm[get_params()->throttle_ch];
 	_plane->pitch_setpoint = get_params()->takeoff_ptch;
 	_plane->roll_setpoint = 0;
+
+	// No integral
 	_plane->aileron_setpoint = roll_controller.get_output(
 		_plane->ahrs_roll,
 		_plane->roll_setpoint,
 		get_params()->roll_kp,
-		0,
 		0,
 		0,
 		-1,
@@ -102,7 +103,6 @@ void Control::update_takeoff()
 		_plane->ahrs_pitch,
 		_plane->pitch_setpoint,
 		get_params()->ptch_kp,
-		0,
 		0,
 		0,
 		-1,
@@ -133,7 +133,6 @@ void Control::update_flare()
 	    _plane->tecs_energy_diff_setpoint,
 	    get_params()->alt_kp,
 	    get_params()->alt_ki,
-	    0,
 		get_params()->ptch_lim_deg,
 	    -get_params()->ptch_lim_deg,
 	    get_params()->ptch_lim_deg,
@@ -158,7 +157,6 @@ void Control::control_roll_ptch()
 		_plane->roll_setpoint,
 		get_params()->roll_kp,
 		get_params()->roll_ki,
-		0,
 		1,
 		-1,
 		1,
@@ -169,7 +167,6 @@ void Control::control_roll_ptch()
 		_plane->pitch_setpoint,
 		get_params()->ptch_kp,
 		get_params()->ptch_ki,
-		0,
 		1,
 		-1,
 		1,
@@ -184,7 +181,6 @@ void Control::control_alt_spd_hdg()
 		_plane->tecs_energy_diff_setpoint,
 		get_params()->alt_kp,
 		get_params()->alt_ki,
-		0,
 		get_params()->ptch_lim_deg,
 		-get_params()->ptch_lim_deg,
 		get_params()->ptch_lim_deg,
@@ -195,7 +191,6 @@ void Control::control_alt_spd_hdg()
 		_plane->tecs_energy_total_setpoint,
 		get_params()->thr_kp,
 		get_params()->thr_ki,
-		0,
 		1,
 		0,
 		1,
@@ -206,7 +201,6 @@ void Control::control_alt_spd_hdg()
 		_plane->guidance_hdg_setpoint,
 		get_params()->hdg_kp,
 		get_params()->hdg_ki,
-		0,
 		get_params()->roll_lim_deg,
 		-get_params()->roll_lim_deg,
 		get_params()->roll_lim_deg,

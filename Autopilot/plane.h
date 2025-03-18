@@ -125,9 +125,12 @@ struct Plane
 
     // RC Transmitter
     bool tx_connected = false;
-    bool manual_sw; // Switch on/off
-    bool mode_sw;
-    float rc_in_norm[16]; // Normalized RC transmitter stick input, -1 to 1
+    float rc_ail_norm = 0; // Normalized RC transmitter stick input, -1 to 1
+    float rc_ele_norm = 0;
+    float rc_rud_norm = 0;
+    float rc_thr_norm = 0;
+    bool rc_man_sw = false;
+    bool rc_mod_sw = false;
 
     // Control commands from -1 to 1
     float aileron_setpoint = 0;

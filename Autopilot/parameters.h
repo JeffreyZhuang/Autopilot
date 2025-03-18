@@ -29,18 +29,34 @@ struct __attribute__((packed))Parameters
 	float takeoff_ptch; // Pitch during takeoff
 
 	// Mixer
-	uint16_t max_duty[6]; // Max duty cycle in microseconds for each channel
-	uint16_t min_duty[6];
-	uint16_t rc_in_max; // RC Transmitter stick max duty cycle microseconds
-	uint16_t rc_in_min; // Make sure values are INSIDE the range of radio, NEVER outside
-	bool rev_ch[6]; // Reverse output PWM channels
-	uint8_t aileron_ch; // Channel for aileron
-	uint8_t elevator_ch; // Channel for elevator
-	uint8_t throttle_ch; // Channel for throttle
+	uint16_t pwm_max_ail;
+	uint16_t pwm_max_ele;
+	uint16_t pwm_max_rud;
+	uint16_t pwm_max_thr;
+	uint16_t pwm_max_aux1;
+	uint16_t pwm_max_aux2;
+	uint16_t pwm_max_aux3;
+	uint16_t pwm_max_aux4;
+	uint16_t pwm_min_ail;
+	uint16_t pwm_min_ele;
+	uint16_t pwm_min_rud;
+	uint16_t pwm_min_thr;
+	uint16_t pwm_min_aux1;
+	uint16_t pwm_min_aux2;
+	uint16_t pwm_min_aux3;
+	uint16_t pwm_min_aux4;
+	bool pwm_rev_ail;
+	bool pwm_rev_ele;
+	bool pwm_rev_rud;
+	bool pwm_rev_thr;
+	bool pwm_rev_aux1;
+	bool pwm_rev_aux2;
+	bool pwm_rev_aux3;
+	bool pwm_rev_aux4;
 
 	// RC Transmitter
-	uint8_t manual_sw_ch;
-	uint8_t mode_sw_ch;
+	uint16_t rc_max; // RC Transmitter stick max duty cycle microseconds
+	uint16_t rc_min; // Make sure values are INSIDE the range of radio, NEVER outside
 
 	// PID gains
 	float ptch_kp;
@@ -58,8 +74,18 @@ struct __attribute__((packed))Parameters
 	float ahrs_beta; // Madgwick filter gain
 	float mag_decl; // Declination in degrees, determined from online calculator
 	float ahrs_acc_max; // Max acceleration in units of g to enable sensor fusion
-	float hard_iron[3];
-	float soft_iron[3][3];
+	float hard_iron_x;
+	float hard_iron_y;
+	float hard_iron_z;
+	float soft_iron_xx;
+	float soft_iron_xy;
+	float soft_iron_xz;
+	float soft_iron_yx;
+	float soft_iron_yy;
+	float soft_iron_yz;
+	float soft_iron_zx;
+	float soft_iron_zy;
+	float soft_iron_zz;
 
 	// Kalman filter
 	float baro_r; // Variance

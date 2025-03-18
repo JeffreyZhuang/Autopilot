@@ -11,24 +11,31 @@
 
 struct __attribute__((packed))Telem_payload
 {
-	uint8_t payload_type;
 	int16_t roll;
 	int16_t pitch;
 	uint16_t yaw;
 	int16_t alt;
 	uint16_t spd;
-	float lat;
-	float lon;
+	int16_t alt_setpoint;
+	int32_t lat;
+	int32_t lon;
+	float nav_north;
+	float nav_east;
 	uint8_t mode_id;
 	uint8_t wp_idx;
+	uint16_t cell_voltage;
+	uint16_t battery_current;
+	uint16_t battery_used;
+	uint16_t autopilot_current;
 	uint8_t gps_sats;
 	bool gps_fix;
-	int16_t alt_setpoint;
+	uint8_t aileron;
+	uint8_t elevator;
+	uint8_t throttle;
 };
 
 struct __attribute__((packed))Waypoint_payload
 {
-	uint8_t payload_type;
 	uint8_t waypoint_index;
 	uint8_t total_waypoints;
 	float lat;
@@ -38,19 +45,17 @@ struct __attribute__((packed))Waypoint_payload
 
 struct __attribute__((packed))Params_payload
 {
-	uint8_t payload_type;
 	Parameters params;
 };
 
 // Message identifiers
-static constexpr uint8_t TELEM_MSG_ID = 0;
-static constexpr uint8_t WPT_MSG_ID = 1;
-static constexpr uint8_t PARAMS_MSG_ID = 2;
+static constexpr uint8_t TELEM_MSG_ID = 1;
+static constexpr uint8_t WPT_MSG_ID = 2;
+static constexpr uint8_t PARAMS_MSG_ID = 3;
 
 // Packet length constants
 static constexpr uint8_t HEADER_LEN = 3;
 static constexpr uint16_t MAX_PKT_LEN = 255 + HEADER_LEN;
-static constexpr uint16_t TLM_PKT_LEN = sizeof(Telem_payload) + HEADER_LEN;
 static constexpr uint16_t MAX_BYTE_RATE = 1500; // Bytes per sec
 
 class Telem

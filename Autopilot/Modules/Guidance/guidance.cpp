@@ -64,7 +64,7 @@ void Guidance::update_mission()
 	float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
 	// Calculate heading setpoint using proportional guidance law
-	_plane->guidance_hdg_setpoint = (trk_hdg + atanf(get_params()->guidance_kp * -xte)) * rad_to_deg;
+	_plane->guidance_hdg_setpoint = (trk_hdg + atanf(get_params()->guidance_kp * -xte)) * RAD_TO_DEG;
 	if (_plane->guidance_hdg_setpoint < 0) {
 		_plane->guidance_hdg_setpoint += 360.0; // Normalize to [0, 360] range
 	}

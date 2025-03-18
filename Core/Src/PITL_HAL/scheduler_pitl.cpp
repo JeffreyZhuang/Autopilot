@@ -6,7 +6,7 @@ void Pitl_hal::start_main_task(void (*task)())
 
 	while (1)
 	{
-		if (get_time_us() - prev_time >= get_main_dt() * s_to_us)
+		if (get_time_us() - prev_time >= get_main_dt() * S_TO_US)
 		{
 			prev_time = get_time_us();
 			task();
