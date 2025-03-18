@@ -19,9 +19,14 @@ public:
     // Sensors
     void read_sensors()
     {
-    	if (_hal_mode == Hal_mode::FLIGHT)
+    	switch (_hal_mode)
     	{
+    	case Hal_mode::FLIGHT:
     		read_sensors_flight();
+    		break;
+    	case Hal_mode::HITL:
+    		read_sensors_hitl();
+    		break;
     	}
     }
 
@@ -69,6 +74,7 @@ private:
     Hal_mode _hal_mode = Hal_mode::FLIGHT;
 
     virtual void read_sensors_flight() = 0;
+    virtual void read_sensors_hitl() = 0;
 };
 
 #endif

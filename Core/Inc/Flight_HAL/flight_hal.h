@@ -72,7 +72,6 @@ public:
 	Flight_hal(Plane* plane);
 
 	void init() override;
-	void read_sensors_flight() override;
 
 	// imu_hal.cpp
 	void init_imu();
@@ -115,12 +114,12 @@ public:
 	void init_servos();
 	void set_ail_pwm(uint16_t duty_us) override;
 	void set_ele_pwm(uint16_t duty_us) override;
-	void set_rud_pwm(uint16_t duty_us) = 0;
+	void set_rud_pwm(uint16_t duty_us) override;
 	void set_thr_pwm(uint16_t duty_us) override;
-	void set_aux1_pwm(uint16_t duty_us) = 0;
-	void set_aux2_pwm(uint16_t duty_us) = 0;
-	void set_aux3_pwm(uint16_t duty_us) = 0;
-	void set_aux4_pwm(uint16_t duty_us) = 0;
+	void set_aux1_pwm(uint16_t duty_us) {};
+	void set_aux2_pwm(uint16_t duty_us) {};
+	void set_aux3_pwm(uint16_t duty_us) {};
+	void set_aux4_pwm(uint16_t duty_us) {};
 
 	// power_monitor_hal.cpp
 	void read_power_monitor();
@@ -157,6 +156,9 @@ private:
 	Servo servo1;
 	Servo servo2;
 	Cxof cxof;
+
+	void read_sensors_flight() override;
+	void read_sensors_hitl() override;
 
 	// HITL USB Double Buffering
 	Hitl_tx_packet hitl_tx_packet{0, 0, 0, 0};

@@ -37,3 +37,49 @@ void Flight_hal::read_sensors_flight()
 	read_power_monitor();
 	read_rangefinder();
 }
+
+void Flight_hal::read_sensors_hitl()
+{
+	Hitl_rx_packet* data;
+
+	if (buff1_ready)
+	{
+		data = usb_buff1;
+		buff1_ready = false;
+	}
+	else if (buff2_ready)
+	{
+		data = usb_buff2;
+		buff2_ready = false;
+	}
+	else
+	{
+		return;
+	}
+
+	uint64_t time = get_time_us();
+	_plane->imu_gx = data->gx;
+	_plane->imu_gy = data->gy;
+	_plane->imu_gz = data->gz;
+	_plane->imu_ax = data->ax;
+	_plane->imu_ay = data->ay;
+	_plane->imu_az = data->az;
+	_plane->imu_timestamp = time;
+	_plane->compass_mx = data->mx;
+	_plane->compass_my = data->my;
+	_plane->compass_mz = data->mz;
+	_plane->compass_timestamp = time;
+	_plane->baro_alt = data->asl;
+	_plane->baro_timestamp = time;
+	_plane->gnss_lat = data->lat;
+	_plane->gnss_lon = data->lon;
+	_plane->gnss_asl = data->asl;
+	_plane->gnss_sats = 10;
+	_plane->gps_fix = true;
+	_plane->gnss_timestamp = time;
+
+	// Transmit control commands
+	uint8_t txBuf[sizeof(Hitl_tx_packet)];
+	memcpy(txBuf, &hitl_tx_packet, sizeof(Hitl_tx_packet));
+	CDC_Transmit_FS(txBuf, sizeof(txBuf));
+}
