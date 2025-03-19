@@ -38,9 +38,9 @@ struct __attribute__((packed))Waypoint_payload
 {
 	uint8_t waypoint_index;
 	uint8_t total_waypoints;
-	float lat;
-	float lon;
-	float alt;
+	int32_t lat;
+	int32_t lon;
+	int16_t alt;
 };
 
 struct __attribute__((packed))Params_payload
@@ -48,13 +48,15 @@ struct __attribute__((packed))Params_payload
 	Parameters params;
 };
 
+static constexpr uint8_t START_BYTE = 0;
+
 // Message identifiers
 static constexpr uint8_t TELEM_MSG_ID = 1;
 static constexpr uint8_t WPT_MSG_ID = 2;
 static constexpr uint8_t PARAMS_MSG_ID = 3;
 
 // Packet length constants
-static constexpr uint8_t HEADER_LEN = 3;
+static constexpr uint8_t HEADER_LEN = 4;
 static constexpr uint16_t MAX_PKT_LEN = 255 + HEADER_LEN;
 static constexpr uint16_t MAX_BYTE_RATE = 1500; // Bytes per sec
 

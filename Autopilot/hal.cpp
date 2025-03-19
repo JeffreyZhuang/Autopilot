@@ -26,25 +26,13 @@ void HAL::set_pwm(uint16_t ail_duty, uint16_t ele_duty, uint16_t rud_duty, uint1
 {
 	if (_hal_mode == Hal_mode::FLIGHT)
 	{
-		set_pwm_flight(ail_duty,
-					   ele_duty,
-					   rud_duty,
-					   thr_duty,
-					   aux1_duty,
-					   aux2_duty,
-					   aux3_duty,
-					   aux4_duty);
+		set_pwm_flight(ail_duty, ele_duty, rud_duty, thr_duty,
+					   aux1_duty, aux2_duty, aux3_duty, aux4_duty);
 	}
 	else if (_hal_mode == Hal_mode::HITL)
 	{
-		set_pwm_hitl(ail_duty,
-					 ele_duty,
-					 rud_duty,
-					 thr_duty,
-					 aux1_duty,
-					 aux2_duty,
-					 aux3_duty,
-					 aux4_duty);
+		set_pwm_hitl(ail_duty, ele_duty, rud_duty, thr_duty,
+					 aux1_duty, aux2_duty, aux3_duty, aux4_duty);
 	}
 }
 

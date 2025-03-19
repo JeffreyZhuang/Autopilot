@@ -151,6 +151,12 @@ void Guidance::update_flare()
 						   get_params()->flare_sink_rate,
 						   clamp(-_plane->nav_pos_down, 0, get_params()->flare_alt));
 
+	// Make sure sink rate decreases during flare, not increases
+	if (sink_rate > flare_initial_sink_rate)
+	{
+		sink_rate = flare_initial_sink_rate;
+	}
+
 	// Update the guidance setpoint with the calculated sink rate
 	_plane->guidance_d_setpoint += sink_rate * _hal->get_main_dt();
 }

@@ -27,6 +27,11 @@ struct __attribute__((packed))Parameters
 	// Takeoff
 	float takeoff_alt; // Altitude to detect when takeoff is complete meters
 	float takeoff_ptch; // Pitch during takeoff
+	float takeoff_roll_lim; // Degrees
+
+	// Stabilization
+	float stab_ptch_lim;
+	float stab_roll_lim;
 
 	// Mixer
 	uint16_t pwm_max_ail;

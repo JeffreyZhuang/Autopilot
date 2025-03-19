@@ -44,7 +44,7 @@ void Telem::transmit_telem()
 		bytes_since_last_tlm_transmit = 0;
 		last_tlm_transmit_time = _hal->get_time_us();
 
-		// Construct telemetry packet
+		// Construct telemetry payload
 		Telem_payload payload = create_telem_payload();
 
 		// Convert struct to byte array
@@ -55,13 +55,16 @@ void Telem::transmit_telem()
 		uint8_t packet_cobs[sizeof(Telem_payload) + 1]; // Add 1 for COBS byte
 		cobs_encode(packet_cobs, sizeof(packet_cobs), payload_arr, sizeof(Telem_payload));
 
+		uint16_t packet_index = 0;
+
 		// Construct final packet
 		uint8_t packet[sizeof(Telem_payload) + HEADER_LEN];
-		packet[0] = 0; // Start byte
-		packet[1] = sizeof(Telem_payload); // Length byte
+		packet[packet_index++] = START_BYTE; // Start byte
+		packet[packet_index++] = sizeof(Telem_payload); // Length byte
+		packet[packet_index++] = TELEM_MSG_ID; // Message ID
 		for (uint i = 0; i < sizeof(packet_cobs); i++)
 		{
-			packet[i + 2] = packet_cobs[i];
+			packet[packet_index++] = packet_cobs[i];
 		}
 
 		transmit_packet(packet, sizeof(packet));
@@ -71,19 +74,27 @@ void Telem::transmit_telem()
 Telem_payload Telem::create_telem_payload()
 {
 	Telem_payload payload = {
-		TELEM_MSG_ID,
 		(int16_t)(_plane->ahrs_roll * 100),
 		(int16_t)(_plane->ahrs_pitch * 100),
 		(uint16_t)(_plane->ahrs_yaw * 10),
 		(int16_t)(-_plane->nav_pos_down * 10),
 		(uint16_t)(_plane->nav_airspeed * 10),
-		(float)_plane->gnss_lat,
-		(float)_plane->gnss_lon,
+		(int16_t)(-_plane->guidance_d_setpoint * 10),
+		(int32_t)(_plane->gnss_lat * 7),
+		(int32_t)(_plane->gnss_lon * 7),
+		0,
+		0,
 		get_current_state(),
 		_plane->waypoint_index,
+		0,
+		0,
+		0,
+		0,
 		_plane->gnss_sats,
 		_plane->gps_fix,
-		(int16_t)(-_plane->guidance_d_setpoint * 10)
+		(uint8_t)(_plane->aileron_setpoint * 100),
+		(uint8_t)(_plane->elevator_setpoint * 100),
+		(uint8_t)(_plane->throttle_setpoint * 100)
 	};
 
 	return payload;
@@ -106,13 +117,15 @@ void Telem::ack()
 
 bool Telem::parse_packet()
 {
-	uint16_t payload_len = latest_pkt_len - HEADER_LEN;
+	uint16_t packet_index = 1;
+	uint8_t payload_len = latest_packet[packet_index++];
+	uint8_t msg_id = latest_packet[packet_index++];
 
-	// Remove start and length byte from packet
+	// Remove header except COBS byte
 	uint8_t payload_cobs[payload_len + 1]; // Add 1 for COBS byte
 	for (uint i = 0; i < sizeof(payload_cobs); i++)
 	{
-		payload_cobs[i] = latest_packet[i + 2]; // Add 2 to ignore start and length byte
+		payload_cobs[i] = latest_packet[packet_index++];
 	}
 
 	// Decode consistent overhead byte shuffling
@@ -120,7 +133,6 @@ bool Telem::parse_packet()
 	cobs_decode(payload, sizeof(payload), payload_cobs, sizeof(payload_cobs));
 
 	// Determine type of payload from message ID
-	uint8_t msg_id = payload[0];
 	if (msg_id == WPT_MSG_ID && payload_len == sizeof(Waypoint_payload))
 	{
 		Waypoint_payload waypoint_payload;
@@ -139,9 +151,9 @@ bool Telem::parse_packet()
 
 		_plane->num_waypoints = waypoint_payload.total_waypoints;
 		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){
-			waypoint_payload.lat,
-			waypoint_payload.lon,
-			waypoint_payload.alt
+			(float)waypoint_payload.lat * 1E-7f,
+			(float)waypoint_payload.lon * 1E-7f,
+			(float)waypoint_payload.alt * 1E-1f
 		};
 
 		return true;
