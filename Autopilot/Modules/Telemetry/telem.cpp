@@ -10,10 +10,10 @@ void Telem::update()
 {
 	if (_hal->read_telem(latest_packet, &latest_pkt_len))
 	{
-		if (validate_packet() && parse_packet())
-		{
-			ack();
-		}
+//		if (validate_packet() && parse_packet())
+//		{
+//			ack();
+//		}
 	}
 
 	if (_plane->system_mode != System_mode::CONFIG)
@@ -92,9 +92,9 @@ Telem_payload Telem::create_telem_payload()
 		0,
 		_plane->gnss_sats,
 		_plane->gps_fix,
-		(uint8_t)(_plane->aileron_setpoint * 100),
-		(uint8_t)(_plane->elevator_setpoint * 100),
-		(uint8_t)(_plane->throttle_setpoint * 100)
+		(uint8_t)(_plane->rud_cmd * 100),
+		(uint8_t)(_plane->ele_cmd * 100),
+		(uint8_t)(_plane->thr_cmd * 100)
 	};
 
 	return payload;
@@ -111,15 +111,26 @@ bool Telem::validate_packet()
 // Send back same message for acknowledgement
 void Telem::ack()
 {
+//	printf("Telem ack: ");
+//	for (int i = 0; i < latest_pkt_len; i++)
+//	{
+//		printf("%d\n", latest_packet[i]);
+//	}
+//	printf("\n");
+
 	// Do not use queue and send directly because this is priority
 	transmit_packet(latest_packet, latest_pkt_len);
 }
 
 bool Telem::parse_packet()
 {
-	uint16_t packet_index = 1;
+	uint16_t packet_index = 1; // Skip start byte
 	uint8_t payload_len = latest_packet[packet_index++];
 	uint8_t msg_id = latest_packet[packet_index++];
+	printf("Telem msg id: %d\n", msg_id);
+	printf("Telem payload len: %d\n", payload_len);
+	printf("Telem waypoint_payload len: %d\n", sizeof(Waypoint_payload));
+	printf("Telem params_payload len: %d\n", sizeof(Params_payload));
 
 	// Remove header except COBS byte
 	uint8_t payload_cobs[payload_len + 1]; // Add 1 for COBS byte
@@ -133,7 +144,9 @@ bool Telem::parse_packet()
 	cobs_decode(payload, sizeof(payload), payload_cobs, sizeof(payload_cobs));
 
 	// Determine type of payload from message ID
-	if (msg_id == WPT_MSG_ID && payload_len == sizeof(Waypoint_payload))
+	if (msg_id == WPT_MSG_ID &&
+		_plane->system_mode == System_mode::CONFIG &&
+		payload_len == sizeof(Waypoint_payload))
 	{
 		Waypoint_payload waypoint_payload;
 		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
@@ -156,6 +169,8 @@ bool Telem::parse_packet()
 			(float)waypoint_payload.alt * 1E-1f
 		};
 
+		printf("Telem waypoint set\n");
+
 		return true;
 	}
 	else if (msg_id == PARAMS_MSG_ID &&
@@ -167,6 +182,8 @@ bool Telem::parse_packet()
 
 		// Set parameters
 		set_params(&params_payload.params);
+
+		printf("Telem params set\n");
 
 		return true;
 	}

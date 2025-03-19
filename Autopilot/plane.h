@@ -134,9 +134,9 @@ struct Plane
     bool rc_mod_sw = false;
 
     // Control commands from -1 to 1
-    float aileron_setpoint = 0;
-    float elevator_setpoint = 0;
-    float throttle_setpoint = 0;
+    float rud_cmd = 0;
+    float ele_cmd = 0;
+    float thr_cmd = 0;
 
     // TECS
     float tecs_energy_total_setpoint = 0;

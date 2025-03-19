@@ -16,6 +16,9 @@ struct __attribute__((packed))Parameters
 	float roll_lim_deg; // Maximum roll angle in either direction
 	float min_dist_wp; // Distance in meters from waypoint until switching to next
 
+	// Sensors
+	bool enable_of; // Enable optical flow
+
 	// Guidance
 	float guidance_kp; // Proportional guidance law gain
 
@@ -34,30 +37,24 @@ struct __attribute__((packed))Parameters
 	float stab_roll_lim;
 
 	// Mixer
-	uint16_t pwm_max_ail;
 	uint16_t pwm_max_ele;
 	uint16_t pwm_max_rud;
 	uint16_t pwm_max_thr;
 	uint16_t pwm_max_aux1;
 	uint16_t pwm_max_aux2;
 	uint16_t pwm_max_aux3;
-	uint16_t pwm_max_aux4;
-	uint16_t pwm_min_ail;
 	uint16_t pwm_min_ele;
 	uint16_t pwm_min_rud;
 	uint16_t pwm_min_thr;
 	uint16_t pwm_min_aux1;
 	uint16_t pwm_min_aux2;
 	uint16_t pwm_min_aux3;
-	uint16_t pwm_min_aux4;
-	bool pwm_rev_ail;
 	bool pwm_rev_ele;
 	bool pwm_rev_rud;
 	bool pwm_rev_thr;
 	bool pwm_rev_aux1;
 	bool pwm_rev_aux2;
 	bool pwm_rev_aux3;
-	bool pwm_rev_aux4;
 
 	// RC Transmitter
 	uint16_t rc_max; // RC Transmitter stick max duty cycle microseconds

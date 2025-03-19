@@ -37,22 +37,22 @@ void Mixer::update_startup()
 void Mixer::update_flight()
 {
 	_elevator_duty = map(
-		get_params()->pwm_rev_ele ? -_plane->elevator_setpoint : _plane->elevator_setpoint,
+		get_params()->pwm_rev_ele ? -_plane->ele_cmd : _plane->ele_cmd,
 		 -1,
 		 1,
 		 get_params()->pwm_min_ele,
 		 get_params()->pwm_max_ele);
-	_aileron_duty = map(
-		get_params()->pwm_rev_ail ? -_plane->aileron_setpoint : _plane->aileron_setpoint,
+	_rudder_duty = map(
+		get_params()->pwm_rev_rud ? -_plane->rud_cmd : _plane->rud_cmd,
 		 -1,
 		 1,
-		 get_params()->pwm_min_ail,
-		 get_params()->pwm_max_ail);
+		 get_params()->pwm_min_rud,
+		 get_params()->pwm_max_rud);
 	_throttle_duty = map(
-		_plane->throttle_setpoint,
+		_plane->thr_cmd,
 		 0,
 		 1,
 		 get_params()->pwm_min_thr,
 		 get_params()->pwm_max_thr);
-	_hal->set_pwm(_aileron_duty, _elevator_duty, 0, _throttle_duty, 0, 0, 0, 0);
+	_hal->set_pwm(_rudder_duty, _elevator_duty, 0, _throttle_duty, 0, 0, 0, 0);
 }

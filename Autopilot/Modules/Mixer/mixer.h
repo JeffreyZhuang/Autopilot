@@ -14,7 +14,7 @@ private:
 	Plane* _plane;
 	HAL* _hal;
 	uint16_t _elevator_duty = 0;
-	uint16_t _aileron_duty = 0;
+	uint16_t _rudder_duty = 0;
 	uint16_t _throttle_duty = 0;
 	void update_config();
 	void update_startup();

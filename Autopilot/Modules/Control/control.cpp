@@ -65,15 +65,15 @@ void Control::handle_auto_mode()
 // Read from radio and send commands directly to servos
 void Control::update_direct()
 {
-	_plane->aileron_setpoint = _plane->rc_ail_norm;
-	_plane->elevator_setpoint = _plane->rc_ele_norm;
-	_plane->throttle_setpoint = _plane->rc_thr_norm;
+	_plane->rud_cmd = _plane->rc_ail_norm;
+	_plane->ele_cmd = _plane->rc_ele_norm;
+	_plane->thr_cmd = _plane->rc_thr_norm;
 }
 
 // Pilot commands roll and pitch angles, throttle is manual
 void Control::update_stabilized()
 {
-	_plane->throttle_setpoint = _plane->rc_thr_norm;
+	_plane->thr_cmd = _plane->rc_thr_norm;
 	_plane->pitch_setpoint = _plane->rc_ele_norm * get_params()->stab_ptch_lim;
 	_plane->roll_setpoint = _plane->rc_ail_norm * get_params()->stab_roll_lim;
 	control_roll_ptch();
@@ -96,7 +96,7 @@ void Control::update_takeoff()
 	_plane->pitch_setpoint = get_params()->takeoff_ptch;
 
 	// No integral
-	_plane->aileron_setpoint = roll_controller.get_output(
+	_plane->rud_cmd = roll_controller.get_output(
 		_plane->ahrs_roll,
 		_plane->roll_setpoint,
 		get_params()->roll_kp,
@@ -106,7 +106,7 @@ void Control::update_takeoff()
 		1,
 		0
 	);
-	_plane->elevator_setpoint = pitch_controller.get_output(
+	_plane->ele_cmd = pitch_controller.get_output(
 		_plane->ahrs_pitch,
 		_plane->pitch_setpoint,
 		get_params()->ptch_kp,
@@ -116,7 +116,7 @@ void Control::update_takeoff()
 		1,
 		0
 	);
-	_plane->throttle_setpoint = _plane->rc_thr_norm;
+	_plane->thr_cmd = _plane->rc_thr_norm;
 }
 
 // Track guidance altitude and heading setpoints at a speed of AIRSPEED_CUIRSE
@@ -147,20 +147,20 @@ void Control::update_flare()
 	    0
 	);
 	_plane->roll_setpoint = 0;
-	_plane->throttle_setpoint = 0;
+	_plane->thr_cmd = 0;
 	control_roll_ptch();
 }
 
 void Control::update_touchdown()
 {
-	_plane->aileron_setpoint = 0;
-	_plane->elevator_setpoint = 0;
-	_plane->throttle_setpoint = 0;
+	_plane->rud_cmd = 0;
+	_plane->ele_cmd = 0;
+	_plane->thr_cmd = 0;
 }
 
 void Control::control_roll_ptch()
 {
-	_plane->aileron_setpoint = roll_controller.get_output(
+	_plane->rud_cmd = roll_controller.get_output(
 		_plane->ahrs_roll,
 		_plane->roll_setpoint,
 		get_params()->roll_kp,
@@ -170,7 +170,7 @@ void Control::control_roll_ptch()
 		1,
 		0
 	);
-	_plane->elevator_setpoint = pitch_controller.get_output(
+	_plane->ele_cmd = pitch_controller.get_output(
 		_plane->ahrs_pitch,
 		_plane->pitch_setpoint,
 		get_params()->ptch_kp,
@@ -194,7 +194,7 @@ void Control::control_alt_spd_hdg()
 		get_params()->ptch_lim_deg,
 		0
 	);
-	_plane->throttle_setpoint = speed_controller.get_output(
+	_plane->thr_cmd = speed_controller.get_output(
 		_plane->tecs_energy_total,
 		_plane->tecs_energy_total_setpoint,
 		get_params()->thr_kp,

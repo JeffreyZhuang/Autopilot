@@ -20,7 +20,8 @@ bool Mlrs_telem::read(uint8_t packet[], uint16_t* size)
 {
 	if (new_packet)
 	{
-		memcpy(packet, complete_packet, packet_len);
+		printf("Mlrs_telem packet_len: %d\n", packet_len);
+		memcpy(packet, complete_packet, packet_len); // Memcpy mem fault
 		*size = packet_len;
 		new_packet = false;
 		return true;
@@ -32,7 +33,9 @@ bool Mlrs_telem::read(uint8_t packet[], uint16_t* size)
 void Mlrs_telem::dma_complete()
 {
 	// Detect start byte
-	if (rx_buffer[0] == 0)
+	// If I remove !new_packet there is mem fault from concurrency issue
+	// Due to changing packet_len
+	if (rx_buffer[0] == 0 && !new_packet)
 	{
 		in_pkt = true;
 	}
@@ -42,7 +45,7 @@ void Mlrs_telem::dma_complete()
 		// Get length byte and determine packet length
 		if (wrking_pkt_idx == 1)
 		{
-			packet_len = rx_buffer[0] + 3; // Add 3 because header
+			packet_len = rx_buffer[0] + header_len;
 		}
 
 		// Append new byte to working buffer
@@ -52,16 +55,13 @@ void Mlrs_telem::dma_complete()
 		// Check if packet completed
 		if (wrking_pkt_idx == packet_len)
 		{
-			// Only update complete packet if it has been read
-			if (!new_packet)
-			{
-				// Copy working packet to complete packet
-				memcpy(complete_packet, working_packet, max_packet_len);
-				new_packet = true;
+			// Copy working packet to complete packet
+			memcpy(complete_packet, working_packet, max_packet_len);
+			new_packet = true;
 
-				wrking_pkt_idx = 0;
-				in_pkt = false;
-			}
+			// Reset
+			wrking_pkt_idx = 0;
+			in_pkt = false;
 		}
 	}
 

@@ -71,10 +71,13 @@ void Flight_hal::read_sensors_hitl()
 	_plane->compass_timestamp = time;
 	_plane->baro_alt = data->asl;
 	_plane->baro_timestamp = time;
-	_plane->gnss_lat = data->lat;
-	_plane->gnss_lon = data->lon;
+	_plane->gnss_lat = (double)data->lat * 1E-7;
+	_plane->gnss_lon = (double)data->lon * 1E-7;
 	_plane->gnss_asl = data->asl;
 	_plane->gnss_sats = 10;
 	_plane->gps_fix = true;
 	_plane->gnss_timestamp = time;
+	_plane->of_x = data->of_x;
+	_plane->of_y = data->of_y;
+	_plane->of_timestamp = time;
 }
