@@ -21,18 +21,18 @@ void HAL::usb_print(char* str)
 	}
 }
 
-void HAL::set_pwm(uint16_t ail_duty, uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
-			 	  uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty, uint16_t aux4_duty)
+void HAL::set_pwm(uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
+			 	  uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty)
 {
 	if (_hal_mode == Hal_mode::FLIGHT)
 	{
-		set_pwm_flight(ail_duty, ele_duty, rud_duty, thr_duty,
-					   aux1_duty, aux2_duty, aux3_duty, aux4_duty);
+		set_pwm_flight(ele_duty, rud_duty, thr_duty,
+					   aux1_duty, aux2_duty, aux3_duty);
 	}
 	else if (_hal_mode == Hal_mode::HITL)
 	{
-		set_pwm_hitl(ail_duty, ele_duty, rud_duty, thr_duty,
-					 aux1_duty, aux2_duty, aux3_duty, aux4_duty);
+		set_pwm_hitl(ele_duty, rud_duty, thr_duty,
+					 aux1_duty, aux2_duty, aux3_duty);
 	}
 }
 

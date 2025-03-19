@@ -10,10 +10,10 @@ void Telem::update()
 {
 	if (_hal->read_telem(latest_packet, &latest_pkt_len))
 	{
-//		if (validate_packet() && parse_packet())
-//		{
-//			ack();
-//		}
+		if (validate_packet() && parse_packet())
+		{
+			ack();
+		}
 	}
 
 	if (_plane->system_mode != System_mode::CONFIG)

@@ -16,6 +16,7 @@ class Mlrs_telem
 {
 public:
 	Mlrs_telem(UART_HandleTypeDef* uart);
+
 	void setup();
 	void transmit(uint8_t tx_buff[], int len);
 	void dma_complete();

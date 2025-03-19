@@ -16,7 +16,7 @@ struct __attribute__((packed))Parameters
 	float roll_lim_deg; // Maximum roll angle in either direction
 	float min_dist_wp; // Distance in meters from waypoint until switching to next
 
-	// Sensors
+	// Optical flow
 	bool enable_of; // Enable optical flow
 
 	// Guidance

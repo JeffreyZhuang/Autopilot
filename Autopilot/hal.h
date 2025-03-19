@@ -35,8 +35,8 @@ public:
     void usb_print(char* str);
 
     // Control surfaces
-    void set_pwm(uint16_t ail_duty, uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
-				 uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty, uint16_t aux4_duty);
+    void set_pwm(uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
+				 uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty);
 
     // Time
     virtual void delay_us(uint64_t us) = 0;
@@ -56,10 +56,10 @@ private:
     virtual void read_sensors_flight() = 0;
     virtual void read_sensors_hitl() = 0;
 
-    virtual void set_pwm_flight(uint16_t ail_duty, uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
-								uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty, uint16_t aux4_duty) = 0;
-    virtual void set_pwm_hitl(uint16_t ail_duty, uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
-    						  uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty, uint16_t aux4_duty) = 0;
+    virtual void set_pwm_flight(uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
+								uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty) = 0;
+    virtual void set_pwm_hitl(uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
+    						  uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty) = 0;
 
     virtual void usb_print_flight(char* str) = 0;
 };

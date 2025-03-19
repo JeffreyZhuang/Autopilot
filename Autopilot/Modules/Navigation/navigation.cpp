@@ -202,6 +202,11 @@ bool Navigation::check_new_ahrs_data()
 	return _plane->ahrs_timestamp > last_ahrs_timestamp;
 }
 
+bool Navigation::check_new_of_data()
+{
+	return _plane->of_timestamp > last_of_timestamp;
+}
+
 // Function to rotate IMU measurements from inertial frame to NED frame
 Eigen::Vector3f Navigation::inertial_to_ned(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw) {
     // Precompute trigonometric functions
@@ -225,4 +230,14 @@ Eigen::Vector3f Navigation::inertial_to_ned(const Eigen::Vector3f& imu_measureme
     Eigen::Vector3f ned_measurement = R * imu_measurement;
 
     return ned_measurement;
+}
+
+bool Navigation::is_of_reliable()
+{
+	// Use OF max speed to calculate
+	// Or just check if raw pixel flow is within range...
+	// Just have max and min values of raw optical flow to use
+
+	int16_t of_min = 50;
+	int16_t of_max = 2000;
 }

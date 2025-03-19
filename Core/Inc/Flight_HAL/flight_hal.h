@@ -55,7 +55,6 @@ struct Hitl_rx_packet
 
 struct Hitl_tx_packet
 {
-	uint16_t ail_duty;
 	uint16_t ele_duty;
 	uint16_t rud_duty;
 	uint16_t thr_duty;
@@ -148,22 +147,10 @@ private:
 	void read_sensors_flight() override;
 	void read_sensors_hitl() override;
 
-	void set_pwm_flight(uint16_t ail_duty,
-						uint16_t ele_duty,
-						uint16_t rud_duty,
-						uint16_t thr_duty,
-						uint16_t aux1_duty,
-						uint16_t aux2_duty,
-						uint16_t aux3_duty,
-						uint16_t aux4_duty) override;
-	void set_pwm_hitl(uint16_t ail_duty,
-					  uint16_t ele_duty,
-					  uint16_t rud_duty,
-					  uint16_t thr_duty,
-					  uint16_t aux1_duty,
-					  uint16_t aux2_duty,
-					  uint16_t aux3_duty,
-					  uint16_t aux4_duty) override;
+	void set_pwm_flight(uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
+						uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty) override;
+	void set_pwm_hitl(uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
+					  uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty) override;
 
 	// HITL USB Double Buffering
 	Hitl_rx_packet* usb_buff1;
