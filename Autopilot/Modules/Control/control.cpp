@@ -1,11 +1,11 @@
 #include "control.h"
 
 Control::Control(HAL * hal, Plane * plane)
-	: roll_controller(false, hal->get_main_dt()),
-	  pitch_controller(false, hal->get_main_dt()),
-	  hdg_controller(true, hal->get_main_dt()),
-	  alt_controller(false, hal->get_main_dt()),
-	  speed_controller(false, hal->get_main_dt())
+	: roll_controller(false),
+	  pitch_controller(false),
+	  hdg_controller(true),
+	  alt_controller(false),
+	  speed_controller(false)
 {
 	_hal = hal;
 	_plane = plane;
@@ -91,7 +91,8 @@ void Control::update_takeoff()
 		0,
 		-get_params()->takeoff_roll_lim,
 		get_params()->takeoff_roll_lim,
-		0
+		0,
+		_plane->dt
 	);
 	_plane->pitch_setpoint = get_params()->takeoff_ptch;
 
@@ -104,7 +105,8 @@ void Control::update_takeoff()
 		0,
 		-1,
 		1,
-		0
+		0,
+		_plane->dt
 	);
 	_plane->ele_cmd = pitch_controller.get_output(
 		_plane->ahrs_pitch,
@@ -114,7 +116,8 @@ void Control::update_takeoff()
 		0,
 		-1,
 		1,
-		0
+		0,
+		_plane->dt
 	);
 	_plane->thr_cmd = _plane->rc_thr_norm;
 }
@@ -144,7 +147,8 @@ void Control::update_flare()
 		get_params()->ptch_lim_deg,
 	    -get_params()->ptch_lim_deg,
 	    get_params()->ptch_lim_deg,
-	    0
+	    0,
+		_plane->dt
 	);
 	_plane->roll_setpoint = 0;
 	_plane->thr_cmd = 0;
@@ -168,7 +172,8 @@ void Control::control_roll_ptch()
 		1,
 		-1,
 		1,
-		0
+		0,
+		_plane->dt
 	);
 	_plane->ele_cmd = pitch_controller.get_output(
 		_plane->ahrs_pitch,
@@ -178,7 +183,8 @@ void Control::control_roll_ptch()
 		1,
 		-1,
 		1,
-		0
+		0,
+		_plane->dt
 	);
 }
 
@@ -192,7 +198,8 @@ void Control::control_alt_spd_hdg()
 		get_params()->ptch_lim_deg,
 		-get_params()->ptch_lim_deg,
 		get_params()->ptch_lim_deg,
-		0
+		0,
+		_plane->dt
 	);
 	_plane->thr_cmd = speed_controller.get_output(
 		_plane->tecs_energy_total,
@@ -202,7 +209,8 @@ void Control::control_alt_spd_hdg()
 		1,
 		0,
 		1,
-		get_params()->throttle_cruise
+		get_params()->throttle_cruise,
+		_plane->dt
 	);
 	_plane->roll_setpoint = hdg_controller.get_output(
 		_plane->ahrs_yaw,
@@ -212,6 +220,7 @@ void Control::control_alt_spd_hdg()
 		get_params()->roll_lim_deg,
 		-get_params()->roll_lim_deg,
 		get_params()->roll_lim_deg,
-		0
+		0,
+		_plane->dt
 	);
 }

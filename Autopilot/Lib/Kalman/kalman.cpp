@@ -1,24 +1,20 @@
 #include "kalman.h"
 
-Kalman::Kalman(int n,
-			   int m,
-			   Eigen::MatrixXf A,
-			   Eigen::MatrixXf B,
-			   Eigen::MatrixXf Q)
+Kalman::Kalman(int n, int m)
 {
 	_n = n;
 	_m = m;
-	_A_mat = A;
-	_B_mat = B;
-	_Q_mat = Q;
 	_P_mat = Eigen::MatrixXf::Zero(n, n);
 	_x = Eigen::MatrixXf::Zero(n, 1);
 }
 
-void Kalman::predict(Eigen::MatrixXf u)
+void Kalman::predict(Eigen::MatrixXf u,
+					 Eigen::MatrixXf A,
+					 Eigen::MatrixXf B,
+					 Eigen::MatrixXf Q)
 {
-    _x = _A_mat * _x + _B_mat * u;
-    _P_mat = _A_mat * _P_mat * _A_mat.transpose() + _Q_mat;
+    _x = A * _x + B * u;
+    _P_mat = A * _P_mat * A.transpose() + Q;
 }
 
 void Kalman::update(Eigen::MatrixXf R, Eigen::MatrixXf H, Eigen::MatrixXf y)

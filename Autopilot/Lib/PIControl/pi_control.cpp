@@ -1,9 +1,8 @@
 #include "Lib/PIControl/pi_control.h"
 
-PI_control::PI_control(bool normalize_180, float dt)
+PI_control::PI_control(bool normalize_180)
 {
     _normalize_180 = normalize_180;
-    _dt = dt;
 }
 
 float PI_control::get_output(float state,
@@ -13,7 +12,8 @@ float PI_control::get_output(float state,
 					  float integral_limit,
 					  float output_min,
 					  float output_max,
-					  float trim)
+					  float trim,
+					  float dt)
 {
     float error = setpoint - state;
     if (_normalize_180)
@@ -23,7 +23,7 @@ float PI_control::get_output(float state,
 
     if (kI != 0)
     {
-    	_integral += error * _dt;
+    	_integral += error * dt;
     	_integral = clamp(_integral, -integral_limit / kI, integral_limit / kI);
     }
 

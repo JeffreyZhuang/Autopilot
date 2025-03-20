@@ -158,5 +158,5 @@ void Guidance::update_flare()
 	}
 
 	// Update the guidance setpoint with the calculated sink rate
-	_plane->guidance_d_setpoint += sink_rate * _hal->get_main_dt();
+	_plane->guidance_d_setpoint += sink_rate * _plane->dt;
 }

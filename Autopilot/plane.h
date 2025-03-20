@@ -50,7 +50,7 @@ struct Plane
 
     // Time
     uint64_t time;
-    uint64_t loop_execution_time;
+    float dt;
     uint32_t loop_iteration = 0;
 
     // Power Monitor

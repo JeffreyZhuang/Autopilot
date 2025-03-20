@@ -28,11 +28,15 @@
 //-------------------------------------------------------------------------------------------
 // AHRS algorithm update
 
-Madgwick::Madgwick(float dt) {
+Madgwick::Madgwick() {
 	q0 = 1.0f;
 	q1 = 0.0f;
 	q2 = 0.0f;
 	q3 = 0.0f;
+}
+
+void Madgwick::set_dt(float dt)
+{
 	invSampleFreq = dt;
 }
 

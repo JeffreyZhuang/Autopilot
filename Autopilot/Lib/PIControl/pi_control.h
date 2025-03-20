@@ -5,7 +5,7 @@ class PI_control
 {
 public:
 	// normalize_180 is special for heading PID where it finds nearest path by normalizing angle to [-180, 180) degrees
-    PI_control(bool normalize_180, float dt);
+    PI_control(bool normalize_180);
     float get_output(float state,
     				 float setpoint,
 					 float kP,
@@ -13,15 +13,15 @@ public:
     				 float integral_limit,
     				 float output_min,
     				 float output_max,
-    				 float trim);
+    				 float trim,
+					 float dt);
     float get_integral();
 private:
     float clamp(float n, float min, float max);
     float normalize_angle(float angle);
 
     float _integral = 0;
-    bool _normalize_180;
-    float _dt;
+    bool _normalize_180 = false;
 };
 
 #endif /* PID_H_ */

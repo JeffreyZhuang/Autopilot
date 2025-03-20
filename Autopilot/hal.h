@@ -45,7 +45,6 @@ public:
     // Scheduler
     virtual void start_main_task(void (*task)()) = 0;
     virtual void start_background_task(void (*task)()) = 0;
-    virtual float get_main_dt() const = 0;
 
     // HITL
     void enable_hitl() noexcept;

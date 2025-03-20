@@ -1,7 +1,7 @@
 #include "navigation.h"
 
 Navigation::Navigation(HAL* hal, Plane* plane)
-	: kalman(n, m, get_a(hal->get_main_dt()), get_b(hal->get_main_dt()), get_q()),
+	: kalman(n, m),
 	  avg_baro(window_len, window_baro),
 	  avg_lat(window_len, window_lat),
 	  avg_lon(window_len, window_lon)
@@ -120,7 +120,7 @@ void Navigation::predict_imu()
 	_plane->nav_acc_east = acc_ned(1);
 	_plane->nav_acc_down = acc_ned(2);
 
-	kalman.predict(acc_ned);
+	kalman.predict(acc_ned, get_a(_plane->dt), get_b(_plane->dt), get_q());
 
 	update_plane();
 }

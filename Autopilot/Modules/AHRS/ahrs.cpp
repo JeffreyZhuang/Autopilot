@@ -1,8 +1,7 @@
 #include "ahrs.h"
 
 AHRS::AHRS(HAL* hal, Plane* plane)
-	: filter(hal->get_main_dt()),
-	  avg_ax(window_size, window_ax),
+	: avg_ax(window_size, window_ax),
 	  avg_ay(window_size, window_ay),
 	  avg_az(window_size, window_az),
 	  avg_mx(window_size, window_mx),
@@ -17,6 +16,7 @@ void AHRS::update()
 {
 	if (_plane->system_mode != System_mode::CONFIG)
 	{
+		filter.set_dt(_plane->dt);
 		filter.set_beta(get_params()->ahrs_beta);
 
 		switch (ahrs_state)
