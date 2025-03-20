@@ -54,6 +54,7 @@ private:
 	void update_gps();
 	void update_baro();
 	void update_plane();
+	void update_of_agl();
 
     // Kalman
     Eigen::MatrixXf get_a(float dt);

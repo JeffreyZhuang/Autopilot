@@ -147,7 +147,7 @@ void Commander::update_land()
 void Commander::update_flare()
 {
 	// Detect touchdown when speed is below TOUCHDOWN_SPD_THR
-	if (_plane->nav_airspeed < get_params()->touchdown_aspd_thresh)
+	if (_plane->nav_gnd_spd < get_params()->touchdown_aspd_thresh)
 	{
 		_plane->auto_mode = Auto_mode::TOUCHDOWN;
 	}

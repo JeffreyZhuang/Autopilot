@@ -54,7 +54,7 @@ void Tecs::calculate(float target_vel_mps, float target_alt_m, float wb)
 	// SKe = 1/2 v^2
 	// Ignore mass since its the energy ratio that matters
 	float energy_pot = G * (-_plane->nav_pos_down);
-	float energy_kin = 0.5 * powf(_plane->nav_airspeed, 2);
+	float energy_kin = 0.5 * powf(_plane->nav_gnd_spd, 2);
 	float energy_total = energy_pot + energy_kin;
 
 	// Calculate target energy using same equations

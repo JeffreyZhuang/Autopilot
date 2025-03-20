@@ -32,8 +32,8 @@ enum class Manual_mode
 };
 
 struct Waypoint {
-	float lat;
-	float lon;
+	double lat;
+	double lon;
 	float alt;
 };
 
@@ -112,7 +112,8 @@ struct Plane
     float nav_acc_north = 0;
     float nav_acc_east = 0;
     float nav_acc_down = 0;
-    float nav_airspeed = 0;
+    float nav_gnd_spd = 0;
+    float nav_terr_hgt = 0;
     float home_lat = 0;
 	float home_lon = 0;
     uint64_t nav_timestamp = 0;

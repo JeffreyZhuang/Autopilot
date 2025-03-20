@@ -18,6 +18,8 @@ struct __attribute__((packed))Parameters
 
 	// Optical flow
 	bool enable_of; // Enable optical flow
+	int16_t of_min; // Maximum optical flow value in pixels per sec
+	int16_t of_max;
 
 	// Guidance
 	float guidance_kp; // Proportional guidance law gain

@@ -78,7 +78,7 @@ Telem_payload Telem::create_telem_payload()
 		(int16_t)(_plane->ahrs_pitch * 100),
 		(uint16_t)(_plane->ahrs_yaw * 10),
 		(int16_t)(-_plane->nav_pos_down * 10),
-		(uint16_t)(_plane->nav_airspeed * 10),
+		(uint16_t)(_plane->nav_gnd_spd * 10),
 		(int16_t)(-_plane->guidance_d_setpoint * 10),
 		(int32_t)(_plane->gnss_lat * 1E7),
 		(int32_t)(_plane->gnss_lon * 1E7),

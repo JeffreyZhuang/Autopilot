@@ -10,37 +10,20 @@ Navigation::Navigation(HAL* hal, Plane* plane)
 	_plane = plane;
 }
 
-Eigen::MatrixXf Navigation::get_a(float dt)
+void Navigation::update()
 {
-	Eigen::MatrixXf A(n, n);
-	A << 1, 0, 0, dt, 0, 0,
-		 0, 1, 0, 0, dt, 0,
-		 0, 0, 1, 0, 0, dt,
-		 0, 0, 0, 1, 0, 0,
-		 0, 0, 0, 0, 1, 0,
-		 0, 0, 0, 0, 0, 1;
-
-	return A;
-}
-
-Eigen::MatrixXf Navigation::get_b(float dt)
-{
-	Eigen::MatrixXf B(n, m);
-	B << 0.5*dt*dt, 0, 0,
-		 0, 0.5*dt*dt, 0,
-		 0, 0, 0.5*dt*dt,
-	     dt, 0, 0,
-		 0, dt, 0,
-		 0, 0, dt;
-
-	return B;
-}
-
-Eigen::MatrixXf Navigation::get_q()
-{
-	Eigen::DiagonalMatrix<float, n> Q(1, 1, 1, 1, 1, 1);
-
-	return Q;
+	if (_plane->system_mode != System_mode::CONFIG)
+	{
+		switch (nav_state)
+		{
+		case Nav_state::INITIALIZATION:
+			update_initialization();
+			break;
+		case Nav_state::RUNNING:
+			update_running();
+			break;
+		}
+	}
 }
 
 void Navigation::update_initialization()
@@ -62,33 +45,23 @@ void Navigation::update_initialization()
 	}
 }
 
-/**
- * @brief Update navigation
- *
- */
-void Navigation::update()
-{
-	if (_plane->system_mode != System_mode::CONFIG)
-	{
-		switch (nav_state)
-		{
-		case Nav_state::INITIALIZATION:
-			update_initialization();
-			break;
-		case Nav_state::RUNNING:
-			update_running();
-			break;
-		}
-	}
-}
-
 void Navigation::update_running()
 {
-	if (check_new_ahrs_data() && check_new_imu_data())
+	if (check_new_imu_data())
 	{
-		last_ahrs_timestamp = _plane->ahrs_timestamp;
-		last_imu_timestamp = _plane->imu_timestamp;
-		predict_imu();
+		if (check_new_ahrs_data())
+		{
+			last_ahrs_timestamp = _plane->ahrs_timestamp;
+			last_imu_timestamp = _plane->imu_timestamp;
+			predict_imu();
+		}
+
+		if (check_new_of_data() && is_of_reliable())
+		{
+			last_ahrs_timestamp = _plane->ahrs_timestamp;
+			last_imu_timestamp = _plane->imu_timestamp;
+			update_of_agl();
+		}
 	}
 
 	if (check_new_gnss_data())
@@ -156,7 +129,7 @@ void Navigation::update_gps()
 void Navigation::update_baro()
 {
 	Eigen::VectorXf y(1);
-	y << -(_plane->baro_alt - _plane->baro_offset); // Multiply by -1 to put in correct coordinate system
+	y << -(_plane->baro_alt - _plane->baro_offset);
 
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
@@ -168,6 +141,14 @@ void Navigation::update_baro()
 	update_plane();
 }
 
+void Navigation::update_of_agl()
+{
+	float flow = sqrtf(powf(_plane->of_x, 2) + powf(_plane->of_y, 2));
+	float angular_rate = sqrtf(powf(_plane->imu_gx, 2) + powf(_plane->imu_gy, 2)) * DEG_TO_RAD;
+	float alt = _plane->nav_gnd_spd / (flow - angular_rate);
+	printf("OF AGL: %f\n", alt);
+}
+
 void Navigation::update_plane()
 {
 	Eigen::MatrixXf est = kalman.get_estimate();
@@ -177,7 +158,7 @@ void Navigation::update_plane()
 	_plane->nav_vel_north = est(3, 0);
 	_plane->nav_vel_east = est(4, 0);
 	_plane->nav_vel_down = est(5, 0);
-	_plane->nav_airspeed = sqrtf(powf(_plane->nav_vel_north, 2) + powf(_plane->nav_vel_east, 2));
+	_plane->nav_gnd_spd = sqrtf(powf(_plane->nav_vel_north, 2) + powf(_plane->nav_vel_east, 2));
 	_plane->nav_timestamp = _hal->get_time_us();
 	_plane->nav_converged = nav_state == Nav_state::RUNNING;
 }
@@ -234,10 +215,39 @@ Eigen::Vector3f Navigation::inertial_to_ned(const Eigen::Vector3f& imu_measureme
 
 bool Navigation::is_of_reliable()
 {
-	// Use OF max speed to calculate
-	// Or just check if raw pixel flow is within range...
-	// Just have max and min values of raw optical flow to use
+	float flow = sqrtf(powf(_plane->of_x, 2) + powf(_plane->of_y, 2));
+	return flow > get_params()->of_min && flow < get_params()->of_max;
+}
 
-	int16_t of_min = 50;
-	int16_t of_max = 2000;
+Eigen::MatrixXf Navigation::get_a(float dt)
+{
+	Eigen::MatrixXf A(n, n);
+	A << 1, 0, 0, dt, 0, 0,
+		 0, 1, 0, 0, dt, 0,
+		 0, 0, 1, 0, 0, dt,
+		 0, 0, 0, 1, 0, 0,
+		 0, 0, 0, 0, 1, 0,
+		 0, 0, 0, 0, 0, 1;
+
+	return A;
+}
+
+Eigen::MatrixXf Navigation::get_b(float dt)
+{
+	Eigen::MatrixXf B(n, m);
+	B << 0.5*dt*dt, 0, 0,
+		 0, 0.5*dt*dt, 0,
+		 0, 0, 0.5*dt*dt,
+	     dt, 0, 0,
+		 0, dt, 0,
+		 0, 0, dt;
+
+	return B;
+}
+
+Eigen::MatrixXf Navigation::get_q()
+{
+	Eigen::DiagonalMatrix<float, n> Q(1, 1, 1, 1, 1, 1);
+
+	return Q;
 }
