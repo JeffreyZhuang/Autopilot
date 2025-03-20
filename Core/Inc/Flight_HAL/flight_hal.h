@@ -55,9 +55,9 @@ struct Hitl_rx_packet
 
 struct Hitl_tx_packet
 {
-	uint16_t ele_duty;
-	uint16_t rud_duty;
-	uint16_t thr_duty;
+	uint16_t ele_duty = 0;
+	uint16_t rud_duty = 0;
+	uint16_t thr_duty = 0;
 };
 
 class Flight_hal : public HAL

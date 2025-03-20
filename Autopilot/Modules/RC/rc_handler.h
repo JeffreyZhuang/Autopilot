@@ -10,8 +10,8 @@
 // Channels
 constexpr uint8_t AIL_CH = 0;
 constexpr uint8_t ELE_CH = 1;
-constexpr uint8_t RUD_CH = 2;
-constexpr uint8_t THR_CH = 3;
+constexpr uint8_t THR_CH = 2;
+constexpr uint8_t RUD_CH = 3;
 constexpr uint8_t MAN_CH = 4;
 constexpr uint8_t MOD_CH = 5;
 constexpr uint8_t NUM_CH = 6;

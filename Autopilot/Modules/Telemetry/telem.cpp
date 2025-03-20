@@ -80,10 +80,10 @@ Telem_payload Telem::create_telem_payload()
 		(int16_t)(-_plane->nav_pos_down * 10),
 		(uint16_t)(_plane->nav_airspeed * 10),
 		(int16_t)(-_plane->guidance_d_setpoint * 10),
-		(int32_t)(_plane->gnss_lat * 7),
-		(int32_t)(_plane->gnss_lon * 7),
-		0,
-		0,
+		(int32_t)(_plane->gnss_lat * 1E7),
+		(int32_t)(_plane->gnss_lon * 1E7),
+		_plane->nav_pos_north,
+		_plane->nav_pos_east,
 		get_current_state(),
 		_plane->waypoint_index,
 		0,
@@ -111,13 +111,6 @@ bool Telem::validate_packet()
 // Send back same message for acknowledgement
 void Telem::ack()
 {
-//	printf("Telem ack: ");
-//	for (int i = 0; i < latest_pkt_len; i++)
-//	{
-//		printf("%d\n", latest_packet[i]);
-//	}
-//	printf("\n");
-
 	// Do not use queue and send directly because this is priority
 	transmit_packet(latest_packet, latest_pkt_len);
 }
@@ -158,8 +151,8 @@ bool Telem::parse_packet()
 
 		if (waypoint_payload.waypoint_index == 0)
 		{
-			_plane->home_lat = waypoint_payload.lat;
-			_plane->home_lon = waypoint_payload.lon;
+			_plane->home_lat = (float)waypoint_payload.lat * 1E-7f;
+			_plane->home_lon = (float)waypoint_payload.lon * 1E-7f;
 		}
 
 		_plane->num_waypoints = waypoint_payload.total_waypoints;

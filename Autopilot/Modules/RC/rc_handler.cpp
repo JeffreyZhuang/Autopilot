@@ -19,8 +19,8 @@ void Rc_handler::rc_update()
 		_plane->rc_ele_norm = map(rc_input[ELE_CH], get_params()->rc_min, get_params()->rc_max, -1, 1);
 		_plane->rc_rud_norm = map(rc_input[RUD_CH], get_params()->rc_min, get_params()->rc_max, -1, 1);
 		_plane->rc_thr_norm = map(rc_input[THR_CH], get_params()->rc_min, get_params()->rc_max, 0, 1);
-		_plane->rc_man_sw = rc_input[MAN_CH] > (get_params()->rc_max - get_params()->rc_min) / 2;
-		_plane->rc_mod_sw = rc_input[MOD_CH] > (get_params()->rc_max - get_params()->rc_min) / 2;
-		_plane->tx_connected = rc_input[0] > get_params()->rc_min / 2;
+		_plane->rc_man_sw = rc_input[MAN_CH] > get_params()->rc_min + (get_params()->rc_max - get_params()->rc_min) / 2;
+		_plane->rc_mod_sw = rc_input[MOD_CH] > get_params()->rc_min + (get_params()->rc_max - get_params()->rc_min) / 2;
+		_plane->tx_connected = rc_input[THR_CH] > get_params()->rc_min / 2;
 	}
 }
