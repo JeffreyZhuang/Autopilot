@@ -92,7 +92,7 @@ void Control::update_takeoff()
 		-get_params()->takeoff_roll_lim,
 		get_params()->takeoff_roll_lim,
 		0,
-		_plane->dt
+		_plane->dt_s
 	);
 	_plane->pitch_setpoint = get_params()->takeoff_ptch;
 
@@ -106,7 +106,7 @@ void Control::update_takeoff()
 		-1,
 		1,
 		0,
-		_plane->dt
+		_plane->dt_s
 	);
 	_plane->ele_cmd = pitch_controller.get_output(
 		_plane->ahrs_pitch,
@@ -117,7 +117,7 @@ void Control::update_takeoff()
 		-1,
 		1,
 		0,
-		_plane->dt
+		_plane->dt_s
 	);
 	_plane->thr_cmd = _plane->rc_thr_norm;
 }
@@ -148,7 +148,7 @@ void Control::update_flare()
 	    -get_params()->ptch_lim_deg,
 	    get_params()->ptch_lim_deg,
 	    0,
-		_plane->dt
+		_plane->dt_s
 	);
 	_plane->roll_setpoint = 0;
 	_plane->thr_cmd = 0;
@@ -173,7 +173,7 @@ void Control::control_roll_ptch()
 		-1,
 		1,
 		0,
-		_plane->dt
+		_plane->dt_s
 	);
 	_plane->ele_cmd = pitch_controller.get_output(
 		_plane->ahrs_pitch,
@@ -184,7 +184,7 @@ void Control::control_roll_ptch()
 		-1,
 		1,
 		0,
-		_plane->dt
+		_plane->dt_s
 	);
 }
 
@@ -199,7 +199,7 @@ void Control::control_alt_spd_hdg()
 		-get_params()->ptch_lim_deg,
 		get_params()->ptch_lim_deg,
 		0,
-		_plane->dt
+		_plane->dt_s
 	);
 	_plane->thr_cmd = speed_controller.get_output(
 		_plane->tecs_energy_total,
@@ -210,7 +210,7 @@ void Control::control_alt_spd_hdg()
 		0,
 		1,
 		get_params()->throttle_cruise,
-		_plane->dt
+		_plane->dt_s
 	);
 	_plane->roll_setpoint = hdg_controller.get_output(
 		_plane->ahrs_yaw,
@@ -221,6 +221,6 @@ void Control::control_alt_spd_hdg()
 		-get_params()->roll_lim_deg,
 		get_params()->roll_lim_deg,
 		0,
-		_plane->dt
+		_plane->dt_s
 	);
 }

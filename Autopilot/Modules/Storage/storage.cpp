@@ -83,7 +83,7 @@ Storage_payload Storage::create_payload()
 {
 	Storage_payload payload = {
 		_plane->loop_iteration,
-		_plane->time,
+		_plane->time_us,
 		{_plane->imu_gx, _plane->imu_gy, _plane->imu_gz},
 		{_plane->imu_ax, _plane->imu_ay, _plane->imu_az},
 		{_plane->compass_mx, _plane->compass_my, _plane->compass_mz},
@@ -108,7 +108,7 @@ void Storage::read()
 		uint8_t start_byte[1];
 		if (!_hal->read_storage(start_byte, 1))
 		{
-			break;
+			break; // End of file
 		}
 
 		// Detect start byte

@@ -49,9 +49,10 @@ struct Plane
     Manual_mode manual_mode;
 
     // Time
-    uint64_t time = 0;
-    float dt = 0;
+    uint64_t time_us = 0;
+    float dt_s = 0;
     uint32_t loop_iteration = 0;
+    uint64_t us_since_epoch = 0;
 
     // Power Monitor
 	float batt_current = 0;

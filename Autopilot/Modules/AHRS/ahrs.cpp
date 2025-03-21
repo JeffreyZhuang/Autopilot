@@ -16,7 +16,7 @@ void AHRS::update()
 {
 	if (_plane->system_mode != System_mode::CONFIG)
 	{
-		filter.set_dt(_plane->dt);
+		filter.set_dt(_plane->dt_s);
 		filter.set_beta(get_params()->ahrs_beta);
 
 		switch (ahrs_state)
@@ -38,12 +38,12 @@ void AHRS::update_initialization()
 		float mag_data[3] = {_plane->compass_mx, _plane->compass_my, _plane->compass_mz};
 		apply_compass_calibration(mag_data);
 
-		avg_ax.add(-_plane->imu_ax);
-		avg_ay.add(-_plane->imu_ay);
-		avg_az.add(-_plane->imu_az);
-		avg_mx.add(-mag_data[0]);
-		avg_my.add(-mag_data[1]);
-		avg_mz.add(-mag_data[2]);
+		avg_ax.add(_plane->imu_ax);
+		avg_ay.add(_plane->imu_ay);
+		avg_az.add(_plane->imu_az);
+		avg_mx.add(mag_data[0]);
+		avg_my.add(mag_data[1]);
+		avg_mz.add(mag_data[2]);
 
 		last_imu_timestamp = _plane->imu_timestamp;
 		last_compass_timestamp = _plane->compass_timestamp;
@@ -51,12 +51,12 @@ void AHRS::update_initialization()
 		if (avg_ax.getFilled())
 		{
 			float q0, q1, q2, q3;
-			float ax = avg_ax.getAverage();
-			float ay = avg_ay.getAverage();
-			float az = avg_az.getAverage();
-			float mx = avg_mx.getAverage();
-			float my = avg_my.getAverage();
-			float mz = avg_mz.getAverage();
+			float ax = -avg_ax.getAverage();
+			float ay = -avg_ay.getAverage();
+			float az = -avg_az.getAverage();
+			float mx = -avg_mx.getAverage();
+			float my = -avg_my.getAverage();
+			float mz = -avg_mz.getAverage();
 
 			float roll_initial = atan2f(ay, az);
 			float pitch_initial = atan2f(-ax, sqrtf(powf(ay, 2) + powf(az, 2)));

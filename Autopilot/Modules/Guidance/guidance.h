@@ -21,6 +21,10 @@ private:
 	void handle_auto_mode();
 	void update_mission();
 	void update_flare();
+
+	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
+			 	 	 	 	 	 	   float pos_n, float pos_e);
+	float distance(float n1, float e1, float n2, float e2);
 };
 
 #endif /* GUIDANCE_H_ */

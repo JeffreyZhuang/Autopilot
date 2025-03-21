@@ -64,16 +64,16 @@ void Autopilot::init_state()
 void Autopilot::update_time()
 {
 	uint64_t time = _hal->get_time_us();
-	if (_plane->time > 0)
+	if (_plane->time_us > 0)
 	{
-		_plane->dt = (time - _plane->time) * US_TO_S;
+		_plane->dt_s = (time - _plane->time_us) * US_TO_S;
 	}
 	else
 	{
 		// Initialize
-		_plane->dt = 0;
+		_plane->dt_s = 0;
 	}
-	_plane->time = time;
+	_plane->time_us = time;
 	_plane->loop_iteration++;
 }
 

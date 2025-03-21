@@ -93,7 +93,7 @@ void Navigation::predict_imu()
 	_plane->nav_acc_east = acc_ned(1);
 	_plane->nav_acc_down = acc_ned(2);
 
-	kalman.predict(acc_ned, get_a(_plane->dt), get_b(_plane->dt), get_q());
+	kalman.predict(acc_ned, get_a(_plane->dt_s), get_b(_plane->dt_s), get_q());
 
 	update_plane();
 }
