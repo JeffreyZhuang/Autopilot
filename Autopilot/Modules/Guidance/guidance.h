@@ -25,6 +25,7 @@ private:
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);
 	float distance(float n1, float e1, float n2, float e2);
+	float normalize_heading(float heading);
 };
 
 #endif /* GUIDANCE_H_ */

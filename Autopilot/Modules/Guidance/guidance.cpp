@@ -52,8 +52,22 @@ void Guidance::update_mission()
 
 	// Convert waypoints to north east coordinates
 	double prev_north, prev_east, tgt_north, tgt_east;
-	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, prev_wp.lat, prev_wp.lon, &prev_north, &prev_east);
-	lat_lon_to_meters(_plane->home_lat, _plane->home_lon, target_wp.lat, target_wp.lon, &tgt_north, &tgt_east);
+	lat_lon_to_meters(
+		_plane->home_lat,
+		_plane->home_lon,
+		prev_wp.lat,
+		prev_wp.lon,
+		&prev_north,
+		&prev_east
+	);
+	lat_lon_to_meters(
+		_plane->home_lat,
+		_plane->home_lon,
+		target_wp.lat,
+		target_wp.lon,
+		&tgt_north,
+		&tgt_east
+	);
 
 	// Calculate track heading (bearing from previous to target waypoint)
 	float trk_hdg = atan2f(tgt_east - prev_east, tgt_north - prev_north);
@@ -64,10 +78,9 @@ void Guidance::update_mission()
 	float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
 	// Calculate heading setpoint using proportional guidance law
-	_plane->guidance_hdg_setpoint = (trk_hdg + atanf(get_params()->guidance_kp * -xte)) * RAD_TO_DEG;
-	if (_plane->guidance_hdg_setpoint < 0) {
-		_plane->guidance_hdg_setpoint += 360.0; // Normalize to [0, 360] range
-	}
+	_plane->guidance_hdg_setpoint = normalize_heading(
+		(trk_hdg + atanf(get_params()->guidance_kp * -xte)) * RAD_TO_DEG
+	);
 
 	// Determine altitude setpoint
 	if (_plane->waypoint_index == 1)
@@ -107,11 +120,24 @@ void Guidance::update_mission()
 			Waypoint prev_prev_wp = _plane->waypoints[_plane->waypoint_index - 2];
 
 			double prev_prev_north, prev_prev_east;
-			lat_lon_to_meters(_plane->home_lat, _plane->home_lon, prev_prev_wp.lat, prev_prev_wp.lon, &prev_prev_north, &prev_prev_east);
+			lat_lon_to_meters(
+				_plane->home_lat,
+				_plane->home_lon,
+				prev_prev_wp.lat,
+				prev_prev_wp.lon,
+				&prev_prev_north,
+				&prev_prev_east
+			);
 
 			// Compute along-track distance (projected aircraft position onto path)
-			float along_track_dist_prev = compute_along_track_distance(prev_prev_north, prev_prev_east, prev_north, prev_east,
-																				   _plane->nav_pos_north, _plane->nav_pos_east);
+			float along_track_dist_prev = compute_along_track_distance(
+				prev_prev_north,
+				prev_prev_east,
+				prev_north,
+				prev_east,
+				_plane->nav_pos_north,
+				_plane->nav_pos_east
+			);
 
 			// Interpolate between previous waypoint and the one before that
 			_plane->guidance_d_setpoint = lerp(
@@ -188,4 +214,12 @@ float Guidance::distance(float n1, float e1, float n2, float e2)
 	float dn = n2 - n1;
 	float de = e2 - e1;
 	return sqrtf(dn * dn + de * de);
+}
+
+// Normalize angles to [0, 360] degrees
+float Guidance::normalize_heading(float heading)
+{
+	while (heading < 0) heading += 360.0f;
+	while (heading >= 360) heading -= 360.0f;
+	return heading;
 }
