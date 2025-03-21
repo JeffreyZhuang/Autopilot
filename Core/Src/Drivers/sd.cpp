@@ -40,7 +40,7 @@ void Sd::write(uint8_t* tx_buff, uint16_t size)
 	}
 }
 
-void Sd::read(uint8_t* rx_buff, uint16_t size)
+bool Sd::read(uint8_t* rx_buff, uint16_t size)
 {
 	if (!reading)
 	{
@@ -61,6 +61,9 @@ void Sd::read(uint8_t* rx_buff, uint16_t size)
 	{
 		printf("Error during read\n");
 	}
+
+	// Check if end of file is reached
+	return !(bytes_read < size);
 }
 
 void Sd::flush()

@@ -93,7 +93,7 @@ public:
 	void init_logger();
 	void write_storage_buffer(uint8_t* packet, uint16_t len) override;
 	void flush_storage_buffer() override;
-	void read_storage(uint8_t* rx_buff, uint16_t size) override;
+	bool read_storage(uint8_t* rx_buff, uint16_t size) override;
 
 	// debug_hal.cpp
 	void debug_print(char * str) override;

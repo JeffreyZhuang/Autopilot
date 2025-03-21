@@ -15,7 +15,7 @@ void Flight_hal::flush_storage_buffer()
 	_sd.flush();
 }
 
-void Flight_hal::read_storage(uint8_t* rx_buff, uint16_t size)
+bool Flight_hal::read_storage(uint8_t* rx_buff, uint16_t size)
 {
-	_sd.read(rx_buff, size);
+	return _sd.read(rx_buff, size);
 }

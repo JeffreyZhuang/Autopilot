@@ -8,72 +8,61 @@ Storage::Storage(Plane* plane, HAL* hal)
 
 void Storage::write()
 {
-	// Create struct
-	Storage_payload payload = {
-		_plane->loop_iteration,
-		_plane->time,
-		{_plane->imu_gx, _plane->imu_gy, _plane->imu_gz},
-		{_plane->imu_ax, _plane->imu_ay, _plane->imu_az},
-		{_plane->compass_mx, _plane->compass_my, _plane->compass_mz},
-		{_plane->nav_pos_north, _plane->nav_pos_east, _plane->nav_pos_down},
-		{_plane->nav_vel_north, _plane->nav_vel_east, _plane->nav_vel_down},
-		_plane->baro_alt,
-		{_plane->rc_ail_norm, _plane->rc_ele_norm, _plane->rc_rud_norm, _plane->rc_thr_norm},
-		_plane->gnss_lat,
-		_plane->gnss_lon,
-		_plane->gps_fix,
-		static_cast<uint8_t>(_plane->flight_mode)
-	};
-
-	// Convert struct to byte array
-	uint8_t payload_arr[payload_size];
-	memcpy(payload_arr, &payload, payload_size);
-
-	// COBS encode
-	uint8_t payload_cobs[payload_size + 1];
-	cobs_encode(payload_cobs, sizeof(payload_cobs), payload_arr, sizeof(payload_arr));
-
-	// Add start byte to complete packet
-	uint8_t packet[packet_size];
-	packet[0] = 0; // Start byte
-	for (uint i = 1; i < packet_size; i++) // Copy over payload to packet
+	if (_plane->system_mode != System_mode::CONFIG)
 	{
-		packet[i] = payload_cobs[i - 1];
-	}
+		// Create struct
+		Storage_payload payload = create_payload();
 
-	// Double buffering:
-	// If back_buffer is not full, add data to back_buffer
-	// If back_buffer is full and front_buffer is not full, swap back and front buffers add data to back_buffer
-	// If both buffers are full, there is no way to store the data so throw out the data
-	bool back_buff_full = back_buff_last_idx == buffer_size;
-	if (!back_buff_full)
-	{
-		for (uint i = 0; i < packet_size; i++)
+		// Convert struct to byte array
+		uint8_t payload_arr[payload_size];
+		memcpy(payload_arr, &payload, payload_size);
+
+		// COBS encode
+		uint8_t payload_cobs[payload_size + 1];
+		cobs_encode(payload_cobs, sizeof(payload_cobs), payload_arr, sizeof(payload_arr));
+
+		// Add start byte to complete packet
+		uint8_t packet[packet_size];
+		packet[0] = 0; // Start byte
+		for (uint i = 1; i < packet_size; i++) // Copy over payload to packet
 		{
-			back_buffer[back_buff_last_idx] = packet[i];
-			back_buff_last_idx++;
+			packet[i] = payload_cobs[i - 1];
 		}
-	}
-	else if (back_buff_full && !front_buff_full)
-	{
-		// Copy back buffer to front buffer
-		memcpy(front_buffer, back_buffer, buffer_size);
-		front_buff_full = true;
 
-		// Reset buffer index
-		back_buff_last_idx = 0;
-
-		// Add packet to buffer
-		for (uint i = 0; i < packet_size; i++)
+		// Double buffering:
+		// If back_buffer is not full, add data to back_buffer
+		// If back_buffer is full and front_buffer is not full, swap back and front buffers add data to back_buffer
+		// If both buffers are full, there is no way to store the data so throw out the data
+		bool back_buff_full = back_buff_last_idx == buffer_size;
+		if (!back_buff_full)
 		{
-			back_buffer[back_buff_last_idx] = packet[i];
-			back_buff_last_idx++;
+			for (uint i = 0; i < packet_size; i++)
+			{
+				back_buffer[back_buff_last_idx] = packet[i];
+				back_buff_last_idx++;
+			}
 		}
-	}
-	else
-	{
-		// Throw out data if both buffers full
-//		printf("Both buffers full\n");
+		else if (back_buff_full && !front_buff_full)
+		{
+			// Copy back buffer to front buffer
+			memcpy(front_buffer, back_buffer, buffer_size);
+			front_buff_full = true;
+
+			// Reset buffer index
+			back_buff_last_idx = 0;
+
+			// Add packet to buffer
+			for (uint i = 0; i < packet_size; i++)
+			{
+				back_buffer[back_buff_last_idx] = packet[i];
+				back_buff_last_idx++;
+			}
+		}
+		else
+		{
+			// Throw out data if both buffers full
+	//		printf("Both buffers full\n");
+		}
 	}
 }
 
@@ -90,13 +79,37 @@ void Storage::flush()
 	}
 }
 
+Storage_payload Storage::create_payload()
+{
+	Storage_payload payload = {
+		_plane->loop_iteration,
+		_plane->time,
+		{_plane->imu_gx, _plane->imu_gy, _plane->imu_gz},
+		{_plane->imu_ax, _plane->imu_ay, _plane->imu_az},
+		{_plane->compass_mx, _plane->compass_my, _plane->compass_mz},
+		{_plane->nav_pos_north, _plane->nav_pos_east, _plane->nav_pos_down},
+		{_plane->nav_vel_north, _plane->nav_vel_east, _plane->nav_vel_down},
+		_plane->baro_alt,
+		{_plane->rc_ail_norm, _plane->rc_ele_norm, _plane->rc_rud_norm, _plane->rc_thr_norm},
+		_plane->gnss_lat,
+		_plane->gnss_lon,
+		_plane->gps_fix,
+		static_cast<uint8_t>(_plane->flight_mode)
+	};
+
+	return payload;
+}
+
 void Storage::read()
 {
 	while (true)
 	{
 		// Read storage to look for start byte
 		uint8_t start_byte[1];
-		_hal->read_storage(start_byte, 1);
+		if (!_hal->read_storage(start_byte, 1))
+		{
+			break;
+		}
 
 		// Detect start byte
 		if (start_byte[0] == 0)
@@ -117,20 +130,8 @@ void Storage::read()
 			printf("%d\n", payload.loop_iteration);
 			_hal->delay_us(10000); // Must be here
 			// If there is a corrupt bit, it takes extra long to print and will skip some
+
+			break; // Break after one payload has been read
 		}
 	}
-}
-
-void Storage::load_params()
-{
-
-}
-
-void Storage::save_params()
-{
-	// Write params struct to file
-	// Skip this, just use GCS?
-	// You also have to transmit params to GCS at start
-	// Save functionality
-	// If power reset mid flight, I'm dead anyways
 }

@@ -18,7 +18,7 @@ struct __attribute__((packed))Storage_payload
 	float nav_pos[3];
 	float nav_vel[3];
 	float baro_alt;
-	uint16_t rc_channels[4];
+	float rc_channels[4];
 	double gnss_lat;
 	double gnss_lon;
 	bool gps_fix;
@@ -33,13 +33,10 @@ public:
 	void write();
 	void flush();
 	void read();
-	void load_params();
-	void save_params();
 
 private:
 	Plane* _plane;
 	HAL* _hal;
-
 	static constexpr int payload_size = sizeof(Storage_payload);
 	static constexpr int packet_size = payload_size + 2; // Add start byte and COBS
 	static constexpr int buffer_size = 200 * packet_size;
@@ -48,6 +45,7 @@ private:
 	bool front_buff_full = false;
 	uint32_t back_buff_last_idx = 0;
 
+	Storage_payload create_payload();
 };
 
 #endif /* MODULES_STORAGE_STORAGE_H_ */

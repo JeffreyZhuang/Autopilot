@@ -14,7 +14,7 @@ class Sd
 public:
 	void initialize();
 	void write(uint8_t* tx_buff, uint16_t size);
-	void read(uint8_t* rx_buff, uint16_t size);
+	bool read(uint8_t* rx_buff, uint16_t size);
 	void flush();
 private:
 	FATFS fatfs;

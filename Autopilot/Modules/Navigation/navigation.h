@@ -26,6 +26,7 @@ class Navigation
 public:
     Navigation(HAL* hal, Plane* plane);
     void update();
+
 private:
     HAL* _hal;
     Plane* _plane;

@@ -28,7 +28,7 @@ public:
     // Logger
     virtual void write_storage_buffer(uint8_t* packet, uint16_t len) = 0;
     virtual void flush_storage_buffer() = 0;
-    virtual void read_storage(uint8_t* rx_buff, uint16_t size) = 0;
+    virtual bool read_storage(uint8_t* rx_buff, uint16_t size) = 0;
 
     // Debug
     virtual void debug_print(char* str) = 0;

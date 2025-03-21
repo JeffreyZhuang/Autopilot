@@ -8,14 +8,21 @@ Telem::Telem(HAL* hal, Plane* plane)
 
 void Telem::update()
 {
+	// It starts reading new 0 every time after buffer empty bug
+	printf("NEW LOOP TELEM\n");
 	while (!_hal->telem_buffer_empty())
 	{
 		uint8_t byte;
-		_hal->read_telem(&byte);
+		if (!_hal->read_telem(&byte))
+		{
+			break; // Oh, maybe this is making byte 0
+		}
+		printf("TLEEM BYTE: %d\n", byte); // This works, so the detect start byte and stuff
 
 		if (byte == START_BYTE)
 		{
 			_in_pkt = true;
+//			_pkt_idx = 0;
 		}
 
 		if (_in_pkt)
@@ -23,6 +30,8 @@ void Telem::update()
 			// Append byte to packet
 			_packet[_pkt_idx] = byte;
 			_pkt_idx++;
+
+			printf("Telem _pkt_idx, byte: %d, %d\n", _pkt_idx, byte);
 
 			switch (_pkt_idx)
 			{
@@ -219,7 +228,7 @@ Telem_payload Telem::create_telem_payload()
 		0,
 		0,
 		0,
-		0,
+		(uint16_t)(_plane->autopilot_current * 1000.0f),
 		_plane->gnss_sats,
 		_plane->gps_fix,
 		(uint8_t)(_plane->rud_cmd * 100),
