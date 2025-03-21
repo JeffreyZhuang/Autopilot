@@ -15,42 +15,42 @@ void Telem::update()
 
 		if (byte == START_BYTE)
 		{
-			in_packet = true;
+			_in_pkt = true;
 		}
 
-		if (in_packet)
+		if (_in_pkt)
 		{
 			// Append byte to packet
-			packet[packet_index] = byte;
-			packet_index++;
+			_packet[_pkt_idx] = byte;
+			_pkt_idx++;
 
-			if (packet_index == 1)
+			switch (_pkt_idx)
 			{
-				// Ignore start byte
-			}
-			else if (packet_index == 2)
-			{
-				payload_len = byte;
-			}
-			else if (packet_index == 3)
-			{
-				msg_id = byte;
-			}
-			else if (packet_index == 4)
-			{
-				cobs_byte = byte;
-			}
-			else if (packet_index == payload_len)
-			{
-				// Parse
-				if (parse_packet())
+			case 1:
+				break;
+			case 2:
+				_payload_len = byte;
+				break;
+			case 3:
+				_msg_id = byte;
+				break;
+			case 4:
+				_cobs_byte = byte;
+				break;
+			default:
+				if (_pkt_idx == _payload_len + HEADER_LEN)
 				{
-					ack();
-				}
+					// Parse
+					if (parse_packet())
+					{
+						ack();
+					}
 
-				// Reset
-				packet_index = 0;
-				in_packet = false;
+					// Reset
+					_pkt_idx = 0;
+					_in_pkt = false;
+				}
+				break;
 			}
 		}
 	}
@@ -61,27 +61,21 @@ void Telem::update()
 	}
 }
 
-void Telem::transmit_packet(uint8_t packet[], uint16_t size)
-{
-	bytes_since_last_tlm_transmit += size;
-	_hal->transmit_telem(packet, size);
-}
-
 void Telem::transmit_telem()
 {
 	// Limit data rate through radio
-	float sec_since_last_tlm_transmit = (_hal->get_time_us() - last_tlm_transmit_time) * US_TO_S;
+	float sec_since_last_tlm_transmit = (_hal->get_time_us() - _last_tlm_transmit_time) * US_TO_S;
 
 	uint16_t byte_rate = 0;
 	if (sec_since_last_tlm_transmit != 0) // Prevent divide by zero
 	{
-		byte_rate = bytes_since_last_tlm_transmit / sec_since_last_tlm_transmit;
+		byte_rate = (_bytes_since_last_tlm_transmit + sizeof(Telem_payload) + HEADER_LEN) / sec_since_last_tlm_transmit;
 	}
 
 	if (byte_rate < MAX_BYTE_RATE)
 	{
-		bytes_since_last_tlm_transmit = 0;
-		last_tlm_transmit_time = _hal->get_time_us();
+		_bytes_since_last_tlm_transmit = 0;
+		_last_tlm_transmit_time = _hal->get_time_us();
 
 		// Construct telemetry payload
 		Telem_payload payload = create_telem_payload();
@@ -94,9 +88,8 @@ void Telem::transmit_telem()
 		uint8_t packet_cobs[sizeof(Telem_payload) + 1]; // Add 1 for COBS byte
 		cobs_encode(packet_cobs, sizeof(packet_cobs), payload_arr, sizeof(Telem_payload));
 
-		uint16_t packet_index = 0;
-
 		// Construct final packet
+		uint16_t packet_index = 0;
 		uint8_t packet[sizeof(Telem_payload) + HEADER_LEN];
 		packet[packet_index++] = START_BYTE; // Start byte
 		packet[packet_index++] = sizeof(Telem_payload); // Length byte
@@ -108,6 +101,104 @@ void Telem::transmit_telem()
 
 		transmit_packet(packet, sizeof(packet));
 	}
+}
+
+bool Telem::parse_packet()
+{
+	printf("Telem msg id: %d\n", _msg_id);
+	printf("Telem payload len: %d\n", _payload_len);
+	printf("Telem waypoint_payload len: %d\n", sizeof(Waypoint_payload));
+	printf("Telem params_payload len: %d\n", sizeof(Params_payload));
+	for (int i = 0; i < _payload_len + HEADER_LEN; i++)
+	{
+		printf("%d", _packet[i]);
+	}
+	printf("\n");
+
+	// Remove header except COBS byte
+	uint8_t payload_cobs[_payload_len + 1]; // Add 1 for COBS byte
+	payload_cobs[0] = _cobs_byte;
+	for (uint i = 0; i < _payload_len; i++)
+	{
+		payload_cobs[i + 1] = _packet[i + HEADER_LEN];
+	}
+
+	// Decode consistent overhead byte shuffling
+	uint8_t payload[_payload_len];
+	cobs_decode_result res = cobs_decode(payload, sizeof(payload), payload_cobs, sizeof(payload_cobs));
+	if (res.status == COBS_DECODE_OK)
+	{
+		// Determine type of payload from message ID
+		if (_msg_id == WPT_MSG_ID &&
+			_plane->system_mode == System_mode::CONFIG &&
+			_payload_len == sizeof(Waypoint_payload))
+		{
+			Waypoint_payload waypoint_payload;
+			memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
+
+			if (waypoint_payload.waypoint_index == waypoint_payload.total_waypoints - 1)
+			{
+				_plane->waypoints_loaded = true;
+			}
+
+			if (waypoint_payload.waypoint_index == 0)
+			{
+				_plane->home_lat = (float)waypoint_payload.lat * 1E-7f;
+				_plane->home_lon = (float)waypoint_payload.lon * 1E-7f;
+			}
+
+			_plane->num_waypoints = waypoint_payload.total_waypoints;
+			_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){
+				(double)waypoint_payload.lat * 1E-7,
+				(double)waypoint_payload.lon * 1E-7,
+				(float)waypoint_payload.alt * 1E-1f
+			};
+
+			printf("Telem waypoint set\n");
+
+			return true;
+		}
+		else if (_msg_id == PARAMS_MSG_ID &&
+				 _plane->system_mode == System_mode::CONFIG &&
+				 _payload_len == sizeof(Params_payload))
+		{
+			Params_payload params_payload;
+			memcpy(&params_payload, payload, sizeof(Params_payload));
+
+			// Set parameters
+			set_params(&params_payload.params);
+
+			printf("Telem params set\n");
+
+			return true;
+		}
+	}
+	else
+	{
+		printf("COBS DECODE NOT OK\n");
+	}
+
+	return false;
+}
+
+// Send back same message for acknowledgement
+void Telem::ack()
+{
+	printf("Ack\n");
+	for (int i = 0; i < _payload_len + HEADER_LEN; i++)
+	{
+		printf("%d", _packet[i]);
+	}
+	printf("\n");
+
+	// Do not use queue and send directly because this is priority
+	transmit_packet(_packet, _payload_len + HEADER_LEN);
+}
+
+void Telem::transmit_packet(uint8_t packet[], uint16_t size)
+{
+	_bytes_since_last_tlm_transmit += size;
+	_hal->transmit_telem(packet, size);
 }
 
 Telem_payload Telem::create_telem_payload()
@@ -137,79 +228,6 @@ Telem_payload Telem::create_telem_payload()
 	};
 
 	return payload;
-}
-
-// Send back same message for acknowledgement
-void Telem::ack()
-{
-	// Do not use queue and send directly because this is priority
-	transmit_packet(packet, payload_len + HEADER_LEN);
-}
-
-bool Telem::parse_packet()
-{
-	printf("Telem msg id: %d\n", msg_id);
-	printf("Telem payload len: %d\n", payload_len);
-	printf("Telem waypoint_payload len: %d\n", sizeof(Waypoint_payload));
-	printf("Telem params_payload len: %d\n", sizeof(Params_payload));
-
-	// Remove header except COBS byte
-	uint8_t payload_cobs[payload_len + 1]; // Add 1 for COBS byte
-	payload_cobs[0] = cobs_byte;
-	for (uint i = 1; i < sizeof(payload_cobs); i++)
-	{
-		payload_cobs[i] = packet[i + HEADER_LEN - 1];
-	}
-
-	// Decode consistent overhead byte shuffling
-	uint8_t payload[payload_len];
-	cobs_decode(payload, sizeof(payload), payload_cobs, sizeof(payload_cobs));
-
-	// Determine type of payload from message ID
-	if (msg_id == WPT_MSG_ID &&
-		_plane->system_mode == System_mode::CONFIG &&
-		payload_len == sizeof(Waypoint_payload))
-	{
-		Waypoint_payload waypoint_payload;
-		memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
-
-		if (waypoint_payload.waypoint_index == waypoint_payload.total_waypoints - 1)
-		{
-			_plane->waypoints_loaded = true;
-		}
-
-		if (waypoint_payload.waypoint_index == 0)
-		{
-			_plane->home_lat = (float)waypoint_payload.lat * 1E-7f;
-			_plane->home_lon = (float)waypoint_payload.lon * 1E-7f;
-		}
-
-		_plane->num_waypoints = waypoint_payload.total_waypoints;
-		_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){
-			(float)waypoint_payload.lat * 1E-7f,
-			(float)waypoint_payload.lon * 1E-7f,
-			(float)waypoint_payload.alt * 1E-1f
-		};
-
-		printf("Telem waypoint set\n");
-
-		return true;
-	}
-	else if (msg_id == PARAMS_MSG_ID &&
-			 _plane->system_mode == System_mode::CONFIG &&
-			 payload_len == sizeof(Params_payload))
-	{
-		Params_payload params_payload;
-		memcpy(&params_payload, payload, sizeof(Params_payload));
-
-		// Set parameters
-		set_params(&params_payload.params);
-
-		printf("Telem params set\n");
-
-		return true;
-	}
-	return false;
 }
 
 // Returns unique state identifier

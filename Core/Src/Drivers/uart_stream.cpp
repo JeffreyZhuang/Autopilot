@@ -1,8 +1,14 @@
 #include "Drivers/uart_stream.h"
 
+#define RING_BUFFER_SIZE (1000)
+
+static uint8_t data_buffer[RING_BUFFER_SIZE] = {0U};
+
 Uart_stream::Uart_stream(UART_HandleTypeDef* uart)
 {
 	_uart = uart;
+
+	ring_buffer_setup(&ring_buffer, data_buffer, RING_BUFFER_SIZE);
 }
 
 void Uart_stream::setup()

@@ -59,19 +59,22 @@ void Autopilot::init_state()
 	_plane->flight_mode = Flight_mode::MANUAL;
 	_plane->manual_mode = Manual_mode::DIRECT;
 	_plane->auto_mode = Auto_mode::TAKEOFF;
-
-	// Initialize start time
-	_plane->time = _hal->get_time_us();
 }
 
 void Autopilot::update_time()
 {
 	uint64_t time = _hal->get_time_us();
-	_plane->dt = (time - _plane->time) * US_TO_S;
+	if (_plane->time > 0)
+	{
+		_plane->dt = (time - _plane->time) * US_TO_S;
+	}
+	else
+	{
+		// Initialize
+		_plane->dt = 0;
+	}
 	_plane->time = time;
 	_plane->loop_iteration++;
-
-	printf("Autopilot dt: %f\n", _plane->dt);
 }
 
 // View in web serial plotter

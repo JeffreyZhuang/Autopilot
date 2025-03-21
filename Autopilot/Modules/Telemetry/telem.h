@@ -70,14 +70,14 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
-	uint8_t packet[MAX_PKT_LEN];
-	uint16_t packet_index = 0;
-	bool in_packet = false;
-	uint8_t payload_len = 0;
-	uint8_t msg_id = 0;
-	uint8_t cobs_byte = 0;
-	uint64_t last_tlm_transmit_time = 0; // Time of last telemetry transmission
-	uint16_t bytes_since_last_tlm_transmit = 0; // Total bytes sent since last telemetry transmission
+	uint8_t _packet[MAX_PKT_LEN];
+	uint16_t _pkt_idx = 0;
+	bool _in_pkt = false;
+	uint8_t _payload_len = 0;
+	uint8_t _msg_id = 0;
+	uint8_t _cobs_byte = 0;
+	uint64_t _last_tlm_transmit_time = 0; // Time of last telemetry transmission
+	uint16_t _bytes_since_last_tlm_transmit = 0; // Total bytes sent since last telemetry transmission
 
 	void transmit_packet(uint8_t packet[], uint16_t size);
 	void transmit_telem(); // Transmit telemetry packet
