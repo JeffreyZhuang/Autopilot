@@ -8,7 +8,7 @@
 #include "Drivers/mlx90393.h"
 #include "Drivers/sd.h"
 #include "Drivers/mlrs_rc.h"
-#include "Drivers/mlrs_telem.h"
+#include "Drivers/uart_stream.h"
 #include "Drivers/cxof.h"
 #include "Lib/Utils/utils.h"
 #include "parameters.h"
@@ -112,10 +112,13 @@ public:
 	// telemetry_hal.cpp
 	void init_telem();
 	void transmit_telem(uint8_t tx_buff[], int len) override;
-	bool read_telem(uint8_t rx_buff[], uint16_t* size) override;
+	bool read_telem(uint8_t* byte) override;
+	bool telem_buffer_empty() override;
+	static void telemetry_dma_complete() { _instance->mlrs_telem.dma_complete(); }
+
+	// RC
 	void get_rc_input(uint16_t duty[], uint8_t num_channels) override;
 	static void rc_dma_complete() { _instance->mlrs_rc.dma_complete(); }
-	static void telemetry_dma_complete() { _instance->mlrs_telem.dma_complete(); }
 
 	// USB
 	void usb_rx_callback(uint8_t* Buf, uint32_t Len);
@@ -136,7 +139,7 @@ private:
 	GNSS _gnss;
 	Sd _sd;
 	Mlrs_rc mlrs_rc;
-	Mlrs_telem mlrs_telem;
+	Uart_stream mlrs_telem;
 	Servo servo1;
 	Servo servo2;
 	Cxof cxof;

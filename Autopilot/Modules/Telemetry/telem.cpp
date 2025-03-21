@@ -8,11 +8,50 @@ Telem::Telem(HAL* hal, Plane* plane)
 
 void Telem::update()
 {
-	if (_hal->read_telem(latest_packet, &latest_pkt_len))
+	while (!_hal->telem_buffer_empty())
 	{
-		if (validate_packet() && parse_packet())
+		uint8_t byte;
+		_hal->read_telem(&byte);
+
+		if (byte == START_BYTE)
 		{
-			ack();
+			in_packet = true;
+		}
+
+		if (in_packet)
+		{
+			// Append byte to packet
+			packet[packet_index] = byte;
+			packet_index++;
+
+			if (packet_index == 1)
+			{
+				// Ignore start byte
+			}
+			else if (packet_index == 2)
+			{
+				payload_len = byte;
+			}
+			else if (packet_index == 3)
+			{
+				msg_id = byte;
+			}
+			else if (packet_index == 4)
+			{
+				cobs_byte = byte;
+			}
+			else if (packet_index == payload_len)
+			{
+				// Parse
+				if (parse_packet())
+				{
+					ack();
+				}
+
+				// Reset
+				packet_index = 0;
+				in_packet = false;
+			}
 		}
 	}
 
@@ -100,26 +139,15 @@ Telem_payload Telem::create_telem_payload()
 	return payload;
 }
 
-// Ensure packet length is valid before parsing
-bool Telem::validate_packet()
-{
-	if (latest_pkt_len < HEADER_LEN) return false; // Prevent underflow in decoding
-	if (latest_pkt_len > MAX_PKT_LEN) return false; // Prevent buffer overflow
-	return true;
-}
-
 // Send back same message for acknowledgement
 void Telem::ack()
 {
 	// Do not use queue and send directly because this is priority
-	transmit_packet(latest_packet, latest_pkt_len);
+	transmit_packet(packet, payload_len + HEADER_LEN);
 }
 
 bool Telem::parse_packet()
 {
-	uint16_t packet_index = 1; // Skip start byte
-	uint8_t payload_len = latest_packet[packet_index++];
-	uint8_t msg_id = latest_packet[packet_index++];
 	printf("Telem msg id: %d\n", msg_id);
 	printf("Telem payload len: %d\n", payload_len);
 	printf("Telem waypoint_payload len: %d\n", sizeof(Waypoint_payload));
@@ -127,9 +155,10 @@ bool Telem::parse_packet()
 
 	// Remove header except COBS byte
 	uint8_t payload_cobs[payload_len + 1]; // Add 1 for COBS byte
-	for (uint i = 0; i < sizeof(payload_cobs); i++)
+	payload_cobs[0] = cobs_byte;
+	for (uint i = 1; i < sizeof(payload_cobs); i++)
 	{
-		payload_cobs[i] = latest_packet[packet_index++];
+		payload_cobs[i] = packet[i + HEADER_LEN - 1];
 	}
 
 	// Decode consistent overhead byte shuffling

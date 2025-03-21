@@ -21,7 +21,8 @@ public:
 
     // Telemetry
     virtual void transmit_telem(uint8_t tx_buff[], int len) = 0;
-    virtual bool read_telem(uint8_t* rx_buff, uint16_t* size) = 0;
+    virtual bool read_telem(uint8_t* byte) = 0;
+    virtual bool telem_buffer_empty() = 0;
     virtual void get_rc_input(uint16_t duty[], uint8_t num_channels) = 0;
 
     // Logger

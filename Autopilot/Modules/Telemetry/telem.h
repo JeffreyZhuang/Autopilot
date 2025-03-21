@@ -57,7 +57,8 @@ static constexpr uint8_t PARAMS_MSG_ID = 3;
 
 // Packet length constants
 static constexpr uint8_t HEADER_LEN = 4;
-static constexpr uint16_t MAX_PKT_LEN = 255 + HEADER_LEN;
+static constexpr uint8_t MAX_PAYLOAD_LEN = 255;
+static constexpr uint16_t MAX_PKT_LEN = MAX_PAYLOAD_LEN + HEADER_LEN;
 static constexpr uint16_t MAX_BYTE_RATE = 1500; // Bytes per sec
 
 class Telem
@@ -69,14 +70,17 @@ public:
 private:
 	HAL* _hal;
 	Plane* _plane;
-	uint8_t latest_packet[MAX_PKT_LEN];
-	uint16_t latest_pkt_len = 0;
+	uint8_t packet[MAX_PKT_LEN];
+	uint16_t packet_index = 0;
+	bool in_packet = false;
+	uint8_t payload_len = 0;
+	uint8_t msg_id = 0;
+	uint8_t cobs_byte = 0;
 	uint64_t last_tlm_transmit_time = 0; // Time of last telemetry transmission
 	uint16_t bytes_since_last_tlm_transmit = 0; // Total bytes sent since last telemetry transmission
 
 	void transmit_packet(uint8_t packet[], uint16_t size);
 	void transmit_telem(); // Transmit telemetry packet
-	bool validate_packet();
 	bool parse_packet();
 	void ack();
 	uint8_t get_current_state();

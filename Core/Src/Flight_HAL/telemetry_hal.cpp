@@ -11,9 +11,14 @@ void Flight_hal::transmit_telem(uint8_t tx_buff[], int len)
 	mlrs_telem.transmit(tx_buff, len);
 }
 
-bool Flight_hal::read_telem(uint8_t rx_buff[], uint16_t* size)
+bool Flight_hal::read_telem(uint8_t* byte)
 {
-	return mlrs_telem.read(rx_buff, size);
+	return mlrs_telem.read_byte(byte);
+}
+
+bool Flight_hal::telem_buffer_empty()
+{
+	return mlrs_telem.buffer_empty();
 }
 
 void Flight_hal::get_rc_input(uint16_t duty[], uint8_t num_channels)
