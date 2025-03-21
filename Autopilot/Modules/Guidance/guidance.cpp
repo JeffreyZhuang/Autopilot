@@ -52,6 +52,7 @@ void Guidance::update_mission()
 
 	// Convert waypoints to north east coordinates
 	double prev_north, prev_east, tgt_north, tgt_east;
+
 	lat_lon_to_meters(
 		_plane->home_lat,
 		_plane->home_lon,
@@ -60,6 +61,7 @@ void Guidance::update_mission()
 		&prev_north,
 		&prev_east
 	);
+
 	lat_lon_to_meters(
 		_plane->home_lat,
 		_plane->home_lon,
