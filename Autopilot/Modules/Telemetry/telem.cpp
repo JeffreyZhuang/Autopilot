@@ -1,9 +1,7 @@
 #include "telem.h"
 
-Telem::Telem(HAL* hal, Plane* plane)
+Telem::Telem(HAL* hal, Plane* plane) : Module(hal, plane)
 {
-	_plane = plane;
-	_hal = hal;
 }
 
 void Telem::update()

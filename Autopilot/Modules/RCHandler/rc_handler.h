@@ -5,6 +5,7 @@
 #include "parameters.h"
 #include "hal.h"
 #include "plane.h"
+#include "module.h"
 #include <stdio.h>
 
 // Channels
@@ -16,14 +17,12 @@ constexpr uint8_t MAN_CH = 4;
 constexpr uint8_t MOD_CH = 5;
 constexpr uint8_t NUM_CH = 6;
 
-class Rc_handler
+class Rc_handler : public Module
 {
 public:
 	Rc_handler(HAL* hal, Plane* plane);
-	void rc_update();
-private:
-	HAL* _hal;
-	Plane* _plane;
+
+	void update();
 };
 
 #endif /* MODULES_RCHANDLER_RC_HANDLER_H_ */

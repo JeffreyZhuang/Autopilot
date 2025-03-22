@@ -4,18 +4,17 @@
 #include "parameters.h"
 #include "plane.h"
 #include "hal.h"
+#include "module.h"
 #include <stdio.h>
 
-class Commander
+class Commander : public Module
 {
 public:
 	Commander(HAL* hal, Plane* plane);
+
 	void update();
 
 private:
-	HAL* _hal;
-	Plane* _plane;
-
 	void handle_flight_mode();
 	void handle_manual_mode();
 	void handle_auto_mode();

@@ -8,11 +8,11 @@ Autopilot::Autopilot(HAL* hal, Plane* plane)
 	  _control(hal, plane),
 	  _guidance(hal, plane),
 	  _telem(hal, plane),
-	  _storage(plane, hal),
+	  _storage(hal, plane),
 	  _mixer(hal, plane),
 	  _rc_handler(hal, plane),
 	  _commander(hal, plane),
-	  _tecs(plane),
+	  _tecs(hal, plane),
 	  _navigator(hal, plane)
 {
 	_hal = hal;
@@ -33,7 +33,7 @@ void Autopilot::main_task()
 {
 	update_time();
 	_hal->read_sensors();
-	_rc_handler.rc_update();
+	_rc_handler.update();
 	_ahrs.update();
 	_navigation.update();
 	_commander.update();
@@ -42,14 +42,14 @@ void Autopilot::main_task()
 	_tecs.update();
 	_control.update();
 	_mixer.update();
-	_storage.write();
+	_storage.update();
 	_telem.update();
 	debug_serial();
 }
 
 void Autopilot::background_task()
 {
-	_storage.flush();
+	_storage.update_background();
 }
 
 /**

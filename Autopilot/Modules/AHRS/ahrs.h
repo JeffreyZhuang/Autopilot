@@ -29,9 +29,6 @@ public:
     bool is_converged();
 
 private:
-    Plane* _plane;
-    HAL* _hal;
-
     Madgwick filter;
     Ahrs_state ahrs_state = Ahrs_state::INITIALIZATION;
 

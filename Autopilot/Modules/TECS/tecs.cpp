@@ -1,10 +1,10 @@
 #include "tecs.h"
 
-Tecs::Tecs(Plane* plane)
-	: pitch_controller(false),
+Tecs::Tecs(HAL* hal, Plane* plane)
+	: Module(hal, plane),
+	  pitch_controller(false),
 	  throttle_controller(false)
 {
-	_plane = plane;
 }
 
 void Tecs::update()

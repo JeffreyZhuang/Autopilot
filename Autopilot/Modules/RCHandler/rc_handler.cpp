@@ -1,12 +1,10 @@
 #include <Modules/RCHandler/rc_handler.h>
 
-Rc_handler::Rc_handler(HAL* hal, Plane* plane)
+Rc_handler::Rc_handler(HAL* hal, Plane* plane) : Module(hal, plane)
 {
-	_hal = hal;
-	_plane = plane;
 }
 
-void Rc_handler::rc_update()
+void Rc_handler::update()
 {
 	if (_plane->system_mode != System_mode::CONFIG)
 	{

@@ -9,15 +9,14 @@
 #include "module.h"
 #include <math.h>
 
-class Tecs
+class Tecs : public Module
 {
 public:
-	Tecs(Plane* plane);
+	Tecs(HAL* hal, Plane* plane);
 
 	void update();
 
 private:
-	Plane* _plane;
 	PI_control pitch_controller;
 	PI_control throttle_controller;
 

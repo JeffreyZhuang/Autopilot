@@ -1,11 +1,10 @@
 #include <Modules/AttitudeControl/attitude_control.h>
 
 Control::Control(HAL * hal, Plane * plane)
-	: roll_controller(false),
+	: Module(hal, plane),
+	  roll_controller(false),
 	  pitch_controller(false)
 {
-	_hal = hal;
-	_plane = plane;
 }
 
 void Control::update()

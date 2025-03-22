@@ -1,9 +1,10 @@
 #ifndef MODULES_STORAGE_STORAGE_H_
 #define MODULES_STORAGE_STORAGE_H_
 
+#include "Lib/COBS/cobs.h"
 #include "plane.h"
 #include "hal.h"
-#include "Lib/COBS/cobs.h"
+#include "module.h"
 #include <stdint.h>
 #include <cstring>
 #include <stdio.h>
@@ -25,18 +26,15 @@ struct __attribute__((packed))Storage_payload
 	uint8_t mode_id;
 };
 
-class Storage
+class Storage : public Module
 {
 public:
-	Storage(Plane* plane, HAL* hal);
+	Storage(HAL* hal, Plane* plane);
 
-	void write();
-	void flush();
-	void read();
+	void update();
+	void update_background();
 
 private:
-	Plane* _plane;
-	HAL* _hal;
 	static constexpr int payload_size = sizeof(Storage_payload);
 	static constexpr int packet_size = payload_size + 2; // Add start byte and COBS
 	static constexpr int buffer_size = 200 * packet_size;
@@ -45,6 +43,9 @@ private:
 	bool front_buff_full = false;
 	uint32_t back_buff_last_idx = 0;
 
+	void write();
+	void flush();
+	void read();
 	Storage_payload create_payload();
 };
 

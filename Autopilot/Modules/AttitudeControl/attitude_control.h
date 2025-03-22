@@ -4,11 +4,12 @@
 #include "Lib/PIControl/PI_control.h"
 #include "Lib/Utils/utils.h"
 #include "hal.h"
+#include "module.h"
 #include "parameters.h"
 #include <math.h>
 #include <cstdio>
 
-class Control
+class Control : public Module
 {
 public:
 	Control(HAL* hal, Plane* plane);
@@ -16,8 +17,6 @@ public:
 	void update();
 
 private:
-	HAL* _hal;
-	Plane* _plane;
 	PI_control roll_controller;
 	PI_control pitch_controller;
 

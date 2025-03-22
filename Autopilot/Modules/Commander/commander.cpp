@@ -1,9 +1,7 @@
 #include "commander.h"
 
-Commander::Commander(HAL* hal, Plane* plane)
+Commander::Commander(HAL* hal, Plane* plane) : Module(hal, plane)
 {
-	_hal = hal;
-	_plane = plane;
 }
 
 void Commander::update()

@@ -30,8 +30,6 @@ public:
     void update();
 
 private:
-    HAL* _hal;
-    Plane* _plane;
     Kalman kalman;
 
     Nav_state nav_state = Nav_state::INITIALIZATION;

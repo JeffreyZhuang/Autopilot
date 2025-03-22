@@ -6,6 +6,7 @@
 #include "hal.h"
 #include "parameters.h"
 #include "constants.h"
+#include "module.h"
 #include <cstdio>
 #include <cstring>
 
@@ -61,15 +62,14 @@ static constexpr uint8_t MAX_PAYLOAD_LEN = 255;
 static constexpr uint16_t MAX_PKT_LEN = MAX_PAYLOAD_LEN + HEADER_LEN;
 static constexpr uint16_t MAX_BYTE_RATE = 1500; // Bytes per sec
 
-class Telem
+class Telem : public Module
 {
 public:
 	Telem(HAL* hal, Plane* plane);
+
 	void update();
 
 private:
-	HAL* _hal;
-	Plane* _plane;
 	uint8_t _packet[MAX_PKT_LEN];
 	uint16_t _pkt_idx = 0;
 	bool _in_pkt = false;

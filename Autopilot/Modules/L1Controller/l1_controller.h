@@ -17,9 +17,6 @@ public:
 	void update();
 
 private:
-	HAL* _hal;
-	Plane*_plane;
-
 	void handle_auto_mode();
 	void update_mission();
 	void update_flare();
