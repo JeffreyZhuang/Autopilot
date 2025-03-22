@@ -1,7 +1,7 @@
 #ifndef MODULES_MIXER_MIXER_H_
 #define MODULES_MIXER_MIXER_H_
 
-#include <lib/Utils/utils.h>
+#include <lib/utils/utils.h>
 #include "hal.h"
 #include "module.h"
 #include "parameters.h"

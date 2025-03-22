@@ -1,4 +1,4 @@
-#include <lib/PIControl/pi_control.h>
+#include <lib/pi_control/pi_control.h>
 
 PI_control::PI_control(bool normalize_180)
 {

@@ -1,4 +1,4 @@
-#include <lib/MovingAvg/moving_avg.h>
+#include <lib/moving_average/moving_avg.h>
 
 MovingAverage::MovingAverage(size_t windowSize, float* buffer)
     : buffer(buffer), windowSize(windowSize), index(0), sum(0), filled(false) {

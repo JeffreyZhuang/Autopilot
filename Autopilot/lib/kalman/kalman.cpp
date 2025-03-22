@@ -1,4 +1,4 @@
-#include <lib/Kalman/kalman.h>
+#include <lib/kalman/kalman.h>
 
 Kalman::Kalman(int n, int m)
 {

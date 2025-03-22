@@ -1,8 +1,8 @@
 #ifndef TELEM_H_
 #define TELEM_H_
 
-#include <lib/COBS/cobs.h>
-#include <lib/Utils/utils.h>
+#include <lib/cobs/cobs.h>
+#include <lib/utils/utils.h>
 #include "hal.h"
 #include "parameters.h"
 #include "constants.h"

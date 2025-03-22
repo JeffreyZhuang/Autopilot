@@ -1,7 +1,7 @@
 #ifndef MODULES_STORAGE_STORAGE_H_
 #define MODULES_STORAGE_STORAGE_H_
 
-#include <lib/COBS/cobs.h>
+#include <lib/cobs/cobs.h>
 #include "plane.h"
 #include "hal.h"
 #include "module.h"

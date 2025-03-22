@@ -1,8 +1,8 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include <lib/Madgwick/madgwick.h>
-#include <lib/MovingAvg/moving_avg.h>
+#include <lib/madgwick/madgwick.h>
+#include <lib/moving_average/moving_avg.h>
 #include "plane.h"
 #include "parameters.h"
 #include "hal.h"

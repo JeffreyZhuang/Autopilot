@@ -1,8 +1,8 @@
 #ifndef LIB_TECS_TECS_H_
 #define LIB_TECS_TECS_H_
 
-#include <lib/PIControl/pi_control.h>
-#include <lib/Utils/utils.h>
+#include <lib/pi_control/pi_control.h>
+#include <lib/utils/utils.h>
 #include "constants.h"
 #include "plane.h"
 #include "parameters.h"

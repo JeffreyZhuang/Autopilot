@@ -1,9 +1,9 @@
 #ifndef NAVIGATION_H
 #define NAVIGATION_H
 
-#include <lib/Kalman/kalman.h>
-#include <lib/MovingAvg/moving_avg.h>
-#include <lib/Utils/utils.h>
+#include <lib/kalman/kalman.h>
+#include <lib/moving_average/moving_avg.h>
+#include <lib/utils/utils.h>
 #include "hal.h"
 #include "parameters.h"
 #include "constants.h"

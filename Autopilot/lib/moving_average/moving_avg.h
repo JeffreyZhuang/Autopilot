@@ -5,8 +5,8 @@
  *      Author: jeffr
  */
 
-#ifndef LIB_MOVINGAVG_MOVING_AVG_H_
-#define LIB_MOVINGAVG_MOVING_AVG_H_
+#ifndef LIB_MOVING_AVERAGE_MOVING_AVG_H_
+#define LIB_MOVING_AVERAGE_MOVING_AVG_H_
 
 #include <cstddef>
 
@@ -25,4 +25,4 @@ private:
     bool filled;
 };
 
-#endif /* LIB_MOVINGAVG_MOVING_AVG_H_ */
+#endif /* LIB_MOVING_AVERAGE_MOVING_AVG_H_ */

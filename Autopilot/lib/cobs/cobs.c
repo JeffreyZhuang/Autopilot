@@ -4,7 +4,7 @@
  * Consistent Overhead Byte Stuffing
  */
 
-#include <lib/COBS/cobs.h>
+#include <lib/cobs/cobs.h>
 #include <stdlib.h>
 
 

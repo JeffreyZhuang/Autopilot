@@ -1,8 +1,8 @@
 #ifndef CONTROL_H_
 #define CONTROL_H_
 
-#include <lib/PIControl/pi_control.h>
-#include <lib/Utils/utils.h>
+#include <lib/pi_control/pi_control.h>
+#include <lib/utils/utils.h>
 #include "hal.h"
 #include "module.h"
 #include "parameters.h"

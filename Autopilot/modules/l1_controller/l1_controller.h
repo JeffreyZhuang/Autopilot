@@ -1,7 +1,7 @@
 #ifndef GUIDANCE_H_
 #define GUIDANCE_H_
 
-#include <lib/Utils/utils.h>
+#include <lib/utils/utils.h>
 #include "hal.h"
 #include "constants.h"
 #include "parameters.h"
