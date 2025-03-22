@@ -97,7 +97,7 @@ void Commander::update_config()
 {
 	if (are_params_set() && _plane->waypoints_loaded)
 	{
-		if (get_params()->enable_hitl)
+		if (get_params()->hitl.enable)
 		{
 			_hal->enable_hitl();
 		}
@@ -122,7 +122,7 @@ void Commander::update_startup()
 
 void Commander::update_takeoff()
 {
-	if (-_plane->nav_pos_down > get_params()->takeoff_alt)
+	if (-_plane->nav_pos_down > get_params()->takeoff.alt)
 	{
 		_plane->auto_mode = Auto_mode::MISSION;
 	}
@@ -138,7 +138,7 @@ void Commander::update_mission()
 
 void Commander::update_land()
 {
-	if (-_plane->nav_pos_down < get_params()->flare_alt)
+	if (-_plane->nav_pos_down < get_params()->landing.flare_alt)
 	{
 		_plane->auto_mode = Auto_mode::FLARE;
 	}
@@ -147,7 +147,7 @@ void Commander::update_land()
 void Commander::update_flare()
 {
 	// Detect touchdown when speed is below TOUCHDOWN_SPD_THR
-	if (_plane->nav_gnd_spd < get_params()->touchdown_aspd_thresh)
+	if (_plane->nav_gnd_spd < get_params()->landing.touchdown_speed)
 	{
 		_plane->auto_mode = Auto_mode::TOUCHDOWN;
 	}

@@ -1,9 +1,7 @@
-#include <Modules/Mixer/mixer.h>
+#include "Modules/Mixer/mixer.h"
 
-Mixer::Mixer(HAL* hal, Plane* plane)
+Mixer::Mixer(HAL* hal, Plane* plane) : Module(hal, plane)
 {
-	_hal = hal;
-	_plane = plane;
 }
 
 // Convert control setpoints into duty cycle values
@@ -31,28 +29,28 @@ void Mixer::update_config()
 
 void Mixer::update_startup()
 {
-	_hal->set_pwm(0, 0, get_params()->pwm_min_thr, 0, 0, 0);
+	_hal->set_pwm(0, 0, get_params()->mixer.pwm_min_thr, 0, 0, 0);
 }
 
 void Mixer::update_flight()
 {
 	_elevator_duty = map(
-		get_params()->pwm_rev_ele ? -_plane->ele_cmd : _plane->ele_cmd,
+		get_params()->mixer.pwm_rev_ele ? -_plane->ele_cmd : _plane->ele_cmd,
 		 -1,
 		 1,
-		 get_params()->pwm_min_ele,
-		 get_params()->pwm_max_ele);
+		 get_params()->mixer.pwm_min_ele,
+		 get_params()->mixer.pwm_max_ele);
 	_rudder_duty = map(
-		get_params()->pwm_rev_rud ? -_plane->rud_cmd : _plane->rud_cmd,
+		get_params()->mixer.pwm_rev_rud ? -_plane->rud_cmd : _plane->rud_cmd,
 		 -1,
 		 1,
-		 get_params()->pwm_min_rud,
-		 get_params()->pwm_max_rud);
+		 get_params()->mixer.pwm_min_rud,
+		 get_params()->mixer.pwm_max_rud);
 	_throttle_duty = map(
 		_plane->thr_cmd,
 		 0,
 		 1,
-		 get_params()->pwm_min_thr,
-		 get_params()->pwm_max_thr);
+		 get_params()->mixer.pwm_min_thr,
+		 get_params()->mixer.pwm_max_thr);
 	_hal->set_pwm(_elevator_duty, _rudder_duty, _throttle_duty, 0, 0, 0);
 }

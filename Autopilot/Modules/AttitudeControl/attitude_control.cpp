@@ -71,72 +71,29 @@ void Control::update_direct()
 void Control::update_stabilized()
 {
 	_plane->thr_cmd = _plane->rc_thr_norm;
-	_plane->pitch_setpoint = _plane->rc_ele_norm * get_params()->att_control.fbw_ptch_lim;
-	_plane->roll_setpoint = _plane->rc_ail_norm * get_params()->att_control.fbw_roll_lim;
+	_plane->pitch_setpoint = _plane->rc_ele_norm * get_params()->att_ctrl.fbw_ptch_lim;
+	_plane->roll_setpoint = _plane->rc_ail_norm * get_params()->att_ctrl.fbw_roll_lim;
 	control_roll_ptch();
 }
 
 // Manual throttle, hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
 void Control::update_takeoff()
 {
-	_plane->pitch_setpoint = get_params()->takeoff.ptch;
-
-	// No integral
-	_plane->rud_cmd = roll_controller.get_output(
-		_plane->ahrs_roll,
-		_plane->roll_setpoint,
-		get_params()->att_control.roll_kp,
-		0,
-		0,
-		-1,
-		1,
-		0,
-		_plane->dt_s
-	);
-	_plane->ele_cmd = pitch_controller.get_output(
-		_plane->ahrs_pitch,
-		_plane->pitch_setpoint,
-		get_params()->att_control.ptch_kp,
-		0,
-		0,
-		-1,
-		1,
-		0,
-		_plane->dt_s
-	);
-	_plane->thr_cmd = _plane->rc_thr_norm;
+	control_roll_ptch_no_integral();
 }
 
-// Track guidance altitude and heading setpoints at a speed of AIRSPEED_CUIRSE
 void Control::update_mission()
 {
-	control_alt_spd_hdg();
 	control_roll_ptch();
 }
 
-// Track approach guidance altitude and heading setpoints at the reduced speed of AIRSPEED_LANDING
 void Control::update_land()
 {
-	control_alt_spd_hdg();
 	control_roll_ptch();
 }
 
-// Cut throttle, set roll to 0 and track flare guidance altitude setpoints
 void Control::update_flare()
 {
-	_plane->pitch_setpoint = alt_controller.get_output(
-	    _plane->tecs_energy_diff,
-	    _plane->tecs_energy_diff_setpoint,
-	    get_params()->alt_kp,
-	    get_params()->alt_ki,
-		get_params()->ptch_lim_deg,
-	    -get_params()->ptch_lim_deg,
-	    get_params()->ptch_lim_deg,
-	    0,
-		_plane->dt_s
-	);
-	_plane->roll_setpoint = 0;
-	_plane->thr_cmd = 0;
 	control_roll_ptch();
 }
 
@@ -152,8 +109,8 @@ void Control::control_roll_ptch()
 	_plane->rud_cmd = roll_controller.get_output(
 		_plane->ahrs_roll,
 		_plane->roll_setpoint,
-		get_params()->roll_kp,
-		get_params()->roll_ki,
+		get_params()->att_ctrl.roll_kp,
+		get_params()->att_ctrl.roll_ki,
 		1,
 		-1,
 		1,
@@ -163,8 +120,8 @@ void Control::control_roll_ptch()
 	_plane->ele_cmd = pitch_controller.get_output(
 		_plane->ahrs_pitch,
 		_plane->pitch_setpoint,
-		get_params()->ptch_kp,
-		get_params()->ptch_ki,
+		get_params()->att_ctrl.ptch_kp,
+		get_params()->att_ctrl.ptch_ki,
 		1,
 		-1,
 		1,
@@ -173,28 +130,28 @@ void Control::control_roll_ptch()
 	);
 }
 
-void Control::control_alt_spd_hdg()
+void Control::control_roll_ptch_no_integral()
 {
-	_plane->pitch_setpoint = alt_controller.get_output(
-		_plane->tecs_energy_diff,
-		_plane->tecs_energy_diff_setpoint,
-		get_params()->alt_kp,
-		get_params()->alt_ki,
-		get_params()->ptch_lim_deg,
-		-get_params()->ptch_lim_deg,
-		get_params()->ptch_lim_deg,
+	_plane->rud_cmd = roll_controller.get_output(
+		_plane->ahrs_roll,
+		_plane->roll_setpoint,
+		get_params()->att_ctrl.roll_kp,
+		0,
+		0,
+		-1,
+		1,
 		0,
 		_plane->dt_s
 	);
-	_plane->thr_cmd = speed_controller.get_output(
-		_plane->tecs_energy_total,
-		_plane->tecs_energy_total_setpoint,
-		get_params()->thr_kp,
-		get_params()->thr_ki,
+	_plane->ele_cmd = pitch_controller.get_output(
+		_plane->ahrs_pitch,
+		_plane->pitch_setpoint,
+		get_params()->att_ctrl.ptch_kp,
+		0,
+		0,
+		-1,
 		1,
 		0,
-		1,
-		get_params()->throttle_cruise,
 		_plane->dt_s
 	);
 }

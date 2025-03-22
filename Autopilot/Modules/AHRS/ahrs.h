@@ -1,11 +1,12 @@
 #ifndef AHRS_H
 #define AHRS_H
 
+#include "Lib/Madgwick/madgwick.h"
 #include "Lib/MovingAvg/moving_avg.h"
 #include "plane.h"
 #include "parameters.h"
 #include "hal.h"
-#include "Lib/Madgwick/madgwick.h"
+#include "module.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -19,24 +20,15 @@ enum class Ahrs_state
  * @brief Attitude Heading Reference System
  *
  */
-class AHRS
+class AHRS : public Module
 {
 public:
     AHRS(HAL* hal, Plane* plane);
+
     void update();
     bool is_converged();
-private:
-    void update_initialization();
-    void update_running();
-    void update_gyro();
-    void update_imu();
-    void update_imu_mag();
-    void publish_ahrs();
-    bool check_new_imu_data();
-    bool check_new_compass_data();
-    void apply_compass_calibration(float mag_data[3]);
-    bool is_accel_reliable();
 
+private:
     Plane* _plane;
     HAL* _hal;
 
@@ -59,6 +51,17 @@ private:
 
     uint64_t last_imu_timestamp = 0;
     uint64_t last_compass_timestamp = 0;
+
+	void update_initialization();
+	void update_running();
+	void update_gyro();
+	void update_imu();
+	void update_imu_mag();
+	void publish_ahrs();
+	bool check_new_imu_data();
+	bool check_new_compass_data();
+	void apply_compass_calibration(float mag_data[3]);
+	bool is_accel_reliable();
 };
 
 #endif

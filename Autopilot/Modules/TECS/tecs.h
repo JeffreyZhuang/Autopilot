@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "plane.h"
 #include "parameters.h"
+#include "module.h"
 #include <math.h>
 
 class Tecs
@@ -20,10 +21,13 @@ private:
 	PI_control pitch_controller;
 	PI_control throttle_controller;
 
+	void update_takeoff();
 	void update_mission();
 	void update_land();
 	void update_flare();
-	void calculate(float target_vel_mps, float target_alt_m, float wb);
+	void calculate_energies(float target_vel_mps, float target_alt_m, float wb);
+	void control_pitch();
+	void control_throttle();
 };
 
 

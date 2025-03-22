@@ -5,13 +5,15 @@
 #include "hal.h"
 #include "constants.h"
 #include "parameters.h"
+#include "module.h"
 #include <math.h>
 #include <cstdio>
 
-class Guidance
+class Guidance : public Module
 {
 public:
 	Guidance(HAL* hal, Plane* plane);
+
 	void update();
 
 private:

@@ -1,15 +1,14 @@
 #include "ahrs.h"
 
 AHRS::AHRS(HAL* hal, Plane* plane)
-	: avg_ax(window_size, window_ax),
+	: Module(hal, plane),
+	  avg_ax(window_size, window_ax),
 	  avg_ay(window_size, window_ay),
 	  avg_az(window_size, window_az),
 	  avg_mx(window_size, window_mx),
 	  avg_my(window_size, window_my),
 	  avg_mz(window_size, window_mz)
 {
-    _plane = plane;
-    _hal = hal;
 }
 
 void AHRS::update()
@@ -17,7 +16,7 @@ void AHRS::update()
 	if (_plane->system_mode != System_mode::CONFIG)
 	{
 		filter.set_dt(_plane->dt_s);
-		filter.set_beta(get_params()->ahrs_beta);
+		filter.set_beta(get_params()->ahrs.beta);
 
 		switch (ahrs_state)
 		{
@@ -153,7 +152,7 @@ void AHRS::publish_ahrs()
 
 	// Account for magnetic declination
 	// Keep between 0 and 360 degrees
-	_plane->ahrs_yaw = fmod(filter.getYaw() + get_params()->mag_decl + 360.0f, 360.0f);
+	_plane->ahrs_yaw = fmod(filter.getYaw() + get_params()->ahrs.mag_decl + 360.0f, 360.0f);
 
 	_plane->ahrs_timestamp = _hal->get_time_us();
 	_plane->ahrs_converged = ahrs_state == Ahrs_state::RUNNING;
@@ -165,20 +164,20 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 	float hi_cal[3];
 
 	// Apply hard-iron offsets
-	hi_cal[0] = mag_data[0] - get_params()->hard_iron_x;
-	hi_cal[1] = mag_data[1] - get_params()->hard_iron_y;
-	hi_cal[2] = mag_data[2] - get_params()->hard_iron_z;
+	hi_cal[0] = mag_data[0] - get_params()->ahrs.hard_iron_x;
+	hi_cal[1] = mag_data[1] - get_params()->ahrs.hard_iron_y;
+	hi_cal[2] = mag_data[2] - get_params()->ahrs.hard_iron_z;
 
 	// Apply soft-iron scaling
-	mag_data[0] = (get_params()->soft_iron_xx * hi_cal[0]) +
-				  (get_params()->soft_iron_xy * hi_cal[1]) +
-				  (get_params()->soft_iron_xz * hi_cal[2]);
-	mag_data[1] = (get_params()->soft_iron_yx * hi_cal[0]) +
-				  (get_params()->soft_iron_yy * hi_cal[1]) +
-				  (get_params()->soft_iron_yz * hi_cal[2]);
-	mag_data[2] = (get_params()->soft_iron_zx * hi_cal[0]) +
-				  (get_params()->soft_iron_zy * hi_cal[1]) +
-				  (get_params()->soft_iron_zz * hi_cal[2]);
+	mag_data[0] = (get_params()->ahrs.soft_iron_xx * hi_cal[0]) +
+				  (get_params()->ahrs.soft_iron_xy * hi_cal[1]) +
+				  (get_params()->ahrs.soft_iron_xz * hi_cal[2]);
+	mag_data[1] = (get_params()->ahrs.soft_iron_yx * hi_cal[0]) +
+				  (get_params()->ahrs.soft_iron_yy * hi_cal[1]) +
+				  (get_params()->ahrs.soft_iron_yz * hi_cal[2]);
+	mag_data[2] = (get_params()->ahrs.soft_iron_zx * hi_cal[0]) +
+				  (get_params()->ahrs.soft_iron_zy * hi_cal[1]) +
+				  (get_params()->ahrs.soft_iron_zz * hi_cal[2]);
 }
 
 bool AHRS::is_accel_reliable()
@@ -188,7 +187,7 @@ bool AHRS::is_accel_reliable()
 								  powf(_plane->imu_az, 2));
 
 	// Assuming 1g reference
-	return fabs(accel_magnitude - 1.0f) < get_params()->ahrs_acc_max;
+	return fabs(accel_magnitude - 1.0f) < get_params()->ahrs.acc_max;
 }
 
 bool AHRS::check_new_imu_data()

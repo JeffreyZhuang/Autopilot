@@ -45,14 +45,19 @@ struct __attribute__((packed))Parameters
 		float total_energy_ki;
 		float energy_balance_kp;
 		float energy_balance_ki;
+		float ptch_lim_deg; // Maximum pitch angle
 	} tecs;
 
 	// L1 Controller
 	struct {
 		float lookahead; // Lookahead distance meters L1 guidance
 		float roll_lim; // Maximum roll angle in either direction
-		float min_dist_wp; // Distance in meters from waypoint until switching to next
 	} l1_ctrl;
+
+	// Navigator
+	struct {
+		float min_dist_wp; // Distance in meters from waypoint until switching to next
+	} navigator;
 
 	// Optical flow
 	struct {
@@ -117,7 +122,7 @@ struct __attribute__((packed))Parameters
 
 	// HITL
 	struct {
-		bool enable_hitl;
+		bool enable;
 	} hitl;
 };
 

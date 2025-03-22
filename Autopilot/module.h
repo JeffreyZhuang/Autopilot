@@ -11,9 +11,11 @@ class Module
 {
 public:
 	Module(HAL* hal, Plane* plane);
+	virtual ~Module() {};
+
 	virtual void update() = 0;
 
-private:
+protected:
 	HAL* _hal;
 	Plane* _plane;
 };

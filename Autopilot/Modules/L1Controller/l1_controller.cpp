@@ -1,9 +1,8 @@
 #include <Modules/L1Controller/l1_controller.h>
 
 Guidance::Guidance(HAL* hal, Plane* plane)
+	: Module(hal, plane)
 {
-	_hal = hal;
-	_plane = plane;
 }
 
 void Guidance::update()
@@ -80,7 +79,7 @@ void Guidance::update_mission()
 	float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
 	// Calculate roll setpoint using l1 guidance
-	float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / get_params()->l1_controller.lookahead) * sinf(xte);
+	float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / get_params()->l1_ctrl.lookahead) * sinf(xte);
 	_plane->roll_setpoint = atanf(lateral_accel / G) * RAD_TO_DEG;
 	if (_plane->auto_mode == Auto_mode::TAKEOFF)
 	{
@@ -94,8 +93,8 @@ void Guidance::update_mission()
 	{
 		_plane->roll_setpoint = clamp(
 			_plane->roll_setpoint,
-			-get_params()->l1_controller.roll_lim,
-			get_params()->l1_controller.roll_lim
+			-get_params()->l1_ctrl.roll_lim,
+			get_params()->l1_ctrl.roll_lim
 		);
 	}
 
@@ -206,6 +205,8 @@ void Guidance::update_flare()
 
 	// Update the guidance setpoint with the calculated sink rate
 	_plane->guidance_d_setpoint += sink_rate * _plane->dt_s;
+
+	_plane->roll_setpoint = 0;
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)

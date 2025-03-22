@@ -1,8 +1,8 @@
 #include "tecs.h"
 
 Tecs::Tecs(Plane* plane)
-	: throttle_controller(false),
-	  pitch_controller(false)
+	: pitch_controller(false),
+	  throttle_controller(false)
 {
 	_plane = plane;
 }
@@ -15,6 +15,8 @@ void Tecs::update()
 		switch (_plane->auto_mode)
 		{
 		case Auto_mode::TAKEOFF:
+			update_takeoff();
+			break;
 		case Auto_mode::MISSION:
 			update_mission();
 			break;
@@ -30,26 +32,38 @@ void Tecs::update()
 	}
 }
 
+void Tecs::update_takeoff()
+{
+	_plane->pitch_setpoint = get_params()->takeoff.ptch;
+	_plane->thr_cmd = _plane->rc_thr_norm;
+}
+
 void Tecs::update_mission()
 {
-	calculate(get_params()->tecs.aspd_cruise, _plane->guidance_d_setpoint, 1);
+	calculate_energies(get_params()->tecs.aspd_cruise, _plane->guidance_d_setpoint, 1);
+	control_pitch();
+	control_throttle();
 }
 
 void Tecs::update_land()
 {
-	calculate(get_params()->tecs.aspd_land, _plane->guidance_d_setpoint, 1);
+	calculate_energies(get_params()->tecs.aspd_land, _plane->guidance_d_setpoint, 1);
+	control_pitch();
+	control_throttle();
 }
 
 void Tecs::update_flare()
 {
-	calculate(0, _plane->guidance_d_setpoint, 2);
+	calculate_energies(0, _plane->guidance_d_setpoint, 2);
+	control_pitch();
+	_plane->thr_cmd = 0;
 }
 
 // wb: weight balance
 // wb = 0: only spd
 // wb = 1: balanced
 // wb = 2: only alt
-void Tecs::calculate(float target_vel_mps, float target_alt_m, float wb)
+void Tecs::calculate_energies(float target_vel_mps, float target_alt_m, float wb)
 {
 	// Calculate specific energy
 	// SPe = gh
@@ -83,4 +97,34 @@ void Tecs::calculate(float target_vel_mps, float target_alt_m, float wb)
 	_plane->tecs_energy_total = energy_total;
 	_plane->tecs_energy_diff_setpoint = energy_diff_setpoint;
 	_plane->tecs_energy_diff = energy_diff;
+}
+
+void Tecs::control_pitch()
+{
+	_plane->pitch_setpoint = pitch_controller.get_output(
+		_plane->tecs_energy_diff,
+		_plane->tecs_energy_diff_setpoint,
+		get_params()->tecs.energy_balance_kp,
+		get_params()->tecs.energy_balance_ki,
+		get_params()->tecs.ptch_lim_deg,
+		-get_params()->tecs.ptch_lim_deg,
+		get_params()->tecs.ptch_lim_deg,
+		0,
+		_plane->dt_s
+	);
+}
+
+void Tecs::control_throttle()
+{
+	_plane->thr_cmd = throttle_controller.get_output(
+		_plane->tecs_energy_total,
+		_plane->tecs_energy_total_setpoint,
+		get_params()->tecs.total_energy_kp,
+		get_params()->tecs.total_energy_ki,
+		1,
+		0,
+		1,
+		get_params()->perf.throttle_cruise,
+		_plane->dt_s
+	);
 }

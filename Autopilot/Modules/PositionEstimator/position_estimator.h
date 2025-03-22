@@ -7,6 +7,7 @@
 #include "hal.h"
 #include "parameters.h"
 #include "constants.h"
+#include "module.h"
 #include <stdio.h>
 
 static constexpr int n = 6;
@@ -21,10 +22,11 @@ enum class Nav_state
 /**
  * @brief Calculates the position and altitude of the plane
  */
-class Navigation
+class Navigation : public Module
 {
 public:
     Navigation(HAL* hal, Plane* plane);
+
     void update();
 
 private:

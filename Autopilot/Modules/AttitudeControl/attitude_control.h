@@ -31,7 +31,7 @@ private:
 	void update_flare();
 	void update_touchdown();
 	void control_roll_ptch();
-	void control_alt_spd_hdg();
+	void control_roll_ptch_no_integral();
 };
 
 #endif /* CONTROL_H_ */

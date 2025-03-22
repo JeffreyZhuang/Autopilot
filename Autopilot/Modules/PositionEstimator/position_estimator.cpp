@@ -1,13 +1,12 @@
 #include <Modules/PositionEstimator/position_estimator.h>
 
 Navigation::Navigation(HAL* hal, Plane* plane)
-	: kalman(n, m),
+	: Module(hal, plane),
+	  kalman(n, m),
 	  avg_baro(window_len, window_baro),
 	  avg_lat(window_len, window_lat),
 	  avg_lon(window_len, window_lon)
 {
-	_hal = hal;
-	_plane = plane;
 }
 
 void Navigation::update()
@@ -119,7 +118,9 @@ void Navigation::update_gps()
 		 0, 1, 0, 0, 0, 0,
 		 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 3> R(get_params()->gnss_r, get_params()->gnss_r, get_params()->gnss_alt_r);
+	Eigen::DiagonalMatrix<float, 3> R(get_params()->pos_estimator.gnss_r,
+									  get_params()->pos_estimator.gnss_r,
+									  get_params()->pos_estimator.gnss_alt_r);
 
 	kalman.update(R, H, y);
 
@@ -134,7 +135,7 @@ void Navigation::update_baro()
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 1> R(get_params()->baro_r);
+	Eigen::DiagonalMatrix<float, 1> R(get_params()->pos_estimator.baro_r);
 
 	kalman.update(R, H, y);
 
@@ -216,7 +217,7 @@ Eigen::Vector3f Navigation::inertial_to_ned(const Eigen::Vector3f& imu_measureme
 bool Navigation::is_of_reliable()
 {
 	float flow = sqrtf(powf(_plane->of_x, 2) + powf(_plane->of_y, 2));
-	return flow > get_params()->of_min && flow < get_params()->of_max;
+	return flow > get_params()->sensors.of_min && flow < get_params()->sensors.of_max;
 }
 
 Eigen::MatrixXf Navigation::get_a(float dt)
