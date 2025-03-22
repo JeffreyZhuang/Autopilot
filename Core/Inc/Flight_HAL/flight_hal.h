@@ -1,6 +1,7 @@
 #ifndef INC_FLIGHT_HAL_H_
 #define INC_FLIGHT_HAL_H_
 
+#include <lib/Utils/utils.h>
 #include "Drivers/servo.h"
 #include "Drivers/gnss.h"
 #include "Drivers/icm42688p.h"
@@ -10,7 +11,6 @@
 #include "Drivers/mlrs_rc.h"
 #include "Drivers/uart_stream.h"
 #include "Drivers/cxof.h"
-#include "Lib/Utils/utils.h"
 #include "parameters.h"
 #include "hal.h"
 #include "plane.h"

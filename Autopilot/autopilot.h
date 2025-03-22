@@ -1,17 +1,17 @@
 #ifndef AUTOPILOT_H
 #define AUTOPILOT_H
 
-#include <Modules/AttitudeControl/attitude_control.h>
-#include <Modules/L1Controller/l1_controller.h>
-#include <Modules/PositionEstimator/position_estimator.h>
-#include <Modules/RCHandler/rc_handler.h>
-#include "Modules/Mixer/mixer.h"
-#include "Modules/AHRS/ahrs.h"
-#include "Modules/Telemetry/telem.h"
-#include "Modules/Storage/storage.h"
-#include "Modules/Commander/commander.h"
-#include "Modules/TECS/tecs.h"
-#include "Modules/Navigator/navigator.h"
+#include <modules/ahrs/ahrs.h>
+#include <modules/attitude_control/attitude_control.h>
+#include <modules/commander/commander.h>
+#include <modules/l1_controller/l1_controller.h>
+#include <modules/mixer/mixer.h>
+#include <modules/navigator/navigator.h>
+#include <modules/position_estimator/position_estimator.h>
+#include <modules/rc_handler/rc_handler.h>
+#include <modules/storage/storage.h>
+#include <modules/tecs/tecs.h>
+#include <modules/telemetry/telem.h>
 #include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -29,7 +29,7 @@ private:
     Plane* _plane;
     AHRS _ahrs;
     Navigation _navigation;
-    Control _control;
+    Attitude_control _att_control;
     Guidance _guidance;
     Telem _telem;
     Storage _storage;
