@@ -1,8 +1,8 @@
 #ifndef TELEM_H_
 #define TELEM_H_
 
-#include <lib/cobs/cobs.h>
-#include <lib/utils/utils.h>
+#include "lib/cobs/cobs.h"
+#include "lib/utils/utils.h"
 #include "hal.h"
 #include "parameters.h"
 #include "constants.h"
@@ -49,7 +49,12 @@ struct __attribute__((packed)) Params_payload
 	Parameters params;
 };
 
-static constexpr uint8_t START_BYTE = 0;
+struct __attribute__((packed)) Time_payload
+{
+	uint64_t us_since_epoch;
+};
+
+static constexpr uint8_t START_BYTE = 0; // Move to autopilot_link library
 
 // Message identifiers
 static constexpr uint8_t TELEM_MSG_ID = 1;

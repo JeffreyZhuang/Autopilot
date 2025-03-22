@@ -50,7 +50,7 @@ struct __attribute__((packed)) Parameters
 
 	// L1 Controller
 	struct __attribute__((packed)) {
-		float lookahead; // Lookahead distance meters L1 guidance
+		float period;
 		float roll_lim; // Maximum roll angle in either direction
 	} l1_ctrl;
 

@@ -30,8 +30,8 @@ private:
 	void update_flare();
 	void update_touchdown();
 	void calculate_energies(float target_vel_mps, float target_alt_m, float wb);
-	void control_energy_balance();
-	void control_total_energy();
+	float control_energy_balance();
+	float control_total_energy();
 };
 
 

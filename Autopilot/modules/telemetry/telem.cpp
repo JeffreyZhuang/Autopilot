@@ -178,13 +178,6 @@ bool Telem::parse_packet()
 // Send back same message for acknowledgement
 void Telem::ack()
 {
-	printf("Ack\n");
-	for (int i = 0; i < _payload_len + HEADER_LEN; i++)
-	{
-		printf("%d", _packet[i]);
-	}
-	printf("\n");
-
 	// Do not use queue and send directly because this is priority
 	transmit_packet(_packet, _payload_len + HEADER_LEN);
 }

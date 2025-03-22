@@ -60,6 +60,7 @@ void Tecs::handle_auto_mode()
 
 void Tecs::update_direct()
 {
+	_plane->pitch_setpoint = 0;
 	_plane->thr_cmd = _plane->rc_thr_norm;
 }
 
@@ -78,26 +79,27 @@ void Tecs::update_takeoff()
 void Tecs::update_mission()
 {
 	calculate_energies(get_params()->tecs.aspd_cruise, _plane->guidance_d_setpoint, 1);
-	control_energy_balance();
-	control_total_energy();
+	_plane->pitch_setpoint = control_energy_balance();
+	_plane->thr_cmd = control_total_energy();
 }
 
 void Tecs::update_land()
 {
 	calculate_energies(get_params()->tecs.aspd_land, _plane->guidance_d_setpoint, 1);
-	control_energy_balance();
-	control_total_energy();
+	_plane->pitch_setpoint = control_energy_balance();
+	_plane->thr_cmd = control_total_energy();
 }
 
 void Tecs::update_flare()
 {
 	calculate_energies(0, _plane->guidance_d_setpoint, 2);
-	control_energy_balance();
+	_plane->pitch_setpoint = control_energy_balance();
 	_plane->thr_cmd = 0;
 }
 
 void Tecs::update_touchdown()
 {
+	_plane->pitch_setpoint = 0;
 	_plane->thr_cmd = 0;
 }
 
@@ -141,9 +143,9 @@ void Tecs::calculate_energies(float target_vel_mps, float target_alt_m, float wb
 	_plane->tecs_energy_diff = energy_diff;
 }
 
-void Tecs::control_energy_balance()
+float Tecs::control_energy_balance()
 {
-	_plane->pitch_setpoint = energy_balance_controller.get_output(
+	return energy_balance_controller.get_output(
 		_plane->tecs_energy_diff,
 		_plane->tecs_energy_diff_setpoint,
 		get_params()->tecs.energy_balance_kp,
@@ -156,9 +158,9 @@ void Tecs::control_energy_balance()
 	);
 }
 
-void Tecs::control_total_energy()
+float Tecs::control_total_energy()
 {
-	_plane->thr_cmd = total_energy_controller.get_output(
+	return total_energy_controller.get_output(
 		_plane->tecs_energy_total,
 		_plane->tecs_energy_total_setpoint,
 		get_params()->tecs.total_energy_kp,

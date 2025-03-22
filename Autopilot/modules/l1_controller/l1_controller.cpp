@@ -1,4 +1,8 @@
-#include <modules/l1_controller/l1_controller.h>
+#include "modules/l1_controller/l1_controller.h"
+
+// S. Park, J. Deyst, and J. P. How, "A New Nonlinear Guidance Logic for Trajectory Tracking,"
+// Proceedings of the AIAA Guidance, Navigation and Control
+// Conference, Aug 2004. AIAA-2004-4900.
 
 L1_controller::L1_controller(HAL* hal, Plane* plane)
 	: Module(hal, plane)
@@ -73,13 +77,27 @@ void L1_controller::update_mission()
 	// Calculate track heading (bearing from previous to target waypoint)
 	float trk_hdg = atan2f(tgt_east - prev_east, tgt_north - prev_north);
 
+	// Calculate plane heading error
+	float hdg_err = wrap_pi(trk_hdg - wrap_pi(_plane->ahrs_yaw * DEG_TO_RAD));
+
 	// Compute cross-track error (perpendicular distance from aircraft to path)
 	float rel_east = _plane->nav_pos_east - tgt_east;
 	float rel_north = _plane->nav_pos_north - tgt_north;
 	float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
+	// Scale L1 distance with speed
+	float l1_dist = (1.0 / M_PI) * get_params()->l1_ctrl.period * _plane->nav_gnd_spd;
+	if (l1_dist <= xte)
+	{
+
+	}
+	else
+	{
+
+	}
+
 	// Calculate roll setpoint using l1 guidance
-	float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / get_params()->l1_ctrl.lookahead) * sinf(xte);
+	float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / l1_dist) * sinf(hdg_err);
 	_plane->roll_setpoint = atanf(lateral_accel / G) * RAD_TO_DEG;
 	if (_plane->auto_mode == Auto_mode::TAKEOFF)
 	{
