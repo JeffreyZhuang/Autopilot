@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <cstring>
 
-struct __attribute__((packed))Telem_payload
+struct __attribute__((packed)) Telem_payload
 {
 	int16_t roll;
 	int16_t pitch;
@@ -35,7 +35,7 @@ struct __attribute__((packed))Telem_payload
 	uint8_t throttle;
 };
 
-struct __attribute__((packed))Waypoint_payload
+struct __attribute__((packed)) Waypoint_payload
 {
 	uint8_t waypoint_index;
 	uint8_t total_waypoints;
@@ -44,7 +44,7 @@ struct __attribute__((packed))Waypoint_payload
 	int16_t alt;
 };
 
-struct __attribute__((packed))Params_payload
+struct __attribute__((packed)) Params_payload
 {
 	Parameters params;
 };

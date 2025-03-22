@@ -16,7 +16,7 @@ void AHRS::update()
 	if (_plane->system_mode != System_mode::CONFIG)
 	{
 		filter.set_dt(_plane->dt_s);
-		filter.set_beta(get_params()->ahrs.beta);
+		filter.set_beta(get_params()->ahrs.beta_gain);
 
 		switch (ahrs_state)
 		{

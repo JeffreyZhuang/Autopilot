@@ -118,9 +118,9 @@ void Position_estimator::update_gps()
 		 0, 1, 0, 0, 0, 0,
 		 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 3> R(get_params()->pos_estimator.gnss_r,
-									  get_params()->pos_estimator.gnss_r,
-									  get_params()->pos_estimator.gnss_alt_r);
+	Eigen::DiagonalMatrix<float, 3> R(get_params()->pos_estimator.gnss_var,
+									  get_params()->pos_estimator.gnss_var,
+									  get_params()->pos_estimator.gnss_alt_var);
 
 	kalman.update(R, H, y);
 
@@ -135,7 +135,7 @@ void Position_estimator::update_baro()
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 1> R(get_params()->pos_estimator.baro_r);
+	Eigen::DiagonalMatrix<float, 1> R(get_params()->pos_estimator.baro_var);
 
 	kalman.update(R, H, y);
 
