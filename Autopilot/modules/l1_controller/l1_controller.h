@@ -1,7 +1,7 @@
 #ifndef GUIDANCE_H_
 #define GUIDANCE_H_
 
-#include <lib/utils/utils.h>
+#include "lib/utils/utils.h"
 #include "hal.h"
 #include "constants.h"
 #include "parameters.h"
@@ -9,10 +9,10 @@
 #include <math.h>
 #include <cstdio>
 
-class Guidance : public Module
+class L1_controller : public Module
 {
 public:
-	Guidance(HAL* hal, Plane* plane);
+	L1_controller(HAL* hal, Plane* plane);
 
 	void update();
 

@@ -28,9 +28,9 @@ private:
     HAL* _hal;
     Plane* _plane;
     AHRS _ahrs;
-    Navigation _navigation;
+    Position_estimator _position_estimator;
     Attitude_control _att_control;
-    Guidance _guidance;
+    L1_controller _l1_controller;
     Telem _telem;
     Storage _storage;
     Mixer _mixer;

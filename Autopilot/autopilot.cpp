@@ -4,9 +4,9 @@ Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal, Plane* plane)
 	: _ahrs(hal, plane),
-	  _navigation(hal, plane),
+	  _position_estimator(hal, plane),
 	  _att_control(hal, plane),
-	  _guidance(hal, plane),
+	  _l1_controller(hal, plane),
 	  _telem(hal, plane),
 	  _storage(hal, plane),
 	  _mixer(hal, plane),
@@ -35,10 +35,10 @@ void Autopilot::main_task()
 	_hal->read_sensors();
 	_rc_handler.update();
 	_ahrs.update();
-	_navigation.update();
+	_position_estimator.update();
 	_commander.update();
 	_navigator.update();
-	_guidance.update();
+	_l1_controller.update();
 	_tecs.update();
 	_att_control.update();
 	_mixer.update();

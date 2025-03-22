@@ -13,7 +13,7 @@
 static constexpr int n = 6;
 static constexpr int m = 3;
 
-enum class Nav_state
+enum class Pos_estimator_state
 {
 	INITIALIZATION,
 	RUNNING
@@ -22,17 +22,17 @@ enum class Nav_state
 /**
  * @brief Calculates the position and altitude of the plane
  */
-class Navigation : public Module
+class Position_estimator : public Module
 {
 public:
-    Navigation(HAL* hal, Plane* plane);
+    Position_estimator(HAL* hal, Plane* plane);
 
     void update();
 
 private:
     Kalman kalman;
 
-    Nav_state nav_state = Nav_state::INITIALIZATION;
+    Pos_estimator_state pos_estimator_state = Pos_estimator_state::INITIALIZATION;
 
     MovingAverage avg_baro;
     MovingAverage avg_lat;

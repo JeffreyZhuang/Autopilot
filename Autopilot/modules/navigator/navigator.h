@@ -1,7 +1,7 @@
 #ifndef MODULES_NAVIGATOR_NAVIGATOR_H_
 #define MODULES_NAVIGATOR_NAVIGATOR_H_
 
-#include <lib/utils/utils.h>
+#include "lib/utils/utils.h"
 #include "plane.h"
 #include "hal.h"
 #include "parameters.h"

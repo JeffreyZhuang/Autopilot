@@ -1,11 +1,11 @@
 #include <modules/l1_controller/l1_controller.h>
 
-Guidance::Guidance(HAL* hal, Plane* plane)
+L1_controller::L1_controller(HAL* hal, Plane* plane)
 	: Module(hal, plane)
 {
 }
 
-void Guidance::update()
+void L1_controller::update()
 {
 	if (_plane->system_mode == System_mode::FLIGHT &&
 		_plane->auto_mode != Auto_mode::TOUCHDOWN)
@@ -22,7 +22,7 @@ void Guidance::update()
 	}
 }
 
-void Guidance::handle_auto_mode()
+void L1_controller::handle_auto_mode()
 {
 	switch (_plane->auto_mode)
 	{
@@ -41,7 +41,7 @@ void Guidance::handle_auto_mode()
 
 // Generate position and altitude setpoints
 // Detect when waypoint reached and switch to next waypoint
-void Guidance::update_mission()
+void L1_controller::update_mission()
 {
 	// Determine previous waypoint
 	Waypoint prev_wp = _plane->waypoints[_plane->waypoint_index - 1];
@@ -169,7 +169,7 @@ void Guidance::update_mission()
 	}
 }
 
-void Guidance::update_flare()
+void L1_controller::update_flare()
 {
 	// Get the landing waypoint and the approach waypoint
 	const Waypoint& land_wp = _plane->waypoints[_plane->waypoint_index];
@@ -210,7 +210,7 @@ void Guidance::update_flare()
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)
-float Guidance::compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
+float L1_controller::compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 											 float pos_n, float pos_e)
 {
 	float vec_north = end_n - start_n;
@@ -221,7 +221,7 @@ float Guidance::compute_along_track_distance(float start_n, float start_e, float
 }
 
 // Helper function to compute Euclidean distance
-float Guidance::distance(float n1, float e1, float n2, float e2)
+float L1_controller::distance(float n1, float e1, float n2, float e2)
 {
 	float dn = n2 - n1;
 	float de = e2 - e1;
