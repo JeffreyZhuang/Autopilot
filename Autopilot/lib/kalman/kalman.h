@@ -1,7 +1,7 @@
 #ifndef KALMAN_H_
 #define KALMAN_H_
 
-#include <lib/Eigen/Eigen>
+#include "lib/eigen/Eigen/Eigen"
 
 class Kalman
 {
