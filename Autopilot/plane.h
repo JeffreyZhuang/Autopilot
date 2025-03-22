@@ -123,7 +123,6 @@ struct Plane
     uint8_t waypoint_index = 1; // Skip home waypoint
     uint8_t num_waypoints = 0;
 	Waypoint waypoints[100]; // 100 max waypoints
-    float guidance_hdg_setpoint = 0;
     float guidance_d_setpoint = 0;
 
     // RC Transmitter

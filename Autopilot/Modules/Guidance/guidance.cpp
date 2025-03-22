@@ -1,4 +1,4 @@
-#include "guidance.h"
+#include <Modules/Guidance/guidance.h>
 
 Guidance::Guidance(HAL* hal, Plane* plane)
 {
@@ -79,10 +79,25 @@ void Guidance::update_mission()
 	float rel_north = _plane->nav_pos_north - tgt_north;
 	float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
-	// Calculate heading setpoint using proportional guidance law
-	_plane->guidance_hdg_setpoint = normalize_heading(
-		(trk_hdg + atanf(get_params()->guidance_kp * -xte)) * RAD_TO_DEG
-	);
+	// Calculate roll setpoint using l1 guidance
+	float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / get_params()->l1_controller.lookahead) * sinf(xte);
+	_plane->roll_setpoint = atanf(lateral_accel / G) * RAD_TO_DEG;
+	if (_plane->auto_mode == Auto_mode::TAKEOFF)
+	{
+		_plane->roll_setpoint = clamp(
+			_plane->roll_setpoint,
+			-get_params()->takeoff.roll_lim,
+			get_params()->takeoff.roll_lim
+		);
+	}
+	else
+	{
+		_plane->roll_setpoint = clamp(
+			_plane->roll_setpoint,
+			-get_params()->l1_controller.roll_lim,
+			get_params()->l1_controller.roll_lim
+		);
+	}
 
 	// Determine altitude setpoint
 	if (_plane->waypoint_index == 1)
@@ -114,6 +129,8 @@ void Guidance::update_mission()
 		}
 		else if (_plane->waypoint_index == 2)
 		{
+			// If along track distance is negative and previous previous waypoint
+			// is takeoff point, set altitude to first waypoint
 			_plane->guidance_d_setpoint = _plane->waypoints[1].alt;
 		}
 		else
@@ -154,7 +171,7 @@ void Guidance::update_mission()
 
 	// Check distance to waypoint to determine if waypoint reached
 	float dist_to_wp = sqrtf(rel_north*rel_north + rel_east*rel_east);
-	if ((dist_to_wp < get_params()->min_dist_wp) &&
+	if ((dist_to_wp < get_params()->l1_controller.min_dist_wp) &&
 		(_plane->waypoint_index < _plane->num_waypoints - 1))
 	{
 		_plane->waypoint_index++; // Move to next waypoint
@@ -180,14 +197,14 @@ void Guidance::update_flare()
 	);
 
 	// Calculate the initial sink rate during flare based on the glideslope angle and landing airspeed
-	float flare_initial_sink_rate = get_params()->aspd_land * sinf(glideslope_angle);
+	float flare_initial_sink_rate = get_params()->tecs.aspd_land * sinf(glideslope_angle);
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
-	float sink_rate = lerp(get_params()->flare_alt,
+	float sink_rate = lerp(get_params()->landing.flare_alt,
 						   flare_initial_sink_rate,
 						   0,
-						   get_params()->flare_sink_rate,
-						   clamp(-_plane->nav_pos_down, 0, get_params()->flare_alt));
+						   get_params()->landing.flare_sink_rate,
+						   clamp(-_plane->nav_pos_down, 0, get_params()->landing.flare_alt));
 
 	// Make sure sink rate decreases during flare, not increases
 	if (sink_rate > flare_initial_sink_rate)
@@ -216,12 +233,4 @@ float Guidance::distance(float n1, float e1, float n2, float e2)
 	float dn = n2 - n1;
 	float de = e2 - e1;
 	return sqrtf(dn * dn + de * de);
-}
-
-// Normalize angles to [0, 360] degrees
-float Guidance::normalize_heading(float heading)
-{
-	while (heading < 0) heading += 360.0f;
-	while (heading >= 360) heading -= 360.0f;
-	return heading;
 }

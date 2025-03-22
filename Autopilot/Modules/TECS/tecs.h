@@ -1,6 +1,7 @@
 #ifndef LIB_TECS_TECS_H_
 #define LIB_TECS_TECS_H_
 
+#include "Lib/PIControl/pi_control.h"
 #include "Lib/Utils/utils.h"
 #include "constants.h"
 #include "plane.h"
@@ -16,6 +17,8 @@ public:
 
 private:
 	Plane* _plane;
+	PI_control pitch_controller;
+	PI_control throttle_controller;
 
 	void update_mission();
 	void update_land();

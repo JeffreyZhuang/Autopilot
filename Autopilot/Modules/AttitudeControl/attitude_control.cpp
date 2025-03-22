@@ -1,11 +1,8 @@
-#include "control.h"
+#include <Modules/AttitudeControl/attitude_control.h>
 
 Control::Control(HAL * hal, Plane * plane)
 	: roll_controller(false),
-	  pitch_controller(false),
-	  hdg_controller(true),
-	  alt_controller(false),
-	  speed_controller(false)
+	  pitch_controller(false)
 {
 	_hal = hal;
 	_plane = plane;
@@ -74,33 +71,21 @@ void Control::update_direct()
 void Control::update_stabilized()
 {
 	_plane->thr_cmd = _plane->rc_thr_norm;
-	_plane->pitch_setpoint = _plane->rc_ele_norm * get_params()->stab_ptch_lim;
-	_plane->roll_setpoint = _plane->rc_ail_norm * get_params()->stab_roll_lim;
+	_plane->pitch_setpoint = _plane->rc_ele_norm * get_params()->att_control.fbw_ptch_lim;
+	_plane->roll_setpoint = _plane->rc_ail_norm * get_params()->att_control.fbw_roll_lim;
 	control_roll_ptch();
 }
 
 // Manual throttle, hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
 void Control::update_takeoff()
 {
-	// No integral
-	_plane->roll_setpoint = hdg_controller.get_output(
-		_plane->ahrs_yaw,
-		_plane->guidance_hdg_setpoint,
-		get_params()->hdg_kp,
-		0,
-		0,
-		-get_params()->takeoff_roll_lim,
-		get_params()->takeoff_roll_lim,
-		0,
-		_plane->dt_s
-	);
-	_plane->pitch_setpoint = get_params()->takeoff_ptch;
+	_plane->pitch_setpoint = get_params()->takeoff.ptch;
 
 	// No integral
 	_plane->rud_cmd = roll_controller.get_output(
 		_plane->ahrs_roll,
 		_plane->roll_setpoint,
-		get_params()->roll_kp,
+		get_params()->att_control.roll_kp,
 		0,
 		0,
 		-1,
@@ -111,7 +96,7 @@ void Control::update_takeoff()
 	_plane->ele_cmd = pitch_controller.get_output(
 		_plane->ahrs_pitch,
 		_plane->pitch_setpoint,
-		get_params()->ptch_kp,
+		get_params()->att_control.ptch_kp,
 		0,
 		0,
 		-1,
@@ -210,17 +195,6 @@ void Control::control_alt_spd_hdg()
 		0,
 		1,
 		get_params()->throttle_cruise,
-		_plane->dt_s
-	);
-	_plane->roll_setpoint = hdg_controller.get_output(
-		_plane->ahrs_yaw,
-		_plane->guidance_hdg_setpoint,
-		get_params()->hdg_kp,
-		get_params()->hdg_ki,
-		get_params()->roll_lim_deg,
-		-get_params()->roll_lim_deg,
-		get_params()->roll_lim_deg,
-		0,
 		_plane->dt_s
 	);
 }

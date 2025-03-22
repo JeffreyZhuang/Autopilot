@@ -20,9 +20,6 @@ private:
 	Plane* _plane;
 	PI_control roll_controller;
 	PI_control pitch_controller;
-	PI_control hdg_controller;
-	PI_control alt_controller;
-	PI_control speed_controller;
 
 	void handle_manual_mode();
 	void handle_auto_mode();

@@ -1,4 +1,4 @@
-#include "navigation.h"
+#include <Modules/PositionEstimator/position_estimator.h>
 
 Navigation::Navigation(HAL* hal, Plane* plane)
 	: kalman(n, m),

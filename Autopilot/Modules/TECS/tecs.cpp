@@ -1,6 +1,8 @@
 #include "tecs.h"
 
 Tecs::Tecs(Plane* plane)
+	: throttle_controller(false),
+	  pitch_controller(false)
 {
 	_plane = plane;
 }
@@ -30,12 +32,12 @@ void Tecs::update()
 
 void Tecs::update_mission()
 {
-	calculate(get_params()->aspd_cruise, _plane->guidance_d_setpoint, 1);
+	calculate(get_params()->tecs.aspd_cruise, _plane->guidance_d_setpoint, 1);
 }
 
 void Tecs::update_land()
 {
-	calculate(get_params()->aspd_land, _plane->guidance_d_setpoint, 1);
+	calculate(get_params()->tecs.aspd_land, _plane->guidance_d_setpoint, 1);
 }
 
 void Tecs::update_flare()
@@ -64,8 +66,8 @@ void Tecs::calculate(float target_vel_mps, float target_alt_m, float wb)
 
 	// Clamp total energy setpoint within allowed airspeed range
 	// Prevent stall/overspeed
-	float min_kin = 0.5 * powf(get_params()->tecs_min_aspd_mps, 2);
-	float max_kin = 0.5 * powf(get_params()->tecs_max_aspd_mps, 2);
+	float min_kin = 0.5 * powf(get_params()->tecs.min_aspd_mps, 2);
+	float max_kin = 0.5 * powf(get_params()->tecs.max_aspd_mps, 2);
 	target_total = clamp(target_total, energy_pot + min_kin, energy_pot + max_kin);
 
 	// Compute energy difference setpoint and measurement
