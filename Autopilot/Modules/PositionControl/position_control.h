@@ -1,8 +1,0 @@
-#ifndef MODULES_POSITIONCONTROL_POSITION_CONTROL_H_
-#define MODULES_POSITIONCONTROL_POSITION_CONTROL_H_
-
-
-// Runs TECS and L1 control and interpolates altitude setpoint
-
-
-#endif /* MODULES_POSITIONCONTROL_POSITION_CONTROL_H_ */

@@ -2,7 +2,7 @@
 #define AUTOPILOT_H
 
 #include <Modules/AttitudeControl/attitude_control.h>
-#include <Modules/Guidance/guidance.h>
+#include <Modules/L1Controller/l1_controller.h>
 #include <Modules/PositionEstimator/position_estimator.h>
 #include <Modules/RCHandler/rc_handler.h>
 #include "Modules/Mixer/mixer.h"
@@ -11,6 +11,7 @@
 #include "Modules/Storage/storage.h"
 #include "Modules/Commander/commander.h"
 #include "Modules/TECS/tecs.h"
+#include "Modules/Navigator/navigator.h"
 #include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -20,7 +21,6 @@ class Autopilot
 {
 public:
 	Autopilot(HAL* hal, Plane* plane);
-
     void setup();
 
 private:
@@ -36,6 +36,7 @@ private:
     Rc_handler _rc_handler;
     Commander _commander;
     Tecs _tecs;
+    Navigator _navigator;
 
     // Helper functions
     void update_time();
