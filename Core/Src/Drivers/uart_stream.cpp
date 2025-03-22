@@ -1,6 +1,6 @@
 #include "Drivers/uart_stream.h"
 
-#define RING_BUFFER_SIZE (1000)
+#define RING_BUFFER_SIZE (1024) // Must be a power of 2
 
 static uint8_t data_buffer[RING_BUFFER_SIZE] = {0U};
 
@@ -35,4 +35,5 @@ void Uart_stream::dma_complete()
 {
 	ring_buffer_write(&ring_buffer, rx_buffer[0]);
 	HAL_UART_Receive_DMA(_uart, rx_buffer, 1);
+//	printf("Uart stream driver: %d\n", rx_buffer[0]);
 }

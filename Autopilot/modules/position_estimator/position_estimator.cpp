@@ -57,8 +57,8 @@ void Position_estimator::update_running()
 
 		if (check_new_of_data() && is_of_reliable())
 		{
-			last_ahrs_timestamp = _plane->ahrs_timestamp;
 			last_imu_timestamp = _plane->imu_timestamp;
+			last_of_timestamp = _plane->of_timestamp;
 			update_of_agl();
 		}
 	}

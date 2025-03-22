@@ -1,4 +1,4 @@
-#include <modules/tecs/tecs.h>
+#include "modules/tecs/tecs.h"
 
 Tecs::Tecs(HAL* hal, Plane* plane)
 	: Module(hal, plane),
@@ -9,27 +9,64 @@ Tecs::Tecs(HAL* hal, Plane* plane)
 
 void Tecs::update()
 {
-	if (_plane->system_mode == System_mode::FLIGHT &&
-		_plane->flight_mode == Flight_mode::AUTO)
+	if (_plane->system_mode == System_mode::FLIGHT)
 	{
-		switch (_plane->auto_mode)
+		switch (_plane->flight_mode)
 		{
-		case Auto_mode::TAKEOFF:
-			update_takeoff();
+		case Flight_mode::MANUAL:
+			handle_manual_mode();
 			break;
-		case Auto_mode::MISSION:
-			update_mission();
-			break;
-		case Auto_mode::LAND:
-			update_land();
-			break;
-		case Auto_mode::FLARE:
-			update_flare();
-			break;
-		case Auto_mode::TOUCHDOWN:
+		case Flight_mode::AUTO:
+			handle_auto_mode();
 			break;
 		}
 	}
+}
+
+void Tecs::handle_manual_mode()
+{
+	switch (_plane->manual_mode)
+	{
+	case Manual_mode::DIRECT:
+		update_direct();
+		break;
+	case Manual_mode::STABILIZED:
+		update_stabilized();
+		break;
+	}
+}
+
+void Tecs::handle_auto_mode()
+{
+	switch (_plane->auto_mode)
+	{
+	case Auto_mode::TAKEOFF:
+		update_takeoff();
+		break;
+	case Auto_mode::MISSION:
+		update_mission();
+		break;
+	case Auto_mode::LAND:
+		update_land();
+		break;
+	case Auto_mode::FLARE:
+		update_flare();
+		break;
+	case Auto_mode::TOUCHDOWN:
+		update_touchdown();
+		break;
+	}
+}
+
+void Tecs::update_direct()
+{
+	_plane->thr_cmd = _plane->rc_thr_norm;
+}
+
+void Tecs::update_stabilized()
+{
+	_plane->pitch_setpoint = _plane->rc_ele_norm * get_params()->att_ctrl.fbw_ptch_lim;
+	_plane->thr_cmd = _plane->rc_thr_norm;
 }
 
 void Tecs::update_takeoff()
@@ -56,6 +93,11 @@ void Tecs::update_flare()
 {
 	calculate_energies(0, _plane->guidance_d_setpoint, 2);
 	control_energy_balance();
+	_plane->thr_cmd = 0;
+}
+
+void Tecs::update_touchdown()
+{
 	_plane->thr_cmd = 0;
 }
 

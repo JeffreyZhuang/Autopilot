@@ -20,10 +20,9 @@ void Navigator::update()
 		&tgt_east
 	);
 
+	// Check distance to waypoint to determine if waypoint reached
 	float rel_east = _plane->nav_pos_east - tgt_east;
 	float rel_north = _plane->nav_pos_north - tgt_north;
-
-	// Check distance to waypoint to determine if waypoint reached
 	float dist_to_wp = sqrtf(rel_north*rel_north + rel_east*rel_east);
 	if ((dist_to_wp < get_params()->navigator.min_dist_wp) &&
 		(_plane->waypoint_index < _plane->num_waypoints - 1))

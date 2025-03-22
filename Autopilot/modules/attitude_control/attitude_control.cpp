@@ -54,24 +54,18 @@ void Attitude_control::handle_auto_mode()
 	}
 }
 
-// Read from radio and send commands directly to servos
 void Attitude_control::update_direct()
 {
 	_plane->rud_cmd = _plane->rc_ail_norm;
 	_plane->ele_cmd = _plane->rc_ele_norm;
-	_plane->thr_cmd = _plane->rc_thr_norm;
 }
 
-// Pilot commands roll and pitch angles, throttle is manual
 void Attitude_control::update_stabilized()
 {
-	_plane->thr_cmd = _plane->rc_thr_norm;
-	_plane->pitch_setpoint = _plane->rc_ele_norm * get_params()->att_ctrl.fbw_ptch_lim;
 	_plane->roll_setpoint = _plane->rc_ail_norm * get_params()->att_ctrl.fbw_roll_lim;
 	control_roll_ptch();
 }
 
-// Manual throttle, hold a pitch angle of TAKEOFF_PTCH and a roll angle of 0
 void Attitude_control::update_takeoff()
 {
 	control_roll_ptch_no_integral();
@@ -86,7 +80,6 @@ void Attitude_control::update_touchdown()
 {
 	_plane->rud_cmd = 0;
 	_plane->ele_cmd = 0;
-	_plane->thr_cmd = 0;
 }
 
 void Attitude_control::control_roll_ptch()

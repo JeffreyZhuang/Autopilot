@@ -2,6 +2,7 @@
 #define INC_DRIVERS_UART_STREAM_H_
 
 #include "stm32f4xx_hal.h"
+#include <stdio.h>
 
 extern "C"
 {

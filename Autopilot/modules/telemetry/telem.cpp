@@ -6,21 +6,15 @@ Telem::Telem(HAL* hal, Plane* plane) : Module(hal, plane)
 
 void Telem::update()
 {
-	// It starts reading new 0 every time after buffer empty bug
-	printf("NEW LOOP TELEM\n");
 	while (!_hal->telem_buffer_empty())
 	{
 		uint8_t byte;
-		if (!_hal->read_telem(&byte))
-		{
-			break; // Oh, maybe this is making byte 0
-		}
-		printf("TLEEM BYTE: %d\n", byte); // This works, so the detect start byte and stuff
+		_hal->read_telem(&byte);
 
 		if (byte == START_BYTE)
 		{
 			_in_pkt = true;
-//			_pkt_idx = 0;
+			_pkt_idx = 0;
 		}
 
 		if (_in_pkt)
@@ -28,8 +22,6 @@ void Telem::update()
 			// Append byte to packet
 			_packet[_pkt_idx] = byte;
 			_pkt_idx++;
-
-			printf("Telem _pkt_idx, byte: %d, %d\n", _pkt_idx, byte);
 
 			switch (_pkt_idx)
 			{
@@ -116,11 +108,6 @@ bool Telem::parse_packet()
 	printf("Telem payload len: %d\n", _payload_len);
 	printf("Telem waypoint_payload len: %d\n", sizeof(Waypoint_payload));
 	printf("Telem params_payload len: %d\n", sizeof(Params_payload));
-	for (int i = 0; i < _payload_len + HEADER_LEN; i++)
-	{
-		printf("%d", _packet[i]);
-	}
-	printf("\n");
 
 	// Remove header except COBS byte
 	uint8_t payload_cobs[_payload_len + 1]; // Add 1 for COBS byte
