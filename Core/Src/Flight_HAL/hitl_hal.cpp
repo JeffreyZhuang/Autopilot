@@ -20,13 +20,7 @@ void Flight_hal::read_sensors_hitl()
 	}
 
 	uint64_t time = get_time_us();
-	_plane->imu_gx = data->gx;
-	_plane->imu_gy = data->gy;
-	_plane->imu_gz = data->gz;
-	_plane->imu_ax = data->ax;
-	_plane->imu_ay = data->ay;
-	_plane->imu_az = data->az;
-	_plane->imu_timestamp = time;
+	_plane->set_imu_data(IMU_data{data->gx, data->gy, data->gz, data->ax, data->ay, data->az, time});
 	_plane->compass_mx = data->mx;
 	_plane->compass_my = data->my;
 	_plane->compass_mz = data->mz;
@@ -39,7 +33,5 @@ void Flight_hal::read_sensors_hitl()
 	_plane->gnss_sats = 10;
 	_plane->gps_fix = true;
 	_plane->gnss_timestamp = time;
-	_plane->of_x = data->of_x;
-	_plane->of_y = data->of_y;
-	_plane->of_timestamp = time;
+	_plane->set_of_data(OF_data{data->of_x, data->of_y, time});
 }

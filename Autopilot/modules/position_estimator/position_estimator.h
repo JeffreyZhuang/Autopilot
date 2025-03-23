@@ -42,11 +42,12 @@ private:
     float window_lat[window_len];
     float window_lon[window_len];
 
-    uint64_t last_imu_timestamp = 0;
     uint64_t last_gnss_timestamp = 0;
     uint64_t last_baro_timestamp = 0;
     uint64_t last_ahrs_timestamp = 0;
-    uint64_t last_of_timestamp = 0;
+
+    IMU_data imu_data;
+    OF_data of_data;
 
     void update_initialization();
     void update_running();
@@ -62,11 +63,9 @@ private:
     Eigen::MatrixXf get_b(float dt);
     Eigen::MatrixXf get_q();
 
-	bool check_new_imu_data();
 	bool check_new_baro_data();
 	bool check_new_gnss_data();
 	bool check_new_ahrs_data();
-	bool check_new_of_data();
 	Eigen::Vector3f inertial_to_ned(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw);
 
 	bool is_of_reliable();

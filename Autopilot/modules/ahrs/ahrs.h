@@ -1,8 +1,8 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include <lib/madgwick/madgwick.h>
-#include <lib/moving_average/moving_avg.h>
+#include "lib/madgwick/madgwick.h"
+#include "lib/moving_average/moving_avg.h"
 #include "plane.h"
 #include "parameters.h"
 #include "hal.h"
@@ -46,7 +46,8 @@ private:
 	MovingAverage avg_my;
 	MovingAverage avg_mz;
 
-    uint64_t last_imu_timestamp = 0;
+	IMU_data imu_data;
+
     uint64_t last_compass_timestamp = 0;
 
 	void update_initialization();
@@ -55,7 +56,6 @@ private:
 	void update_imu();
 	void update_imu_mag();
 	void publish_ahrs();
-	bool check_new_imu_data();
 	bool check_new_compass_data();
 	void apply_compass_calibration(float mag_data[3]);
 	bool is_accel_reliable();

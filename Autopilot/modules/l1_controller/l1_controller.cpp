@@ -89,14 +89,25 @@ void L1_controller::update_mission()
 		l1_dist = 1.0;
 	}
 
-	// Calculate plane heading error
-	float hdg_err = wrap_pi(trk_hdg - wrap_pi(_plane->ahrs_yaw * DEG_TO_RAD));
-
 	// Calculate correction angle
-	float correction_angle = clamp(asinf(xte / l1_dist), -30.0f * DEG_TO_RAD, 30.0f * DEG_TO_RAD);
+	float correction_angle = acosf(clamp(xte / l1_dist, -1, 1));
+	if (correction_angle < 30.0)
+	{
+		correction_angle = 30.0;
+	}
 
-	// Add correction angle to heading error
-	hdg_err -= correction_angle; // When change to +, it flips over, min max
+	float total_correction_angle;
+	if (xte > 0.0)
+	{
+		total_correction_angle = trk_hdg - 90.0 + correction_angle;
+	}
+	else
+	{
+		total_correction_angle = trk_hdg + 90.0 - correction_angle;
+	}
+
+	// Calculate plane heading error
+	float hdg_err = wrap_pi(total_correction_angle - (_plane->ahrs_yaw - 180.0f) * DEG_TO_RAD);
 
 	// Calculate roll setpoint using l1 guidance
 	float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / l1_dist) * sinf(hdg_err);
@@ -117,6 +128,9 @@ void L1_controller::update_mission()
 			get_params()->l1_ctrl.roll_lim
 		);
 	}
+
+	// BUG: WHEN OUT OF TUNE, IT GOES 180 IN THE WRONG WAY
+	// Switch to cosf to fix?
 
 	// Determine altitude setpoint
 	if (_plane->waypoint_index == 1)

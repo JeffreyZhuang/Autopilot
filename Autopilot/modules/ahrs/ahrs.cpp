@@ -1,4 +1,4 @@
-#include <modules/ahrs/ahrs.h>
+#include "modules/ahrs/ahrs.h"
 
 AHRS::AHRS(HAL* hal, Plane* plane)
 	: Module(hal, plane),
@@ -32,19 +32,19 @@ void AHRS::update()
 
 void AHRS::update_initialization()
 {
-	if (check_new_imu_data() && check_new_compass_data())
+	if (_plane->check_new_imu_data(imu_data) && check_new_compass_data())
 	{
 		float mag_data[3] = {_plane->compass_mx, _plane->compass_my, _plane->compass_mz};
 		apply_compass_calibration(mag_data);
 
-		avg_ax.add(_plane->imu_ax);
-		avg_ay.add(_plane->imu_ay);
-		avg_az.add(_plane->imu_az);
+		imu_data = _plane->get_imu_data();
+		avg_ax.add(imu_data.ax);
+		avg_ay.add(imu_data.ay);
+		avg_az.add(imu_data.az);
 		avg_mx.add(mag_data[0]);
 		avg_my.add(mag_data[1]);
 		avg_mz.add(mag_data[2]);
 
-		last_imu_timestamp = _plane->imu_timestamp;
 		last_compass_timestamp = _plane->compass_timestamp;
 
 		if (avg_ax.getFilled())
@@ -100,9 +100,8 @@ void AHRS::update_initialization()
 
 void AHRS::update_running()
 {
-	if (check_new_imu_data())
+	if (_plane->check_new_imu_data(imu_data))
 	{
-		last_imu_timestamp = _plane->imu_timestamp;
 		if (is_accel_reliable())
 		{
 			if (check_new_compass_data())
@@ -126,23 +125,29 @@ void AHRS::update_running()
 
 void AHRS::update_imu()
 {
-	filter.updateIMU(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
-	                 -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az);
+	imu_data = _plane->get_imu_data();
+
+	filter.updateIMU(imu_data.gx, imu_data.gy, imu_data.gz,
+	                 -imu_data.ax, -imu_data.ay, -imu_data.az);
 }
 
 void AHRS::update_imu_mag()
 {
+	imu_data = _plane->get_imu_data();
+
 	float mag_data[3] = {_plane->compass_mx, _plane->compass_my, _plane->compass_mz};
 	apply_compass_calibration(mag_data);
 
-	filter.update(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz,
-				  -_plane->imu_ax, -_plane->imu_ay, -_plane->imu_az,
+	filter.update(imu_data.gx, imu_data.gy, imu_data.gz,
+				  -imu_data.ax, -imu_data.ay, -imu_data.az,
 				  -mag_data[0], -mag_data[1], -mag_data[2]);
 }
 
 void AHRS::update_gyro()
 {
-	filter.updateGyro(_plane->imu_gx, _plane->imu_gy, _plane->imu_gz);
+	imu_data = _plane->get_imu_data();
+
+	filter.updateGyro(imu_data.gx, imu_data.gy, imu_data.gz);
 }
 
 void AHRS::publish_ahrs()
@@ -182,17 +187,14 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 
 bool AHRS::is_accel_reliable()
 {
-	float accel_magnitude = sqrtf(powf(_plane->imu_ax, 2) +
-								  powf(_plane->imu_ay, 2) +
-								  powf(_plane->imu_az, 2));
+	imu_data = _plane->get_imu_data();
+
+	float accel_magnitude = sqrtf(powf(imu_data.ax, 2) +
+								  powf(imu_data.ay, 2) +
+								  powf(imu_data.az, 2));
 
 	// Assuming 1g reference
 	return fabs(accel_magnitude - 1.0f) < get_params()->ahrs.acc_max;
-}
-
-bool AHRS::check_new_imu_data()
-{
-    return _plane->imu_timestamp > last_imu_timestamp;
 }
 
 bool AHRS::check_new_compass_data()

@@ -49,8 +49,8 @@ struct Hitl_rx_packet
 	float asl;
 	int32_t lat;
 	int32_t lon;
-	uint16_t of_x;
-	uint16_t of_y;
+	int16_t of_x;
+	int16_t of_y;
 };
 
 struct Hitl_tx_packet

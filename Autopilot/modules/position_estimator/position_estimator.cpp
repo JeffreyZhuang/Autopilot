@@ -1,4 +1,4 @@
-#include <modules/position_estimator/position_estimator.h>
+#include "modules/position_estimator/position_estimator.h"
 
 Position_estimator::Position_estimator(HAL* hal, Plane* plane)
 	: Module(hal, plane),
@@ -46,20 +46,19 @@ void Position_estimator::update_initialization()
 
 void Position_estimator::update_running()
 {
-	if (check_new_imu_data())
+	if (_plane->check_new_imu_data(imu_data))
 	{
 		if (check_new_ahrs_data())
 		{
-			last_ahrs_timestamp = _plane->ahrs_timestamp;
-			last_imu_timestamp = _plane->imu_timestamp;
 			predict_imu();
 		}
 
-		if (check_new_of_data() && is_of_reliable())
+		if (_plane->check_new_of_data(of_data))
 		{
-			last_imu_timestamp = _plane->imu_timestamp;
-			last_of_timestamp = _plane->of_timestamp;
-			update_of_agl();
+			if (is_of_reliable())
+			{
+				update_of_agl();
+			}
 		}
 	}
 
@@ -78,8 +77,10 @@ void Position_estimator::update_running()
 
 void Position_estimator::predict_imu()
 {
+	imu_data = _plane->get_imu_data();
+
 	// Get IMU data
-	Eigen::Vector3f acc_inertial(_plane->imu_ax, _plane->imu_ay, _plane->imu_az);
+	Eigen::Vector3f acc_inertial(imu_data.ax, imu_data.ay, imu_data.az);
 
 	// Rotate inertial frame to NED
 	Eigen::Vector3f acc_ned = inertial_to_ned(acc_inertial * G,
@@ -144,8 +145,10 @@ void Position_estimator::update_baro()
 
 void Position_estimator::update_of_agl()
 {
-	float flow = sqrtf(powf(_plane->of_x, 2) + powf(_plane->of_y, 2));
-	float angular_rate = sqrtf(powf(_plane->imu_gx, 2) + powf(_plane->imu_gy, 2)) * DEG_TO_RAD;
+	of_data = _plane->get_of_data();
+
+	float flow = sqrtf(powf(of_data.x, 2) + powf(of_data.y, 2));
+	float angular_rate = sqrtf(powf(imu_data.gx, 2) + powf(imu_data.gy, 2)) * DEG_TO_RAD;
 	float alt = _plane->nav_gnd_spd / (flow - angular_rate);
 	printf("OF AGL: %f\n", alt);
 }
@@ -164,11 +167,6 @@ void Position_estimator::update_plane()
 	_plane->nav_converged = pos_estimator_state == Pos_estimator_state::RUNNING;
 }
 
-bool Position_estimator::check_new_imu_data()
-{
-    return _plane->imu_timestamp > last_imu_timestamp;
-}
-
 bool Position_estimator::check_new_gnss_data()
 {
 	return _plane->gnss_timestamp > last_gnss_timestamp;
@@ -182,11 +180,6 @@ bool Position_estimator::check_new_baro_data()
 bool Position_estimator::check_new_ahrs_data()
 {
 	return _plane->ahrs_timestamp > last_ahrs_timestamp;
-}
-
-bool Position_estimator::check_new_of_data()
-{
-	return _plane->of_timestamp > last_of_timestamp;
 }
 
 // Function to rotate IMU measurements from inertial frame to NED frame
@@ -216,7 +209,9 @@ Eigen::Vector3f Position_estimator::inertial_to_ned(const Eigen::Vector3f& imu_m
 
 bool Position_estimator::is_of_reliable()
 {
-	float flow = sqrtf(powf(_plane->of_x, 2) + powf(_plane->of_y, 2));
+	of_data = _plane->get_of_data();
+
+	float flow = sqrtf(powf(of_data.x, 2) + powf(of_data.y, 2));
 	return flow > get_params()->sensors.of_min && flow < get_params()->sensors.of_max;
 }
 

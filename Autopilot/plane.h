@@ -37,11 +37,30 @@ struct Waypoint {
 	float alt;
 };
 
+struct IMU_data
+{
+	float gx = 0;
+	float gy = 0;
+	float gz = 0;
+	float ax = 0;
+	float ay = 0;
+	float az = 0;
+	uint64_t timestamp;
+};
+
+struct OF_data
+{
+	int16_t x = 0;
+	int16_t y = 0;
+	uint64_t timestamp = 0;
+};
+
 /**
  * @brief All flight data and settings that get passed to classes
  */
-struct Plane
+class Plane
 {
+public:
     // State machine
 	System_mode system_mode;
     Flight_mode flight_mode;
@@ -59,16 +78,6 @@ struct Plane
 	float batt_voltage = 0;
 	float autopilot_current = 0;
 	float autopilot_voltage = 0;
-
-    // IMU
-    float imu_ax = 0;
-    float imu_ay = 0;
-    float imu_az = 0;
-    float imu_gx = 0;
-    float imu_gy = 0;
-    float imu_gz = 0;
-    float imu_temp = 0;
-    uint32_t imu_timestamp = 0;
 
     // Compass
     float compass_mx = 0;
@@ -96,11 +105,6 @@ struct Plane
     float ahrs_pitch = 0;
     float ahrs_yaw = 0;
     uint64_t ahrs_timestamp = 0;
-
-    // Optical flow
-    int16_t of_x = 0;
-    int16_t of_y = 0;
-    uint64_t of_timestamp = 0;
 
     // Navigation
     bool nav_converged = false;
@@ -150,6 +154,18 @@ struct Plane
     float roll_setpoint = 0;
 
     bool waypoints_loaded = false;
+
+    bool check_new_imu_data(IMU_data imu_data);
+    IMU_data get_imu_data();
+    void set_imu_data(IMU_data imu_data);
+
+    bool check_new_of_data(OF_data of_data);
+	OF_data get_of_data();
+	void set_of_data(OF_data of_data);
+
+private:
+    IMU_data _imu_data;
+    OF_data _of_data;
 };
 
 #endif /* PLANE_H_ */
