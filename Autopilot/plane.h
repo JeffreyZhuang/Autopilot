@@ -1,35 +1,8 @@
 #ifndef PLANE_H_
 #define PLANE_H_
 
+#include "modes.h"
 #include <stdint.h>
-
-enum class System_mode
-{
-	CONFIG,
-	STARTUP,
-	FLIGHT
-};
-
-enum class Flight_mode
-{
-	AUTO,
-	MANUAL
-};
-
-enum class Auto_mode
-{
-	TAKEOFF,
-	MISSION,
-	LAND,
-	FLARE,
-	TOUCHDOWN
-};
-
-enum class Manual_mode
-{
-	DIRECT,
-	STABILIZED
-};
 
 struct Waypoint {
 	double lat;
@@ -46,6 +19,14 @@ struct IMU_data
 	float ay = 0;
 	float az = 0;
 	uint64_t timestamp;
+};
+
+struct Mag_data
+{
+	float x = 0;
+	float y = 0;
+	float z = 0;
+	uint64_t timestamp = 0;
 };
 
 struct OF_data
@@ -78,12 +59,6 @@ public:
 	float batt_voltage = 0;
 	float autopilot_current = 0;
 	float autopilot_voltage = 0;
-
-    // Compass
-    float compass_mx = 0;
-    float compass_my = 0;
-    float compass_mz = 0;
-    uint64_t compass_timestamp = 0;
 
     // Barometer
     float baro_alt = 0;
@@ -159,12 +134,17 @@ public:
     IMU_data get_imu_data();
     void set_imu_data(IMU_data imu_data);
 
+    bool check_new_mag_data(Mag_data mag_data);
+	Mag_data get_mag_data();
+	void set_mag_data(Mag_data mag_data);
+
     bool check_new_of_data(OF_data of_data);
 	OF_data get_of_data();
 	void set_of_data(OF_data of_data);
 
 private:
     IMU_data _imu_data;
+    Mag_data _mag_data;
     OF_data _of_data;
 };
 

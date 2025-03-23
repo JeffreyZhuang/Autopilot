@@ -1,7 +1,7 @@
 #ifndef MODULES_STORAGE_STORAGE_H_
 #define MODULES_STORAGE_STORAGE_H_
 
-#include <lib/cobs/cobs.h>
+#include "lib/cobs/cobs.h"
 #include "plane.h"
 #include "hal.h"
 #include "module.h"
@@ -43,6 +43,7 @@ private:
 	bool front_buff_full = false;
 	uint32_t back_buff_last_idx = 0;
 	IMU_data imu_data;
+	Mag_data mag_data;
 
 	void write();
 	void flush();

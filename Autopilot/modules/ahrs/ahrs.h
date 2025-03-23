@@ -47,8 +47,7 @@ private:
 	MovingAverage avg_mz;
 
 	IMU_data imu_data;
-
-    uint64_t last_compass_timestamp = 0;
+	Mag_data mag_data;
 
 	void update_initialization();
 	void update_running();
@@ -56,7 +55,6 @@ private:
 	void update_imu();
 	void update_imu_mag();
 	void publish_ahrs();
-	bool check_new_compass_data();
 	void apply_compass_calibration(float mag_data[3]);
 	bool is_accel_reliable();
 };

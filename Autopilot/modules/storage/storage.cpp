@@ -93,13 +93,14 @@ void Storage::flush()
 Storage_payload Storage::create_payload()
 {
 	imu_data = _plane->get_imu_data();
+	mag_data = _plane->get_mag_data();
 
 	Storage_payload payload = {
 		_plane->loop_iteration,
 		_plane->time_us,
 		{imu_data.gx, imu_data.gy, imu_data.gz},
 		{imu_data.ax, imu_data.ay, imu_data.az},
-		{_plane->compass_mx, _plane->compass_my, _plane->compass_mz},
+		{mag_data.x, mag_data.y, mag_data.z},
 		{_plane->nav_pos_north, _plane->nav_pos_east, _plane->nav_pos_down},
 		{_plane->nav_vel_north, _plane->nav_vel_east, _plane->nav_vel_down},
 		_plane->baro_alt,

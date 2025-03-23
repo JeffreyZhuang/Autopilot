@@ -11,9 +11,6 @@ void Flight_hal::read_compass()
 {
 	if (_mag.readDataNonBlocking())
 	{
-		_plane->compass_mx = -_mag.x;
-		_plane->compass_my = _mag.y;
-		_plane->compass_mz = -_mag.z;
-		_plane->compass_timestamp = get_time_us();
+		_plane->set_mag_data(Mag_data{-_mag.x, _mag.y, -_mag.z, get_time_us()});
 	}
 }
