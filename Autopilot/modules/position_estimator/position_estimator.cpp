@@ -27,13 +27,13 @@ void Position_estimator::update()
 
 void Position_estimator::update_initialization()
 {
-	if (check_new_baro_data())
+	if (_plane->check_new_baro_data(baro_data))
 	{
-		avg_baro.add(_plane->baro_alt);
+		baro_data = _plane->get_baro_data();
+		avg_baro.add(baro_data.alt);
 	}
 
-	if (check_new_baro_data() &&
-		check_new_gnss_data() &&
+	if (check_new_gnss_data() &&
 		avg_baro.getFilled() &&
 		_plane->ahrs_converged)
 	{
@@ -68,9 +68,8 @@ void Position_estimator::update_running()
 		update_gps();
 	}
 
-	if (check_new_baro_data())
+	if (_plane->check_new_baro_data(baro_data))
 	{
-		last_baro_timestamp = _plane->baro_timestamp;
 		update_baro();
 	}
 }
@@ -130,8 +129,10 @@ void Position_estimator::update_gps()
 
 void Position_estimator::update_baro()
 {
+	baro_data = _plane->get_baro_data();
+
 	Eigen::VectorXf y(1);
-	y << -(_plane->baro_alt - _plane->baro_offset);
+	y << -(baro_data.alt - _plane->baro_offset);
 
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
@@ -170,11 +171,6 @@ void Position_estimator::update_plane()
 bool Position_estimator::check_new_gnss_data()
 {
 	return _plane->gnss_timestamp > last_gnss_timestamp;
-}
-
-bool Position_estimator::check_new_baro_data()
-{
-	return _plane->baro_timestamp > last_baro_timestamp;
 }
 
 bool Position_estimator::check_new_ahrs_data()

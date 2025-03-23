@@ -109,6 +109,7 @@ void Commander::update_startup()
 	bool transmitter_safe = _plane->rc_thr_norm == 0 &&
 							!_plane->rc_man_sw &&
 							!_plane->rc_mod_sw;
+
 	if (_plane->ahrs_converged &&
 		_plane->nav_converged &&
 		_plane->tx_connected &&

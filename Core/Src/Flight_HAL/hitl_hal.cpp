@@ -22,8 +22,7 @@ void Flight_hal::read_sensors_hitl()
 	uint64_t time = get_time_us();
 	_plane->set_imu_data(IMU_data{data->gx, data->gy, data->gz, data->ax, data->ay, data->az, time});
 	_plane->set_mag_data(Mag_data{data->mx, data->my, data->mz, time});
-	_plane->baro_alt = data->asl;
-	_plane->baro_timestamp = time;
+	_plane->set_baro_data(Baro_data{data->asl, time});
 	_plane->gnss_lat = (double)data->lat * 1E-7;
 	_plane->gnss_lon = (double)data->lon * 1E-7;
 	_plane->gnss_asl = data->asl;

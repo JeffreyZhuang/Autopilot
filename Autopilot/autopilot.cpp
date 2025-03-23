@@ -66,6 +66,7 @@ void Autopilot::init_state()
 void Autopilot::update_time()
 {
 	uint64_t time = _hal->get_time_us();
+
 	if (_plane->time_us > 0)
 	{
 		_plane->dt_s = (time - _plane->time_us) * US_TO_S;
@@ -75,6 +76,7 @@ void Autopilot::update_time()
 		// Initialize
 		_plane->dt_s = 0;
 	}
+
 	_plane->time_us = time;
 	_plane->loop_iteration++;
 }
@@ -85,6 +87,7 @@ void Autopilot::debug_serial()
 	if (_plane->system_mode != System_mode::CONFIG)
 	{
 		double gnss_north_meters, gnss_east_meters;
+
 		lat_lon_to_meters(_plane->home_lat,
 						  _plane->home_lon,
 						  _plane->gnss_lat,
@@ -93,6 +96,7 @@ void Autopilot::debug_serial()
 						  &gnss_east_meters);
 
 		char tx_buff[200];
+
 		sprintf(tx_buff,
 				"%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f\n",
 				_plane->nav_acc_north,
@@ -106,8 +110,9 @@ void Autopilot::debug_serial()
 				_plane->nav_pos_down,
 				gnss_north_meters,
 				gnss_east_meters,
-				-(_plane->baro_alt - _plane->baro_offset),
+				-(_plane->get_baro_data().alt - _plane->baro_offset),
 				_plane->ahrs_yaw);
+
 		_hal->usb_print(tx_buff);
 	}
 }

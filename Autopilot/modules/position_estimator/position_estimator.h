@@ -47,6 +47,7 @@ private:
     uint64_t last_ahrs_timestamp = 0;
 
     IMU_data imu_data;
+    Baro_data baro_data;
     OF_data of_data;
 
     void update_initialization();
@@ -63,7 +64,6 @@ private:
     Eigen::MatrixXf get_b(float dt);
     Eigen::MatrixXf get_q();
 
-	bool check_new_baro_data();
 	bool check_new_gnss_data();
 	bool check_new_ahrs_data();
 	Eigen::Vector3f inertial_to_ned(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw);

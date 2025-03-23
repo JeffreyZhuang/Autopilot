@@ -42,8 +42,6 @@ private:
 	uint8_t back_buffer[buffer_size];
 	bool front_buff_full = false;
 	uint32_t back_buff_last_idx = 0;
-	IMU_data imu_data;
-	Mag_data mag_data;
 
 	void write();
 	void flush();

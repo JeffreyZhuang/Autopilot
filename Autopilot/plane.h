@@ -18,7 +18,7 @@ struct IMU_data
 	float ax = 0;
 	float ay = 0;
 	float az = 0;
-	uint64_t timestamp;
+	uint64_t timestamp = 0;
 };
 
 struct Mag_data
@@ -27,6 +27,22 @@ struct Mag_data
 	float y = 0;
 	float z = 0;
 	uint64_t timestamp = 0;
+};
+
+struct Baro_data
+{
+	float alt = 0;
+	uint64_t timestamp = 0;
+};
+
+struct GNSS_data
+{
+
+};
+
+struct AHRS_data
+{
+
 };
 
 struct OF_data
@@ -60,11 +76,7 @@ public:
 	float autopilot_current = 0;
 	float autopilot_voltage = 0;
 
-    // Barometer
-    float baro_alt = 0;
     float baro_offset = 0;
-    float baro_temp = 0;
-    uint64_t baro_timestamp = 0;
 
     // GNSS
     double gnss_lat = 0;
@@ -98,7 +110,7 @@ public:
 	float home_lon = 0;
     uint64_t nav_timestamp = 0;
 
-    // Guidance
+    // Navigator
     uint8_t waypoint_index = 1; // Skip home waypoint
     uint8_t num_waypoints = 0;
 	Waypoint waypoints[100]; // 100 max waypoints
@@ -138,6 +150,10 @@ public:
 	Mag_data get_mag_data();
 	void set_mag_data(Mag_data mag_data);
 
+	bool check_new_baro_data(Baro_data baro_data);
+	Baro_data get_baro_data();
+	void set_baro_data(Baro_data baro_data);
+
     bool check_new_of_data(OF_data of_data);
 	OF_data get_of_data();
 	void set_of_data(OF_data of_data);
@@ -145,6 +161,7 @@ public:
 private:
     IMU_data _imu_data;
     Mag_data _mag_data;
+    Baro_data _baro_data;
     OF_data _of_data;
 };
 

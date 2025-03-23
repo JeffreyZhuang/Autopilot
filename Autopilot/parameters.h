@@ -7,12 +7,14 @@
 struct __attribute__((packed)) Parameters
 {
 	// Performance
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		float throttle_cruise; // Steady-state cruise throttle
 	} perf;
 
 	// Attitude control
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		float ptch_kp;
 		float ptch_ki;
 		float roll_kp;
@@ -22,21 +24,24 @@ struct __attribute__((packed)) Parameters
 	} att_ctrl;
 
 	// Takeoff
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		float alt; // Altitude to detect when takeoff is complete meters
 		float ptch; // Pitch during takeoff
 		float roll_lim; // Roll limit during takeoff
 	} takeoff;
 
 	// Landing
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		float flare_alt; // Altitude to start flare
 		float flare_sink_rate; // Target sink rate for flare, meters per second
 		float touchdown_speed; // Detect touchdown when speed below this value in meters per second
 	} landing;
 
 	// TECS
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		float aspd_cruise; // Meters per second
 		float aspd_land; // Landing airspeed
 		float min_aspd_mps; // Minimum airspeed meters per second
@@ -49,25 +54,29 @@ struct __attribute__((packed)) Parameters
 	} tecs;
 
 	// L1 Controller
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		float period;
 		float roll_lim; // Maximum roll angle in either direction
 	} l1_ctrl;
 
 	// Navigator
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		float min_dist_wp; // Distance in meters from waypoint until switching to next
 	} navigator;
 
 	// Optical flow
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		bool enable_of; // Enable optical flow
 		int16_t of_min; // Maximum optical flow value in pixels per sec
 		int16_t of_max;
 	} sensors;
 
 	// Mixer
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		uint16_t pwm_max_ele;
 		uint16_t pwm_max_rud;
 		uint16_t pwm_max_thr;
@@ -89,13 +98,15 @@ struct __attribute__((packed)) Parameters
 	} mixer;
 
 	// RC Transmitter Input
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		uint16_t max_duty; // RC Transmitter stick max duty cycle microseconds
 		uint16_t min_duty; // Make sure values are INSIDE the range of radio, NEVER outside
 	} rc_input;
 
 	// AHRS
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		float beta_gain; // Madgwick filter gain
 		float mag_decl; // Declination in degrees, determined from online calculator
 		float acc_max; // Max acceleration in units of g to enable sensor fusion
@@ -114,14 +125,16 @@ struct __attribute__((packed)) Parameters
 	} ahrs;
 
 	// Position Estimator
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		float baro_var; // Variance
 		float gnss_var;
 		float gnss_alt_var;
 	} pos_estimator;
 
 	// HITL
-	struct __attribute__((packed)) {
+	struct __attribute__((packed))
+	{
 		bool enable;
 	} hitl;
 };

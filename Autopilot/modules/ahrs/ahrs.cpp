@@ -34,12 +34,12 @@ void AHRS::update_initialization()
 {
 	if (_plane->check_new_imu_data(imu_data) && _plane->check_new_mag_data(mag_data))
 	{
+		imu_data = _plane->get_imu_data();
 		mag_data = _plane->get_mag_data();
 
 		float mag_calib[3] = {mag_data.x, mag_data.y, mag_data.z};
 		apply_compass_calibration(mag_calib);
 
-		imu_data = _plane->get_imu_data();
 		avg_ax.add(imu_data.ax);
 		avg_ay.add(imu_data.ay);
 		avg_az.add(imu_data.az);
@@ -49,50 +49,7 @@ void AHRS::update_initialization()
 
 		if (avg_ax.getFilled())
 		{
-			float q0, q1, q2, q3;
-			float ax = -avg_ax.getAverage();
-			float ay = -avg_ay.getAverage();
-			float az = -avg_az.getAverage();
-			float mx = -avg_mx.getAverage();
-			float my = -avg_my.getAverage();
-			float mz = -avg_mz.getAverage();
-
-			float roll_initial = atan2f(ay, az);
-			float pitch_initial = atan2f(-ax, sqrtf(powf(ay, 2) + powf(az, 2)));
-			float yaw_initial = 0;
-			float norm = sqrtf(powf(mx, 2) + powf(my, 2) + powf(mz, 2));
-			if (norm == 0)
-			{
-				q0 = 1.0f;
-				q1 = 0.0f;
-				q2 = 0.0f;
-				q3 = 0.0f;
-			}
-			else
-			{
-				mx /= norm;
-				my /= norm;
-				mz /= norm;
-
-				mx = mx * cosf(pitch_initial) + mz * sinf(pitch_initial);
-				my = mx * sinf(roll_initial) * sin(pitch_initial) + my * cos(roll_initial) - mz * sinf(roll_initial) * cosf(pitch_initial);
-				yaw_initial = atan2f(-my, mx);
-
-				float cy = cosf(yaw_initial * 0.5f);
-				float sy = sinf(yaw_initial * 0.5f);
-				float cp = cosf(pitch_initial * 0.5f);
-				float sp = sinf(pitch_initial * 0.5f);
-				float cr = cosf(roll_initial * 0.5f);
-				float sr = sinf(roll_initial * 0.5f);
-
-				q0 = cr * cp * cy + sr * sp * sy;
-				q1 = sr * cp * cy - cr * sp * sy;
-				q2 = cr * sp * cy + sr * cp * sy;
-				q3 = cr * cp * sy - sr * sp * cy;
-			}
-
-			filter.set_state(q0, q1, q2, q3); // Set initial state
-
+			set_initial_angles();
 			ahrs_state = Ahrs_state::RUNNING;
 		}
 	}
@@ -102,10 +59,13 @@ void AHRS::update_running()
 {
 	if (_plane->check_new_imu_data(imu_data))
 	{
+		imu_data = _plane->get_imu_data();
+
 		if (is_accel_reliable())
 		{
 			if (_plane->check_new_mag_data(mag_data))
 			{
+				mag_data = _plane->get_mag_data();
 				update_imu_mag();
 			}
 			else
@@ -124,18 +84,14 @@ void AHRS::update_running()
 
 void AHRS::update_imu()
 {
-	imu_data = _plane->get_imu_data();
-
 	filter.updateIMU(imu_data.gx, imu_data.gy, imu_data.gz,
 	                 -imu_data.ax, -imu_data.ay, -imu_data.az);
 }
 
 void AHRS::update_imu_mag()
 {
-	imu_data = _plane->get_imu_data();
-	mag_data = _plane->get_mag_data();
-
 	float mag_calib[3] = {mag_data.x, mag_data.y, mag_data.z};
+
 	apply_compass_calibration(mag_calib);
 
 	filter.update(imu_data.gx, imu_data.gy, imu_data.gz,
@@ -145,8 +101,6 @@ void AHRS::update_imu_mag()
 
 void AHRS::update_gyro()
 {
-	imu_data = _plane->get_imu_data();
-
 	filter.updateGyro(imu_data.gx, imu_data.gy, imu_data.gz);
 }
 
@@ -161,6 +115,54 @@ void AHRS::publish_ahrs()
 
 	_plane->ahrs_timestamp = _hal->get_time_us();
 	_plane->ahrs_converged = ahrs_state == Ahrs_state::RUNNING;
+}
+
+void AHRS::set_initial_angles()
+{
+	float q0, q1, q2, q3;
+	float ax = -avg_ax.getAverage();
+	float ay = -avg_ay.getAverage();
+	float az = -avg_az.getAverage();
+	float mx = -avg_mx.getAverage();
+	float my = -avg_my.getAverage();
+	float mz = -avg_mz.getAverage();
+
+	float roll_initial = atan2f(ay, az);
+	float pitch_initial = atan2f(-ax, sqrtf(powf(ay, 2) + powf(az, 2)));
+
+	float norm = sqrtf(powf(mx, 2) + powf(my, 2) + powf(mz, 2));
+
+	if (norm == 0)
+	{
+		q0 = 1.0f;
+		q1 = 0.0f;
+		q2 = 0.0f;
+		q3 = 0.0f;
+	}
+	else
+	{
+		mx /= norm;
+		my /= norm;
+		mz /= norm;
+
+		mx = mx * cosf(pitch_initial) + mz * sinf(pitch_initial);
+		my = mx * sinf(roll_initial) * sin(pitch_initial) + my * cos(roll_initial) - mz * sinf(roll_initial) * cosf(pitch_initial);
+		float yaw_initial = atan2f(-my, mx);
+
+		float cy = cosf(yaw_initial * 0.5f);
+		float sy = sinf(yaw_initial * 0.5f);
+		float cp = cosf(pitch_initial * 0.5f);
+		float sp = sinf(pitch_initial * 0.5f);
+		float cr = cosf(roll_initial * 0.5f);
+		float sr = sinf(roll_initial * 0.5f);
+
+		q0 = cr * cp * cy + sr * sp * sy;
+		q1 = sr * cp * cy - cr * sp * sy;
+		q2 = cr * sp * cy + sr * cp * sy;
+		q3 = cr * cp * sy - sr * sp * cy;
+	}
+
+	filter.set_state(q0, q1, q2, q3); // Set initial state
 }
 
 void AHRS::apply_compass_calibration(float mag_data[3])
@@ -187,8 +189,6 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 
 bool AHRS::is_accel_reliable()
 {
-	imu_data = _plane->get_imu_data();
-
 	float accel_magnitude = sqrtf(powf(imu_data.ax, 2) +
 								  powf(imu_data.ay, 2) +
 								  powf(imu_data.az, 2));
