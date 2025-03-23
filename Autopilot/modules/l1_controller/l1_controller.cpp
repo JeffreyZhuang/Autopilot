@@ -77,9 +77,6 @@ void L1_controller::update_mission()
 	// Calculate track heading (bearing from previous to target waypoint)
 	float trk_hdg = atan2f(tgt_east - prev_east, tgt_north - prev_north);
 
-	// Calculate plane heading error
-	float hdg_err = wrap_pi(trk_hdg - wrap_pi(_plane->ahrs_yaw * DEG_TO_RAD));
-
 	// Compute cross-track error (perpendicular distance from aircraft to path)
 	float rel_east = _plane->nav_pos_east - tgt_east;
 	float rel_north = _plane->nav_pos_north - tgt_north;
@@ -87,14 +84,19 @@ void L1_controller::update_mission()
 
 	// Scale L1 distance with speed
 	float l1_dist = (1.0 / M_PI) * get_params()->l1_ctrl.period * _plane->nav_gnd_spd;
-	if (l1_dist <= xte)
+	if (l1_dist < 1.0)
 	{
-
+		l1_dist = 1.0;
 	}
-	else
-	{
 
-	}
+	// Calculate plane heading error
+	float hdg_err = wrap_pi(trk_hdg - wrap_pi(_plane->ahrs_yaw * DEG_TO_RAD));
+
+	// Calculate correction angle
+	float correction_angle = clamp(asinf(xte / l1_dist), -30.0f * DEG_TO_RAD, 30.0f * DEG_TO_RAD);
+
+	// Add correction angle to heading error
+	hdg_err -= correction_angle; // When change to +, it flips over, min max
 
 	// Calculate roll setpoint using l1 guidance
 	float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / l1_dist) * sinf(hdg_err);
