@@ -1,9 +1,6 @@
 #include "modules/tecs/tecs.h"
 
-Tecs::Tecs(HAL* hal, Plane* plane)
-	: Module(hal, plane),
-	  energy_balance_controller(false),
-	  total_energy_controller(false)
+Tecs::Tecs(HAL* hal, Plane* plane) : Module(hal, plane)
 {
 }
 

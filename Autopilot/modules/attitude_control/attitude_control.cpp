@@ -1,9 +1,6 @@
 #include "modules/attitude_control/attitude_control.h"
 
-Attitude_control::Attitude_control(HAL * hal, Plane * plane)
-	: Module(hal, plane),
-	  roll_controller(false),
-	  pitch_controller(false)
+Attitude_control::Attitude_control(HAL * hal, Plane * plane) : Module(hal, plane)
 {
 }
 

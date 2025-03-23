@@ -50,6 +50,7 @@ void Position_estimator::update_running()
 	{
 		if (check_new_ahrs_data())
 		{
+			imu_data = _plane->get_imu_data();
 			predict_imu();
 		}
 
@@ -57,6 +58,8 @@ void Position_estimator::update_running()
 		{
 			if (is_of_reliable())
 			{
+				imu_data = _plane->get_imu_data();
+				of_data = _plane->get_of_data();
 				update_of_agl();
 			}
 		}
@@ -70,14 +73,13 @@ void Position_estimator::update_running()
 
 	if (_plane->check_new_baro_data(baro_data))
 	{
+		baro_data = _plane->get_baro_data();
 		update_baro();
 	}
 }
 
 void Position_estimator::predict_imu()
 {
-	imu_data = _plane->get_imu_data();
-
 	// Get IMU data
 	Eigen::Vector3f acc_inertial(imu_data.ax, imu_data.ay, imu_data.az);
 
@@ -129,8 +131,6 @@ void Position_estimator::update_gps()
 
 void Position_estimator::update_baro()
 {
-	baro_data = _plane->get_baro_data();
-
 	Eigen::VectorXf y(1);
 	y << -(baro_data.alt - _plane->baro_offset);
 
@@ -146,8 +146,6 @@ void Position_estimator::update_baro()
 
 void Position_estimator::update_of_agl()
 {
-	of_data = _plane->get_of_data();
-
 	float flow = sqrtf(powf(of_data.x, 2) + powf(of_data.y, 2));
 	float angular_rate = sqrtf(powf(imu_data.gx, 2) + powf(imu_data.gy, 2)) * DEG_TO_RAD;
 	float alt = _plane->nav_gnd_spd / (flow - angular_rate);

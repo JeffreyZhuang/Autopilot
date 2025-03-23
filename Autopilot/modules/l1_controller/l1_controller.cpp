@@ -84,38 +84,21 @@ void L1_controller::update_mission()
 
 	// Scale L1 distance with speed
 	float l1_dist = (1.0 / M_PI) * get_params()->l1_ctrl.period * _plane->nav_gnd_spd;
-
 	if (l1_dist < 1.0)
 	{
-		l1_dist = 1.0;
+		l1_dist = 1.0; // Prevent divide by zero
 	}
 
 	// Calculate correction angle
-	float correction_angle = acosf(clamp(xte / l1_dist, -1, 1));
-
-	if (correction_angle < 30.0)
-	{
-		correction_angle = 30.0;
-	}
-
-	float total_correction_angle;
-
-	if (xte > 0.0)
-	{
-		total_correction_angle = trk_hdg - 90.0 + correction_angle;
-	}
-	else
-	{
-		total_correction_angle = trk_hdg + 90.0 - correction_angle;
-	}
+	float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
+	float total_correction_angle = trk_hdg - correction_angle;
 
 	// Calculate plane heading error
-	float hdg_err = wrap_pi(total_correction_angle - (_plane->ahrs_yaw - 180.0f) * DEG_TO_RAD);
+	float hdg_err = total_correction_angle - wrap_pi(_plane->ahrs_yaw * DEG_TO_RAD);
 
 	// Calculate roll setpoint using l1 guidance
 	float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / l1_dist) * sinf(hdg_err);
 	_plane->roll_setpoint = atanf(lateral_accel / G) * RAD_TO_DEG;
-
 	if (_plane->auto_mode == Auto_mode::TAKEOFF)
 	{
 		_plane->roll_setpoint = clamp(
@@ -132,9 +115,6 @@ void L1_controller::update_mission()
 			get_params()->l1_ctrl.roll_lim
 		);
 	}
-
-	// BUG: WHEN OUT OF TUNE, IT GOES 180 IN THE WRONG WAY
-	// Switch to cosf to fix?
 
 	// Determine altitude setpoint
 	if (_plane->waypoint_index == 1)

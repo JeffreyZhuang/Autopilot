@@ -1,9 +1,4 @@
-#include <lib/pi_control/pi_control.h>
-
-PI_control::PI_control(bool normalize_180)
-{
-    _normalize_180 = normalize_180;
-}
+#include "lib/pi_control/pi_control.h"
 
 float PI_control::get_output(float state,
 					  float setpoint,
@@ -16,10 +11,6 @@ float PI_control::get_output(float state,
 					  float dt)
 {
     float error = setpoint - state;
-    if (_normalize_180)
-    {
-    	error = normalize_angle(error);
-    }
 
     if (kI != 0)
     {
@@ -51,18 +42,4 @@ float PI_control::clamp(float n, float min, float max)
     }
 
     return n;
-}
-
-float PI_control::normalize_angle(float angle) {
-    while (angle >= 180.0)
-    {
-        angle -= 360.0f;
-    }
-
-    while (angle < -180.0)
-    {
-        angle += 360.0f;
-    }
-
-    return angle;
 }
