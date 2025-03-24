@@ -6,14 +6,14 @@ Tecs::Tecs(HAL* hal, Plane* plane) : Module(hal, plane)
 
 void Tecs::update()
 {
-	if (_plane->system_mode == System_mode::FLIGHT)
+	if (_plane->system_mode == Plane::System_mode::FLIGHT)
 	{
 		switch (_plane->flight_mode)
 		{
-		case Flight_mode::MANUAL:
+		case Plane::Flight_mode::MANUAL:
 			handle_manual_mode();
 			break;
-		case Flight_mode::AUTO:
+		case Plane::Flight_mode::AUTO:
 			handle_auto_mode();
 			break;
 		}
@@ -24,10 +24,10 @@ void Tecs::handle_manual_mode()
 {
 	switch (_plane->manual_mode)
 	{
-	case Manual_mode::DIRECT:
+	case Plane::Manual_mode::DIRECT:
 		update_direct();
 		break;
-	case Manual_mode::STABILIZED:
+	case Plane::Manual_mode::STABILIZED:
 		update_stabilized();
 		break;
 	}
@@ -37,19 +37,19 @@ void Tecs::handle_auto_mode()
 {
 	switch (_plane->auto_mode)
 	{
-	case Auto_mode::TAKEOFF:
+	case Plane::Auto_mode::TAKEOFF:
 		update_takeoff();
 		break;
-	case Auto_mode::MISSION:
+	case Plane::Auto_mode::MISSION:
 		update_mission();
 		break;
-	case Auto_mode::LAND:
+	case Plane::Auto_mode::LAND:
 		update_land();
 		break;
-	case Auto_mode::FLARE:
+	case Plane::Auto_mode::FLARE:
 		update_flare();
 		break;
-	case Auto_mode::TOUCHDOWN:
+	case Plane::Auto_mode::TOUCHDOWN:
 		update_touchdown();
 		break;
 	}

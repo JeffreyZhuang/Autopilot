@@ -10,13 +10,13 @@ void Mixer::update()
 {
 	switch (_plane->system_mode)
 	{
-	case System_mode::CONFIG:
+	case Plane::System_mode::CONFIG:
 		update_config();
 		break;
-	case System_mode::STARTUP:
+	case Plane::System_mode::STARTUP:
 		update_startup();
 		break;
-	case System_mode::FLIGHT:
+	case Plane::System_mode::FLIGHT:
 		update_flight();
 		break;
 	}

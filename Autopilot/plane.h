@@ -1,7 +1,6 @@
 #ifndef PLANE_H_
 #define PLANE_H_
 
-#include "modes.h"
 #include <stdint.h>
 
 /**
@@ -87,6 +86,34 @@ public:
 		float alt;
 	};
 
+	enum class System_mode
+	{
+		CONFIG,
+		STARTUP,
+		FLIGHT
+	};
+
+	enum class Flight_mode
+	{
+		AUTO,
+		MANUAL
+	};
+
+	enum class Auto_mode
+	{
+		TAKEOFF,
+		MISSION,
+		LAND,
+		FLARE,
+		TOUCHDOWN
+	};
+
+	enum class Manual_mode
+	{
+		DIRECT,
+		STABILIZED
+	};
+
     // State machine
 	System_mode system_mode;
     Flight_mode flight_mode;
@@ -133,32 +160,32 @@ public:
 
     bool waypoints_loaded = false;
 
-    bool check_new_imu_data(Subscription_handle subscription_handle);
-    IMU_data get_imu_data(Subscription_handle subscription_handle);
+    bool check_new_imu_data(Subscription_handle subscription_handle) const;
+    IMU_data get_imu_data(Subscription_handle subscription_handle) const;
     void set_imu_data(IMU_data imu_data);
 
-    bool check_new_mag_data(Subscription_handle subscription_handle);
-	Mag_data get_mag_data(Subscription_handle subscription_handle);
+    bool check_new_mag_data(Subscription_handle subscription_handle) const;
+	Mag_data get_mag_data(Subscription_handle subscription_handle) const;
 	void set_mag_data(Mag_data mag_data);
 
-	bool check_new_baro_data(Subscription_handle subscription_handle);
-	Baro_data get_baro_data(Subscription_handle subscription_handle);
+	bool check_new_baro_data(Subscription_handle subscription_handle) const;
+	Baro_data get_baro_data(Subscription_handle subscription_handle) const;
 	void set_baro_data(Baro_data baro_data);
 
-	bool check_new_gnss_data(Subscription_handle subscription_handle);
-	GNSS_data get_gnss_data(Subscription_handle subscription_handle);
+	bool check_new_gnss_data(Subscription_handle subscription_handle) const;
+	GNSS_data get_gnss_data(Subscription_handle subscription_handle) const;
 	void set_gnss_data(GNSS_data gnss_data);
 
-    bool check_new_of_data(Subscription_handle subscription_handle);
-	OF_data get_of_data(Subscription_handle subscription_handle);
+    bool check_new_of_data(Subscription_handle subscription_handle) const;
+	OF_data get_of_data(Subscription_handle subscription_handle) const;
 	void set_of_data(OF_data of_data);
 
-	bool check_new_ahrs_data(Subscription_handle subscription_handle);
-	AHRS_data get_ahrs_data(Subscription_handle subscription_handle);
+	bool check_new_ahrs_data(Subscription_handle subscription_handle) const;
+	AHRS_data get_ahrs_data(Subscription_handle subscription_handle) const;
 	void set_ahrs_data(AHRS_data ahrs_data);
 
-	bool check_new_pos_est_data(Subscription_handle subscription_handle);
-	Pos_est_data get_pos_est_data(Subscription_handle subscription_handle);
+	bool check_new_pos_est_data(Subscription_handle subscription_handle) const;
+	Pos_est_data get_pos_est_data(Subscription_handle subscription_handle) const;
 	void set_pos_est_data(Pos_est_data pos_est_data);
 
 	double get_home_lat() const;

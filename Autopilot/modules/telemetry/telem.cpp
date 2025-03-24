@@ -54,7 +54,7 @@ void Telem::update()
 		}
 	}
 
-	if (_plane->system_mode != System_mode::CONFIG)
+	if (_plane->system_mode != Plane::System_mode::CONFIG)
 	{
 		transmit_telem();
 	}
@@ -124,7 +124,7 @@ bool Telem::parse_packet()
 	{
 		// Determine type of payload from message ID
 		if (_msg_id == WPT_MSG_ID &&
-			_plane->system_mode == System_mode::CONFIG &&
+			_plane->system_mode == Plane::System_mode::CONFIG &&
 			_payload_len == sizeof(Waypoint_payload))
 		{
 			Waypoint_payload waypoint_payload;
@@ -147,7 +147,7 @@ bool Telem::parse_packet()
 			return true;
 		}
 		else if (_msg_id == PARAMS_MSG_ID &&
-				 _plane->system_mode == System_mode::CONFIG &&
+				 _plane->system_mode == Plane::System_mode::CONFIG &&
 				 _payload_len == sizeof(Params_payload))
 		{
 			Params_payload params_payload;
@@ -221,33 +221,33 @@ uint8_t Telem::get_current_state()
 {
     switch (_plane->system_mode)
     {
-	case System_mode::CONFIG:
+	case Plane::System_mode::CONFIG:
 		return 0;
-	case System_mode::STARTUP:
+	case Plane::System_mode::STARTUP:
 		return 1;
-	case System_mode::FLIGHT:
+	case Plane::System_mode::FLIGHT:
 		switch (_plane->flight_mode)
 		{
-		case Flight_mode::AUTO:
+		case Plane::Flight_mode::AUTO:
 			switch (_plane->auto_mode)
 			{
-			case Auto_mode::TAKEOFF:
+			case Plane::Auto_mode::TAKEOFF:
 				return 2;
-			case Auto_mode::MISSION:
+			case Plane::Auto_mode::MISSION:
 				return 3;
-			case Auto_mode::LAND:
+			case Plane::Auto_mode::LAND:
 				return 4;
-			case Auto_mode::FLARE:
+			case Plane::Auto_mode::FLARE:
 				return 5;
-			case Auto_mode::TOUCHDOWN:
+			case Plane::Auto_mode::TOUCHDOWN:
 				return 6;
 			}
-		case Flight_mode::MANUAL:
+		case Plane::Flight_mode::MANUAL:
 			switch (_plane->manual_mode)
 			{
-				case Manual_mode::DIRECT:
+				case Plane::Manual_mode::DIRECT:
 					return 7;
-				case Manual_mode::STABILIZED:
+				case Plane::Manual_mode::STABILIZED:
 					return 8;
 			}
 		}

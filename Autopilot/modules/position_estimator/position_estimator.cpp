@@ -11,7 +11,7 @@ Position_estimator::Position_estimator(HAL* hal, Plane* plane)
 
 void Position_estimator::update()
 {
-	if (_plane->system_mode != System_mode::CONFIG)
+	if (_plane->system_mode != Plane::System_mode::CONFIG)
 	{
 		switch (pos_estimator_state)
 		{

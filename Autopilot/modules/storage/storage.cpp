@@ -6,7 +6,7 @@ Storage::Storage(HAL* hal, Plane* plane) : Module(hal, plane)
 
 void Storage::update()
 {
-	if (_plane->system_mode != System_mode::CONFIG)
+	if (_plane->system_mode != Plane::System_mode::CONFIG)
 	{
 		write();
 	}
@@ -14,7 +14,7 @@ void Storage::update()
 
 void Storage::update_background()
 {
-	if (_plane->system_mode != System_mode::CONFIG)
+	if (_plane->system_mode != Plane::System_mode::CONFIG)
 	{
 		flush();
 	}

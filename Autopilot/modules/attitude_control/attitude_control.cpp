@@ -6,14 +6,16 @@ Attitude_control::Attitude_control(HAL * hal, Plane * plane) : Module(hal, plane
 
 void Attitude_control::update()
 {
-	if (_plane->system_mode == System_mode::FLIGHT)
+	_ahrs_data = _plane->get_ahrs_data(_ahrs_handle);
+
+	if (_plane->system_mode == Plane::System_mode::FLIGHT)
 	{
 		switch (_plane->flight_mode)
 		{
-		case Flight_mode::MANUAL:
+		case Plane::Flight_mode::MANUAL:
 			handle_manual_mode();
 			break;
-		case Flight_mode::AUTO:
+		case Plane::Flight_mode::AUTO:
 			handle_auto_mode();
 			break;
 		}
@@ -24,10 +26,10 @@ void Attitude_control::handle_manual_mode()
 {
 	switch (_plane->manual_mode)
 	{
-	case Manual_mode::DIRECT:
+	case Plane::Manual_mode::DIRECT:
 		update_direct();
 		break;
-	case Manual_mode::STABILIZED:
+	case Plane::Manual_mode::STABILIZED:
 		update_stabilized();
 		break;
 	}
@@ -37,15 +39,15 @@ void Attitude_control::handle_auto_mode()
 {
 	switch (_plane->auto_mode)
 	{
-	case Auto_mode::TAKEOFF:
+	case Plane::Auto_mode::TAKEOFF:
 		update_takeoff();
 		break;
-	case Auto_mode::MISSION:
-	case Auto_mode::LAND:
-	case Auto_mode::FLARE:
+	case Plane::Auto_mode::MISSION:
+	case Plane::Auto_mode::LAND:
+	case Plane::Auto_mode::FLARE:
 		update_mission();
 		break;
-	case Auto_mode::TOUCHDOWN:
+	case Plane::Auto_mode::TOUCHDOWN:
 		update_touchdown();
 		break;
 	}
@@ -81,10 +83,8 @@ void Attitude_control::update_touchdown()
 
 void Attitude_control::control_roll_ptch()
 {
-	Plane::AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
-
 	_plane->rud_cmd = roll_controller.get_output(
-		ahrs_data.roll,
+		_ahrs_data.roll,
 		_plane->roll_setpoint,
 		get_params()->att_ctrl.roll_kp,
 		get_params()->att_ctrl.roll_ki,
@@ -96,7 +96,7 @@ void Attitude_control::control_roll_ptch()
 	);
 
 	_plane->ele_cmd = pitch_controller.get_output(
-		ahrs_data.pitch,
+		_ahrs_data.pitch,
 		_plane->pitch_setpoint,
 		get_params()->att_ctrl.ptch_kp,
 		get_params()->att_ctrl.ptch_ki,
@@ -110,10 +110,8 @@ void Attitude_control::control_roll_ptch()
 
 void Attitude_control::control_roll_ptch_no_integral()
 {
-	Plane::AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
-
 	_plane->rud_cmd = roll_controller.get_output(
-		ahrs_data.roll,
+		_ahrs_data.roll,
 		_plane->roll_setpoint,
 		get_params()->att_ctrl.roll_kp,
 		0,
@@ -125,7 +123,7 @@ void Attitude_control::control_roll_ptch_no_integral()
 	);
 
 	_plane->ele_cmd = pitch_controller.get_output(
-		ahrs_data.pitch,
+		_ahrs_data.pitch,
 		_plane->pitch_setpoint,
 		get_params()->att_ctrl.ptch_kp,
 		0,

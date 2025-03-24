@@ -14,15 +14,15 @@ void L1_controller::update()
 	_ahrs_data = _plane->get_ahrs_data(_ahrs_handle);
 	_pos_est_data = _plane->get_pos_est_data(_pos_est_handle);
 
-	if (_plane->system_mode == System_mode::FLIGHT &&
-		_plane->auto_mode != Auto_mode::TOUCHDOWN)
+	if (_plane->system_mode == Plane::System_mode::FLIGHT &&
+		_plane->auto_mode != Plane::Auto_mode::TOUCHDOWN)
 	{
 		switch (_plane->flight_mode)
 		{
-		case Flight_mode::MANUAL:
+		case Plane::Flight_mode::MANUAL:
 			update_mission();
 			break;
-		case Flight_mode::AUTO:
+		case Plane::Flight_mode::AUTO:
 			handle_auto_mode();
 			break;
 		}
@@ -33,15 +33,15 @@ void L1_controller::handle_auto_mode()
 {
 	switch (_plane->auto_mode)
 	{
-	case Auto_mode::TAKEOFF:
-	case Auto_mode::MISSION:
-	case Auto_mode::LAND:
+	case Plane::Auto_mode::TAKEOFF:
+	case Plane::Auto_mode::MISSION:
+	case Plane::Auto_mode::LAND:
 		update_mission();
 		break;
-	case Auto_mode::FLARE:
+	case Plane::Auto_mode::FLARE:
 		update_flare();
 		break;
-	case Auto_mode::TOUCHDOWN:
+	case Plane::Auto_mode::TOUCHDOWN:
 		break;
 	}
 }
@@ -158,7 +158,7 @@ float L1_controller::calculate_roll_setpoint(float lateral_accel) const
 {
 	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
 
-	if (_plane->auto_mode == Auto_mode::TAKEOFF)
+	if (_plane->auto_mode == Plane::Auto_mode::TAKEOFF)
 	{
 		return clamp(roll, -get_params()->takeoff.roll_lim, get_params()->takeoff.roll_lim);
 	}

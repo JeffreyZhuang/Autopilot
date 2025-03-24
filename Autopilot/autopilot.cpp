@@ -23,7 +23,6 @@ Autopilot::Autopilot(HAL* hal, Plane* plane)
 void Autopilot::setup()
 {
 	printf("Autopilot: Setup\n");
-	init_state();
 	_hal->init();
 	_hal->start_main_task(&Autopilot::static_main_task);
 	_hal->start_background_task(&Autopilot::static_background_task);
@@ -55,14 +54,6 @@ void Autopilot::background_task()
 /**
  * Helper functions
  */
-void Autopilot::init_state()
-{
-	_plane->system_mode = System_mode::CONFIG;
-	_plane->flight_mode = Flight_mode::MANUAL;
-	_plane->manual_mode = Manual_mode::DIRECT;
-	_plane->auto_mode = Auto_mode::TAKEOFF;
-}
-
 void Autopilot::update_time()
 {
 	uint64_t time = _hal->get_time_us();
@@ -85,7 +76,7 @@ void Autopilot::update_time()
 void Autopilot::debug_serial()
 {
 	// Maybe move to debug class
-	if (_plane->system_mode != System_mode::CONFIG)
+	if (_plane->system_mode != Plane::System_mode::CONFIG)
 	{
 		Plane::Subscription_handle ahrs_handle;
 		Plane::Subscription_handle gnss_handle;

@@ -6,7 +6,7 @@ Rc_handler::Rc_handler(HAL* hal, Plane* plane) : Module(hal, plane)
 
 void Rc_handler::update()
 {
-	if (_plane->system_mode != System_mode::CONFIG)
+	if (_plane->system_mode != Plane::System_mode::CONFIG)
 	{
 		// Get RC input duty cycle
 		uint16_t rc_input[NUM_CH];

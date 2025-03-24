@@ -41,7 +41,6 @@ private:
 
     // Helper functions
     void update_time();
-    void init_state();
     void debug_serial();
 
     // Scheduler

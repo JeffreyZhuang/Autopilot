@@ -17,7 +17,8 @@ public:
 	void update();
 
 private:
-	Plane::Subscription_handle ahrs_handle;
+	Plane::Subscription_handle _ahrs_handle;
+	Plane::AHRS_data _ahrs_data;
 	PI_control roll_controller;
 	PI_control pitch_controller;
 
