@@ -83,11 +83,3 @@ float wrap_pi(float angle)
     while (angle < -M_PI) angle += 2 * M_PI;
     return angle;
 }
-
-float max(float a, float b) {
-    return (a > b) ? a : b;
-}
-
-float min(float a, float b) {
-    return (a < b) ? a : b;
-}

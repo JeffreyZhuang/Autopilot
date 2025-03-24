@@ -65,8 +65,8 @@ void L1_controller::update_mission()
 	const float rel_north = _plane->nav_pos_north - tgt_north;
 	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
-	// Scale L1 distance with speed
-	const float l1_dist = max(get_params()->l1_ctrl.period * _plane->nav_gnd_spd / M_PI, 1.0);
+	// Calculate L1 distance and scale with speed
+	const float l1_dist = fmaxf(get_params()->l1_ctrl.period * _plane->nav_gnd_spd / M_PI, 1.0);
 
 	// Calculate correction angle
 	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
@@ -75,8 +75,10 @@ void L1_controller::update_mission()
 	// Calculate plane heading error
 	const float hdg_err = hdg_setpoint - wrap_pi(_plane->get_ahrs_data(ahrs_handle).yaw * DEG_TO_RAD);
 
-	// Calculate roll setpoint using l1 guidance
-	const float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / l1_dist) * sinf(hdg_err);
+	// Calculate lateral acceleration using l1 guidance
+	const float lateral_accel = 2 * powf(_plane->nav_gnd_spd, 2) / l1_dist * sinf(hdg_err);
+
+	// Update roll and altitude setpoints
 	_plane->roll_setpoint = calculate_roll_setpoint(lateral_accel);
 	_plane->guidance_d_setpoint = calculate_altitude_setpoint(prev_north, prev_east,
 															  tgt_north, tgt_east,
@@ -86,26 +88,27 @@ void L1_controller::update_mission()
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
 void L1_controller::update_flare()
 {
-	const Waypoint& land_wp = _plane->waypoints[_plane->waypoint_index];
-	const Waypoint& appr_wp = _plane->waypoints[_plane->waypoint_index - 1];
+	const Waypoint& land_wp = _plane->waypoints[-1];
+	const Waypoint& appr_wp = _plane->waypoints[-2];
 
 	// Calculate the glideslope angle based on the altitude difference and horizontal distance
-	float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon, appr_wp.lat, appr_wp.lon);
-	float glideslope_angle = atan2f(land_wp.alt - appr_wp.alt, dist_land_appr);
+	const float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon,
+													 appr_wp.lat, appr_wp.lon);
+	const float glideslope_angle = atan2f(land_wp.alt - appr_wp.alt, dist_land_appr);
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
-	float final_altitude = 0;
-	float final_sink_rate = get_params()->landing.flare_sink_rate;
-	float initial_altitude = max(get_params()->landing.flare_alt, final_altitude);
-	float initial_sink_rate = max(get_params()->tecs.aspd_land * sinf(glideslope_angle),
+	const float final_altitude = 0;
+	const float final_sink_rate = get_params()->landing.flare_sink_rate;
+	const float initial_altitude = fmaxf(get_params()->landing.flare_alt, final_altitude);
+	const float initial_sink_rate = fmaxf(get_params()->tecs.aspd_land * sinf(glideslope_angle),
 								  final_sink_rate);
-	float sink_rate = lerp(
+	const float sink_rate = lerp(
 		initial_altitude, initial_sink_rate,
 		final_altitude, final_sink_rate,
 		clamp(-_plane->nav_pos_down, final_altitude, initial_altitude)
 	);
 
-	// Update the guidance setpoint with the calculated sink rate
+	// Update altitude setpoint with the calculated sink rate
 	_plane->guidance_d_setpoint += sink_rate * _plane->dt_s;
 	_plane->roll_setpoint = 0;
 }
@@ -150,18 +153,16 @@ float L1_controller::calculate_altitude_setpoint(const float prev_north, const f
 
 float L1_controller::calculate_roll_setpoint(float lateral_accel) const
 {
-	float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
+	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
 
 	if (_plane->auto_mode == Auto_mode::TAKEOFF)
 	{
-		roll = clamp(roll, -get_params()->takeoff.roll_lim, get_params()->takeoff.roll_lim);
+		return clamp(roll, -get_params()->takeoff.roll_lim, get_params()->takeoff.roll_lim);
 	}
 	else
 	{
-		roll = clamp(roll, -get_params()->l1_ctrl.roll_lim, get_params()->l1_ctrl.roll_lim);
+		return clamp(roll, -get_params()->l1_ctrl.roll_lim, get_params()->l1_ctrl.roll_lim);
 	}
-
-	return roll;
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)
@@ -169,21 +170,21 @@ float L1_controller::compute_along_track_distance(float start_n, float start_e,
 												  float end_n, float end_e,
 											 	  float pos_n, float pos_e)
 {
-	float vec_north = end_n - start_n;
-	float vec_east = end_e - start_e;
-	float vec_norm = sqrtf(vec_north * vec_north + vec_east * vec_east);
+	const float vec_north = end_n - start_n;
+	const float vec_east = end_e - start_e;
+	const float vec_norm = sqrtf(vec_north * vec_north + vec_east * vec_east);
 
 	if (vec_norm == 0) return 0.0f;
 
-	float proj_factor = ((pos_n - start_n) * vec_north + (pos_e - start_e) * vec_east) /
-						(vec_norm * vec_norm);
+	const float proj_factor = ((pos_n - start_n) * vec_north + (pos_e - start_e) * vec_east) /
+							  (vec_norm * vec_norm);
 	return proj_factor * vec_norm;
 }
 
 // Helper function to compute Euclidean distance
 float L1_controller::distance(float n1, float e1, float n2, float e2)
 {
-	float dn = n2 - n1;
-	float de = e2 - e1;
+	const float dn = n2 - n1;
+	const float de = e2 - e1;
 	return sqrtf(dn * dn + de * de);
 }
