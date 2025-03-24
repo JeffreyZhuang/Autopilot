@@ -153,6 +153,17 @@ void L1_controller::update_flare()
 	float initial_sink_rate = get_params()->tecs.aspd_land * sinf(glideslope_angle);
 	float final_altitude = 0;
 	float final_sink_rate = get_params()->landing.flare_sink_rate;
+
+	if (initial_altitude < final_altitude)
+	{
+		initial_altitude = final_altitude;
+	}
+
+	if (final_sink_rate > initial_sink_rate)
+	{
+		final_sink_rate = initial_sink_rate;
+	}
+
 	float sink_rate = lerp(
 		initial_altitude, initial_sink_rate,
 		final_altitude, final_sink_rate,
