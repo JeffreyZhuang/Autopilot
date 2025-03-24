@@ -47,58 +47,46 @@ void L1_controller::handle_auto_mode()
 void L1_controller::update_mission()
 {
 	// Determine target and previous waypoints
-	Waypoint prev_wp = _plane->waypoints[_plane->waypoint_index - 1];
-	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
+	const Waypoint& prev_wp = _plane->waypoints[_plane->waypoint_index - 1];
+	const Waypoint& target_wp = _plane->waypoints[_plane->waypoint_index];
 
 	// Convert waypoints to north east coordinates
-	double prev_north, prev_east;
+	double prev_north, prev_east, tgt_north, tgt_east;
 	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, prev_wp.lat, prev_wp.lon,
 					  &prev_north, &prev_east);
-
-	double tgt_north, tgt_east;
 	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, target_wp.lat, target_wp.lon,
 					  &tgt_north, &tgt_east);
 
 	// Calculate track heading (bearing from previous to target waypoint)
-	float trk_hdg = atan2f(tgt_east - prev_east, tgt_north - prev_north);
+	const float trk_hdg = atan2f(tgt_east - prev_east, tgt_north - prev_north);
 
 	// Compute cross-track error (perpendicular distance from aircraft to path)
-	float rel_east = _plane->nav_pos_east - tgt_east;
-	float rel_north = _plane->nav_pos_north - tgt_north;
-	float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
+	const float rel_east = _plane->nav_pos_east - tgt_east;
+	const float rel_north = _plane->nav_pos_north - tgt_north;
+	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
 	// Scale L1 distance with speed
-	float l1_dist = (1.0 / M_PI) * get_params()->l1_ctrl.period * _plane->nav_gnd_spd;
-	if (l1_dist < 1.0)
-	{
-		l1_dist = 1.0; // Prevent divide by zero
-	}
+	const float l1_dist = max(get_params()->l1_ctrl.period * _plane->nav_gnd_spd / M_PI, 1.0);
 
 	// Calculate correction angle
-	float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
-	float hdg_setpoint = trk_hdg - correction_angle;
+	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
+	const float hdg_setpoint = trk_hdg - correction_angle;
 
 	// Calculate plane heading error
-	float hdg_err = hdg_setpoint - wrap_pi(_plane->get_ahrs_data(ahrs_handle).yaw * DEG_TO_RAD);
+	const float hdg_err = hdg_setpoint - wrap_pi(_plane->get_ahrs_data(ahrs_handle).yaw * DEG_TO_RAD);
 
 	// Calculate roll setpoint using l1 guidance
-	float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / l1_dist) * sinf(hdg_err);
-	_plane->roll_setpoint = atanf(lateral_accel / G) * RAD_TO_DEG;
+	const float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / l1_dist) * sinf(hdg_err);
+	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
 	if (_plane->auto_mode == Auto_mode::TAKEOFF)
 	{
-		_plane->roll_setpoint = clamp(
-			_plane->roll_setpoint,
-			-get_params()->takeoff.roll_lim,
-			get_params()->takeoff.roll_lim
-		);
+		_plane->roll_setpoint = clamp(roll, -get_params()->takeoff.roll_lim,
+									  get_params()->takeoff.roll_lim);
 	}
 	else
 	{
-		_plane->roll_setpoint = clamp(
-			_plane->roll_setpoint,
-			-get_params()->l1_ctrl.roll_lim,
-			get_params()->l1_ctrl.roll_lim
-		);
+		_plane->roll_setpoint = clamp(roll, -get_params()->l1_ctrl.roll_lim,
+									  get_params()->l1_ctrl.roll_lim);
 	}
 
 	// Altitude first order hold
@@ -173,7 +161,11 @@ float L1_controller::compute_along_track_distance(float start_n, float start_e,
 	float vec_north = end_n - start_n;
 	float vec_east = end_e - start_e;
 	float vec_norm = sqrtf(vec_north * vec_north + vec_east * vec_east);
-	float proj_factor = ((pos_n - start_n) * vec_north + (pos_e - start_e) * vec_east) / (vec_norm * vec_norm);
+
+	if (vec_norm == 0) return 0.0f;
+
+	float proj_factor = ((pos_n - start_n) * vec_north + (pos_e - start_e) * vec_east) /
+						(vec_norm * vec_norm);
 	return proj_factor * vec_norm;
 }
 

@@ -14,7 +14,7 @@ class L1_controller : public Module
 public:
 	L1_controller(HAL* hal, Plane* plane);
 
-	void update();
+	void update() override;
 
 private:
 	Subscription_handle ahrs_handle;
