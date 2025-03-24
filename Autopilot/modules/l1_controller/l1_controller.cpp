@@ -43,8 +43,7 @@ void L1_controller::handle_auto_mode()
 	}
 }
 
-// Generate position and altitude setpoints
-// Detect when waypoint reached and switch to next waypoint
+// Update roll and altitude setpoints
 void L1_controller::update_mission()
 {
 	// Determine target and previous waypoints
@@ -139,6 +138,7 @@ void L1_controller::update_mission()
 	}
 }
 
+// Decrease altitude setpoint at the flare sink rate and set roll to 0
 void L1_controller::update_flare()
 {
 	// Get the landing waypoint and the approach waypoint
@@ -149,27 +149,25 @@ void L1_controller::update_flare()
 	float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon, appr_wp.lat, appr_wp.lon);
 
 	// Calculate the glideslope angle based on the altitude difference and horizontal distance
-	float glideslope_angle = atan2f(
-		land_wp.alt - appr_wp.alt,
-		dist_land_appr
-	);
+	float glideslope_angle = atan2f(land_wp.alt - appr_wp.alt, dist_land_appr);
 
-	// Calculate the initial sink rate during flare based on the glideslope angle and landing airspeed
-	float flare_initial_sink_rate = get_params()->tecs.aspd_land * sinf(glideslope_angle);
+	// Calculate the initial sink rate during flare based on the glideslope angle and land airspeed
+	float initial_sink_rate = get_params()->tecs.aspd_land * sinf(glideslope_angle);
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
+	float initial_altitude = get_params()->landing.flare_alt;
+	float final_altitude = 0;
+	float final_sink_rate = get_params()->landing.flare_sink_rate;
 	float sink_rate = lerp(
-		get_params()->landing.flare_alt,
-		flare_initial_sink_rate,
-		0,
-		get_params()->landing.flare_sink_rate,
-		clamp(-_plane->nav_pos_down, 0, get_params()->landing.flare_alt)
+		initial_altitude, initial_sink_rate,
+		final_altitude, final_sink_rate,
+		clamp(-_plane->nav_pos_down, final_altitude, initial_altitude)
 	);
 
 	// Make sure sink rate decreases during flare, not increases
-	if (sink_rate > flare_initial_sink_rate)
+	if (sink_rate > initial_sink_rate)
 	{
-		sink_rate = flare_initial_sink_rate;
+		sink_rate = initial_sink_rate;
 	}
 
 	// Update the guidance setpoint with the calculated sink rate
