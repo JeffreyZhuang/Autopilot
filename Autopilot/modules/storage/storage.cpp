@@ -95,6 +95,7 @@ Storage_payload Storage::create_payload()
 	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
 	Plane::Mag_data mag_data = _plane->get_mag_data(mag_handle);
 	Plane::GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
+	Plane::Pos_est_data pos_est_data = _plane->get_pos_est_data(pos_est_handle);
 
 	Storage_payload payload = {
 		_plane->loop_iteration,
@@ -102,8 +103,8 @@ Storage_payload Storage::create_payload()
 		{imu_data.gx, imu_data.gy, imu_data.gz},
 		{imu_data.ax, imu_data.ay, imu_data.az},
 		{mag_data.x, mag_data.y, mag_data.z},
-		{_plane->nav_pos_north, _plane->nav_pos_east, _plane->nav_pos_down},
-		{_plane->nav_vel_north, _plane->nav_vel_east, _plane->nav_vel_down},
+		{pos_est_data.pos_n, pos_est_data.pos_e, pos_est_data.pos_d},
+		{pos_est_data.vel_n, pos_est_data.vel_e, pos_est_data.vel_d},
 		_plane->get_baro_data(baro_handle).alt,
 		{_plane->rc_ail_norm, _plane->rc_ele_norm, _plane->rc_rud_norm, _plane->rc_thr_norm},
 		gnss_data.lat,

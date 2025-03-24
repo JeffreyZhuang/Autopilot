@@ -6,6 +6,9 @@ Commander::Commander(HAL* hal, Plane* plane) : Module(hal, plane)
 
 void Commander::update()
 {
+	_pos_est_data = _plane->get_pos_est_data(_pos_est_handle);
+	_ahrs_data = _plane->get_ahrs_data(_ahrs_handle);
+
 	switch (_plane->system_mode)
 	{
 	case System_mode::CONFIG:
@@ -110,8 +113,8 @@ void Commander::update_startup()
 							!_plane->rc_man_sw &&
 							!_plane->rc_mod_sw;
 
-	if (_plane->get_ahrs_data(ahrs_handle).converged &&
-		_plane->nav_converged &&
+	if (_ahrs_data.converged &&
+		_pos_est_data.converged &&
 		_plane->tx_connected &&
 		transmitter_safe)
 	{
@@ -121,7 +124,7 @@ void Commander::update_startup()
 
 void Commander::update_takeoff()
 {
-	if (-_plane->nav_pos_down > get_params()->takeoff.alt)
+	if (-_pos_est_data.pos_d > get_params()->takeoff.alt)
 	{
 		_plane->auto_mode = Auto_mode::MISSION;
 	}
@@ -137,7 +140,7 @@ void Commander::update_mission()
 
 void Commander::update_land()
 {
-	if (-_plane->nav_pos_down < get_params()->landing.flare_alt)
+	if (-_pos_est_data.pos_d < get_params()->landing.flare_alt)
 	{
 		_plane->auto_mode = Auto_mode::FLARE;
 	}
@@ -146,7 +149,7 @@ void Commander::update_land()
 void Commander::update_flare()
 {
 	// Detect touchdown when speed is below TOUCHDOWN_SPD_THR
-	if (_plane->nav_gnd_spd < get_params()->landing.touchdown_speed)
+	if (_pos_est_data.gnd_spd < get_params()->landing.touchdown_speed)
 	{
 		_plane->auto_mode = Auto_mode::TOUCHDOWN;
 	}

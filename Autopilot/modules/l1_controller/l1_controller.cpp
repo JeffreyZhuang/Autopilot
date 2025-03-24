@@ -11,6 +11,9 @@ L1_controller::L1_controller(HAL* hal, Plane* plane)
 
 void L1_controller::update()
 {
+	_ahrs_data = _plane->get_ahrs_data(_ahrs_handle);
+	_pos_est_data = _plane->get_pos_est_data(_pos_est_handle);
+
 	if (_plane->system_mode == System_mode::FLIGHT &&
 		_plane->auto_mode != Auto_mode::TOUCHDOWN)
 	{
@@ -61,22 +64,22 @@ void L1_controller::update_mission()
 	const float trk_hdg = atan2f(tgt_east - prev_east, tgt_north - prev_north);
 
 	// Compute cross-track error (perpendicular distance from aircraft to path)
-	const float rel_east = _plane->nav_pos_east - tgt_east;
-	const float rel_north = _plane->nav_pos_north - tgt_north;
+	const float rel_east = _pos_est_data.pos_e - tgt_east;
+	const float rel_north = _pos_est_data.pos_n - tgt_north;
 	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
 	// Calculate L1 distance and scale with speed
-	const float l1_dist = fmaxf(get_params()->l1_ctrl.period * _plane->nav_gnd_spd / M_PI, 1.0);
+	const float l1_dist = fmaxf(get_params()->l1_ctrl.period * _pos_est_data.gnd_spd / M_PI, 1.0);
 
 	// Calculate correction angle
 	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
 	const float hdg_setpoint = trk_hdg - correction_angle;
 
 	// Calculate plane heading error
-	const float hdg_err = hdg_setpoint - wrap_pi(_plane->get_ahrs_data(ahrs_handle).yaw * DEG_TO_RAD);
+	const float hdg_err = hdg_setpoint - wrap_pi(_ahrs_data.yaw * DEG_TO_RAD);
 
 	// Calculate lateral acceleration using l1 guidance
-	const float lateral_accel = 2 * powf(_plane->nav_gnd_spd, 2) / l1_dist * sinf(hdg_err);
+	const float lateral_accel = 2 * powf(_pos_est_data.gnd_spd, 2) / l1_dist * sinf(hdg_err);
 
 	// Update roll and altitude setpoints
 	_plane->roll_setpoint = calculate_roll_setpoint(lateral_accel);
@@ -105,7 +108,7 @@ void L1_controller::update_flare()
 	const float sink_rate = lerp(
 		initial_altitude, initial_sink_rate,
 		final_altitude, final_sink_rate,
-		clamp(-_plane->nav_pos_down, final_altitude, initial_altitude)
+		clamp(-_pos_est_data.pos_d, final_altitude, initial_altitude)
 	);
 
 	// Update altitude setpoint with the calculated sink rate
@@ -126,7 +129,7 @@ float L1_controller::calculate_altitude_setpoint(const float prev_north, const f
 	const float dist_prev_tgt = distance(prev_north, prev_east, tgt_north, tgt_east);
 	const float along_track_dist = compute_along_track_distance(
 		prev_north, prev_east, tgt_north, tgt_east,
-		_plane->nav_pos_north, _plane->nav_pos_east
+		_pos_est_data.pos_n, _pos_est_data.pos_e
 	);
 
 	const float initial_dist = get_params()->navigator.min_dist_wp;

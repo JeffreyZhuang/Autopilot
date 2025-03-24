@@ -106,12 +106,14 @@ void Tecs::update_touchdown()
 // wb = 2: only alt
 void Tecs::calculate_energies(float target_vel_mps, float target_alt_m, float wb)
 {
+	Plane::Pos_est_data pos_est_data = _plane->get_pos_est_data(pos_est_handle);
+
 	// Calculate specific energy
 	// SPe = gh
 	// SKe = 1/2 v^2
 	// Ignore mass since its the energy ratio that matters
-	float energy_pot = G * (-_plane->nav_pos_down);
-	float energy_kin = 0.5 * powf(_plane->nav_gnd_spd, 2);
+	float energy_pot = G * (-pos_est_data.pos_d);
+	float energy_kin = 0.5 * powf(pos_est_data.gnd_spd, 2);
 	float energy_total = energy_pot + energy_kin;
 
 	// Calculate target energy using same equations
@@ -134,17 +136,17 @@ void Tecs::calculate_energies(float target_vel_mps, float target_alt_m, float wb
 	float max_diff = wb * target_pot - (2.0f - wb) * min_kin;
 	energy_diff_setpoint = clamp(energy_diff_setpoint, min_diff, max_diff);
 
-	_plane->tecs_energy_total_setpoint = target_total;
-	_plane->tecs_energy_total = energy_total;
-	_plane->tecs_energy_diff_setpoint = energy_diff_setpoint;
-	_plane->tecs_energy_diff = energy_diff;
+	_total_energy_setpoint = target_total;
+	_total_energy = energy_total;
+	_energy_balance_setpoint = energy_diff_setpoint;
+	_energy_balance = energy_diff;
 }
 
 float Tecs::control_energy_balance()
 {
 	return energy_balance_controller.get_output(
-		_plane->tecs_energy_diff,
-		_plane->tecs_energy_diff_setpoint,
+		_energy_balance,
+		_energy_balance_setpoint,
 		get_params()->tecs.energy_balance_kp,
 		get_params()->tecs.energy_balance_ki,
 		get_params()->tecs.ptch_lim_deg,
@@ -158,8 +160,8 @@ float Tecs::control_energy_balance()
 float Tecs::control_total_energy()
 {
 	return total_energy_controller.get_output(
-		_plane->tecs_energy_total,
-		_plane->tecs_energy_total_setpoint,
+		_total_energy,
+		_total_energy_setpoint,
 		get_params()->tecs.total_energy_kp,
 		get_params()->tecs.total_energy_ki,
 		1,

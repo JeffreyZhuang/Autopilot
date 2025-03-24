@@ -88,10 +88,6 @@ void Position_estimator::predict_imu()
 											  ahrs_data.yaw * DEG_TO_RAD);
 	acc_ned(2) += G; // Gravity correction
 
-	_plane->nav_acc_north = acc_ned(0);
-	_plane->nav_acc_east = acc_ned(1);
-	_plane->nav_acc_down = acc_ned(2);
-
 	kalman.predict(acc_ned, get_a(_plane->dt_s), get_b(_plane->dt_s), get_q());
 
 	update_plane();
@@ -150,22 +146,19 @@ void Position_estimator::update_of_agl()
 
 	float flow = sqrtf(powf(of_data.x, 2) + powf(of_data.y, 2));
 	float angular_rate = sqrtf(powf(imu_data.gx, 2) + powf(imu_data.gy, 2)) * DEG_TO_RAD;
-	float alt = _plane->nav_gnd_spd / (flow - angular_rate);
+	float alt = pos_est_data.gnd_spd / (flow - angular_rate);
 	printf("OF AGL: %f\n", alt);
 }
 
 void Position_estimator::update_plane()
 {
 	Eigen::MatrixXf est = kalman.get_estimate();
-	_plane->nav_pos_north = est(0, 0);
-	_plane->nav_pos_east = est(1, 0);
-	_plane->nav_pos_down = est(2, 0);
-	_plane->nav_vel_north = est(3, 0);
-	_plane->nav_vel_east = est(4, 0);
-	_plane->nav_vel_down = est(5, 0);
-	_plane->nav_gnd_spd = sqrtf(powf(_plane->nav_vel_north, 2) + powf(_plane->nav_vel_east, 2));
-	_plane->nav_timestamp = _hal->get_time_us();
-	_plane->nav_converged = pos_estimator_state == Pos_estimator_state::RUNNING;
+
+	_plane->set_pos_est_data(Plane::Pos_est_data{
+		pos_estimator_state == Pos_estimator_state::RUNNING,
+		est(0, 0), est(1, 0), est(2, 0), est(3, 0), est(4, 0), est(5, 0),
+		sqrtf(powf(est(3, 0), 2) + powf(est(4, 0), 2)), 0,_hal->get_time_us()
+	});
 }
 
 // Function to rotate IMU measurements from inertial frame to NED frame

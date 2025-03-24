@@ -46,6 +46,7 @@ private:
 	Plane::Subscription_handle mag_handle;
 	Plane::Subscription_handle gnss_handle;
 	Plane::Subscription_handle baro_handle;
+	Plane::Subscription_handle pos_est_handle;
 
 	void write();
 	void flush();

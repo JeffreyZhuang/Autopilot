@@ -96,6 +96,22 @@ void Plane::set_ahrs_data(AHRS_data ahrs_data)
 	_ahrs_data = ahrs_data;
 }
 
+bool Plane::check_new_pos_est_data(Subscription_handle subscription_handle)
+{
+	return _pos_est_data.timestamp > subscription_handle.timestamp;
+}
+
+Plane::Pos_est_data Plane::get_pos_est_data(Subscription_handle subscription_handle)
+{
+	subscription_handle.timestamp = _pos_est_data.timestamp;
+	return _pos_est_data;
+}
+
+void Plane::set_pos_est_data(Pos_est_data pos_est_data)
+{
+	_pos_est_data = pos_est_data;
+}
+
 double Plane::get_home_lat() const
 {
 	return waypoints[0].lat;

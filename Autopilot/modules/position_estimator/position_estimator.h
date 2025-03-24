@@ -47,6 +47,9 @@ private:
     Plane::Subscription_handle gnss_handle;
     Plane::Subscription_handle of_handle;
     Plane::Subscription_handle ahrs_handle;
+    Plane::Subscription_handle pos_est_handle;
+
+    Plane::Pos_est_data pos_est_data;
 
     void update_initialization();
     void update_running();

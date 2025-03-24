@@ -13,6 +13,9 @@ public:
 	Navigator(HAL* hal, Plane* plane);
 
 	void update() override;
+
+private:
+	Plane::Subscription_handle pos_est_handle;
 };
 
 

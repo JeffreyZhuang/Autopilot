@@ -66,6 +66,20 @@ public:
 		uint64_t timestamp = 0;
 	};
 
+	struct Pos_est_data
+	{
+		bool converged = false;
+		float pos_n = 0;
+		float pos_e = 0;
+		float pos_d = 0;
+		float vel_n = 0;
+		float vel_e = 0;
+		float vel_d = 0;
+		float gnd_spd = 0;
+		float terr_hgt = 0;
+		uint64_t timestamp = 0;
+	};
+
 	struct Waypoint
 	{
 		double lat;
@@ -93,21 +107,6 @@ public:
 
     float baro_offset = 0;
 
-    // Position Estimator
-    bool nav_converged = false;
-    float nav_pos_north = 0;
-    float nav_pos_east = 0;
-    float nav_pos_down = 0;
-    float nav_vel_north = 0;
-    float nav_vel_east = 0;
-    float nav_vel_down = 0;
-    float nav_acc_north = 0;
-    float nav_acc_east = 0;
-    float nav_acc_down = 0;
-    float nav_gnd_spd = 0;
-    float nav_terr_hgt = 0;
-    uint64_t nav_timestamp = 0;
-
     // Navigator
     uint8_t waypoint_index = 1; // Skip home waypoint
     uint8_t num_waypoints = 0;
@@ -127,12 +126,6 @@ public:
     float rud_cmd = 0;
     float ele_cmd = 0;
     float thr_cmd = 0;
-
-    // TECS
-    float tecs_energy_total_setpoint = 0;
-	float tecs_energy_total = 0;
-	float tecs_energy_diff_setpoint = 0;
-	float tecs_energy_diff = 0;
 
     // Control
     float pitch_setpoint = 0;
@@ -164,6 +157,10 @@ public:
 	AHRS_data get_ahrs_data(Subscription_handle subscription_handle);
 	void set_ahrs_data(AHRS_data ahrs_data);
 
+	bool check_new_pos_est_data(Subscription_handle subscription_handle);
+	Pos_est_data get_pos_est_data(Subscription_handle subscription_handle);
+	void set_pos_est_data(Pos_est_data pos_est_data);
+
 	double get_home_lat() const;
 	double get_home_lon() const;
 
@@ -174,6 +171,7 @@ private:
     GNSS_data _gnss_data;
     OF_data _of_data;
     AHRS_data _ahrs_data;
+    Pos_est_data _pos_est_data;
 };
 
 #endif /* PLANE_H_ */

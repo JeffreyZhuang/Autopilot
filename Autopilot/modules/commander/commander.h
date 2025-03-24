@@ -15,7 +15,11 @@ public:
 	void update();
 
 private:
-	Plane::Subscription_handle ahrs_handle;
+	Plane::Subscription_handle _ahrs_handle;
+	Plane::Subscription_handle _pos_est_handle;
+
+	Plane::Pos_est_data _pos_est_data;
+	Plane::AHRS_data _ahrs_data;
 
 	void handle_flight_mode();
 	void handle_manual_mode();

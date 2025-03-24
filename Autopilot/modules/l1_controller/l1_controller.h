@@ -17,7 +17,11 @@ public:
 	void update() override;
 
 private:
-	Plane::Subscription_handle ahrs_handle;
+	Plane::Subscription_handle _ahrs_handle;
+	Plane::Subscription_handle _pos_est_handle;
+
+	Plane::AHRS_data _ahrs_data;
+	Plane::Pos_est_data _pos_est_data;
 
 	void handle_auto_mode();
 	void update_mission();

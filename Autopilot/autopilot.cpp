@@ -84,15 +84,18 @@ void Autopilot::update_time()
 // View in web serial plotter
 void Autopilot::debug_serial()
 {
+	// Maybe move to debug class
 	if (_plane->system_mode != System_mode::CONFIG)
 	{
 		Plane::Subscription_handle ahrs_handle;
 		Plane::Subscription_handle gnss_handle;
 		Plane::Subscription_handle baro_handle;
+		Plane::Subscription_handle pos_est_handle;
 
 		Plane::AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
 		Plane::GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
 		Plane::Baro_data baro_data = _plane->get_baro_data(baro_handle);
+		Plane::Pos_est_data pos_est_data = _plane->get_pos_est_data(pos_est_handle);
 
 		double gnss_north_meters, gnss_east_meters;
 		lat_lon_to_meters(_plane->get_home_lat(), _plane->get_home_lon(),
@@ -101,16 +104,13 @@ void Autopilot::debug_serial()
 
 		char tx_buff[200];
 		sprintf(tx_buff,
-				"%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f\n",
-				_plane->nav_acc_north,
-				_plane->nav_acc_east,
-				_plane->nav_acc_down,
-				_plane->nav_vel_north,
-				_plane->nav_vel_east,
-				_plane->nav_vel_down,
-				_plane->nav_pos_north,
-				_plane->nav_pos_east,
-				_plane->nav_pos_down,
+				"%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f\n",
+				pos_est_data.vel_n,
+				pos_est_data.vel_e,
+				pos_est_data.vel_d,
+				pos_est_data.pos_n,
+				pos_est_data.pos_e,
+				pos_est_data.pos_d,
 				gnss_north_meters,
 				gnss_east_meters,
 				-(baro_data.alt - _plane->baro_offset),

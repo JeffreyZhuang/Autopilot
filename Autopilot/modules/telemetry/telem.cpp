@@ -186,18 +186,19 @@ Telem_payload Telem::create_telem_payload()
 {
 	Plane::AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
 	Plane::GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
+	Plane::Pos_est_data pos_est_data = _plane->get_pos_est_data(pos_est_handle);
 
 	Telem_payload payload = {
 		(int16_t)(ahrs_data.roll * 100),
 		(int16_t)(ahrs_data.pitch * 100),
 		(uint16_t)(ahrs_data.yaw * 10),
-		(int16_t)(-_plane->nav_pos_down * 10),
-		(uint16_t)(_plane->nav_gnd_spd * 10),
+		(int16_t)(-pos_est_data.pos_d * 10),
+		(uint16_t)(pos_est_data.gnd_spd * 10),
 		(int16_t)(-_plane->guidance_d_setpoint * 10),
 		(int32_t)(gnss_data.lat * 1E7),
 		(int32_t)(gnss_data.lon * 1E7),
-		_plane->nav_pos_north,
-		_plane->nav_pos_east,
+		pos_est_data.pos_n,
+		pos_est_data.pos_e,
 		get_current_state(),
 		_plane->waypoint_index,
 		0,
