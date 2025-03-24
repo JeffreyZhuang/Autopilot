@@ -7,18 +7,13 @@ Navigator::Navigator(HAL* hal, Plane* plane) : Module(hal, plane)
 void Navigator::update()
 {
 	// Get target waypoint
-	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
+	const Plane::Waypoint& target_wp = _plane->waypoints[_plane->waypoint_index];
 
 	// Convert waypoint to north east coordinates
 	double tgt_north, tgt_east;
-	lat_lon_to_meters(
-		_plane->waypoints[0].lat,
-		_plane->waypoints[0].lon,
-		target_wp.lat,
-		target_wp.lon,
-		&tgt_north,
-		&tgt_east
-	);
+	lat_lon_to_meters(_plane->get_home_lat(), _plane->get_home_lon(),
+					  target_wp.lat, target_wp.lon,
+					  &tgt_north, &tgt_east);
 
 	// Check distance to waypoint to determine if waypoint reached
 	float rel_east = _plane->nav_pos_east - tgt_east;

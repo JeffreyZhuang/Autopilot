@@ -81,7 +81,7 @@ void Attitude_control::update_touchdown()
 
 void Attitude_control::control_roll_ptch()
 {
-	AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
+	Plane::AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
 
 	_plane->rud_cmd = roll_controller.get_output(
 		ahrs_data.roll,
@@ -110,7 +110,7 @@ void Attitude_control::control_roll_ptch()
 
 void Attitude_control::control_roll_ptch_no_integral()
 {
-	AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
+	Plane::AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
 
 	_plane->rud_cmd = roll_controller.get_output(
 		ahrs_data.roll,

@@ -5,7 +5,7 @@ bool Plane::check_new_imu_data(Subscription_handle subscription_handle)
 	return _imu_data.timestamp > subscription_handle.timestamp;
 }
 
-IMU_data Plane::get_imu_data(Subscription_handle subscription_handle)
+Plane::IMU_data Plane::get_imu_data(Subscription_handle subscription_handle)
 {
 	subscription_handle.timestamp = _imu_data.timestamp;
 	return _imu_data;
@@ -21,7 +21,7 @@ bool Plane::check_new_mag_data(Subscription_handle subscription_handle)
 	return _mag_data.timestamp > subscription_handle.timestamp;
 }
 
-Mag_data Plane::get_mag_data(Subscription_handle subscription_handle)
+Plane::Mag_data Plane::get_mag_data(Subscription_handle subscription_handle)
 {
 	subscription_handle.timestamp = _mag_data.timestamp;
 	return _mag_data;
@@ -37,7 +37,7 @@ bool Plane::check_new_baro_data(Subscription_handle subscription_handle)
 	return _baro_data.timestamp > subscription_handle.timestamp;
 }
 
-Baro_data Plane::get_baro_data(Subscription_handle subscription_handle)
+Plane::Baro_data Plane::get_baro_data(Subscription_handle subscription_handle)
 {
 	subscription_handle.timestamp = _baro_data.timestamp;
 	return _baro_data;
@@ -53,7 +53,7 @@ bool Plane::check_new_gnss_data(Subscription_handle subscription_handle)
 	return _gnss_data.timestamp > subscription_handle.timestamp;
 }
 
-GNSS_data Plane::get_gnss_data(Subscription_handle subscription_handle)
+Plane::GNSS_data Plane::get_gnss_data(Subscription_handle subscription_handle)
 {
 	subscription_handle.timestamp = _gnss_data.timestamp;
 	return _gnss_data;
@@ -69,7 +69,7 @@ bool Plane::check_new_of_data(Subscription_handle subscription_handle)
 	return _of_data.timestamp > subscription_handle.timestamp;
 }
 
-OF_data Plane::get_of_data(Subscription_handle subscription_handle)
+Plane::OF_data Plane::get_of_data(Subscription_handle subscription_handle)
 {
 	subscription_handle.timestamp = _of_data.timestamp;
 	return _of_data;
@@ -85,7 +85,7 @@ bool Plane::check_new_ahrs_data(Subscription_handle subscription_handle)
 	return _ahrs_data.timestamp > subscription_handle.timestamp;
 }
 
-AHRS_data Plane::get_ahrs_data(Subscription_handle subscription_handle)
+Plane::AHRS_data Plane::get_ahrs_data(Subscription_handle subscription_handle)
 {
 	subscription_handle.timestamp = _ahrs_data.timestamp;
 	return _ahrs_data;

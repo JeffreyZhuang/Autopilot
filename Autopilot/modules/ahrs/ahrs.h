@@ -46,8 +46,8 @@ private:
 	MovingAverage avg_my;
 	MovingAverage avg_mz;
 
-	Subscription_handle imu_handle;
-	Subscription_handle mag_handle;
+	Plane::Subscription_handle imu_handle;
+	Plane::Subscription_handle mag_handle;
 
 	void update_initialization();
 	void update_running();

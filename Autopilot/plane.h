@@ -4,91 +4,75 @@
 #include "modes.h"
 #include <stdint.h>
 
-struct Waypoint {
-	double lat;
-	double lon;
-	float alt;
-};
-
-struct Subscription_handle
-{
-	uint64_t timestamp = 0;
-};
-
-struct IMU_data
-{
-	float gx = 0;
-	float gy = 0;
-	float gz = 0;
-	float ax = 0;
-	float ay = 0;
-	float az = 0;
-	uint64_t timestamp = 0;
-};
-
-struct Mag_data
-{
-	float x = 0;
-	float y = 0;
-	float z = 0;
-	uint64_t timestamp = 0;
-};
-
-struct Baro_data
-{
-	float alt = 0;
-	uint64_t timestamp = 0;
-};
-
-struct GNSS_data
-{
-	double lat = 0;
-	double lon = 0;
-	float asl = 0;
-	uint8_t sats = 0;
-	bool fix = false;
-	uint64_t timestamp = 0;
-};
-
-struct AHRS_data
-{
-	bool converged = false;
-	float roll = 0;
-	float pitch = 0;
-	float yaw = 0;
-	uint64_t timestamp = 0;
-};
-
-struct OF_data
-{
-	int16_t x = 0;
-	int16_t y = 0;
-	uint64_t timestamp = 0;
-};
-
-struct Pos_est_data
-{
-	bool converged = false;
-	float pos_north = 0;
-	float pos_east = 0;
-	float pos_down = 0;
-	float vel_north = 0;
-	float vel_east = 0;
-	float vel_down = 0;
-	float acc_north = 0;
-	float acc_east = 0;
-	float acc_down = 0;
-	float gnd_spd = 0;
-	float terr_hgt = 0;
-	uint64_t timestamp = 0;
-};
-
 /**
  * @brief All flight data and settings that get passed to classes
  */
 class Plane
 {
 public:
+	struct Subscription_handle
+	{
+		uint64_t timestamp = 0;
+	};
+
+	struct IMU_data
+	{
+		float gx = 0;
+		float gy = 0;
+		float gz = 0;
+		float ax = 0;
+		float ay = 0;
+		float az = 0;
+		uint64_t timestamp = 0;
+	};
+
+	struct Mag_data
+	{
+		float x = 0;
+		float y = 0;
+		float z = 0;
+		uint64_t timestamp = 0;
+	};
+
+	struct Baro_data
+	{
+		float alt = 0;
+		uint64_t timestamp = 0;
+	};
+
+	struct GNSS_data
+	{
+		double lat = 0;
+		double lon = 0;
+		float asl = 0;
+		uint8_t sats = 0;
+		bool fix = false;
+		uint64_t timestamp = 0;
+	};
+
+	struct AHRS_data
+	{
+		bool converged = false;
+		float roll = 0;
+		float pitch = 0;
+		float yaw = 0;
+		uint64_t timestamp = 0;
+	};
+
+	struct OF_data
+	{
+		int16_t x = 0;
+		int16_t y = 0;
+		uint64_t timestamp = 0;
+	};
+
+	struct Waypoint
+	{
+		double lat;
+		double lon;
+		float alt;
+	};
+
     // State machine
 	System_mode system_mode;
     Flight_mode flight_mode;

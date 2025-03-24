@@ -42,11 +42,11 @@ private:
     float window_lat[window_len];
     float window_lon[window_len];
 
-    Subscription_handle imu_handle;
-    Subscription_handle baro_handle;
-    Subscription_handle gnss_handle;
-    Subscription_handle of_handle;
-    Subscription_handle ahrs_handle;
+    Plane::Subscription_handle imu_handle;
+    Plane::Subscription_handle baro_handle;
+    Plane::Subscription_handle gnss_handle;
+    Plane::Subscription_handle of_handle;
+    Plane::Subscription_handle ahrs_handle;
 
     void update_initialization();
     void update_running();

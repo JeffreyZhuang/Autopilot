@@ -47,8 +47,8 @@ void L1_controller::handle_auto_mode()
 void L1_controller::update_mission()
 {
 	// Determine target and previous waypoints
-	const Waypoint& prev_wp = _plane->waypoints[_plane->waypoint_index - 1];
-	const Waypoint& target_wp = _plane->waypoints[_plane->waypoint_index];
+	const Plane::Waypoint& prev_wp = _plane->waypoints[_plane->waypoint_index - 1];
+	const Plane::Waypoint& target_wp = _plane->waypoints[_plane->waypoint_index];
 
 	// Convert waypoints to north east coordinates
 	double prev_north, prev_east, tgt_north, tgt_east;
@@ -88,8 +88,8 @@ void L1_controller::update_mission()
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
 void L1_controller::update_flare()
 {
-	const Waypoint& land_wp = _plane->waypoints[-1];
-	const Waypoint& appr_wp = _plane->waypoints[-2];
+	const Plane::Waypoint& land_wp = _plane->waypoints[-1];
+	const Plane::Waypoint& appr_wp = _plane->waypoints[-2];
 
 	// Calculate the glideslope angle based on the altitude difference and horizontal distance
 	const float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon,
@@ -115,7 +115,7 @@ void L1_controller::update_flare()
 
 float L1_controller::calculate_altitude_setpoint(const float prev_north, const float prev_east,
 		  	  	  	  	  	  	  	  	  	  	 const float tgt_north, const float tgt_east,
-												 const Waypoint& prev_wp, const Waypoint& target_wp)
+												 const Plane::Waypoint& prev_wp, const Plane::Waypoint& target_wp)
 {
 	if (_plane->waypoint_index == 1)
 	{

@@ -136,7 +136,7 @@ bool Telem::parse_packet()
 			}
 
 			_plane->num_waypoints = waypoint_payload.total_waypoints;
-			_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){
+			_plane->waypoints[waypoint_payload.waypoint_index] = (Plane::Waypoint){
 				(double)waypoint_payload.lat * 1E-7,
 				(double)waypoint_payload.lon * 1E-7,
 				(float)waypoint_payload.alt * 1E-1f
@@ -184,8 +184,8 @@ void Telem::transmit_packet(uint8_t packet[], uint16_t size)
 
 Telem_payload Telem::create_telem_payload()
 {
-	AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
-	GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
+	Plane::AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
+	Plane::GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
 
 	Telem_payload payload = {
 		(int16_t)(ahrs_data.roll * 100),

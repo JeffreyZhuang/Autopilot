@@ -34,8 +34,8 @@ void AHRS::update_initialization()
 {
 	if (_plane->check_new_imu_data(imu_handle) && _plane->check_new_mag_data(mag_handle))
 	{
-		IMU_data imu_data = _plane->get_imu_data(imu_handle);
-		Mag_data mag_data = _plane->get_mag_data(mag_handle);
+		Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
+		Plane::Mag_data mag_data = _plane->get_mag_data(mag_handle);
 
 		float mag_calib[3] = {mag_data.x, mag_data.y, mag_data.z};
 		apply_compass_calibration(mag_calib);
@@ -81,7 +81,7 @@ void AHRS::update_running()
 
 void AHRS::update_imu()
 {
-	IMU_data imu_data = _plane->get_imu_data(imu_handle);
+	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
 
 	filter.updateIMU(imu_data.gx, imu_data.gy, imu_data.gz,
 	                 -imu_data.ax, -imu_data.ay, -imu_data.az);
@@ -89,8 +89,8 @@ void AHRS::update_imu()
 
 void AHRS::update_imu_mag()
 {
-	IMU_data imu_data = _plane->get_imu_data(imu_handle);
-	Mag_data mag_data = _plane->get_mag_data(mag_handle);
+	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
+	Plane::Mag_data mag_data = _plane->get_mag_data(mag_handle);
 
 	float mag_calib[3] = {mag_data.x, mag_data.y, mag_data.z};
 
@@ -103,7 +103,7 @@ void AHRS::update_imu_mag()
 
 void AHRS::update_gyro()
 {
-	IMU_data imu_data = _plane->get_imu_data(imu_handle);
+	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
 
 	filter.updateGyro(imu_data.gx, imu_data.gy, imu_data.gz);
 }
@@ -111,7 +111,7 @@ void AHRS::update_gyro()
 void AHRS::publish_ahrs()
 {
 	// Account yaw for magnetic declination and normalize to [0, 360]
-	_plane->set_ahrs_data(AHRS_data{
+	_plane->set_ahrs_data(Plane::AHRS_data{
 		ahrs_state == Ahrs_state::RUNNING,
 		filter.getRoll(),
 		filter.getPitch(),
@@ -192,7 +192,7 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 
 bool AHRS::is_accel_reliable()
 {
-	IMU_data imu_data = _plane->get_imu_data(imu_handle);
+	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
 
 	float accel_magnitude = sqrtf(powf(imu_data.ax, 2) +
 								  powf(imu_data.ay, 2) +

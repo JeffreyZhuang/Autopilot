@@ -92,9 +92,9 @@ void Storage::flush()
 
 Storage_payload Storage::create_payload()
 {
-	IMU_data imu_data = _plane->get_imu_data(imu_handle);
-	Mag_data mag_data = _plane->get_mag_data(mag_handle);
-	GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
+	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
+	Plane::Mag_data mag_data = _plane->get_mag_data(mag_handle);
+	Plane::GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
 
 	Storage_payload payload = {
 		_plane->loop_iteration,

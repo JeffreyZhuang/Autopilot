@@ -1,4 +1,4 @@
-#include <modules/rc_handler/rc_handler.h>
+#include "modules/rc_handler/rc_handler.h"
 
 Rc_handler::Rc_handler(HAL* hal, Plane* plane) : Module(hal, plane)
 {

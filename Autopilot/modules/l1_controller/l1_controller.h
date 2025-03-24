@@ -17,14 +17,14 @@ public:
 	void update() override;
 
 private:
-	Subscription_handle ahrs_handle;
+	Plane::Subscription_handle ahrs_handle;
 
 	void handle_auto_mode();
 	void update_mission();
 	void update_flare();
 	float calculate_altitude_setpoint(const float prev_north, const float prev_east,
 	  	  	  	  	  	 	 	 	  const float tgt_north, const float tgt_east,
-									  const Waypoint& prev_wp, const Waypoint& target_wp);
+									  const Plane::Waypoint& prev_wp, const Plane::Waypoint& target_wp);
 	float calculate_roll_setpoint(float lateral_accel) const;
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);
