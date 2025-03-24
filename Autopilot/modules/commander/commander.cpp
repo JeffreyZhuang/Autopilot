@@ -110,7 +110,7 @@ void Commander::update_startup()
 							!_plane->rc_man_sw &&
 							!_plane->rc_mod_sw;
 
-	if (_plane->ahrs_converged &&
+	if (_plane->get_ahrs_data(ahrs_handle).converged &&
 		_plane->nav_converged &&
 		_plane->tx_connected &&
 		transmitter_safe)

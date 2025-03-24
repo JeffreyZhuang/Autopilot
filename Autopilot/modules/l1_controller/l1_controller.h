@@ -1,5 +1,5 @@
-#ifndef GUIDANCE_H_
-#define GUIDANCE_H_
+#ifndef L1_CONTROLLER_H_
+#define L1_CONTROLLER_H_
 
 #include "lib/utils/utils.h"
 #include "hal.h"
@@ -17,13 +17,17 @@ public:
 	void update();
 
 private:
+	Subscription_handle ahrs_handle;
+
 	void handle_auto_mode();
 	void update_mission();
 	void update_flare();
-
+	void compute_altitude_setpoint();
+	float compute_along_track_dist_wp(Waypoint prev_wp, Waypoint tgt_wp);
+	float interpolate_altitude(Waypoint prev_wp, Waypoint tgt_wp);
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);
 	float distance(float n1, float e1, float n2, float e2);
 };
 
-#endif /* GUIDANCE_H_ */
+#endif /* L1_CONTROLLER_H_ */

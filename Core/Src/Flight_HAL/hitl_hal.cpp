@@ -23,11 +23,13 @@ void Flight_hal::read_sensors_hitl()
 	_plane->set_imu_data(IMU_data{data->gx, data->gy, data->gz, data->ax, data->ay, data->az, time});
 	_plane->set_mag_data(Mag_data{data->mx, data->my, data->mz, time});
 	_plane->set_baro_data(Baro_data{data->asl, time});
-	_plane->gnss_lat = (double)data->lat * 1E-7;
-	_plane->gnss_lon = (double)data->lon * 1E-7;
-	_plane->gnss_asl = data->asl;
-	_plane->gnss_sats = 10;
-	_plane->gps_fix = true;
-	_plane->gnss_timestamp = time;
+	_plane->set_gnss_data(GNSS_data{
+		(double)data->lat * 1E-7,
+		(double)data->lon * 1E-7,
+		data->asl,
+		10,
+		true,
+		time
+	});
 	_plane->set_of_data(OF_data{data->of_x, data->of_y, time});
 }

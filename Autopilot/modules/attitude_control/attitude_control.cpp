@@ -81,8 +81,10 @@ void Attitude_control::update_touchdown()
 
 void Attitude_control::control_roll_ptch()
 {
+	AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
+
 	_plane->rud_cmd = roll_controller.get_output(
-		_plane->ahrs_roll,
+		ahrs_data.roll,
 		_plane->roll_setpoint,
 		get_params()->att_ctrl.roll_kp,
 		get_params()->att_ctrl.roll_ki,
@@ -94,7 +96,7 @@ void Attitude_control::control_roll_ptch()
 	);
 
 	_plane->ele_cmd = pitch_controller.get_output(
-		_plane->ahrs_pitch,
+		ahrs_data.pitch,
 		_plane->pitch_setpoint,
 		get_params()->att_ctrl.ptch_kp,
 		get_params()->att_ctrl.ptch_ki,
@@ -108,8 +110,10 @@ void Attitude_control::control_roll_ptch()
 
 void Attitude_control::control_roll_ptch_no_integral()
 {
+	AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
+
 	_plane->rud_cmd = roll_controller.get_output(
-		_plane->ahrs_roll,
+		ahrs_data.roll,
 		_plane->roll_setpoint,
 		get_params()->att_ctrl.roll_kp,
 		0,
@@ -121,7 +125,7 @@ void Attitude_control::control_roll_ptch_no_integral()
 	);
 
 	_plane->ele_cmd = pitch_controller.get_output(
-		_plane->ahrs_pitch,
+		ahrs_data.pitch,
 		_plane->pitch_setpoint,
 		get_params()->att_ctrl.ptch_kp,
 		0,

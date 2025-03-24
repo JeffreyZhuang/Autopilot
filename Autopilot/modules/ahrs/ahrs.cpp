@@ -32,10 +32,10 @@ void AHRS::update()
 
 void AHRS::update_initialization()
 {
-	if (_plane->check_new_imu_data(imu_data) && _plane->check_new_mag_data(mag_data))
+	if (_plane->check_new_imu_data(imu_handle) && _plane->check_new_mag_data(mag_handle))
 	{
-		imu_data = _plane->get_imu_data();
-		mag_data = _plane->get_mag_data();
+		IMU_data imu_data = _plane->get_imu_data(imu_handle);
+		Mag_data mag_data = _plane->get_mag_data(mag_handle);
 
 		float mag_calib[3] = {mag_data.x, mag_data.y, mag_data.z};
 		apply_compass_calibration(mag_calib);
@@ -57,15 +57,12 @@ void AHRS::update_initialization()
 
 void AHRS::update_running()
 {
-	if (_plane->check_new_imu_data(imu_data))
+	if (_plane->check_new_imu_data(imu_handle))
 	{
-		imu_data = _plane->get_imu_data();
-
 		if (is_accel_reliable())
 		{
-			if (_plane->check_new_mag_data(mag_data))
+			if (_plane->check_new_mag_data(mag_handle))
 			{
-				mag_data = _plane->get_mag_data();
 				update_imu_mag();
 			}
 			else
@@ -84,12 +81,17 @@ void AHRS::update_running()
 
 void AHRS::update_imu()
 {
+	IMU_data imu_data = _plane->get_imu_data(imu_handle);
+
 	filter.updateIMU(imu_data.gx, imu_data.gy, imu_data.gz,
 	                 -imu_data.ax, -imu_data.ay, -imu_data.az);
 }
 
 void AHRS::update_imu_mag()
 {
+	IMU_data imu_data = _plane->get_imu_data(imu_handle);
+	Mag_data mag_data = _plane->get_mag_data(mag_handle);
+
 	float mag_calib[3] = {mag_data.x, mag_data.y, mag_data.z};
 
 	apply_compass_calibration(mag_calib);
@@ -101,20 +103,21 @@ void AHRS::update_imu_mag()
 
 void AHRS::update_gyro()
 {
+	IMU_data imu_data = _plane->get_imu_data(imu_handle);
+
 	filter.updateGyro(imu_data.gx, imu_data.gy, imu_data.gz);
 }
 
 void AHRS::publish_ahrs()
 {
-	_plane->ahrs_roll = filter.getRoll();
-	_plane->ahrs_pitch = filter.getPitch();
-
-	// Account for magnetic declination
-	// Keep between 0 and 360 degrees
-	_plane->ahrs_yaw = fmod(filter.getYaw() + get_params()->ahrs.mag_decl + 360.0f, 360.0f);
-
-	_plane->ahrs_timestamp = _hal->get_time_us();
-	_plane->ahrs_converged = ahrs_state == Ahrs_state::RUNNING;
+	// Account yaw for magnetic declination and normalize to [0, 360]
+	_plane->set_ahrs_data(AHRS_data{
+		ahrs_state == Ahrs_state::RUNNING,
+		filter.getRoll(),
+		filter.getPitch(),
+		fmod(filter.getYaw() + get_params()->ahrs.mag_decl + 360.0f, 360.0f),
+		_hal->get_time_us()
+	});
 }
 
 void AHRS::set_initial_angles()
@@ -189,6 +192,8 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 
 bool AHRS::is_accel_reliable()
 {
+	IMU_data imu_data = _plane->get_imu_data(imu_handle);
+
 	float accel_magnitude = sqrtf(powf(imu_data.ax, 2) +
 								  powf(imu_data.ay, 2) +
 								  powf(imu_data.az, 2));

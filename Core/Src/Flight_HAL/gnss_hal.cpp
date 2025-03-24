@@ -9,15 +9,13 @@ void Flight_hal::read_gnss()
 {
 	if (_gnss.read())
 	{
-		_plane->gnss_lat = _gnss.lat;
-		_plane->gnss_lon = _gnss.lon;
-		_plane->gnss_sats = _gnss.sats;
-		_plane->gnss_asl = _gnss.alt;
-		_plane->gps_fix = _gnss.fix;
-
-		if (_plane->gps_fix)
-		{
-			_plane->gnss_timestamp = get_time_us();
-		}
+		_plane->set_gnss_data(GNSS_data{
+			_gnss.lat,
+			_gnss.lon,
+			_gnss.alt,
+			_gnss.sats,
+			_gnss.fix,
+			get_time_us()
+		});
 	}
 }

@@ -27,15 +27,15 @@ void Position_estimator::update()
 
 void Position_estimator::update_initialization()
 {
-	if (_plane->check_new_baro_data(baro_data))
+	if (_plane->check_new_baro_data(baro_handle))
 	{
-		baro_data = _plane->get_baro_data();
+		Baro_data baro_data = _plane->get_baro_data(baro_handle);
 		avg_baro.add(baro_data.alt);
 	}
 
-	if (check_new_gnss_data() &&
+	if (_plane->get_gnss_data(gnss_handle).fix &&
 		avg_baro.getFilled() &&
-		_plane->ahrs_converged)
+		_plane->get_ahrs_data(ahrs_handle).converged)
 	{
 		// Set barometer home position
 		_plane->baro_offset = avg_baro.getAverage();
@@ -46,48 +46,46 @@ void Position_estimator::update_initialization()
 
 void Position_estimator::update_running()
 {
-	if (_plane->check_new_imu_data(imu_data))
+	if (_plane->check_new_imu_data(imu_handle))
 	{
-		if (check_new_ahrs_data())
+		if (_plane->check_new_ahrs_data(ahrs_handle))
 		{
-			imu_data = _plane->get_imu_data();
 			predict_imu();
 		}
 
-		if (_plane->check_new_of_data(of_data))
+		if (_plane->check_new_of_data(of_handle))
 		{
 			if (is_of_reliable())
 			{
-				imu_data = _plane->get_imu_data();
-				of_data = _plane->get_of_data();
 				update_of_agl();
 			}
 		}
 	}
 
-	if (check_new_gnss_data())
+	if (_plane->check_new_gnss_data(gnss_handle))
 	{
-		last_gnss_timestamp = _plane->gnss_timestamp;
 		update_gps();
 	}
 
-	if (_plane->check_new_baro_data(baro_data))
+	if (_plane->check_new_baro_data(baro_handle))
 	{
-		baro_data = _plane->get_baro_data();
 		update_baro();
 	}
 }
 
 void Position_estimator::predict_imu()
 {
+	IMU_data imu_data = _plane->get_imu_data(imu_handle);
+	AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
+
 	// Get IMU data
 	Eigen::Vector3f acc_inertial(imu_data.ax, imu_data.ay, imu_data.az);
 
 	// Rotate inertial frame to NED
 	Eigen::Vector3f acc_ned = inertial_to_ned(acc_inertial * G,
-										  _plane->ahrs_roll * DEG_TO_RAD,
-										  _plane->ahrs_pitch * DEG_TO_RAD,
-										  _plane->ahrs_yaw * DEG_TO_RAD);
+										  ahrs_data.roll * DEG_TO_RAD,
+										  ahrs_data.pitch * DEG_TO_RAD,
+										  ahrs_data.yaw * DEG_TO_RAD);
 	acc_ned(2) += G; // Gravity correction
 
 	_plane->nav_acc_north = acc_ned(0);
@@ -101,19 +99,21 @@ void Position_estimator::predict_imu()
 
 void Position_estimator::update_gps()
 {
+	GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
+
 	// Convert lat/lon to meters
 	double gnss_north_meters, gnss_east_meters;
 	lat_lon_to_meters(_plane->home_lat,
 					  _plane->home_lon,
-					  _plane->gnss_lat,
-					  _plane->gnss_lon,
+					  gnss_data.lat,
+					  gnss_data.lon,
 					  &gnss_north_meters,
 					  &gnss_east_meters);
 
 	Eigen::VectorXf y(3);
 	y << gnss_north_meters,
 		 gnss_east_meters,
-		 -_plane->gnss_asl; // Need to subtract offset!
+		 -gnss_data.asl; // Need to subtract offset!
 
 	Eigen::MatrixXf H(3, n);
 	H << 1, 0, 0, 0, 0, 0,
@@ -131,6 +131,8 @@ void Position_estimator::update_gps()
 
 void Position_estimator::update_baro()
 {
+	Baro_data baro_data = _plane->get_baro_data(baro_handle);
+
 	Eigen::VectorXf y(1);
 	y << -(baro_data.alt - _plane->baro_offset);
 
@@ -146,6 +148,9 @@ void Position_estimator::update_baro()
 
 void Position_estimator::update_of_agl()
 {
+	IMU_data imu_data = _plane->get_imu_data(imu_handle);
+	OF_data of_data = _plane->get_of_data(of_handle);
+
 	float flow = sqrtf(powf(of_data.x, 2) + powf(of_data.y, 2));
 	float angular_rate = sqrtf(powf(imu_data.gx, 2) + powf(imu_data.gy, 2)) * DEG_TO_RAD;
 	float alt = _plane->nav_gnd_spd / (flow - angular_rate);
@@ -164,16 +169,6 @@ void Position_estimator::update_plane()
 	_plane->nav_gnd_spd = sqrtf(powf(_plane->nav_vel_north, 2) + powf(_plane->nav_vel_east, 2));
 	_plane->nav_timestamp = _hal->get_time_us();
 	_plane->nav_converged = pos_estimator_state == Pos_estimator_state::RUNNING;
-}
-
-bool Position_estimator::check_new_gnss_data()
-{
-	return _plane->gnss_timestamp > last_gnss_timestamp;
-}
-
-bool Position_estimator::check_new_ahrs_data()
-{
-	return _plane->ahrs_timestamp > last_ahrs_timestamp;
 }
 
 // Function to rotate IMU measurements from inertial frame to NED frame
@@ -203,7 +198,7 @@ Eigen::Vector3f Position_estimator::inertial_to_ned(const Eigen::Vector3f& imu_m
 
 bool Position_estimator::is_of_reliable()
 {
-	of_data = _plane->get_of_data();
+	OF_data of_data = _plane->get_of_data(of_handle);
 
 	float flow = sqrtf(powf(of_data.x, 2) + powf(of_data.y, 2));
 	return flow > get_params()->sensors.of_min && flow < get_params()->sensors.of_max;

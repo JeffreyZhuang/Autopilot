@@ -1,8 +1,8 @@
 #ifndef CONTROL_H_
 #define CONTROL_H_
 
-#include <lib/pi_control/pi_control.h>
-#include <lib/utils/utils.h>
+#include "lib/pi_control/pi_control.h"
+#include "lib/utils/utils.h"
 #include "hal.h"
 #include "module.h"
 #include "parameters.h"
@@ -17,6 +17,7 @@ public:
 	void update();
 
 private:
+	Subscription_handle ahrs_handle;
 	PI_control roll_controller;
 	PI_control pitch_controller;
 

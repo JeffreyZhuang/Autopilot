@@ -42,6 +42,10 @@ private:
 	uint8_t back_buffer[buffer_size];
 	bool front_buff_full = false;
 	uint32_t back_buff_last_idx = 0;
+	Subscription_handle imu_handle;
+	Subscription_handle mag_handle;
+	Subscription_handle gnss_handle;
+	Subscription_handle baro_handle;
 
 	void write();
 	void flush();

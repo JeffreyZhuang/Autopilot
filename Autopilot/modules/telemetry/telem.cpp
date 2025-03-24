@@ -1,4 +1,4 @@
-#include <modules/telemetry/telem.h>
+#include "modules/telemetry/telem.h"
 
 Telem::Telem(HAL* hal, Plane* plane) : Module(hal, plane)
 {
@@ -190,15 +190,18 @@ void Telem::transmit_packet(uint8_t packet[], uint16_t size)
 
 Telem_payload Telem::create_telem_payload()
 {
+	AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
+	GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
+
 	Telem_payload payload = {
-		(int16_t)(_plane->ahrs_roll * 100),
-		(int16_t)(_plane->ahrs_pitch * 100),
-		(uint16_t)(_plane->ahrs_yaw * 10),
+		(int16_t)(ahrs_data.roll * 100),
+		(int16_t)(ahrs_data.pitch * 100),
+		(uint16_t)(ahrs_data.yaw * 10),
 		(int16_t)(-_plane->nav_pos_down * 10),
 		(uint16_t)(_plane->nav_gnd_spd * 10),
 		(int16_t)(-_plane->guidance_d_setpoint * 10),
-		(int32_t)(_plane->gnss_lat * 1E7),
-		(int32_t)(_plane->gnss_lon * 1E7),
+		(int32_t)(gnss_data.lat * 1E7),
+		(int32_t)(gnss_data.lon * 1E7),
 		_plane->nav_pos_north,
 		_plane->nav_pos_east,
 		get_current_state(),
@@ -207,8 +210,8 @@ Telem_payload Telem::create_telem_payload()
 		0,
 		0,
 		(uint16_t)(_plane->autopilot_current * 1000.0f),
-		_plane->gnss_sats,
-		_plane->gps_fix,
+		gnss_data.sats,
+		gnss_data.fix,
 		(uint8_t)(_plane->rud_cmd * 100),
 		(uint8_t)(_plane->ele_cmd * 100),
 		(uint8_t)(_plane->thr_cmd * 100)

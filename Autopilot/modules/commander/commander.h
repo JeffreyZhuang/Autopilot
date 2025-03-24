@@ -15,6 +15,8 @@ public:
 	void update();
 
 private:
+	Subscription_handle ahrs_handle;
+
 	void handle_flight_mode();
 	void handle_manual_mode();
 	void handle_auto_mode();

@@ -10,6 +10,11 @@ struct Waypoint {
 	float alt;
 };
 
+struct Subscription_handle
+{
+	uint64_t timestamp = 0;
+};
+
 struct IMU_data
 {
 	float gx = 0;
@@ -37,12 +42,21 @@ struct Baro_data
 
 struct GNSS_data
 {
-
+	double lat = 0;
+	double lon = 0;
+	float asl = 0;
+	uint8_t sats = 0;
+	bool fix = false;
+	uint64_t timestamp = 0;
 };
 
 struct AHRS_data
 {
-
+	bool converged = false;
+	float roll = 0;
+	float pitch = 0;
+	float yaw = 0;
+	uint64_t timestamp = 0;
 };
 
 struct OF_data
@@ -77,21 +91,6 @@ public:
 	float autopilot_voltage = 0;
 
     float baro_offset = 0;
-
-    // GNSS
-    double gnss_lat = 0;
-    double gnss_lon = 0;
-    float gnss_asl = 0;
-    uint8_t gnss_sats = 0;
-    bool gps_fix = false;
-    uint64_t gnss_timestamp = 0;
-
-    // AHRS
-    bool ahrs_converged = false;
-    float ahrs_roll = 0;
-    float ahrs_pitch = 0;
-    float ahrs_yaw = 0;
-    uint64_t ahrs_timestamp = 0;
 
     // Navigation
     bool nav_converged = false;
@@ -142,27 +141,37 @@ public:
 
     bool waypoints_loaded = false;
 
-    bool check_new_imu_data(IMU_data imu_data);
-    IMU_data get_imu_data();
+    bool check_new_imu_data(Subscription_handle subscription_handle);
+    IMU_data get_imu_data(Subscription_handle subscription_handle);
     void set_imu_data(IMU_data imu_data);
 
-    bool check_new_mag_data(Mag_data mag_data);
-	Mag_data get_mag_data();
+    bool check_new_mag_data(Subscription_handle subscription_handle);
+	Mag_data get_mag_data(Subscription_handle subscription_handle);
 	void set_mag_data(Mag_data mag_data);
 
-	bool check_new_baro_data(Baro_data baro_data);
-	Baro_data get_baro_data();
+	bool check_new_baro_data(Subscription_handle subscription_handle);
+	Baro_data get_baro_data(Subscription_handle subscription_handle);
 	void set_baro_data(Baro_data baro_data);
 
-    bool check_new_of_data(OF_data of_data);
-	OF_data get_of_data();
+	bool check_new_gnss_data(Subscription_handle subscription_handle);
+	GNSS_data get_gnss_data(Subscription_handle subscription_handle);
+	void set_gnss_data(GNSS_data gnss_data);
+
+    bool check_new_of_data(Subscription_handle subscription_handle);
+	OF_data get_of_data(Subscription_handle subscription_handle);
 	void set_of_data(OF_data of_data);
+
+	bool check_new_ahrs_data(Subscription_handle subscription_handle);
+	AHRS_data get_ahrs_data(Subscription_handle subscription_handle);
+	void set_ahrs_data(AHRS_data ahrs_data);
 
 private:
     IMU_data _imu_data;
     Mag_data _mag_data;
     Baro_data _baro_data;
+    GNSS_data _gnss_data;
     OF_data _of_data;
+    AHRS_data _ahrs_data;
 };
 
 #endif /* PLANE_H_ */

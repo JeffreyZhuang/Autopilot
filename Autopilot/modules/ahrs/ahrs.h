@@ -46,8 +46,8 @@ private:
 	MovingAverage avg_my;
 	MovingAverage avg_mz;
 
-	IMU_data imu_data;
-	Mag_data mag_data;
+	Subscription_handle imu_handle;
+	Subscription_handle mag_handle;
 
 	void update_initialization();
 	void update_running();
