@@ -78,42 +78,10 @@ void L1_controller::update_mission()
 	// Calculate roll setpoint using l1 guidance
 	const float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / l1_dist) * sinf(hdg_err);
 	_plane->roll_setpoint = calculate_roll_setpoint(lateral_accel);
+	_plane->guidance_d_setpoint = calculate_altitude_setpoint(prev_north, prev_east,
+															  tgt_north, tgt_east,
+															  prev_wp, target_wp);
 
-	// Altitude first order hold
-	if (_plane->waypoint_index == 1)
-	{
-		// Takeoff
-		_plane->guidance_d_setpoint = target_wp.alt;
-	}
-	else
-	{
-		float dist_prev_tgt = distance(prev_north, prev_east, tgt_north, tgt_east);
-
-		float along_track_dist = compute_along_track_distance(
-			prev_north, prev_east, tgt_north, tgt_east,
-			_plane->nav_pos_north, _plane->nav_pos_east
-		);
-
-		float initial_dist = get_params()->navigator.min_dist_wp;
-		float final_dist;
-		if (_plane->waypoint_index == _plane->num_waypoints - 1)
-		{
-			// Landing
-			// Drive plane directly to next waypoint
-			final_dist =  dist_prev_tgt;
-		}
-		else
-		{
-			// Reach altitude when within acceptance radius of next waypoint
-			final_dist = dist_prev_tgt - get_params()->navigator.min_dist_wp;
-		}
-
-		_plane->guidance_d_setpoint = lerp(
-			initial_dist, prev_wp.alt,
-			final_dist, target_wp.alt,
-			clamp(along_track_dist, initial_dist, final_dist)
-		);
-	}
 }
 
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
@@ -141,6 +109,44 @@ void L1_controller::update_flare()
 	// Update the guidance setpoint with the calculated sink rate
 	_plane->guidance_d_setpoint += sink_rate * _plane->dt_s;
 	_plane->roll_setpoint = 0;
+}
+
+float L1_controller::calculate_altitude_setpoint(float prev_north, float prev_east,
+		  	  	  	  	  	  	  	  	  	  	 float tgt_north, float tgt_east,
+												 Waypoint prev_wp, Waypoint target_wp)
+{
+	// Takeoff
+	if (_plane->waypoint_index == 1)
+	{
+		return target_wp.alt;
+	}
+
+	float dist_prev_tgt = distance(prev_north, prev_east, tgt_north, tgt_east);
+
+	float along_track_dist = compute_along_track_distance(
+		prev_north, prev_east, tgt_north, tgt_east,
+		_plane->nav_pos_north, _plane->nav_pos_east
+	);
+
+	float initial_dist = get_params()->navigator.min_dist_wp;
+	float final_dist;
+	if (_plane->waypoint_index == _plane->num_waypoints - 1)
+	{
+		// During landing, go directly to landing point
+		final_dist =  dist_prev_tgt;
+	}
+	else
+	{
+		// Reach altitude when within acceptance radius of next waypoint
+		final_dist = dist_prev_tgt - get_params()->navigator.min_dist_wp;
+	}
+
+	// Altitude first order hold
+	return lerp(
+		initial_dist, prev_wp.alt,
+		final_dist, target_wp.alt,
+		clamp(along_track_dist, initial_dist, final_dist)
+	);
 }
 
 float L1_controller::calculate_roll_setpoint(float lateral_accel) const
