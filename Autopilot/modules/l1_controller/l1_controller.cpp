@@ -47,18 +47,18 @@ void L1_controller::handle_auto_mode()
 // Detect when waypoint reached and switch to next waypoint
 void L1_controller::update_mission()
 {
-	// Determine previous waypoint
+	// Determine target and previous waypoints
 	Waypoint prev_wp = _plane->waypoints[_plane->waypoint_index - 1];
-
-	// Get target waypoint
 	Waypoint target_wp = _plane->waypoints[_plane->waypoint_index];
 
 	// Convert waypoints to north east coordinates
 	double prev_north, prev_east;
-	lat_lon_to_meters( _plane->waypoints[0].lat, _plane->waypoints[0].lon, prev_wp.lat, prev_wp.lon, &prev_north, &prev_east);
+	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, prev_wp.lat, prev_wp.lon,
+					  &prev_north, &prev_east);
 
 	double tgt_north, tgt_east;
-	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, target_wp.lat, target_wp.lon, &tgt_north, &tgt_east);
+	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, target_wp.lat, target_wp.lon,
+					  &tgt_north, &tgt_east);
 
 	// Calculate track heading (bearing from previous to target waypoint)
 	float trk_hdg = atan2f(tgt_east - prev_east, tgt_north - prev_north);
@@ -102,7 +102,41 @@ void L1_controller::update_mission()
 		);
 	}
 
-	compute_altitude_setpoint();
+	// Altitude first order hold
+	if (_plane->waypoint_index == 1)
+	{
+		// Takeoff
+		_plane->guidance_d_setpoint = target_wp.alt;
+	}
+	else
+	{
+		float dist_prev_tgt = distance(prev_north, prev_east, tgt_north, tgt_east);
+
+		float along_track_dist = compute_along_track_distance(
+			prev_north, prev_east, tgt_north, tgt_east,
+			_plane->nav_pos_north, _plane->nav_pos_east
+		);
+
+		float initial_dist = get_params()->navigator.min_dist_wp;
+		float final_dist;
+		if (_plane->waypoint_index == _plane->num_waypoints - 1)
+		{
+			// Landing
+			// Drive plane directly to next waypoint
+			final_dist =  dist_prev_tgt;
+		}
+		else
+		{
+			// Reach altitude when within acceptance radius of next waypoint
+			final_dist = dist_prev_tgt - get_params()->navigator.min_dist_wp;
+		}
+
+		_plane->guidance_d_setpoint = lerp(
+			initial_dist, prev_wp.alt,
+			final_dist, target_wp.alt,
+			clamp(along_track_dist, initial_dist, final_dist)
+		);
+	}
 }
 
 void L1_controller::update_flare()
@@ -140,52 +174,7 @@ void L1_controller::update_flare()
 
 	// Update the guidance setpoint with the calculated sink rate
 	_plane->guidance_d_setpoint += sink_rate * _plane->dt_s;
-
 	_plane->roll_setpoint = 0;
-}
-
-void L1_controller::compute_altitude_setpoint()
-{
-	Waypoint prev_wp = _plane->waypoints[_plane->waypoint_index - 1];
-	if (_plane->waypoint_index == 1)
-	{
-		prev_wp.alt = -get_params()->takeoff.alt;
-	}
-
-	// Interpolate altitude between previous and target waypoint
-	_plane->guidance_d_setpoint = interpolate_altitude(prev_wp, _plane->waypoints[_plane->waypoint_index]);
-
-	// Don't go below takeoff_alt
-	if (_plane->waypoint_index == 1 &&
-		-_plane->guidance_d_setpoint < get_params()->takeoff.alt)
-	{
-		_plane->guidance_d_setpoint = -get_params()->takeoff.alt;
-	}
-}
-
-float L1_controller::interpolate_altitude(Waypoint prev_wp, Waypoint tgt_wp)
-{
-	// Convert waypoints to north east coordinates
-	double prev_north, prev_east;
-	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, prev_wp.lat, prev_wp.lon, &prev_north, &prev_east);
-
-	double tgt_north, tgt_east;
-	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, tgt_wp.lat, tgt_wp.lon, &tgt_north, &tgt_east);
-
-	float along_track_dist = compute_along_track_distance( prev_north, prev_east, tgt_north, tgt_east, _plane->nav_pos_north, _plane->nav_pos_east);
-
-	return lerp(0, prev_wp.alt, distance(prev_north, prev_east, tgt_north, tgt_east), tgt_wp.alt, along_track_dist);
-}
-
-float L1_controller::compute_along_track_dist_wp(Waypoint prev_wp, Waypoint tgt_wp)
-{
-	double prev_north, prev_east;
-	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, prev_wp.lat, prev_wp.lon, &prev_north, &prev_east);
-
-	double tgt_north, tgt_east;
-	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, tgt_wp.lat, tgt_wp.lon, &tgt_north, &tgt_east);
-
-	return compute_along_track_distance(prev_north, prev_east, tgt_north, tgt_east, _plane->nav_pos_north, _plane->nav_pos_east);
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)
