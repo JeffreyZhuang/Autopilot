@@ -77,17 +77,7 @@ void L1_controller::update_mission()
 
 	// Calculate roll setpoint using l1 guidance
 	const float lateral_accel = (2 * powf(_plane->nav_gnd_spd, 2) / l1_dist) * sinf(hdg_err);
-	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
-	if (_plane->auto_mode == Auto_mode::TAKEOFF)
-	{
-		_plane->roll_setpoint = clamp(roll, -get_params()->takeoff.roll_lim,
-									  get_params()->takeoff.roll_lim);
-	}
-	else
-	{
-		_plane->roll_setpoint = clamp(roll, -get_params()->l1_ctrl.roll_lim,
-									  get_params()->l1_ctrl.roll_lim);
-	}
+	_plane->roll_setpoint = calculate_roll_setpoint(lateral_accel);
 
 	// Altitude first order hold
 	if (_plane->waypoint_index == 1)
@@ -151,6 +141,22 @@ void L1_controller::update_flare()
 	// Update the guidance setpoint with the calculated sink rate
 	_plane->guidance_d_setpoint += sink_rate * _plane->dt_s;
 	_plane->roll_setpoint = 0;
+}
+
+float L1_controller::calculate_roll_setpoint(float lateral_accel) const
+{
+	float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
+
+	if (_plane->auto_mode == Auto_mode::TAKEOFF)
+	{
+		roll = clamp(roll, -get_params()->takeoff.roll_lim, get_params()->takeoff.roll_lim);
+	}
+	else
+	{
+		roll = clamp(roll, -get_params()->l1_ctrl.roll_lim, get_params()->l1_ctrl.roll_lim);
+	}
+
+	return roll;
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)
