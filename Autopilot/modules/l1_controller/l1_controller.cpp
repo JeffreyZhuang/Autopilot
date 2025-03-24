@@ -159,12 +159,6 @@ void L1_controller::update_flare()
 		clamp(-_plane->nav_pos_down, final_altitude, initial_altitude)
 	);
 
-	// Make sure sink rate decreases during flare, not increases
-	if (sink_rate > initial_sink_rate)
-	{
-		sink_rate = initial_sink_rate;
-	}
-
 	// Update the guidance setpoint with the calculated sink rate
 	_plane->guidance_d_setpoint += sink_rate * _plane->dt_s;
 	_plane->roll_setpoint = 0;
