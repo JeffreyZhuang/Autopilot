@@ -20,5 +20,4 @@ protected:
 	Plane* _plane;
 };
 
-
 #endif /* MODULE_H_ */

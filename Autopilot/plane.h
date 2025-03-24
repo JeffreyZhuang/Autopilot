@@ -4,7 +4,11 @@
 #include <stdint.h>
 
 /**
- * @brief All flight data and settings that get passed to classes
+ * @brief Centralized flight data and settings container
+ *
+ * This class serves as the main data repository for all flight-related
+ * information including sensor data, state estimates, control commands,
+ * and system state.
  */
 class Plane
 {
