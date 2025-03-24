@@ -81,7 +81,6 @@ void L1_controller::update_mission()
 	_plane->guidance_d_setpoint = calculate_altitude_setpoint(prev_north, prev_east,
 															  tgt_north, tgt_east,
 															  prev_wp, target_wp);
-
 }
 
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
