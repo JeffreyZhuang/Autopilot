@@ -180,6 +180,9 @@ public:
 	AHRS_data get_ahrs_data(Subscription_handle subscription_handle);
 	void set_ahrs_data(AHRS_data ahrs_data);
 
+	double get_home_lat() const;
+	double get_home_lon() const;
+
 private:
     IMU_data _imu_data;
     Mag_data _mag_data;

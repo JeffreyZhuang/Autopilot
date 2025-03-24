@@ -1,6 +1,7 @@
 #ifndef INC_FLIGHT_HAL_H_
 #define INC_FLIGHT_HAL_H_
 
+#include <Drivers/sbus_input.h>
 #include <lib/utils/utils.h>
 #include "Drivers/servo.h"
 #include "Drivers/gnss.h"
@@ -8,7 +9,6 @@
 #include "Drivers/ina219.h"
 #include "Drivers/mlx90393.h"
 #include "Drivers/sd.h"
-#include "Drivers/mlrs_rc.h"
 #include "Drivers/uart_stream.h"
 #include "Drivers/cxof.h"
 #include "parameters.h"
@@ -114,11 +114,11 @@ public:
 	void transmit_telem(uint8_t tx_buff[], int len) override;
 	bool read_telem(uint8_t* byte) override;
 	bool telem_buffer_empty() override;
-	static void telemetry_dma_complete() { _instance->mlrs_telem.dma_complete(); }
+	static void telemetry_dma_complete() { _instance->telem.dma_complete(); }
 
 	// RC
 	void get_rc_input(uint16_t duty[], uint8_t num_channels) override;
-	static void rc_dma_complete() { _instance->mlrs_rc.dma_complete(); }
+	static void rc_dma_complete() { _instance->sbus_input.dma_complete(); }
 
 	// USB
 	void usb_rx_callback(uint8_t* Buf, uint32_t Len);
@@ -138,8 +138,8 @@ private:
 	Adafruit_MLX90393 _mag;
 	GNSS _gnss;
 	Sd _sd;
-	Mlrs_rc mlrs_rc;
-	Uart_stream mlrs_telem;
+	SBUS_input sbus_input;
+	Uart_stream telem;
 	Servo servo1;
 	Servo servo2;
 	Cxof cxof;

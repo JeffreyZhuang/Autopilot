@@ -5,17 +5,17 @@
  *      Author: jeffr
  */
 
-#ifndef INC_DRIVERS_MLRS_RC_H_
-#define INC_DRIVERS_MLRS_RC_H_
+#ifndef INC_DRIVERS_SBUS_INPUT_H_
+#define INC_DRIVERS_SBUS_INPUT_H_
 
+#include <Drivers/sbus.h>
 #include "stm32f4xx_hal.h"
 #include <cstdio>
-#include "sbus.h"
 
-class Mlrs_rc
+class SBUS_input
 {
 public:
-	Mlrs_rc(UART_HandleTypeDef* uart);
+	SBUS_input(UART_HandleTypeDef* uart);
 	void setup();
 	void dma_complete();
 	void get_rc_data(uint16_t out[], int size);
@@ -25,4 +25,4 @@ private:
 	uint16_t _rc_data[16];
 };
 
-#endif /* INC_DRIVERS_MLRS_RC_H_ */
+#endif /* INC_DRIVERS_SBUS_INPUT_H_ */

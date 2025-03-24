@@ -95,3 +95,13 @@ void Plane::set_ahrs_data(AHRS_data ahrs_data)
 {
 	_ahrs_data = ahrs_data;
 }
+
+double Plane::get_home_lat() const
+{
+	return waypoints[0].lat;
+}
+
+double Plane::get_home_lon() const
+{
+	return waypoints[0].lon;
+}
