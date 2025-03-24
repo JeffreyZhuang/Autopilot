@@ -12,8 +12,8 @@ void Navigator::update()
 	// Convert waypoint to north east coordinates
 	double tgt_north, tgt_east;
 	lat_lon_to_meters(
-		_plane->home_lat,
-		_plane->home_lon,
+		_plane->waypoints[0].lat,
+		_plane->waypoints[0].lon,
 		target_wp.lat,
 		target_wp.lon,
 		&tgt_north,

@@ -135,12 +135,6 @@ bool Telem::parse_packet()
 				_plane->waypoints_loaded = true;
 			}
 
-			if (waypoint_payload.waypoint_index == 0)
-			{
-				_plane->home_lat = (float)waypoint_payload.lat * 1E-7f;
-				_plane->home_lon = (float)waypoint_payload.lon * 1E-7f;
-			}
-
 			_plane->num_waypoints = waypoint_payload.total_waypoints;
 			_plane->waypoints[waypoint_payload.waypoint_index] = (Waypoint){
 				(double)waypoint_payload.lat * 1E-7,

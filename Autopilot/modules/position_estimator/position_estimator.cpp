@@ -103,8 +103,8 @@ void Position_estimator::update_gps()
 
 	// Convert lat/lon to meters
 	double gnss_north_meters, gnss_east_meters;
-	lat_lon_to_meters(_plane->home_lat,
-					  _plane->home_lon,
+	lat_lon_to_meters(_plane->waypoints[0].lat,
+					  _plane->waypoints[0].lon,
 					  gnss_data.lat,
 					  gnss_data.lon,
 					  &gnss_north_meters,

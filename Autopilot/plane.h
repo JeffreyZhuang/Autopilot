@@ -66,6 +66,23 @@ struct OF_data
 	uint64_t timestamp = 0;
 };
 
+struct Pos_est_data
+{
+	bool converged = false;
+	float pos_north = 0;
+	float pos_east = 0;
+	float pos_down = 0;
+	float vel_north = 0;
+	float vel_east = 0;
+	float vel_down = 0;
+	float acc_north = 0;
+	float acc_east = 0;
+	float acc_down = 0;
+	float gnd_spd = 0;
+	float terr_hgt = 0;
+	uint64_t timestamp = 0;
+};
+
 /**
  * @brief All flight data and settings that get passed to classes
  */
@@ -92,7 +109,7 @@ public:
 
     float baro_offset = 0;
 
-    // Navigation
+    // Position Estimator
     bool nav_converged = false;
     float nav_pos_north = 0;
     float nav_pos_east = 0;
@@ -105,8 +122,6 @@ public:
     float nav_acc_down = 0;
     float nav_gnd_spd = 0;
     float nav_terr_hgt = 0;
-    float home_lat = 0;
-	float home_lon = 0;
     uint64_t nav_timestamp = 0;
 
     // Navigator
