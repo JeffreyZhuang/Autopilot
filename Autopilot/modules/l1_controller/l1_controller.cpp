@@ -150,8 +150,8 @@ void L1_controller::update_flare()
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
 	float initial_altitude = get_params()->landing.flare_alt;
-	float final_altitude = 0;
 	float initial_sink_rate = get_params()->tecs.aspd_land * sinf(glideslope_angle);
+	float final_altitude = 0;
 	float final_sink_rate = get_params()->landing.flare_sink_rate;
 	float sink_rate = lerp(
 		initial_altitude, initial_sink_rate,
