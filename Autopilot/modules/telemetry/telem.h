@@ -83,9 +83,14 @@ private:
 	uint8_t _cobs_byte = 0;
 	uint64_t _last_tlm_transmit_time = 0; // Time of last telemetry transmission
 	uint16_t _bytes_since_last_tlm_transmit = 0; // Total bytes sent since last telemetry transmission
+
 	Plane::Subscription_handle gnss_handle;
 	Plane::Subscription_handle ahrs_handle;
 	Plane::Subscription_handle pos_est_handle;
+
+	Plane::AHRS_data ahrs_data;
+	Plane::GNSS_data gnss_data;
+	Plane::Pos_est_data pos_est_data;
 
 	void transmit_packet(uint8_t packet[], uint16_t size);
 	void transmit_telem(); // Transmit telemetry packet

@@ -19,11 +19,14 @@ public:
 private:
 	PI_control energy_balance_controller;
 	PI_control total_energy_controller;
-	Plane::Subscription_handle pos_est_handle;
 	float _total_energy_setpoint = 0;
 	float _total_energy = 0;
 	float _energy_balance_setpoint = 0;
 	float _energy_balance = 0;
+
+	Plane::Subscription_handle pos_est_handle;
+
+	Plane::Pos_est_data pos_est_data;
 
 	void handle_manual_mode();
 	void handle_auto_mode();

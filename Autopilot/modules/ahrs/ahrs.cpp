@@ -57,12 +57,15 @@ void AHRS::update_initialization()
 
 void AHRS::update_running()
 {
-	if (_plane->check_new_imu_data(imu_handle))
+	if (_plane->imu_data.check_new(imu_handle))
 	{
+		imu_data = _plane->imu_data.get(imu_handle);
+
 		if (is_accel_reliable())
 		{
-			if (_plane->check_new_mag_data(mag_handle))
+			if (_plane->mag_data.check_new(mag_handle))
 			{
+				mag_data = _plane->mag_data.get(mag_handle);
 				update_imu_mag();
 			}
 			else

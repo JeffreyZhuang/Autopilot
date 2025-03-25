@@ -1,13 +1,17 @@
 #include "modules/storage/storage.h"
 
-Storage::Storage(HAL* hal, Plane* plane) : Module(hal, plane)
-{
-}
+Storage::Storage(HAL* hal, Plane* plane) : Module(hal, plane) {}
 
 void Storage::update()
 {
 	if (_plane->system_mode != Plane::System_mode::CONFIG)
 	{
+		imu_data = _plane->imu_data.get(imu_handle);
+		mag_data = _plane->mag_data.get(mag_handle);
+		gnss_data = _plane->gnss_data.get(gnss_handle);
+		baro_data = _plane->baro_data.get(baro_handle);
+		pos_est_data = _plane->pos_est_data.get(pos_est_handle);
+
 		write();
 	}
 }
@@ -92,11 +96,6 @@ void Storage::flush()
 
 Storage_payload Storage::create_payload()
 {
-	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
-	Plane::Mag_data mag_data = _plane->get_mag_data(mag_handle);
-	Plane::GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
-	Plane::Pos_est_data pos_est_data = _plane->get_pos_est_data(pos_est_handle);
-
 	Storage_payload payload = {
 		_plane->loop_iteration,
 		_plane->time_us + _plane->us_since_epoch,
@@ -105,7 +104,7 @@ Storage_payload Storage::create_payload()
 		{mag_data.x, mag_data.y, mag_data.z},
 		{pos_est_data.pos_n, pos_est_data.pos_e, pos_est_data.pos_d},
 		{pos_est_data.vel_n, pos_est_data.vel_e, pos_est_data.vel_d},
-		_plane->get_baro_data(baro_handle).alt,
+		baro_data.alt,
 		{_plane->rc_ail_norm, _plane->rc_ele_norm, _plane->rc_rud_norm, _plane->rc_thr_norm},
 		gnss_data.lat,
 		gnss_data.lon,

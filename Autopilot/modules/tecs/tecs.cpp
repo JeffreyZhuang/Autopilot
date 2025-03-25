@@ -1,13 +1,13 @@
 #include "modules/tecs/tecs.h"
 
-Tecs::Tecs(HAL* hal, Plane* plane) : Module(hal, plane)
-{
-}
+Tecs::Tecs(HAL* hal, Plane* plane) : Module(hal, plane) {}
 
 void Tecs::update()
 {
 	if (_plane->system_mode == Plane::System_mode::FLIGHT)
 	{
+		pos_est_data = _plane->pos_est_data.get(pos_est_handle);
+
 		switch (_plane->flight_mode)
 		{
 		case Plane::Flight_mode::MANUAL:
@@ -106,8 +106,6 @@ void Tecs::update_touchdown()
 // wb = 2: only alt
 void Tecs::calculate_energies(float target_vel_mps, float target_alt_m, float wb)
 {
-	Plane::Pos_est_data pos_est_data = _plane->get_pos_est_data(pos_est_handle);
-
 	// Calculate specific energy
 	// SPe = gh
 	// SKe = 1/2 v^2

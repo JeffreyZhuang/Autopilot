@@ -49,6 +49,9 @@ private:
 	Plane::Subscription_handle imu_handle;
 	Plane::Subscription_handle mag_handle;
 
+	Plane::IMU_data imu_data;
+	Plane::Mag_data mag_data;
+
 	void update_initialization();
 	void update_running();
 	void update_gyro();

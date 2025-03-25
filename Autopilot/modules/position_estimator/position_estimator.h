@@ -50,6 +50,7 @@ private:
     Plane::Subscription_handle pos_est_handle;
 
     Plane::Pos_est_data pos_est_data;
+    Plane::OF_data of_data;
 
     void update_initialization();
     void update_running();

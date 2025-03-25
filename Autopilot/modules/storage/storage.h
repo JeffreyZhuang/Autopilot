@@ -42,11 +42,18 @@ private:
 	uint8_t back_buffer[buffer_size];
 	bool front_buff_full = false;
 	uint32_t back_buff_last_idx = 0;
+
 	Plane::Subscription_handle imu_handle;
 	Plane::Subscription_handle mag_handle;
 	Plane::Subscription_handle gnss_handle;
 	Plane::Subscription_handle baro_handle;
 	Plane::Subscription_handle pos_est_handle;
+
+	Plane::IMU_data imu_data;
+	Plane::Mag_data mag_data;
+	Plane::GNSS_data gnss_data;
+	Plane::Pos_est_data pos_est_data;
+	Plane::Baro_data baro_data;
 
 	void write();
 	void flush();

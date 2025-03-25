@@ -1,11 +1,13 @@
 #include "modules/telemetry/telem.h"
 
-Telem::Telem(HAL* hal, Plane* plane) : Module(hal, plane)
-{
-}
+Telem::Telem(HAL* hal, Plane* plane) : Module(hal, plane) {}
 
 void Telem::update()
 {
+	ahrs_data = _plane->ahrs_data.get(ahrs_handle);
+	gnss_data = _plane->gnss_data.get(gnss_handle);
+	pos_est_data = _plane->pos_est_data.get(pos_est_handle);
+
 	while (!_hal->telem_buffer_empty())
 	{
 		uint8_t byte;
@@ -184,10 +186,6 @@ void Telem::transmit_packet(uint8_t packet[], uint16_t size)
 
 Telem_payload Telem::create_telem_payload()
 {
-	Plane::AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
-	Plane::GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
-	Plane::Pos_est_data pos_est_data = _plane->get_pos_est_data(pos_est_handle);
-
 	Telem_payload payload = {
 		(int16_t)(ahrs_data.roll * 100),
 		(int16_t)(ahrs_data.pitch * 100),

@@ -27,13 +27,13 @@ void Position_estimator::update()
 
 void Position_estimator::update_initialization()
 {
-	if (_plane->check_new_baro_data(baro_handle))
+	if (_plane->baro_data.check_new(baro_handle))
 	{
 		Plane::Baro_data baro_data = _plane->get_baro_data(baro_handle);
 		avg_baro.add(baro_data.alt);
 	}
 
-	if (_plane->get_gnss_data(gnss_handle).fix &&
+	if (_plane->gnss_data.check_new(gnss_handle).fix &&
 		avg_baro.getFilled() &&
 		_plane->get_ahrs_data(ahrs_handle).converged)
 	{
@@ -46,15 +46,17 @@ void Position_estimator::update_initialization()
 
 void Position_estimator::update_running()
 {
-	if (_plane->check_new_imu_data(imu_handle))
+	if (_plane->imu_data.check_new(imu_handle))
 	{
-		if (_plane->check_new_ahrs_data(ahrs_handle))
+		if (_plane->ahrs_data.check_new(ahrs_handle))
 		{
 			predict_imu();
 		}
 
-		if (_plane->check_new_of_data(of_handle))
+		if (_plane->of_data.check_new(of_handle))
 		{
+			of_data = _plane->of_data.get(of_handle);
+
 			if (is_of_reliable())
 			{
 				update_of_agl();
@@ -62,12 +64,12 @@ void Position_estimator::update_running()
 		}
 	}
 
-	if (_plane->check_new_gnss_data(gnss_handle))
+	if (_plane->gnss_data.check_new(gnss_handle))
 	{
 		update_gps();
 	}
 
-	if (_plane->check_new_baro_data(baro_handle))
+	if (_plane->baro_data.check_new(baro_handle))
 	{
 		update_baro();
 	}
@@ -188,8 +190,6 @@ Eigen::Vector3f Position_estimator::inertial_to_ned(const Eigen::Vector3f& imu_m
 
 bool Position_estimator::is_of_reliable()
 {
-	Plane::OF_data of_data = _plane->get_of_data(of_handle);
-
 	float flow = sqrtf(powf(of_data.x, 2) + powf(of_data.y, 2));
 	return flow > get_params()->sensors.of_min && flow < get_params()->sensors.of_max;
 }

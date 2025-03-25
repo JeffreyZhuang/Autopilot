@@ -10,6 +10,6 @@ void Flight_hal::read_of()
 	Cxof_frame result;
 	if (cxof.read(&result))
 	{
-		_plane->set_of_data(Plane::OF_data{result.x, result.y, get_time_us()});
+		_plane->of_data.set(Plane::OF_data{result.x, result.y, get_time_us()});
 	}
 }

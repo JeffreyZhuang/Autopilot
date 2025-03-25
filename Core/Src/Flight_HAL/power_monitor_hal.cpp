@@ -4,6 +4,5 @@ void Flight_hal::read_power_monitor()
 {
 	float voltage = _ina219.read_voltage();
 	float current = _ina219.read_current();
-	_plane->autopilot_voltage = voltage;
-	_plane->autopilot_current = current;
+	_plane->power_data.set(Plane::Power_data{0, 0, voltage, current, get_time_us()});
 }

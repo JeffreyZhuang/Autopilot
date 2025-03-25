@@ -1,6 +1,6 @@
 #include "autopilot_link.h"
 
-bool Autopilot_link::parse_byte(uint8_t byte)
+bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& msg_id)
 {
 	if (byte == START_BYTE)
 	{
@@ -11,52 +11,38 @@ bool Autopilot_link::parse_byte(uint8_t byte)
 	if (_in_pkt)
 	{
 		// Append byte to packet
-		_packet[_pkt_idx] = byte;
-		_pkt_idx++;
+		_packet[_pkt_idx++] = byte;
 
-		switch (_pkt_idx)
+		if (_pkt_idx == 2)
 		{
-		case 1:
-			break;
-		case 2:
 			_payload_len = byte;
-			break;
-		case 3:
-			_msg_id = byte;
-			break;
-		case 4:
-			_cobs_byte = byte;
-			break;
-		case MAX_PACKET_LEN:
-			// Reset
-			_pkt_idx = 0;
+		}
+		else if (_pkt_idx == _payload_len + HEADER_LEN)
+		{
 			_in_pkt = false;
 
-			break;
-		default:
-			if (_pkt_idx == _payload_len + HEADER_LEN)
-			{
-				// Parse
-
-
-				// Reset
-				_pkt_idx = 0;
-				_in_pkt = false;
-			}
-			break;
+			// Parse
+			uint8_t payload_len_result;
+			return unpack(_packet, payload, payload_len_result, msg_id);
+		}
+		else if (_pkt_idx == MAX_PACKET_LEN)
+		{
+			_in_pkt = false;
 		}
 	}
+
+	return false;
 }
 
 void Autopilot_link::pack(uint8_t packet[], const uint8_t payload[],
 						  const uint8_t payload_len, const uint8_t msg_id)
 {
-	uint16_t packet_index = 0;
+	uint16_t index = 0;
 
 	// Header
-	packet[packet_index++] = START_BYTE;
-	packet[packet_index++] = payload_len;
-	packet[packet_index++] = msg_id;
+	packet[index++] = START_BYTE;
+	packet[index++] = payload_len;
+	packet[index++] = msg_id;
 
 	// Encode payload with COBS
 	uint8_t payload_cobs[payload_len + 1];
@@ -65,16 +51,17 @@ void Autopilot_link::pack(uint8_t packet[], const uint8_t payload[],
 	// Add COBS byte and encoded payload
 	for (uint8_t i = 0; i < sizeof(payload_cobs); i++)
 	{
-		packet[packet_index++] = payload_cobs[i];
+		packet[index++] = payload_cobs[i];
 	}
 
 	// Compute checksum excluding start byte
-	uint16_t checksum = crc16(&packet[1], packet_index - 1);
-	packet[packet_index++] = (checksum >> 8) & 0xFF; // High byte
-	packet[packet_index++] = checksum & 0xFF; // Low byte
+	uint16_t checksum = crc16(&packet[1], index - 1);
+	packet[index++] = (checksum >> 8) & 0xFF; // High byte
+	packet[index++] = checksum & 0xFF; // Low byte
 }
 
-bool Autopilot_link::unpack(const uint8_t packet[], uint8_t payload[], uint8_t& payload_len, uint8_t& msg_id)
+bool Autopilot_link::unpack(const uint8_t packet[], uint8_t payload[], uint8_t& payload_len,
+							uint8_t& msg_id)
 {
     // Validate start byte
     if (packet[0] != START_BYTE)
