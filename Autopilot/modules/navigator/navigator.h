@@ -10,12 +10,17 @@
 class Navigator : public Module
 {
 public:
-	Navigator(HAL* hal, Plane* plane);
+	Navigator(HAL* hal);
 
 	void update() override;
 
 private:
-	Plane::Subscription_handle pos_est_handle;
+	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<Telem_data> _telem_sub;
+
+	Publisher<Navigator_data> _navigator_pub;
+
+	uint8_t _curr_wp_idx = 1;
 };
 
 

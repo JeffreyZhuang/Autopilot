@@ -1,30 +1,44 @@
 #include "modules/navigator/navigator.h"
 
-Navigator::Navigator(HAL* hal, Plane* plane) : Module(hal, plane)
+Navigator::Navigator(HAL* hal)
+	: Module(hal),
+	  _pos_est_sub(Data_bus::get_instance().pos_est_data),
+	  _telem_sub(Data_bus::get_instance().telem_data),
+	  _navigator_pub(Data_bus::get_instance().navigator_data)
 {
 }
 
 void Navigator::update()
 {
-	Plane::Pos_est_data pos_est_data = _plane->get_pos_est_data(pos_est_handle);
-
-	// Get target waypoint
-	const Plane::Waypoint& target_wp = _plane->waypoints[_plane->waypoint_index];
-
-	// Convert waypoint to north east coordinates
-	double tgt_north, tgt_east;
-	lat_lon_to_meters(_plane->get_home_lat(), _plane->get_home_lon(),
-					  target_wp.lat, target_wp.lon,
-					  &tgt_north, &tgt_east);
-
-	// Check distance to waypoint to determine if waypoint reached
-	float rel_east = pos_est_data.pos_e - tgt_east;
-	float rel_north = pos_est_data.pos_n - tgt_north;
-	float dist_to_wp = sqrtf(rel_north*rel_north + rel_east*rel_east);
-
-	if ((dist_to_wp < get_params()->navigator.min_dist_wp) &&
-		(_plane->waypoint_index < _plane->num_waypoints - 1))
+	if (_pos_est_sub.check_new())
 	{
-		_plane->waypoint_index++; // Move to next waypoint
+		Pos_est_data pos_est_data = _pos_est_sub.get();
+		Telem_data telem_data = _telem_sub.get();
+
+		// Get target waypoint
+		const Waypoint& target_wp = telem_data.waypoints[_curr_wp_idx];
+
+		// Convert waypoint to north east coordinates
+		double tgt_north, tgt_east;
+		lat_lon_to_meters(Data_bus::get_instance().get_home().lat, Data_bus::get_instance().get_home().lon,
+						  target_wp.lat, target_wp.lon,
+						  &tgt_north, &tgt_east);
+
+		// Check distance to waypoint to determine if waypoint reached
+		float rel_east = pos_est_data.pos_e - tgt_east;
+		float rel_north = pos_est_data.pos_n - tgt_north;
+		float dist_to_wp = sqrtf(rel_north*rel_north + rel_east*rel_east);
+
+		if ((dist_to_wp < get_params()->navigator.min_dist_wp) &&
+			(_curr_wp_idx < telem_data.num_waypoints - 1))
+		{
+			_curr_wp_idx++; // Move to next waypoint
+
+			Navigator_data navigator_data;
+			navigator_data.waypoint_index = _curr_wp_idx;
+			navigator_data.timestamp = _hal->get_time_us();
+
+			_navigator_pub.publish(navigator_data);
+		}
 	}
 }

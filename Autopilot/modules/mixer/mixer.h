@@ -9,7 +9,7 @@
 class Mixer : public Module
 {
 public:
-	Mixer(HAL* hal, Plane* plane);
+	Mixer(HAL* hal);
 
 	void update();
 

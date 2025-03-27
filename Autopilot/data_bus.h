@@ -91,6 +91,7 @@ struct OF_data
 
 struct Pos_est_data
 {
+	float baro_offset = 0;
 	bool converged = false;
 	float pos_n = 0;
 	float pos_e = 0;
@@ -114,7 +115,7 @@ struct Power_data
 
 struct Ctrl_cmd_data
 {
-	float rud_cmd = 0; // Control commands from -1 to 1
+	float rud_cmd = 0; // Control commands [-1, 1]
 	float ele_cmd = 0;
 	float thr_cmd = 0;
 	uint64_t timestamp = 0;
@@ -127,15 +128,52 @@ struct Att_setpoint_data
 	uint64_t timestamp = 0;
 };
 
-struct Telem_status_data
+struct Telem_data
 {
 	bool waypoints_loaded = false;
+	uint8_t num_waypoints = 0;
+	Waypoint waypoints[100]; // 100 max waypoints
 	uint64_t timestamp = 0;
 };
 
 struct L1_d_setpoint_data
 {
 	float guidance_d_setpoint = 0;
+	uint64_t timestamp = 0;
+};
+
+struct Modes_data
+{
+	System_mode system_mode;
+	Flight_mode flight_mode;
+	Auto_mode auto_mode;
+	Manual_mode manual_mode;
+	uint64_t timestamp = 0;
+};
+
+struct RC_data
+{
+	bool tx_conn = false;
+	float ail_norm = 0; // Normalized RC transmitter stick input, -1 to 1
+	float ele_norm = 0;
+	float rud_norm = 0;
+	float thr_norm = 0;
+	bool man_sw = false;
+	bool mod_sw = false;
+	uint64_t timestamp = 0;
+};
+
+struct Navigator_data
+{
+	uint8_t waypoint_index = 0; // Current waypoint, default 1 to skip home waypoint
+	uint64_t timestamp = 0;
+};
+
+struct Time_data
+{
+	float dt_s = 0;
+	uint32_t loop_iteration = 0;
+	uint64_t us_since_epoch = 0;
 	uint64_t timestamp = 0;
 };
 
@@ -209,35 +247,7 @@ private:
 class Data_bus
 {
 public:
-    // State machine
-	System_mode system_mode;
-    Flight_mode flight_mode;
-    Auto_mode auto_mode;
-    Manual_mode manual_mode;
-
-    // Time
-    uint64_t time_us = 0;
-    float dt_s = 0;
-    uint32_t loop_iteration = 0;
-    uint64_t us_since_epoch = 0;
-
-	// Position estimator
-    float baro_offset = 0;
-
-    // Navigator
-    uint8_t waypoint_index = 1; // Current waypoint, skip home waypoint
-    uint8_t num_waypoints = 0;
-	Waypoint waypoints[100]; // 100 max waypoints
-
-    // RC Transmitter
-    bool tx_connected = false;
-    float rc_ail_norm = 0; // Normalized RC transmitter stick input, -1 to 1
-    float rc_ele_norm = 0;
-    float rc_rud_norm = 0;
-    float rc_thr_norm = 0;
-    bool rc_man_sw = false;
-    bool rc_mod_sw = false;
-
+	DataHandler<Modes_data> modes_Data;
     DataHandler<IMU_data> imu_data;
     DataHandler<Mag_data> mag_data;
     DataHandler<Baro_data> baro_data;
@@ -247,9 +257,17 @@ public:
     DataHandler<Pos_est_data> pos_est_data;
     DataHandler<Power_data> power_data;
     DataHandler<Att_setpoint_data> att_setpoint_data;
-    DataHandler<Telem_status_data> telem_status_data;
+    DataHandler<Telem_data> telem_data;
     DataHandler<Ctrl_cmd_data> ctrl_cmd_data;
     DataHandler<L1_d_setpoint_data> l1_d_setpoint_data;
+    DataHandler<RC_data> rc_data;
+    DataHandler<Navigator_data> navigator_data;
+
+    Waypoint get_home() const
+    {
+    	// First waypoint is home
+    	return telem_data.get(nullptr).waypoints[0];
+    }
 
     static Data_bus& get_instance()
     {
