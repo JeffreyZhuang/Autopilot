@@ -11,6 +11,6 @@ void Flight_hal::read_baro()
 	float alt;
 	if (Barometer_getAltitude(&alt))
 	{
-		_plane->baro_data.set(Plane::Baro_data{alt, get_time_us()});
+		_baro_pub.publish(Baro_data{alt, get_time_us()});
 	}
 }

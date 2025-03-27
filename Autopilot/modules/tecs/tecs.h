@@ -1,10 +1,10 @@
 #ifndef LIB_TECS_TECS_H_
 #define LIB_TECS_TECS_H_
 
+#include <data_bus.h>
 #include "lib/pi_control/pi_control.h"
 #include "lib/utils/utils.h"
 #include "constants.h"
-#include "plane.h"
 #include "parameters.h"
 #include "module.h"
 #include <math.h>

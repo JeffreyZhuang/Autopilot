@@ -15,7 +15,7 @@ void Flight_hal::read_imu()
 {
 	if (_imu.getAGT() == 1)
 	{
-		_plane->imu_data.set(Plane::IMU_data{-_imu.gyrX(), -_imu.gyrY(), _imu.gyrZ(),
+		_imu_pub.publish(IMU_data{-_imu.gyrX(), -_imu.gyrY(), _imu.gyrZ(),
 											 -_imu.accX(), -_imu.accY(), _imu.accZ(),
 											 get_time_us()});
 	}

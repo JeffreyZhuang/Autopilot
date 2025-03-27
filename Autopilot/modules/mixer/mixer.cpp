@@ -1,8 +1,6 @@
 #include <modules/mixer/mixer.h>
 
-Mixer::Mixer(HAL* hal, Plane* plane) : Module(hal, plane)
-{
-}
+Mixer::Mixer(HAL* hal, Plane* plane) : Module(hal, plane) {}
 
 // Convert control setpoints into duty cycle values
 // And send the signals to motors

@@ -1,7 +1,6 @@
 #include "module.h"
 
-Module::Module(HAL* hal, Plane* plane)
+Module::Module(HAL* hal)
 {
 	_hal = hal;
-	_plane = plane;
 }

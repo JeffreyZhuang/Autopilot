@@ -12,23 +12,30 @@
 class Attitude_control : public Module
 {
 public:
-	Attitude_control(HAL* hal, Plane* plane);
+	Attitude_control(HAL* hal);
 
 	void update();
 
 private:
-	Plane::Subscription_handle _ahrs_handle;
-	Plane::AHRS_data _ahrs_data;
 	PI_control roll_controller;
 	PI_control pitch_controller;
 
+	Plane::Subscription_handle _ahrs_handle;
+	Plane::Subscription_handle _att_setpoint_handle;
+
+	Plane::AHRS_data _ahrs_data;
+	Plane::Att_setpoint_data _att_setpoint_data;
+
 	void handle_manual_mode();
 	void handle_auto_mode();
+
 	void update_direct();
 	void update_stabilized();
+
 	void update_takeoff();
 	void update_mission();
 	void update_touchdown();
+
 	void control_roll_ptch();
 	void control_roll_ptch_no_integral();
 };

@@ -1,7 +1,7 @@
 #ifndef HAL_H_
 #define HAL_H_
 
-#include "plane.h"
+#include <data_bus.h>
 
 enum class Hal_mode
 {

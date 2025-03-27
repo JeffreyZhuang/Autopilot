@@ -1,9 +1,9 @@
 #ifndef AHRS_H
 #define AHRS_H
 
+#include <data_bus.h>
 #include "lib/madgwick/madgwick.h"
 #include "lib/moving_average/moving_avg.h"
-#include "plane.h"
 #include "parameters.h"
 #include "hal.h"
 #include "module.h"
@@ -23,7 +23,7 @@ enum class Ahrs_state
 class AHRS : public Module
 {
 public:
-    AHRS(HAL* hal, Plane* plane);
+    AHRS(HAL* hal);
 
     void update();
     bool is_converged();
@@ -46,11 +46,11 @@ private:
 	MovingAverage avg_my;
 	MovingAverage avg_mz;
 
-	Plane::Subscription_handle imu_handle;
-	Plane::Subscription_handle mag_handle;
+	Subscriber<IMU_data> _imu_sub;
+	Subscriber<Mag_data> _mag_sub;
 
-	Plane::IMU_data imu_data;
-	Plane::Mag_data mag_data;
+	IMU_data imu_data;
+	Mag_data mag_data;
 
 	void update_initialization();
 	void update_running();

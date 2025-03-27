@@ -4,15 +4,12 @@
 // Proceedings of the AIAA Guidance, Navigation and Control
 // Conference, Aug 2004. AIAA-2004-4900.
 
-L1_controller::L1_controller(HAL* hal, Plane* plane)
-	: Module(hal, plane)
-{
-}
+L1_controller::L1_controller(HAL* hal, Plane* plane) : Module(hal, plane) {}
 
 void L1_controller::update()
 {
-	_ahrs_data = _plane->get_ahrs_data(_ahrs_handle);
-	_pos_est_data = _plane->get_pos_est_data(_pos_est_handle);
+	_ahrs_data = _plane->ahrs_data.get(_ahrs_handle);
+	_pos_est_data = _plane->pos_est_data.get(_pos_est_handle);
 
 	if (_plane->system_mode == Plane::System_mode::FLIGHT &&
 		_plane->auto_mode != Plane::Auto_mode::TOUCHDOWN)
@@ -20,13 +17,28 @@ void L1_controller::update()
 		switch (_plane->flight_mode)
 		{
 		case Plane::Flight_mode::MANUAL:
-			update_mission();
+			handle_manual_mode();
 			break;
 		case Plane::Flight_mode::AUTO:
 			handle_auto_mode();
 			break;
 		}
 	}
+}
+
+void L1_controller::handle_manual_mode()
+{
+	switch (_plane->manual_mode)
+	{
+	case Plane::Manual_mode::STABILIZED:
+		update_stabilized();
+		break;
+	}
+}
+
+void L1_controller::update_stabilized()
+{
+	_plane->roll_setpoint = _plane->rc_ail_norm * get_params()->att_ctrl.fbw_roll_lim;
 }
 
 void L1_controller::handle_auto_mode()
@@ -97,7 +109,8 @@ void L1_controller::update_flare()
 	// Calculate the glideslope angle based on the altitude difference and horizontal distance
 	const float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon,
 													 appr_wp.lat, appr_wp.lon);
-	const float glideslope_angle = atan2f(land_wp.alt - appr_wp.alt, dist_land_appr);
+	const float glideslope_angle = atan2f(land_wp.alt - appr_wp.alt,
+										  dist_land_appr - get_params()->navigator.min_dist_wp);
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
 	const float final_altitude = 0;

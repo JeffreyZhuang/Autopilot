@@ -12,7 +12,7 @@
 class L1_controller : public Module
 {
 public:
-	L1_controller(HAL* hal, Plane* plane);
+	L1_controller(HAL* hal);
 
 	void update() override;
 
@@ -23,7 +23,9 @@ private:
 	Plane::AHRS_data _ahrs_data;
 	Plane::Pos_est_data _pos_est_data;
 
+	void handle_manual_mode();
 	void handle_auto_mode();
+	void update_stabilized();
 	void update_mission();
 	void update_flare();
 	float calculate_altitude_setpoint(const float prev_north, const float prev_east,

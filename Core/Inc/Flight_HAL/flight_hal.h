@@ -1,6 +1,7 @@
 #ifndef INC_FLIGHT_HAL_H_
 #define INC_FLIGHT_HAL_H_
 
+#include <data_bus.h>
 #include <Drivers/sbus_input.h>
 #include <lib/utils/utils.h>
 #include "Drivers/servo.h"
@@ -13,7 +14,6 @@
 #include "Drivers/cxof.h"
 #include "parameters.h"
 #include "hal.h"
-#include "plane.h"
 
 extern "C"
 {
@@ -63,7 +63,7 @@ struct Hitl_tx_packet
 class Flight_hal : public HAL
 {
 public:
-	Flight_hal(Plane* plane);
+	Flight_hal();
 
 	void init() override;
 
@@ -132,7 +132,6 @@ public:
 	static Flight_hal *get_instance() { return _instance; };
 
 private:
-	Plane* _plane;
 	ICM42688 _imu;
 	INA219 _ina219;
 	Adafruit_MLX90393 _mag;
@@ -143,6 +142,13 @@ private:
 	Servo servo1;
 	Servo servo2;
 	Cxof cxof;
+
+	Publisher<IMU_data> _imu_pub;
+	Publisher<Baro_data> _baro_pub;
+	Publisher<GNSS_data> _gnss_pub;
+	Publisher<Mag_data> _mag_pub;
+	Publisher<OF_data> _of_pub;
+	Publisher<Power_data> _power_pub;
 
 	void usb_print_flight(char * str) override;
 

@@ -20,13 +20,12 @@
 class Autopilot
 {
 public:
-	Autopilot(HAL* hal, Plane* plane);
+	Autopilot(HAL* hal);
 
     void setup();
 
 private:
     HAL* _hal;
-    Plane* _plane;
     AHRS _ahrs;
     Position_estimator _position_estimator;
     Attitude_control _att_control;

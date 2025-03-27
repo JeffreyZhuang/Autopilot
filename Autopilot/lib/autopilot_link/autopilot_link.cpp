@@ -5,7 +5,6 @@ bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& msg_id
 	if (byte == START_BYTE)
 	{
 		_in_pkt = true;
-		_pkt_idx = 0;
 	}
 
 	if (_in_pkt)
@@ -20,6 +19,7 @@ bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& msg_id
 		else if (_pkt_idx == _payload_len + HEADER_LEN)
 		{
 			_in_pkt = false;
+			_pkt_idx = 0;
 
 			// Parse
 			uint8_t payload_len_result;
@@ -28,6 +28,7 @@ bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& msg_id
 		else if (_pkt_idx == MAX_PACKET_LEN)
 		{
 			_in_pkt = false;
+			_pkt_idx = 0;
 		}
 	}
 

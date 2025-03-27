@@ -1,8 +1,8 @@
 #ifndef MODULES_COMMANDER_COMMANDER_H_
 #define MODULES_COMMANDER_COMMANDER_H_
 
+#include <data_bus.h>
 #include "parameters.h"
-#include "plane.h"
 #include "hal.h"
 #include "module.h"
 #include <stdio.h>
@@ -10,7 +10,7 @@
 class Commander : public Module
 {
 public:
-	Commander(HAL* hal, Plane* plane);
+	Commander(HAL* hal);
 
 	void update();
 

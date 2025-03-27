@@ -1,12 +1,11 @@
 #include "modules/attitude_control/attitude_control.h"
 
-Attitude_control::Attitude_control(HAL * hal, Plane * plane) : Module(hal, plane)
-{
-}
+Attitude_control::Attitude_control(HAL * hal, Plane * plane) : Module(hal, plane) {}
 
 void Attitude_control::update()
 {
-	_ahrs_data = _plane->get_ahrs_data(_ahrs_handle);
+	_ahrs_data = _plane->ahrs_data.get(_ahrs_handle);
+	_att_setpoint_data = _plane->att_setpoint_data.get(_ahrs_handle);
 
 	if (_plane->system_mode == Plane::System_mode::FLIGHT)
 	{
@@ -61,7 +60,6 @@ void Attitude_control::update_direct()
 
 void Attitude_control::update_stabilized()
 {
-	_plane->roll_setpoint = _plane->rc_ail_norm * get_params()->att_ctrl.fbw_roll_lim;
 	control_roll_ptch();
 }
 

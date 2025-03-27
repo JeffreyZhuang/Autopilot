@@ -1,8 +1,8 @@
 #ifndef MODULES_NAVIGATOR_NAVIGATOR_H_
 #define MODULES_NAVIGATOR_NAVIGATOR_H_
 
+#include <data_bus.h>
 #include "lib/utils/utils.h"
-#include "plane.h"
 #include "hal.h"
 #include "parameters.h"
 #include "module.h"

@@ -11,6 +11,6 @@ void Flight_hal::read_compass()
 {
 	if (_mag.readDataNonBlocking())
 	{
-		_plane->mag_data.set(Plane::Mag_data{-_mag.x, _mag.y, -_mag.z, get_time_us()});
+		_mag_pub.publish(Mag_data{-_mag.x, _mag.y, -_mag.z, get_time_us()});
 	}
 }

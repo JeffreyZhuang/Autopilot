@@ -20,10 +20,10 @@ void Flight_hal::read_sensors_hitl()
 	}
 
 	uint64_t time = get_time_us();
-	_plane->imu_data.set(Plane::IMU_data{data->gx, data->gy, data->gz, data->ax, data->ay, data->az, time});
-	_plane->mag_data.set(Plane::Mag_data{data->mx, data->my, data->mz, time});
-	_plane->baro_data.set(Plane::Baro_data{data->asl, time});
-	_plane->gnss_data.set(Plane::GNSS_data{(double)data->lat * 1E-7, (double)data->lon * 1E-7,
+	_imu_pub.publish(IMU_data{data->gx, data->gy, data->gz, data->ax, data->ay, data->az, time});
+	_mag_pub.publish(Mag_data{data->mx, data->my, data->mz, time});
+	_baro_pub.publish(Baro_data{data->asl, time});
+	_gnss_pub.publish(GNSS_data{(double)data->lat * 1E-7, (double)data->lon * 1E-7,
 									 data->asl, 10, true, time});
-	_plane->of_data.set(Plane::OF_data{data->of_x, data->of_y, time});
+	_of_pub.publish(OF_data{data->of_x, data->of_y, time});
 }
