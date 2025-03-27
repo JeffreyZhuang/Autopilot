@@ -121,10 +121,9 @@ struct Ctrl_cmd_data
 	uint64_t timestamp = 0;
 };
 
-struct Att_setpoint_data
+struct TECS_data
 {
 	float pitch_setpoint = 0;
-	float roll_setpoint = 0;
 	uint64_t timestamp = 0;
 };
 
@@ -136,9 +135,10 @@ struct Telem_data
 	uint64_t timestamp = 0;
 };
 
-struct L1_d_setpoint_data
+struct L1_data
 {
-	float guidance_d_setpoint = 0;
+	float d_setpoint = 0;
+	float roll_setpoint = 0;
 	uint64_t timestamp = 0;
 };
 
@@ -247,7 +247,8 @@ private:
 class Data_bus
 {
 public:
-	DataHandler<Modes_data> modes_Data;
+	DataHandler<Time_data> time_data;
+	DataHandler<Modes_data> modes_data;
     DataHandler<IMU_data> imu_data;
     DataHandler<Mag_data> mag_data;
     DataHandler<Baro_data> baro_data;
@@ -256,10 +257,10 @@ public:
     DataHandler<AHRS_data> ahrs_data;
     DataHandler<Pos_est_data> pos_est_data;
     DataHandler<Power_data> power_data;
-    DataHandler<Att_setpoint_data> att_setpoint_data;
+    DataHandler<TECS_data> tecs_data;
     DataHandler<Telem_data> telem_data;
     DataHandler<Ctrl_cmd_data> ctrl_cmd_data;
-    DataHandler<L1_d_setpoint_data> l1_d_setpoint_data;
+    DataHandler<L1_data> l1_data;
     DataHandler<RC_data> rc_data;
     DataHandler<Navigator_data> navigator_data;
 

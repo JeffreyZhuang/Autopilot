@@ -17,11 +17,24 @@ public:
 	void update() override;
 
 private:
-	Plane::Subscription_handle _ahrs_handle;
-	Plane::Subscription_handle _pos_est_handle;
+	Subscriber<AHRS_data> _ahrs_sub;
+	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<Modes_data> _modes_sub;
+	Subscriber<Telem_data> _telem_sub;
+	Subscriber<Navigator_data> _navigator_sub;
+	Subscriber<RC_data> _rc_sub;
+	Subscriber<Time_data> _time_sub;
 
-	Plane::AHRS_data _ahrs_data;
-	Plane::Pos_est_data _pos_est_data;
+	Publisher<L1_data> _l1_pub;
+
+	Modes_data _modes_data;
+	AHRS_data _ahrs_data;
+	Pos_est_data _pos_est_data;
+	Telem_data _telem_data;
+	Navigator_data _navigator_data;
+	L1_data _l1_data;
+	RC_data _rc_data;
+	Time_data _time_data;
 
 	void handle_manual_mode();
 	void handle_auto_mode();
@@ -30,7 +43,7 @@ private:
 	void update_flare();
 	float calculate_altitude_setpoint(const float prev_north, const float prev_east,
 	  	  	  	  	  	 	 	 	  const float tgt_north, const float tgt_east,
-									  const Plane::Waypoint& prev_wp, const Plane::Waypoint& target_wp);
+									  const Waypoint& prev_wp, const Waypoint& target_wp);
 	float calculate_roll_setpoint(float lateral_accel) const;
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);

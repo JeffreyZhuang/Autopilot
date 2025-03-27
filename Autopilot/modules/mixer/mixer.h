@@ -14,6 +14,12 @@ public:
 	void update();
 
 private:
+	Subscriber<Modes_data> _modes_sub;
+	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
+
+	Modes_data _modes_data;
+	Ctrl_cmd_data _ctrl_cmd_data;
+
 	uint16_t _elevator_duty = 0;
 	uint16_t _rudder_duty = 0;
 	uint16_t _throttle_duty = 0;

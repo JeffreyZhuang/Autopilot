@@ -15,11 +15,20 @@ public:
 	void update();
 
 private:
-	Plane::Subscription_handle _ahrs_handle;
-	Plane::Subscription_handle _pos_est_handle;
+	Subscriber<AHRS_data> _ahrs_sub;
+	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<RC_data> _rc_sub;
+	Subscriber<Telem_data> _telem_sub;
+	Subscriber<Navigator_data> _navigator_sub;
 
-	Plane::Pos_est_data _pos_est_data;
-	Plane::AHRS_data _ahrs_data;
+	Publisher<Modes_data> _modes_pub;
+
+	Pos_est_data _pos_est_data;
+	AHRS_data _ahrs_data;
+	Modes_data _modes_data;
+	RC_data _rc_data;
+	Navigator_data _navigator_data;
+	Telem_data _telem_data;
 
 	void handle_flight_mode();
 	void handle_manual_mode();

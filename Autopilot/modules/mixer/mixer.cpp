@@ -1,20 +1,28 @@
 #include <modules/mixer/mixer.h>
 
-Mixer::Mixer(HAL* hal, Plane* plane) : Module(hal, plane) {}
+Mixer::Mixer(HAL* hal)
+	: Module(hal),
+	  _modes_sub(Data_bus::get_instance().modes_data),
+	  _ctrl_cmd_sub(Data_bus::get_instance().ctrl_cmd_data)
+{
+}
 
 // Convert control setpoints into duty cycle values
 // And send the signals to motors
 void Mixer::update()
 {
-	switch (_plane->system_mode)
+	_modes_data = _modes_sub.get();
+	_ctrl_cmd_data = _ctrl_cmd_sub.get();
+
+	switch (_modes_data.system_mode)
 	{
-	case Plane::System_mode::CONFIG:
+	case System_mode::CONFIG:
 		update_config();
 		break;
-	case Plane::System_mode::STARTUP:
+	case System_mode::STARTUP:
 		update_startup();
 		break;
-	case Plane::System_mode::FLIGHT:
+	case System_mode::FLIGHT:
 		update_flight();
 		break;
 	}
@@ -33,19 +41,21 @@ void Mixer::update_startup()
 void Mixer::update_flight()
 {
 	_elevator_duty = map(
-		get_params()->mixer.pwm_rev_ele ? -_plane->ele_cmd : _plane->ele_cmd,
+		get_params()->mixer.pwm_rev_ele ? -_ctrl_cmd_data.ele_cmd : _ctrl_cmd_data.ele_cmd,
 		 -1,
 		 1,
 		 get_params()->mixer.pwm_min_ele,
 		 get_params()->mixer.pwm_max_ele);
 	_rudder_duty = map(
-		get_params()->mixer.pwm_rev_rud ? -_plane->rud_cmd : _plane->rud_cmd,
+		get_params()->mixer.pwm_rev_rud ? -_ctrl_cmd_data.rud_cmd : _ctrl_cmd_data.rud_cmd,
 		 -1,
 		 1,
 		 get_params()->mixer.pwm_min_rud,
 		 get_params()->mixer.pwm_max_rud);
+
+	// TODO: Remove reverse
 	_throttle_duty = map(
-		_plane->thr_cmd,
+		_ctrl_cmd_data.thr_cmd,
 		 0,
 		 1,
 		 get_params()->mixer.pwm_min_thr,

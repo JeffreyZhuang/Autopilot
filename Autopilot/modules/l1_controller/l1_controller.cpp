@@ -4,33 +4,52 @@
 // Proceedings of the AIAA Guidance, Navigation and Control
 // Conference, Aug 2004. AIAA-2004-4900.
 
-L1_controller::L1_controller(HAL* hal, Plane* plane) : Module(hal, plane) {}
+L1_controller::L1_controller(HAL* hal)
+	: Module(hal),
+	  _ahrs_sub(Data_bus::get_instance().ahrs_data),
+	  _pos_est_sub(Data_bus::get_instance().pos_est_data),
+	  _modes_sub(Data_bus::get_instance().modes_data),
+	  _telem_sub(Data_bus::get_instance().telem_data),
+	  _navigator_sub(Data_bus::get_instance().navigator_data),
+	  _rc_sub(Data_bus::get_instance().rc_data),
+	  _time_sub(Data_bus::get_instance().time_data),
+	  _l1_pub(Data_bus::get_instance().l1_data)
+{
+}
 
 void L1_controller::update()
 {
-	_ahrs_data = _plane->ahrs_data.get(_ahrs_handle);
-	_pos_est_data = _plane->pos_est_data.get(_pos_est_handle);
+	_ahrs_data = _ahrs_sub.get();
+	_pos_est_data = _pos_est_sub.get();
+	_modes_data = _modes_sub.get();
+	_telem_data = _telem_sub.get();
+	_navigator_data = _navigator_sub.get();
+	_rc_data = _rc_sub.get();
 
-	if (_plane->system_mode == Plane::System_mode::FLIGHT &&
-		_plane->auto_mode != Plane::Auto_mode::TOUCHDOWN)
+	if (_modes_data.system_mode == System_mode::FLIGHT &&
+		_modes_data.auto_mode != Auto_mode::TOUCHDOWN)
 	{
-		switch (_plane->flight_mode)
+		switch (_modes_data.flight_mode)
 		{
-		case Plane::Flight_mode::MANUAL:
+		case Flight_mode::MANUAL:
 			handle_manual_mode();
 			break;
-		case Plane::Flight_mode::AUTO:
+		case Flight_mode::AUTO:
 			handle_auto_mode();
 			break;
 		}
 	}
+
+	_l1_pub.publish(_l1_data);
 }
 
 void L1_controller::handle_manual_mode()
 {
-	switch (_plane->manual_mode)
+	switch (_modes_data.manual_mode)
 	{
-	case Plane::Manual_mode::STABILIZED:
+	case Manual_mode::DIRECT:
+		break;
+	case Manual_mode::STABILIZED:
 		update_stabilized();
 		break;
 	}
@@ -38,22 +57,22 @@ void L1_controller::handle_manual_mode()
 
 void L1_controller::update_stabilized()
 {
-	_plane->roll_setpoint = _plane->rc_ail_norm * get_params()->att_ctrl.fbw_roll_lim;
+	_l1_data.roll_setpoint = _rc_data.ail_norm * get_params()->att_ctrl.fbw_roll_lim;
 }
 
 void L1_controller::handle_auto_mode()
 {
-	switch (_plane->auto_mode)
+	switch (_modes_data.auto_mode)
 	{
-	case Plane::Auto_mode::TAKEOFF:
-	case Plane::Auto_mode::MISSION:
-	case Plane::Auto_mode::LAND:
+	case Auto_mode::TAKEOFF:
+	case Auto_mode::MISSION:
+	case Auto_mode::LAND:
 		update_mission();
 		break;
-	case Plane::Auto_mode::FLARE:
+	case Auto_mode::FLARE:
 		update_flare();
 		break;
-	case Plane::Auto_mode::TOUCHDOWN:
+	case Auto_mode::TOUCHDOWN:
 		break;
 	}
 }
@@ -62,15 +81,15 @@ void L1_controller::handle_auto_mode()
 void L1_controller::update_mission()
 {
 	// Determine target and previous waypoints
-	const Plane::Waypoint& prev_wp = _plane->waypoints[_plane->waypoint_index - 1];
-	const Plane::Waypoint& target_wp = _plane->waypoints[_plane->waypoint_index];
+	const Waypoint& prev_wp = _telem_data.waypoints[_navigator_data.waypoint_index - 1];
+	const Waypoint& target_wp = _telem_data.waypoints[_navigator_data.waypoint_index];
 
 	// Convert waypoints to north east coordinates
 	double prev_north, prev_east, tgt_north, tgt_east;
-	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, prev_wp.lat, prev_wp.lon,
-					  &prev_north, &prev_east);
-	lat_lon_to_meters(_plane->waypoints[0].lat, _plane->waypoints[0].lon, target_wp.lat, target_wp.lon,
-					  &tgt_north, &tgt_east);
+	lat_lon_to_meters(Data_bus::get_instance().get_home().lat, Data_bus::get_instance().get_home().lon,
+					  prev_wp.lat, prev_wp.lon, &prev_north, &prev_east);
+	lat_lon_to_meters(Data_bus::get_instance().get_home().lat, Data_bus::get_instance().get_home().lon,
+					  target_wp.lat, target_wp.lon, &tgt_north, &tgt_east);
 
 	// Calculate track heading (bearing from previous to target waypoint)
 	const float trk_hdg = atan2f(tgt_east - prev_east, tgt_north - prev_north);
@@ -94,8 +113,8 @@ void L1_controller::update_mission()
 	const float lateral_accel = 2 * powf(_pos_est_data.gnd_spd, 2) / l1_dist * sinf(hdg_err);
 
 	// Update roll and altitude setpoints
-	_plane->roll_setpoint = calculate_roll_setpoint(lateral_accel);
-	_plane->guidance_d_setpoint = calculate_altitude_setpoint(prev_north, prev_east,
+	_l1_data.roll_setpoint = calculate_roll_setpoint(lateral_accel);
+	_l1_data.d_setpoint = calculate_altitude_setpoint(prev_north, prev_east,
 															  tgt_north, tgt_east,
 															  prev_wp, target_wp);
 }
@@ -103,8 +122,8 @@ void L1_controller::update_mission()
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
 void L1_controller::update_flare()
 {
-	const Plane::Waypoint& land_wp = _plane->waypoints[-1];
-	const Plane::Waypoint& appr_wp = _plane->waypoints[-2];
+	const Waypoint& land_wp = _telem_data.waypoints[-1];
+	const Waypoint& appr_wp = _telem_data.waypoints[-2];
 
 	// Calculate the glideslope angle based on the altitude difference and horizontal distance
 	const float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon,
@@ -125,15 +144,15 @@ void L1_controller::update_flare()
 	);
 
 	// Update altitude setpoint with the calculated sink rate
-	_plane->guidance_d_setpoint += sink_rate * _plane->dt_s;
-	_plane->roll_setpoint = 0;
+	_l1_data.d_setpoint += sink_rate * _time_data.dt_s;
+	_l1_data.roll_setpoint = 0;
 }
 
 float L1_controller::calculate_altitude_setpoint(const float prev_north, const float prev_east,
 		  	  	  	  	  	  	  	  	  	  	 const float tgt_north, const float tgt_east,
-												 const Plane::Waypoint& prev_wp, const Plane::Waypoint& target_wp)
+												 const Waypoint& prev_wp, const Waypoint& target_wp)
 {
-	if (_plane->waypoint_index == 1)
+	if (_navigator_data.waypoint_index == 1)
 	{
 		// Takeoff
 		return target_wp.alt;
@@ -148,7 +167,7 @@ float L1_controller::calculate_altitude_setpoint(const float prev_north, const f
 	const float initial_dist = get_params()->navigator.min_dist_wp;
 	float final_dist;
 
-	if (_plane->waypoint_index == _plane->num_waypoints - 1)
+	if (_navigator_data.waypoint_index == _telem_data.num_waypoints - 1)
 	{
 		// During landing, go directly to landing point
 		final_dist =  dist_prev_tgt;
@@ -171,7 +190,7 @@ float L1_controller::calculate_roll_setpoint(float lateral_accel) const
 {
 	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
 
-	if (_plane->auto_mode == Plane::Auto_mode::TAKEOFF)
+	if (_modes_data.auto_mode == Auto_mode::TAKEOFF)
 	{
 		return clamp(roll, -get_params()->takeoff.roll_lim, get_params()->takeoff.roll_lim);
 	}

@@ -20,11 +20,20 @@ private:
 	PI_control roll_controller;
 	PI_control pitch_controller;
 
-	Plane::Subscription_handle _ahrs_handle;
-	Plane::Subscription_handle _att_setpoint_handle;
+	Subscriber<AHRS_data> _ahrs_sub;
+	Subscriber<L1_data> _l1_sub;
+	Subscriber<TECS_data> _tecs_sub;
+	Subscriber<Modes_data> _modes_sub;
+	Subscriber<RC_data> _rc_sub;
 
-	Plane::AHRS_data _ahrs_data;
-	Plane::Att_setpoint_data _att_setpoint_data;
+	Publisher<Ctrl_cmd_data> _ctrl_cmd_pub;
+
+	AHRS_data _ahrs_data;
+	RC_data _rc_data;
+	L1_data _l1_data;
+	TECS_data _tecs_data;
+	Modes_data _modes_data;
+	Ctrl_cmd_data _ctrl_cmd_data;
 
 	void handle_manual_mode();
 	void handle_auto_mode();

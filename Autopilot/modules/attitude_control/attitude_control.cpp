@@ -1,34 +1,49 @@
 #include "modules/attitude_control/attitude_control.h"
 
-Attitude_control::Attitude_control(HAL * hal, Plane * plane) : Module(hal, plane) {}
+Attitude_control::Attitude_control(HAL* hal)
+	: Module(hal),
+	  _ahrs_sub(Data_bus::get_instance().ahrs_data),
+	  _tecs_sub(Data_bus::get_instance().tecs_data),
+	  _modes_sub(Data_bus::get_instance().modes_data),
+	  _l1_sub(Data_bus::get_instance().l1_data),
+	  _rc_sub(Data_bus::get_instance().rc_data),
+	  _time_sub(Data_bus::get_instance().time_data)
+	  _ctrl_cmd_pub(Data_bus::get_instance().ctrl_cmd_data)
+{
+}
 
 void Attitude_control::update()
 {
-	_ahrs_data = _plane->ahrs_data.get(_ahrs_handle);
-	_att_setpoint_data = _plane->att_setpoint_data.get(_ahrs_handle);
+	_ahrs_data = _ahrs_sub.get();
+	_modes_data = _modes_sub.get();
+	_l1_data = _l1_sub.get();
+	_tecs_data = _tecs_sub.get();
+	_rc_data = _rc_sub.get();
 
-	if (_plane->system_mode == Plane::System_mode::FLIGHT)
+	if (_modes_data.system_mode == System_mode::FLIGHT)
 	{
-		switch (_plane->flight_mode)
+		switch (_modes_data.flight_mode)
 		{
-		case Plane::Flight_mode::MANUAL:
+		case Flight_mode::MANUAL:
 			handle_manual_mode();
 			break;
-		case Plane::Flight_mode::AUTO:
+		case Flight_mode::AUTO:
 			handle_auto_mode();
 			break;
 		}
 	}
+
+	_ctrl_cmd_pub.publish(_ctrl_cmd_data);
 }
 
 void Attitude_control::handle_manual_mode()
 {
-	switch (_plane->manual_mode)
+	switch (_modes_data.manual_mode)
 	{
-	case Plane::Manual_mode::DIRECT:
+	case Manual_mode::DIRECT:
 		update_direct();
 		break;
-	case Plane::Manual_mode::STABILIZED:
+	case Manual_mode::STABILIZED:
 		update_stabilized();
 		break;
 	}
@@ -36,17 +51,17 @@ void Attitude_control::handle_manual_mode()
 
 void Attitude_control::handle_auto_mode()
 {
-	switch (_plane->auto_mode)
+	switch (_modes_data.auto_mode)
 	{
-	case Plane::Auto_mode::TAKEOFF:
+	case Auto_mode::TAKEOFF:
 		update_takeoff();
 		break;
-	case Plane::Auto_mode::MISSION:
-	case Plane::Auto_mode::LAND:
-	case Plane::Auto_mode::FLARE:
+	case Auto_mode::MISSION:
+	case Auto_mode::LAND:
+	case Auto_mode::FLARE:
 		update_mission();
 		break;
-	case Plane::Auto_mode::TOUCHDOWN:
+	case Auto_mode::TOUCHDOWN:
 		update_touchdown();
 		break;
 	}
@@ -54,8 +69,8 @@ void Attitude_control::handle_auto_mode()
 
 void Attitude_control::update_direct()
 {
-	_plane->rud_cmd = _plane->rc_ail_norm;
-	_plane->ele_cmd = _plane->rc_ele_norm;
+	_ctrl_cmd_data.rud_cmd = _rc_data.ail_norm;
+	_ctrl_cmd_data.ele_cmd = _rc_data.ele_norm;
 }
 
 void Attitude_control::update_stabilized()
@@ -75,15 +90,15 @@ void Attitude_control::update_mission()
 
 void Attitude_control::update_touchdown()
 {
-	_plane->rud_cmd = 0;
-	_plane->ele_cmd = 0;
+	_ctrl_cmd_data.rud_cmd = 0;
+	_ctrl_cmd_data.ele_cmd = 0;
 }
 
 void Attitude_control::control_roll_ptch()
 {
-	_plane->rud_cmd = roll_controller.get_output(
+	_ctrl_cmd_data.rud_cmd = roll_controller.get_output(
 		_ahrs_data.roll,
-		_plane->roll_setpoint,
+		_l1_data.roll_setpoint,
 		get_params()->att_ctrl.roll_kp,
 		get_params()->att_ctrl.roll_ki,
 		1,
@@ -93,7 +108,7 @@ void Attitude_control::control_roll_ptch()
 		_plane->dt_s
 	);
 
-	_plane->ele_cmd = pitch_controller.get_output(
+	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
 		_ahrs_data.pitch,
 		_plane->pitch_setpoint,
 		get_params()->att_ctrl.ptch_kp,
@@ -108,9 +123,9 @@ void Attitude_control::control_roll_ptch()
 
 void Attitude_control::control_roll_ptch_no_integral()
 {
-	_plane->rud_cmd = roll_controller.get_output(
+	_ctrl_cmd_data.rud_cmd = roll_controller.get_output(
 		_ahrs_data.roll,
-		_plane->roll_setpoint,
+		_l1_data.roll_setpoint,
 		get_params()->att_ctrl.roll_kp,
 		0,
 		0,
@@ -120,7 +135,7 @@ void Attitude_control::control_roll_ptch_no_integral()
 		_plane->dt_s
 	);
 
-	_plane->ele_cmd = pitch_controller.get_output(
+	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
 		_ahrs_data.pitch,
 		_plane->pitch_setpoint,
 		get_params()->att_ctrl.ptch_kp,
