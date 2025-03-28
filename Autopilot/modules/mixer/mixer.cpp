@@ -1,9 +1,9 @@
-#include <modules/mixer/mixer.h>
+#include "modules/mixer/mixer.h"
 
-Mixer::Mixer(HAL* hal)
-	: Module(hal),
-	  _modes_sub(Data_bus::get_instance().modes_node),
-	  _ctrl_cmd_sub(Data_bus::get_instance().ctrl_cmd_node)
+Mixer::Mixer(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
+	  _modes_sub(_data_bus->modes_node),
+	  _ctrl_cmd_sub(_data_bus->ctrl_cmd_node)
 {
 }
 

@@ -266,4 +266,7 @@ struct Data_bus
    	Node<Navigator_data> navigator_node;
 };
 
+// Each node has ID integer. Initialize the nodes in data bus in array. Function to get node given ID that does a search through array.
+// Then you input Node<Time_data>.ID for time data id, or something
+
 #endif /* DATA_BUS_H_ */

@@ -1,7 +1,5 @@
 #include "autopilot.h"
 
-Autopilot* Autopilot::_instance = nullptr;
-
 Autopilot::Autopilot(HAL* hal, Plane* plane)
 	: _ahrs(hal, plane),
 	  _position_estimator(hal, plane),
