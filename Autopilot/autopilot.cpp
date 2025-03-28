@@ -11,7 +11,8 @@ Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
 	  _rc_handler(hal, data_bus),
 	  _commander(hal, data_bus),
 	  _tecs(hal, data_bus),
-	  _navigator(hal, data_bus)
+	  _navigator(hal, data_bus),
+	  _time_pub(data_bus->time_node)
 {
 	_hal = hal;
 	_data_bus = data_bus;
@@ -55,34 +56,38 @@ void Autopilot::update_time()
 {
 	uint64_t time = _hal->get_time_us();
 
-	if (_plane->time_us > 0)
+	if (_time_data.timestamp > 0)
 	{
-		_plane->dt_s = (time - _plane->time_us) * US_TO_S;
+		_time_data.dt_s = (time - _time_data.timestamp) * US_TO_S;
 	}
 	else
 	{
 		// Initialize
-		_plane->dt_s = 0;
+		_time_data.dt_s = 0;
 	}
 
-	_plane->time_us = time;
-	_plane->loop_iteration++;
+	_time_data.timestamp = time;
+	_time_data.loop_iteration++;
 }
 
 // View in web serial plotter
 void Autopilot::debug_serial()
 {
 	// Maybe move to debug class
-	if (Data_bus::get_instance().modes_data.get(nullptr).system_mode != System_mode::CONFIG)
+	if (_data_bus->modes_node.get(nullptr).system_mode != System_mode::CONFIG)
 	{
-		Pos_est_data pos_est_data = Data_bus::get_instance().pos_est_data.get(nullptr);
+		Pos_est_data pos_est_data = _data_bus->pos_est_node.get(nullptr);
+		GNSS_data gnss_data = _data_bus->gnss_node.get(nullptr);
+		AHRS_data ahrs_data = _data_bus->ahrs_node.get(nullptr);
+		Baro_data baro_data = _data_bus->baro_node.get(nullptr);
 
 		// Or serial class
 		// Printf only for printing
 		// USB class for USB
 		// Or send this along with HITL
 		double gnss_north_meters, gnss_east_meters;
-		lat_lon_to_meters(_plane->get_home_lat(), _plane->get_home_lon(),
+		lat_lon_to_meters(_data_bus->telem_node.get(nullptr).waypoints[0].lat,
+						  _data_bus->telem_node.get(nullptr).waypoints[0].lon,
 						  gnss_data.lat, gnss_data.lon,
 						  &gnss_north_meters, &gnss_east_meters);
 
@@ -97,7 +102,7 @@ void Autopilot::debug_serial()
 				pos_est_data.pos_d,
 				gnss_north_meters,
 				gnss_east_meters,
-				-(baro_data.alt - _plane->baro_offset),
+				-(baro_data.alt - pos_est_data.baro_offset),
 				ahrs_data.yaw);
 
 		_hal->usb_print(tx_buff);

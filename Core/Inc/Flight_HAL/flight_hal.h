@@ -169,8 +169,9 @@ private:
 	bool buff2_ready = false;
 
 	// scheduler_hal.cpp
-	void (*main_task)() = nullptr;
-	void (*background_task)() = nullptr;
+	void (*main_task)(void*) = nullptr;
+	void (*background_task)(void*) = nullptr;
+	void* main_task_arg = nullptr;
 
 	static Flight_hal* _instance;
 };

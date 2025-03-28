@@ -3,6 +3,7 @@
 void Flight_hal::start_main_task(void (*task)(void*), void* arg)
 {
 	main_task = task;
+	main_task_arg = arg;
 
 	if (HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
 	{
@@ -14,17 +15,17 @@ void Flight_hal::execute_main_task()
 {
 	if (main_task)
 	{
-		main_task();
+		main_task(main_task_arg);
 	}
 }
 
-void Flight_hal::start_background_task(void (*task)(void*), void* arg))
+void Flight_hal::start_background_task(void (*task)(void*), void* arg)
 {
 	background_task = task;
 
 	while (1)
 	{
-		background_task();
+		background_task(arg);
 	}
 }
 
