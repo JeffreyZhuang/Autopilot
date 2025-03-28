@@ -237,6 +237,8 @@ private:
 	uint64_t last_timestamp = 0;
 };
 
+// INSTEAD OF GET INSTANCE YOU CAN PASS AS POINTER TO ALL CLASSES
+
 /**
  * @brief Centralized flight data and settings container
  *
@@ -244,9 +246,8 @@ private:
  * information including sensor data, state estimates, control commands,
  * and system state.
  */
-class Data_bus
+struct Data_bus
 {
-public:
 	Node<Time_data> time_node;
 	Node<Modes_data> modes_node;
     Node<IMU_data> imu_node;
@@ -263,21 +264,6 @@ public:
    	Node<L1_data> l1_node;
    	Node<RC_data> rc_node;
    	Node<Navigator_data> navigator_node;
-
-    Waypoint get_home(Telem_data data) const
-    {
-    	// First waypoint is home
-    	return data.waypoints[0];
-    }
-
-    static Data_bus& get_instance()
-    {
-    	static Data_bus instance;
-    	return instance;
-    }
-
-private:
-    Data_bus() = default;
 };
 
 #endif /* DATA_BUS_H_ */

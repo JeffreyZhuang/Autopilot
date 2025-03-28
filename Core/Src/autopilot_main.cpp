@@ -4,7 +4,8 @@
 
 void autopilot_main_c()
 {
-	Flight_hal hal;
-	Autopilot autopilot(&hal);
+	Data_bus data_bus;
+	Flight_hal hal(&data_bus);
+	Autopilot autopilot(&hal, &data_bus);
 	autopilot.setup();
 }

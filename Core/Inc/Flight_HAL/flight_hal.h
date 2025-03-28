@@ -63,7 +63,7 @@ struct Hitl_tx_packet
 class Flight_hal : public HAL
 {
 public:
-	Flight_hal();
+	Flight_hal(Data_bus* data_bus);
 
 	void init() override;
 
@@ -132,6 +132,7 @@ public:
 	static Flight_hal *get_instance() { return _instance; };
 
 private:
+	Data_bus* _data_bus;
 	ICM42688 _imu;
 	INA219 _ina219;
 	Adafruit_MLX90393 _mag;

@@ -1,7 +1,7 @@
 #include "modules/navigator/navigator.h"
 
-Navigator::Navigator(HAL* hal)
-	: Module(hal),
+Navigator::Navigator(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
 	  _pos_est_sub(Data_bus::get_instance().pos_est_node),
 	  _telem_sub(Data_bus::get_instance().telem_node),
 	  _navigator_pub(Data_bus::get_instance().navigator_node)

@@ -16,7 +16,7 @@ Autopilot::Autopilot(HAL* hal, Plane* plane)
 	  _navigator(hal, plane)
 {
 	_hal = hal;
-	_plane = plane;
+	_data_bus = data_bus;
 	_instance = this;
 }
 

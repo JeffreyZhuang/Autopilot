@@ -1,20 +1,20 @@
 #include "modules/position_estimator/position_estimator.h"
 
-Position_estimator::Position_estimator(HAL* hal)
-	: Module(hal),
+Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
 	  kalman(n, m),
 	  avg_baro(window_len, window_baro),
 	  avg_lat(window_len, window_lat),
 	  avg_lon(window_len, window_lon),
-	  _time_sub(Data_bus::get_instance().time_node),
-	  _modes_sub(Data_bus::get_instance().modes_node),
-	  _imu_sub(Data_bus::get_instance().imu_node),
-	  _baro_sub(Data_bus::get_instance().baro_node),
-	  _gnss_sub(Data_bus::get_instance().gnss_node),
-	  _of_sub(Data_bus::get_instance().of_node),
-	  _ahrs_sub(Data_bus::get_instance().ahrs_node),
-	  _telem_sub(Data_bus::get_instance().telem_node),
-	  _pos_est_pub(Data_bus::get_instance().pos_est_node)
+	  _time_sub(data_bus->time_node),
+	  _modes_sub(data_bus->modes_node),
+	  _imu_sub(data_bus->imu_node),
+	  _baro_sub(data_bus->baro_node),
+	  _gnss_sub(data_bus->gnss_node),
+	  _of_sub(data_bus->of_node),
+	  _ahrs_sub(data_bus->ahrs_node),
+	  _telem_sub(data_bus->telem_node),
+	  _pos_est_pub(data_bus->pos_est_node)
 {
 }
 

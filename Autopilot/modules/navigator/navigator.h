@@ -10,7 +10,7 @@
 class Navigator : public Module
 {
 public:
-	Navigator(HAL* hal);
+	Navigator(HAL* hal, Data_bus* data_bus);
 
 	void update() override;
 

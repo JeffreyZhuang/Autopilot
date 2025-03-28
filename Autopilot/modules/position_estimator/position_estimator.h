@@ -25,7 +25,7 @@ enum class Pos_estimator_state
 class Position_estimator : public Module
 {
 public:
-    Position_estimator(HAL* hal);
+    Position_estimator(HAL* hal, Data_bus* data_bus);
 
     void update();
 

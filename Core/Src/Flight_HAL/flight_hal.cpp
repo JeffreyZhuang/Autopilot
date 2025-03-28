@@ -2,7 +2,7 @@
 
 Flight_hal* Flight_hal::_instance = nullptr;
 
-Flight_hal::Flight_hal() :
+Flight_hal::Flight_hal(Data_bus* data_bus) :
 	_imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),
 	_ina219(&hi2c1, 0.01),
 	_gnss(&huart3),
@@ -11,13 +11,14 @@ Flight_hal::Flight_hal() :
 	servo1(&htim3, TIM_CHANNEL_1),
 	servo2(&htim2, TIM_CHANNEL_1),
 	cxof(&huart2),
-	_imu_pub(Data_bus::get_instance().imu_node),
-	_mag_pub(Data_bus::get_instance().mag_node),
-	_baro_pub(Data_bus::get_instance().baro_node),
-	_of_pub(Data_bus::get_instance().of_node),
-	_gnss_pub(Data_bus::get_instance().gnss_node),
-	_power_pub(Data_bus::get_instance().power_node)
+	_imu_pub(data_bus->imu_node),
+	_mag_pub(data_bus->mag_node),
+	_baro_pub(data_bus->baro_node),
+	_of_pub(data_bus->of_node),
+	_gnss_pub(data_bus->gnss_node),
+	_power_pub(data_bus->power_node)
 {
+	_data_bus = data_bus;
 	_instance = this;
 }
 
