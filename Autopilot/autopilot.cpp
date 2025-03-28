@@ -76,18 +76,14 @@ void Autopilot::update_time()
 void Autopilot::debug_serial()
 {
 	// Maybe move to debug class
-	if (_plane->system_mode != Plane::System_mode::CONFIG)
+	if (Data_bus::get_instance().modes_data.get(nullptr).system_mode != System_mode::CONFIG)
 	{
-		Plane::Subscription_handle ahrs_handle;
-		Plane::Subscription_handle gnss_handle;
-		Plane::Subscription_handle baro_handle;
-		Plane::Subscription_handle pos_est_handle;
+		Pos_est_data pos_est_data = Data_bus::get_instance().pos_est_data.get(nullptr);
 
-		Plane::AHRS_data ahrs_data = _plane->get_ahrs_data(ahrs_handle);
-		Plane::GNSS_data gnss_data = _plane->get_gnss_data(gnss_handle);
-		Plane::Baro_data baro_data = _plane->get_baro_data(baro_handle);
-		Plane::Pos_est_data pos_est_data = _plane->get_pos_est_data(pos_est_handle);
-
+		// Or serial class
+		// Printf only for printing
+		// USB class for USB
+		// Or send this along with HITL
 		double gnss_north_meters, gnss_east_meters;
 		lat_lon_to_meters(_plane->get_home_lat(), _plane->get_home_lon(),
 						  gnss_data.lat, gnss_data.lon,

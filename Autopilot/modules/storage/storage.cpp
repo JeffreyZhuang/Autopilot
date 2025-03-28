@@ -1,6 +1,6 @@
 #include "modules/storage/storage.h"
 
-Storage::Storage(HAL* hal, Plane* plane) : Module(hal, plane) {}
+Storage::Storage(HAL* hal) : Module(hal) {}
 
 void Storage::update()
 {

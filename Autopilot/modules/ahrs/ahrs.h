@@ -48,9 +48,15 @@ private:
 
 	Subscriber<IMU_data> _imu_sub;
 	Subscriber<Mag_data> _mag_sub;
+	Subscriber<Modes_data> _modes_sub;
+	Subscriber<Time_data> _time_sub;
 
-	IMU_data imu_data;
-	Mag_data mag_data;
+	Publisher<AHRS_data> _ahrs_pub;
+
+	Time_data _time_data;
+	IMU_data _imu_data;
+	Mag_data _mag_data;
+	Modes_data _modes_data;
 
 	void update_initialization();
 	void update_running();

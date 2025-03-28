@@ -1,21 +1,29 @@
 #include "modules/ahrs/ahrs.h"
 
-AHRS::AHRS(HAL* hal, Plane* plane)
-	: Module(hal, plane),
+AHRS::AHRS(HAL* hal)
+	: Module(hal),
 	  avg_ax(window_size, window_ax),
 	  avg_ay(window_size, window_ay),
 	  avg_az(window_size, window_az),
 	  avg_mx(window_size, window_mx),
 	  avg_my(window_size, window_my),
-	  avg_mz(window_size, window_mz)
+	  avg_mz(window_size, window_mz),
+	  _modes_sub(Data_bus::get_instance().modes_data),
+	  _mag_sub(Data_bus::get_instance().mag_data),
+	  _imu_sub(Data_bus::get_instance().imu_data),
+	  _time_sub(Data_bus::get_instance().time_data),
+	  _ahrs_pub(Data_bus::get_instance().ahrs_data)
 {
 }
 
 void AHRS::update()
 {
-	if (_plane->system_mode != Plane::System_mode::CONFIG)
+	_time_data = _time_sub.get();
+	_modes_data = _modes_sub.get();
+
+	if (_modes_data.system_mode != System_mode::CONFIG)
 	{
-		filter.set_dt(_plane->dt_s);
+		filter.set_dt(_time_data.dt_s);
 		filter.set_beta(get_params()->ahrs.beta_gain);
 
 		switch (ahrs_state)
@@ -32,17 +40,17 @@ void AHRS::update()
 
 void AHRS::update_initialization()
 {
-	if (_plane->check_new_imu_data(imu_handle) && _plane->check_new_mag_data(mag_handle))
+	if (_imu_sub.check_new() && _mag_sub.check_new())
 	{
-		Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
-		Plane::Mag_data mag_data = _plane->get_mag_data(mag_handle);
+		_imu_data = _imu_sub.get();
+		_mag_data = _mag_sub.get();
 
-		float mag_calib[3] = {mag_data.x, mag_data.y, mag_data.z};
+		float mag_calib[3] = {_mag_data.x, _mag_data.y, _mag_data.z};
 		apply_compass_calibration(mag_calib);
 
-		avg_ax.add(imu_data.ax);
-		avg_ay.add(imu_data.ay);
-		avg_az.add(imu_data.az);
+		avg_ax.add(_imu_data.ax);
+		avg_ay.add(_imu_data.ay);
+		avg_az.add(_imu_data.az);
 		avg_mx.add(mag_calib[0]);
 		avg_my.add(mag_calib[1]);
 		avg_mz.add(mag_calib[2]);
@@ -57,15 +65,15 @@ void AHRS::update_initialization()
 
 void AHRS::update_running()
 {
-	if (_plane->imu_data.check_new(imu_handle))
+	if (_imu_sub.check_new())
 	{
-		imu_data = _plane->imu_data.get(imu_handle);
+		_imu_data = _imu_sub.get();
 
 		if (is_accel_reliable())
 		{
-			if (_plane->mag_data.check_new(mag_handle))
+			if (_mag_sub.check_new())
 			{
-				mag_data = _plane->mag_data.get(mag_handle);
+				_mag_data = _mag_sub.get();
 				update_imu_mag();
 			}
 			else
@@ -84,37 +92,30 @@ void AHRS::update_running()
 
 void AHRS::update_imu()
 {
-	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
-
-	filter.updateIMU(imu_data.gx, imu_data.gy, imu_data.gz,
-	                 -imu_data.ax, -imu_data.ay, -imu_data.az);
+	filter.updateIMU(_imu_data.gx, _imu_data.gy, _imu_data.gz,
+	                 -_imu_data.ax, -_imu_data.ay, -_imu_data.az);
 }
 
 void AHRS::update_imu_mag()
 {
-	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
-	Plane::Mag_data mag_data = _plane->get_mag_data(mag_handle);
-
-	float mag_calib[3] = {mag_data.x, mag_data.y, mag_data.z};
+	float mag_calib[3] = {_mag_data.x, _mag_data.y, _mag_data.z};
 
 	apply_compass_calibration(mag_calib);
 
-	filter.update(imu_data.gx, imu_data.gy, imu_data.gz,
-				  -imu_data.ax, -imu_data.ay, -imu_data.az,
+	filter.update(_imu_data.gx, _imu_data.gy, _imu_data.gz,
+				  -_imu_data.ax, -_imu_data.ay, -_imu_data.az,
 				  -mag_calib[0], -mag_calib[1], -mag_calib[2]);
 }
 
 void AHRS::update_gyro()
 {
-	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
-
-	filter.updateGyro(imu_data.gx, imu_data.gy, imu_data.gz);
+	filter.updateGyro(_imu_data.gx, _imu_data.gy, _imu_data.gz);
 }
 
 void AHRS::publish_ahrs()
 {
 	// Account yaw for magnetic declination and normalize to [0, 360]
-	_plane->set_ahrs_data(Plane::AHRS_data{
+	_ahrs_pub.publish(AHRS_data{
 		ahrs_state == Ahrs_state::RUNNING,
 		filter.getRoll(),
 		filter.getPitch(),
@@ -195,11 +196,9 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 
 bool AHRS::is_accel_reliable()
 {
-	Plane::IMU_data imu_data = _plane->get_imu_data(imu_handle);
-
-	float accel_magnitude = sqrtf(powf(imu_data.ax, 2) +
-								  powf(imu_data.ay, 2) +
-								  powf(imu_data.az, 2));
+	float accel_magnitude = sqrtf(powf(_imu_data.ax, 2) +
+								  powf(_imu_data.ay, 2) +
+								  powf(_imu_data.az, 2));
 
 	// Assuming 1g reference
 	return fabs(accel_magnitude - 1.0f) < get_params()->ahrs.acc_max;

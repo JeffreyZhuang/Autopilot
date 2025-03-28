@@ -129,7 +129,6 @@ struct __attribute__((packed)) Parameters
 	{
 		float baro_var; // Variance
 		float gnss_var;
-		float gnss_alt_var;
 	} pos_estimator;
 
 	// HITL

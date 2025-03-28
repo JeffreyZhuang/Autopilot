@@ -25,6 +25,7 @@ private:
 	Subscriber<TECS_data> _tecs_sub;
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<RC_data> _rc_sub;
+	Subscriber<Time_data> _time_sub;
 
 	Publisher<Ctrl_cmd_data> _ctrl_cmd_pub;
 
@@ -34,6 +35,7 @@ private:
 	TECS_data _tecs_data;
 	Modes_data _modes_data;
 	Ctrl_cmd_data _ctrl_cmd_data;
+	Time_data _time_data;
 
 	void handle_manual_mode();
 	void handle_auto_mode();

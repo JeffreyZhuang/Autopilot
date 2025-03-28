@@ -178,7 +178,7 @@ struct Time_data
 };
 
 template<typename T>
-class DataHandler
+class Node
 {
 public:
 	bool check_new(const uint64_t last_timestamp) const
@@ -205,7 +205,7 @@ template<typename T>
 class Publisher
 {
 public:
-	Publisher(DataHandler<T>& handler) : handler(handler) {}
+	Publisher(Node<T>& handler) : handler(handler) {}
 
 	void publish(const T& new_data)
 	{
@@ -213,14 +213,14 @@ public:
 	}
 
 private:
-	DataHandler<T>& handler;
+	Node<T>& handler;
 };
 
 template<typename T>
 class Subscriber
 {
 public:
-	Subscriber(DataHandler<T>& handler) : handler(handler) {}
+	Subscriber(Node<T>& handler) : handler(handler) {}
 
 	bool check_new()
 	{
@@ -233,7 +233,7 @@ public:
 	}
 
 private:
-	DataHandler<T>& handler;
+	Node<T>& handler;
 	uint64_t last_timestamp = 0;
 };
 
@@ -247,27 +247,27 @@ private:
 class Data_bus
 {
 public:
-	DataHandler<Time_data> time_data;
-	DataHandler<Modes_data> modes_data;
-    DataHandler<IMU_data> imu_data;
-    DataHandler<Mag_data> mag_data;
-    DataHandler<Baro_data> baro_data;
-    DataHandler<GNSS_data> gnss_data;
-    DataHandler<OF_data> of_data;
-    DataHandler<AHRS_data> ahrs_data;
-    DataHandler<Pos_est_data> pos_est_data;
-    DataHandler<Power_data> power_data;
-    DataHandler<TECS_data> tecs_data;
-    DataHandler<Telem_data> telem_data;
-    DataHandler<Ctrl_cmd_data> ctrl_cmd_data;
-    DataHandler<L1_data> l1_data;
-    DataHandler<RC_data> rc_data;
-    DataHandler<Navigator_data> navigator_data;
+	Node<Time_data> time_node;
+	Node<Modes_data> modes_node;
+    Node<IMU_data> imu_node;
+    Node<Mag_data> mag_node;
+    Node<Baro_data> baro_node;
+    Node<GNSS_data> gnss_node;
+    Node<OF_data> of_node;
+    Node<AHRS_data> ahrs_node;
+    Node<Pos_est_data> pos_est_node;
+    Node<Power_data> power_node;
+    Node<TECS_data> tecs_node;
+    Node<Telem_data> telem_node;
+   	Node<Ctrl_cmd_data> ctrl_cmd_node;
+   	Node<L1_data> l1_node;
+   	Node<RC_data> rc_node;
+   	Node<Navigator_data> navigator_node;
 
-    Waypoint get_home() const
+    Waypoint get_home(Telem_data data) const
     {
     	// First waypoint is home
-    	return telem_data.get(nullptr).waypoints[0];
+    	return data.waypoints[0];
     }
 
     static Data_bus& get_instance()

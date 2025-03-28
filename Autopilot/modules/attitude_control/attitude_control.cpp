@@ -7,13 +7,14 @@ Attitude_control::Attitude_control(HAL* hal)
 	  _modes_sub(Data_bus::get_instance().modes_data),
 	  _l1_sub(Data_bus::get_instance().l1_data),
 	  _rc_sub(Data_bus::get_instance().rc_data),
-	  _time_sub(Data_bus::get_instance().time_data)
+	  _time_sub(Data_bus::get_instance().time_data),
 	  _ctrl_cmd_pub(Data_bus::get_instance().ctrl_cmd_data)
 {
 }
 
 void Attitude_control::update()
 {
+	_time_data = _time_sub.get();
 	_ahrs_data = _ahrs_sub.get();
 	_modes_data = _modes_sub.get();
 	_l1_data = _l1_sub.get();
@@ -105,19 +106,19 @@ void Attitude_control::control_roll_ptch()
 		-1,
 		1,
 		0,
-		_plane->dt_s
+		_time_data.dt_s
 	);
 
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
 		_ahrs_data.pitch,
-		_plane->pitch_setpoint,
+		_tecs_data.pitch_setpoint,
 		get_params()->att_ctrl.ptch_kp,
 		get_params()->att_ctrl.ptch_ki,
 		1,
 		-1,
 		1,
 		0,
-		_plane->dt_s
+		_time_data.dt_s
 	);
 }
 
@@ -132,18 +133,18 @@ void Attitude_control::control_roll_ptch_no_integral()
 		-1,
 		1,
 		0,
-		_plane->dt_s
+		_time_data.dt_s
 	);
 
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
 		_ahrs_data.pitch,
-		_plane->pitch_setpoint,
+		_tecs_data.pitch_setpoint,
 		get_params()->att_ctrl.ptch_kp,
 		0,
 		0,
 		-1,
 		1,
 		0,
-		_plane->dt_s
+		_time_data.dt_s
 	);
 }

@@ -2,8 +2,8 @@
 
 Mixer::Mixer(HAL* hal)
 	: Module(hal),
-	  _modes_sub(Data_bus::get_instance().modes_data),
-	  _ctrl_cmd_sub(Data_bus::get_instance().ctrl_cmd_data)
+	  _modes_sub(Data_bus::get_instance().modes_node),
+	  _ctrl_cmd_sub(Data_bus::get_instance().ctrl_cmd_node)
 {
 }
 

@@ -25,7 +25,7 @@ enum class Pos_estimator_state
 class Position_estimator : public Module
 {
 public:
-    Position_estimator(HAL* hal, Plane* plane);
+    Position_estimator(HAL* hal);
 
     void update();
 
@@ -42,20 +42,31 @@ private:
     float window_lat[window_len];
     float window_lon[window_len];
 
-    Plane::Subscription_handle imu_handle;
-    Plane::Subscription_handle baro_handle;
-    Plane::Subscription_handle gnss_handle;
-    Plane::Subscription_handle of_handle;
-    Plane::Subscription_handle ahrs_handle;
-    Plane::Subscription_handle pos_est_handle;
+    Subscriber<Time_data> _time_sub;
+    Subscriber<Modes_data> _modes_sub;
+    Subscriber<IMU_data> _imu_sub;
+    Subscriber<Baro_data> _baro_sub;
+    Subscriber<GNSS_data> _gnss_sub;
+    Subscriber<OF_data> _of_sub;
+    Subscriber<AHRS_data> _ahrs_sub;
+    Subscriber<Telem_data> _telem_sub;
 
-    Plane::Pos_est_data pos_est_data;
-    Plane::OF_data of_data;
+    Publisher<Pos_est_data> _pos_est_pub;
+
+    Pos_est_data _pos_est_data;
+    OF_data _of_data;
+    Modes_data _modes_data;
+    GNSS_data _gnss_data;
+    Baro_data _baro_data;
+    AHRS_data _ahrs_data;
+    IMU_data _imu_data;
+    Time_data _time_data;
+    Telem_data _telem_data;
 
     void update_initialization();
     void update_running();
 
-    void predict_imu();
+    void predict_accel();
 	void update_gps();
 	void update_baro();
 	void update_plane();

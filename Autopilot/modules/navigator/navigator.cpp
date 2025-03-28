@@ -2,9 +2,9 @@
 
 Navigator::Navigator(HAL* hal)
 	: Module(hal),
-	  _pos_est_sub(Data_bus::get_instance().pos_est_data),
-	  _telem_sub(Data_bus::get_instance().telem_data),
-	  _navigator_pub(Data_bus::get_instance().navigator_data)
+	  _pos_est_sub(Data_bus::get_instance().pos_est_node),
+	  _telem_sub(Data_bus::get_instance().telem_node),
+	  _navigator_pub(Data_bus::get_instance().navigator_node)
 {
 }
 
@@ -20,7 +20,7 @@ void Navigator::update()
 
 		// Convert waypoint to north east coordinates
 		double tgt_north, tgt_east;
-		lat_lon_to_meters(Data_bus::get_instance().get_home().lat, Data_bus::get_instance().get_home().lon,
+		lat_lon_to_meters(Data_bus::get_home(telem_data).lat, Data_bus::get_home(telem_data).lon,
 						  target_wp.lat, target_wp.lon,
 						  &tgt_north, &tgt_east);
 

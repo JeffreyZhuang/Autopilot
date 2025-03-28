@@ -11,12 +11,12 @@ Flight_hal::Flight_hal() :
 	servo1(&htim3, TIM_CHANNEL_1),
 	servo2(&htim2, TIM_CHANNEL_1),
 	cxof(&huart2),
-	_imu_pub(Data_bus::get_instance().imu_data),
-	_mag_pub(Data_bus::get_instance().mag_data),
-	_baro_pub(Data_bus::get_instance().baro_data),
-	_of_pub(Data_bus::get_instance().of_data),
-	_gnss_pub(Data_bus::get_instance().gnss_data),
-	_power_pub(Data_bus::get_instance().power_data)
+	_imu_pub(Data_bus::get_instance().imu_node),
+	_mag_pub(Data_bus::get_instance().mag_node),
+	_baro_pub(Data_bus::get_instance().baro_node),
+	_of_pub(Data_bus::get_instance().of_node),
+	_gnss_pub(Data_bus::get_instance().gnss_node),
+	_power_pub(Data_bus::get_instance().power_node)
 {
 	_instance = this;
 }

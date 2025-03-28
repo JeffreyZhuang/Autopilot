@@ -43,17 +43,17 @@ private:
 	bool front_buff_full = false;
 	uint32_t back_buff_last_idx = 0;
 
-	Plane::Subscription_handle imu_handle;
-	Plane::Subscription_handle mag_handle;
-	Plane::Subscription_handle gnss_handle;
-	Plane::Subscription_handle baro_handle;
-	Plane::Subscription_handle pos_est_handle;
+	Subscriber<IMU_data> _imu_sub;
+	Subscriber<Mag_data> _mag_sub;
+	Subscriber<GNSS_data> _gnss_sub;
+	Subscriber<Pos_est_data> _baro_sub;
+	Subscriber<Baro_data> _pos_est_sub;
 
-	Plane::IMU_data imu_data;
-	Plane::Mag_data mag_data;
-	Plane::GNSS_data gnss_data;
-	Plane::Pos_est_data pos_est_data;
-	Plane::Baro_data baro_data;
+	IMU_data _imu_data;
+	Mag_data _mag_data;
+	GNSS_data _gnss_data;
+	Pos_est_data _pos_est_data;
+	Baro_data _baro_data;
 
 	void write();
 	void flush();

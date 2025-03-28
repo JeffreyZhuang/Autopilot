@@ -20,9 +20,16 @@ constexpr uint8_t NUM_CH = 6;
 class Rc_handler : public Module
 {
 public:
-	Rc_handler(HAL* hal, Plane* plane);
+	Rc_handler(HAL* hal);
 
 	void update();
+private:
+	Subscriber<Modes_data> _modes_sub;
+
+	Publisher<RC_data> _rc_pub;
+
+	Modes_data _modes_data;
+	RC_data _rc_data;
 };
 
 #endif /* MODULES_RC_HANDLER_RC_HANDLER_H_ */
