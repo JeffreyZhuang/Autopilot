@@ -44,8 +44,8 @@ public:
     virtual uint64_t get_time_us() const = 0;
 
     // Scheduler
-    virtual void start_main_task(void (*task)()) = 0;
-    virtual void start_background_task(void (*task)()) = 0;
+    virtual void start_main_task(void (*task)(void*), void* arg) = 0;
+    virtual void start_background_task(void (*task)(void*), void* arg) = 0;
 
     // HITL
     void enable_hitl() noexcept;

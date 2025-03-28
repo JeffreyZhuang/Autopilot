@@ -12,7 +12,7 @@
 class Tecs : public Module
 {
 public:
-	Tecs(HAL* hal, Plane* plane);
+	Tecs(HAL* hal, Data_bus* data_bus);
 
 	void update();
 
@@ -24,9 +24,20 @@ private:
 	float _energy_balance_setpoint = 0;
 	float _energy_balance = 0;
 
-	Plane::Subscription_handle pos_est_handle;
+	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<Modes_data> _modes_sub;
+	Subscriber<Time_data> _time_sub;
+	Subscriber<RC_data> _rc_sub;
+	Subscriber<L1_data> _l1_sub;
 
-	Plane::Pos_est_data pos_est_data;
+	Publisher<TECS_data> _tecs_pub;
+
+	Pos_est_data _pos_est_data;
+	Modes_data _modes_data;
+	Time_data _time_data;
+	RC_data _rc_data;
+	TECS_data _tecs_data;
+	L1_data _l1_data;
 
 	void handle_manual_mode();
 	void handle_auto_mode();

@@ -124,8 +124,8 @@ public:
 	void usb_rx_callback(uint8_t* Buf, uint32_t Len);
 
 	// scheduler_hal.cpp
-	void start_main_task(void (*task)()) override;
-	void start_background_task(void (*task)()) override;
+	void start_main_task(void (*task)(void*), void* arg) override;
+	void start_background_task(void (*task)(void*), void* arg) override;
 	void execute_main_task();
 	static void main_task_callback() { _instance->execute_main_task(); }
 

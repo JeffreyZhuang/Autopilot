@@ -2,8 +2,9 @@
 
 Mixer::Mixer(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
-	  _modes_sub(_data_bus->modes_node),
-	  _ctrl_cmd_sub(_data_bus->ctrl_cmd_node)
+	  _modes_sub(data_bus->modes_node),
+	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
+	  _tecs_sub(data_bus->tecs_node)
 {
 }
 
@@ -53,9 +54,9 @@ void Mixer::update_flight()
 		 get_params()->mixer.pwm_min_rud,
 		 get_params()->mixer.pwm_max_rud);
 
-	// TODO: Remove reverse
+	// TODO: Remove reverse for throttle
 	_throttle_duty = map(
-		_ctrl_cmd_data.thr_cmd,
+		_tecs_data.thr_cmd,
 		 0,
 		 1,
 		 get_params()->mixer.pwm_min_thr,

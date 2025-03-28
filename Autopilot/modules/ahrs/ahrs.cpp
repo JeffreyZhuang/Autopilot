@@ -1,18 +1,18 @@
 #include "modules/ahrs/ahrs.h"
 
-AHRS::AHRS(HAL* hal)
-	: Module(hal),
+AHRS::AHRS(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
 	  avg_ax(window_size, window_ax),
 	  avg_ay(window_size, window_ay),
 	  avg_az(window_size, window_az),
 	  avg_mx(window_size, window_mx),
 	  avg_my(window_size, window_my),
 	  avg_mz(window_size, window_mz),
-	  _modes_sub(Data_bus::get_instance().modes_data),
-	  _mag_sub(Data_bus::get_instance().mag_data),
-	  _imu_sub(Data_bus::get_instance().imu_data),
-	  _time_sub(Data_bus::get_instance().time_data),
-	  _ahrs_pub(Data_bus::get_instance().ahrs_data)
+	  _modes_sub(data_bus->modes_node),
+	  _mag_sub(data_bus->mag_node),
+	  _imu_sub(data_bus->imu_node),
+	  _time_sub(data_bus->time_node),
+	  _ahrs_pub(data_bus->ahrs_node)
 {
 }
 

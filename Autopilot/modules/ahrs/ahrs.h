@@ -23,7 +23,7 @@ enum class Ahrs_state
 class AHRS : public Module
 {
 public:
-    AHRS(HAL* hal);
+    AHRS(HAL* hal, Data_bus* data_bus);
 
     void update();
     bool is_converged();

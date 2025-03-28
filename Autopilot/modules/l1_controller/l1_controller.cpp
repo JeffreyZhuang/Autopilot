@@ -4,16 +4,16 @@
 // Proceedings of the AIAA Guidance, Navigation and Control
 // Conference, Aug 2004. AIAA-2004-4900.
 
-L1_controller::L1_controller(HAL* hal)
-	: Module(hal),
-	  _ahrs_sub(Data_bus::get_instance().ahrs_data),
-	  _pos_est_sub(Data_bus::get_instance().pos_est_data),
-	  _modes_sub(Data_bus::get_instance().modes_data),
-	  _telem_sub(Data_bus::get_instance().telem_data),
-	  _navigator_sub(Data_bus::get_instance().navigator_data),
-	  _rc_sub(Data_bus::get_instance().rc_data),
-	  _time_sub(Data_bus::get_instance().time_data),
-	  _l1_pub(Data_bus::get_instance().l1_data)
+L1_controller::L1_controller(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
+	  _ahrs_sub(data_bus->ahrs_node),
+	  _pos_est_sub(data_bus->pos_est_node),
+	  _modes_sub(data_bus->modes_node),
+	  _telem_sub(data_bus->telem_node),
+	  _navigator_sub(data_bus->navigator_node),
+	  _rc_sub(data_bus->rc_node),
+	  _time_sub(data_bus->time_node),
+	  _l1_pub(data_bus->l1_node)
 {
 }
 
@@ -86,9 +86,9 @@ void L1_controller::update_mission()
 
 	// Convert waypoints to north east coordinates
 	double prev_north, prev_east, tgt_north, tgt_east;
-	lat_lon_to_meters(Data_bus::get_instance().get_home().lat, Data_bus::get_instance().get_home().lon,
+	lat_lon_to_meters(_telem_data.waypoints[0].lat, _telem_data.waypoints[0].lon,
 					  prev_wp.lat, prev_wp.lon, &prev_north, &prev_east);
-	lat_lon_to_meters(Data_bus::get_instance().get_home().lat, Data_bus::get_instance().get_home().lon,
+	lat_lon_to_meters(_telem_data.waypoints[0].lat, _telem_data.waypoints[0].lon,
 					  target_wp.lat, target_wp.lon, &tgt_north, &tgt_east);
 
 	// Calculate track heading (bearing from previous to target waypoint)

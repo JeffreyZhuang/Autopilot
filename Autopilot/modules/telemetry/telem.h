@@ -70,7 +70,7 @@ static constexpr uint16_t MAX_BYTE_RATE = 1500; // Bytes per sec
 class Telem : public Module
 {
 public:
-	Telem(HAL* hal, Plane* plane);
+	Telem(HAL* hal, Data_bus* data_bus);
 
 	void update();
 
@@ -84,13 +84,29 @@ private:
 	uint64_t _last_tlm_transmit_time = 0; // Time of last telemetry transmission
 	uint16_t _bytes_since_last_tlm_transmit = 0; // Total bytes sent since last telemetry transmission
 
-	Plane::Subscription_handle gnss_handle;
-	Plane::Subscription_handle ahrs_handle;
-	Plane::Subscription_handle pos_est_handle;
+	Subscriber<GNSS_data> _gnss_sub;
+	Subscriber<AHRS_data> _ahrs_sub;
+	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<Modes_data> _modes_sub;
+	Subscriber<Telem_data> _telem_sub;
+	Subscriber<L1_data> _l1_sub;
+	Subscriber<Navigator_data> _navigator_sub;
+	Subscriber<Power_data> _power_sub;
+	Subscriber<TECS_data> _tecs_sub;
+	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 
-	Plane::AHRS_data ahrs_data;
-	Plane::GNSS_data gnss_data;
-	Plane::Pos_est_data pos_est_data;
+	Publisher<Telem_data> _telem_pub;
+
+	Ctrl_cmd_data _ctrl_cmd_data;
+	AHRS_data _ahrs_data;
+	GNSS_data _gnss_data;
+	Telem_data _telem_data;
+	Pos_est_data _pos_est_data;
+	Modes_data _modes_data;
+	L1_data _l1_data;
+	Navigator_data _navigator_data;
+	Power_data _power_data;
+	TECS_data _tecs_data;
 
 	void transmit_packet(uint8_t packet[], uint16_t size);
 	void transmit_telem(); // Transmit telemetry packet

@@ -1,33 +1,47 @@
 #include "modules/tecs/tecs.h"
 
-Tecs::Tecs(HAL* hal, Plane* plane) : Module(hal, plane) {}
+Tecs::Tecs(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
+	  _pos_est_sub(data_bus->pos_est_node),
+	  _modes_sub(data_bus->modes_node),
+	  _time_sub(data_bus->time_node),
+	  _rc_sub(data_bus->rc_node),
+	  _l1_sub(data_bus->l1_node),
+	  _tecs_pub(data_bus->tecs_node)
+{
+}
 
 void Tecs::update()
 {
-	if (_plane->system_mode == Plane::System_mode::FLIGHT)
-	{
-		pos_est_data = _plane->pos_est_data.get(pos_est_handle);
+	_modes_data = _modes_sub.get();
 
-		switch (_plane->flight_mode)
+	if (_modes_data.system_mode == System_mode::FLIGHT)
+	{
+		_pos_est_data = _pos_est_sub.get();
+		_rc_data = _rc_sub.get();
+
+		switch (_modes_data.flight_mode)
 		{
-		case Plane::Flight_mode::MANUAL:
+		case Flight_mode::MANUAL:
 			handle_manual_mode();
 			break;
-		case Plane::Flight_mode::AUTO:
+		case Flight_mode::AUTO:
 			handle_auto_mode();
 			break;
 		}
+
+		_tecs_pub.publish(_tecs_data);
 	}
 }
 
 void Tecs::handle_manual_mode()
 {
-	switch (_plane->manual_mode)
+	switch (_modes_data.manual_mode)
 	{
-	case Plane::Manual_mode::DIRECT:
+	case Manual_mode::DIRECT:
 		update_direct();
 		break;
-	case Plane::Manual_mode::STABILIZED:
+	case Manual_mode::STABILIZED:
 		update_stabilized();
 		break;
 	}
@@ -35,21 +49,21 @@ void Tecs::handle_manual_mode()
 
 void Tecs::handle_auto_mode()
 {
-	switch (_plane->auto_mode)
+	switch (_modes_data.auto_mode)
 	{
-	case Plane::Auto_mode::TAKEOFF:
+	case Auto_mode::TAKEOFF:
 		update_takeoff();
 		break;
-	case Plane::Auto_mode::MISSION:
+	case Auto_mode::MISSION:
 		update_mission();
 		break;
-	case Plane::Auto_mode::LAND:
+	case Auto_mode::LAND:
 		update_land();
 		break;
-	case Plane::Auto_mode::FLARE:
+	case Auto_mode::FLARE:
 		update_flare();
 		break;
-	case Plane::Auto_mode::TOUCHDOWN:
+	case Auto_mode::TOUCHDOWN:
 		update_touchdown();
 		break;
 	}
@@ -57,47 +71,47 @@ void Tecs::handle_auto_mode()
 
 void Tecs::update_direct()
 {
-	_plane->pitch_setpoint = 0;
-	_plane->thr_cmd = _plane->rc_thr_norm;
+	_tecs_data.pitch_setpoint = 0;
+	_tecs_data.thr_cmd = _rc_data.thr_norm;
 }
 
 void Tecs::update_stabilized()
 {
-	_plane->pitch_setpoint = _plane->rc_ele_norm * get_params()->att_ctrl.fbw_ptch_lim;
-	_plane->thr_cmd = _plane->rc_thr_norm;
+	_tecs_data.pitch_setpoint = _rc_data.ele_norm * get_params()->att_ctrl.fbw_ptch_lim;
+	_tecs_data.thr_cmd = _rc_data.thr_norm;
 }
 
 void Tecs::update_takeoff()
 {
-	_plane->pitch_setpoint = get_params()->takeoff.ptch;
-	_plane->thr_cmd = _plane->rc_thr_norm;
+	_tecs_data.pitch_setpoint = get_params()->takeoff.ptch;
+	_tecs_data.thr_cmd = _rc_data.thr_norm;
 }
 
 void Tecs::update_mission()
 {
-	calculate_energies(get_params()->tecs.aspd_cruise, _plane->guidance_d_setpoint, 1);
-	_plane->pitch_setpoint = control_energy_balance();
-	_plane->thr_cmd = control_total_energy();
+	calculate_energies(get_params()->tecs.aspd_cruise, _l1_data.d_setpoint, 1);
+	_tecs_data.pitch_setpoint = control_energy_balance();
+	_tecs_data.thr_cmd = control_total_energy();
 }
 
 void Tecs::update_land()
 {
-	calculate_energies(get_params()->tecs.aspd_land, _plane->guidance_d_setpoint, 1);
-	_plane->pitch_setpoint = control_energy_balance();
-	_plane->thr_cmd = control_total_energy();
+	calculate_energies(get_params()->tecs.aspd_land, _l1_data.d_setpoint, 1);
+	_tecs_data.pitch_setpoint = control_energy_balance();
+	_tecs_data.thr_cmd = control_total_energy();
 }
 
 void Tecs::update_flare()
 {
-	calculate_energies(0, _plane->guidance_d_setpoint, 2);
-	_plane->pitch_setpoint = control_energy_balance();
-	_plane->thr_cmd = 0;
+	calculate_energies(0, _l1_data.d_setpoint, 2);
+	_tecs_data.pitch_setpoint = control_energy_balance();
+	_tecs_data.thr_cmd = 0;
 }
 
 void Tecs::update_touchdown()
 {
-	_plane->pitch_setpoint = 0;
-	_plane->thr_cmd = 0;
+	_tecs_data.pitch_setpoint = 0;
+	_tecs_data.thr_cmd = 0;
 }
 
 // wb: weight balance
@@ -110,8 +124,8 @@ void Tecs::calculate_energies(float target_vel_mps, float target_alt_m, float wb
 	// SPe = gh
 	// SKe = 1/2 v^2
 	// Ignore mass since its the energy ratio that matters
-	float energy_pot = G * (-pos_est_data.pos_d);
-	float energy_kin = 0.5 * powf(pos_est_data.gnd_spd, 2);
+	float energy_pot = G * (-_pos_est_data.pos_d);
+	float energy_kin = 0.5 * powf(_pos_est_data.gnd_spd, 2);
 	float energy_total = energy_pot + energy_kin;
 
 	// Calculate target energy using same equations
@@ -151,7 +165,7 @@ float Tecs::control_energy_balance()
 		-get_params()->tecs.ptch_lim_deg,
 		get_params()->tecs.ptch_lim_deg,
 		0,
-		_plane->dt_s
+		_time_data.dt_s
 	);
 }
 
@@ -166,6 +180,6 @@ float Tecs::control_total_energy()
 		0,
 		1,
 		get_params()->perf.throttle_cruise,
-		_plane->dt_s
+		_time_data.dt_s
 	);
 }

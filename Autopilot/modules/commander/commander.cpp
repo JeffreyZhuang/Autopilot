@@ -1,13 +1,13 @@
 #include "modules/commander/commander.h"
 
-Commander::Commander(HAL* hal)
-	: Module(hal),
-	  _ahrs_sub(Data_bus::get_instance().ahrs_data),
-	  _pos_est_sub(Data_bus::get_instance().pos_est_data),
-	  _rc_sub(Data_bus::get_instance().rc_data),
-	  _telem_sub(Data_bus::get_instance().telem_data),
-	  _navigator_sub(Data_bus::get_instance().navigator_data),
-	  _modes_pub(Data_bus::get_instance().modes_data)
+Commander::Commander(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
+	  _ahrs_sub(data_bus->ahrs_node),
+	  _pos_est_sub(data_bus->pos_est_node),
+	  _rc_sub(data_bus->rc_node),
+	  _telem_sub(data_bus->telem_node),
+	  _navigator_sub(data_bus->navigator_node),
+	  _modes_pub(data_bus->modes_node)
 {
 	_modes_data.system_mode = System_mode::CONFIG;
 	_modes_data.flight_mode = Flight_mode::MANUAL;

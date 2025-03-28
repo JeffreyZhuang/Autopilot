@@ -117,7 +117,7 @@ void Position_estimator::update_gps()
 {
 	// Convert lat/lon to meters
 	double gnss_north_meters, gnss_east_meters;
-	lat_lon_to_meters(Data_bus::get_home(_telem_data).lat, Data_bus::get_home(_telem_data).lon,
+	lat_lon_to_meters(_telem_data.waypoints[0].lat, _telem_data.waypoints[0].lon,
 					  _gnss_data.lat, _gnss_data.lon, &gnss_north_meters, &gnss_east_meters);
 
 	Eigen::VectorXf y(2);

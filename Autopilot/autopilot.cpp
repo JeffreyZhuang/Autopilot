@@ -1,29 +1,28 @@
 #include "autopilot.h"
 
-Autopilot::Autopilot(HAL* hal, Plane* plane)
-	: _ahrs(hal, plane),
-	  _position_estimator(hal, plane),
-	  _att_control(hal, plane),
-	  _l1_controller(hal, plane),
-	  _telem(hal, plane),
-	  _storage(hal, plane),
-	  _mixer(hal, plane),
-	  _rc_handler(hal, plane),
-	  _commander(hal, plane),
-	  _tecs(hal, plane),
-	  _navigator(hal, plane)
+Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
+	: _ahrs(hal, data_bus),
+	  _position_estimator(hal, data_bus),
+	  _att_control(hal, data_bus),
+	  _l1_controller(hal, data_bus),
+	  _telem(hal, data_bus),
+	  _storage(hal, data_bus),
+	  _mixer(hal, data_bus),
+	  _rc_handler(hal, data_bus),
+	  _commander(hal, data_bus),
+	  _tecs(hal, data_bus),
+	  _navigator(hal, data_bus)
 {
 	_hal = hal;
 	_data_bus = data_bus;
-	_instance = this;
 }
 
 void Autopilot::setup()
 {
 	printf("Autopilot: Setup\n");
 	_hal->init();
-	_hal->start_main_task(&Autopilot::static_main_task);
-	_hal->start_background_task(&Autopilot::static_background_task);
+	_hal->start_main_task(&Autopilot::static_main_task, this);
+	_hal->start_background_task(&Autopilot::static_background_task, this);
 }
 
 void Autopilot::main_task()

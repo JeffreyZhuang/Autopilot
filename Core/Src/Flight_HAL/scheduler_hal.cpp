@@ -1,6 +1,6 @@
 #include "Flight_HAL/flight_hal.h"
 
-void Flight_hal::start_main_task(void (*task)())
+void Flight_hal::start_main_task(void (*task)(void*), void* arg)
 {
 	main_task = task;
 
@@ -18,7 +18,7 @@ void Flight_hal::execute_main_task()
 	}
 }
 
-void Flight_hal::start_background_task(void (*task)())
+void Flight_hal::start_background_task(void (*task)(void*), void* arg))
 {
 	background_task = task;
 

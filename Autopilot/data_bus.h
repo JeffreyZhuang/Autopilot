@@ -117,13 +117,13 @@ struct Ctrl_cmd_data
 {
 	float rud_cmd = 0; // Control commands [-1, 1]
 	float ele_cmd = 0;
-	float thr_cmd = 0;
 	uint64_t timestamp = 0;
 };
 
 struct TECS_data
 {
 	float pitch_setpoint = 0;
+	float thr_cmd = 0;
 	uint64_t timestamp = 0;
 };
 
@@ -205,39 +205,38 @@ template<typename T>
 class Publisher
 {
 public:
-	Publisher(Node<T>& handler) : handler(handler) {}
+	Publisher(Node<T>& node) : node(node) {}
 
 	void publish(const T& new_data)
 	{
-		handler.set(new_data);
+		node.set(new_data);
 	}
 
 private:
-	Node<T>& handler;
+	Node<T>& node;
 };
 
+// TODO: Rename handler to node
 template<typename T>
 class Subscriber
 {
 public:
-	Subscriber(Node<T>& handler) : handler(handler) {}
+	Subscriber(Node<T>& node) : node(node) {}
 
 	bool check_new()
 	{
-		return handler.check_new(last_timestamp);
+		return node.check_new(last_timestamp);
 	}
 
 	T get()
 	{
-		return handler.get(&last_timestamp);
+		return node.get(&last_timestamp);
 	}
 
 private:
-	Node<T>& handler;
+	Node<T>& node;
 	uint64_t last_timestamp = 0;
 };
-
-// INSTEAD OF GET INSTANCE YOU CAN PASS AS POINTER TO ALL CLASSES
 
 /**
  * @brief Centralized flight data and settings container

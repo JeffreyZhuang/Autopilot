@@ -20,7 +20,7 @@ constexpr uint8_t NUM_CH = 6;
 class Rc_handler : public Module
 {
 public:
-	Rc_handler(HAL* hal);
+	Rc_handler(HAL* hal, Data_bus* data_bus);
 
 	void update();
 private:

@@ -1,14 +1,14 @@
 #include "modules/attitude_control/attitude_control.h"
 
-Attitude_control::Attitude_control(HAL* hal)
-	: Module(hal),
-	  _ahrs_sub(Data_bus::get_instance().ahrs_data),
-	  _tecs_sub(Data_bus::get_instance().tecs_data),
-	  _modes_sub(Data_bus::get_instance().modes_data),
-	  _l1_sub(Data_bus::get_instance().l1_data),
-	  _rc_sub(Data_bus::get_instance().rc_data),
-	  _time_sub(Data_bus::get_instance().time_data),
-	  _ctrl_cmd_pub(Data_bus::get_instance().ctrl_cmd_data)
+Attitude_control::Attitude_control(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
+	  _ahrs_sub(data_bus->ahrs_node),
+	  _tecs_sub(data_bus->tecs_node),
+	  _modes_sub(data_bus->modes_node),
+	  _l1_sub(data_bus->l1_node),
+	  _rc_sub(data_bus->rc_node),
+	  _time_sub(data_bus->time_node),
+	  _ctrl_cmd_pub(data_bus->ctrl_cmd_node)
 {
 }
 

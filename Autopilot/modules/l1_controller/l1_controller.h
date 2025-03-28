@@ -12,7 +12,7 @@
 class L1_controller : public Module
 {
 public:
-	L1_controller(HAL* hal);
+	L1_controller(HAL* hal, Data_bus* data_bus);
 
 	void update() override;
 

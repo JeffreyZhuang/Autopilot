@@ -12,7 +12,7 @@
 class Attitude_control : public Module
 {
 public:
-	Attitude_control(HAL* hal);
+	Attitude_control(HAL* hal, Data_bus* data_bus);
 
 	void update();
 

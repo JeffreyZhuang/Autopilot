@@ -1,16 +1,30 @@
 #include "modules/storage/storage.h"
 
-Storage::Storage(HAL* hal) : Module(hal) {}
+Storage::Storage(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
+	  _imu_sub(data_bus->imu_node),
+	  _baro_sub(data_bus->baro_node),
+	  _modes_sub(data_bus->modes_node),
+	  _pos_est_sub(data_bus->pos_est_node),
+	  _mag_sub(data_bus->mag_node),
+	  _gnss_sub(data_bus->gnss_node),
+	  _time_sub(data_bus->time_node),
+	  _rc_sub(data_bus->rc_node)
+{
+}
 
 void Storage::update()
 {
-	if (_plane->system_mode != Plane::System_mode::CONFIG)
+	_modes_data = _modes_sub.get();
+
+	if (_modes_data.system_mode != System_mode::CONFIG)
 	{
-		imu_data = _plane->imu_data.get(imu_handle);
-		mag_data = _plane->mag_data.get(mag_handle);
-		gnss_data = _plane->gnss_data.get(gnss_handle);
-		baro_data = _plane->baro_data.get(baro_handle);
-		pos_est_data = _plane->pos_est_data.get(pos_est_handle);
+		_time_data = _time_sub.get();
+		_imu_data = _imu_sub.get();
+		_baro_data = _baro_sub.get();
+		_rc_data = _rc_sub.get();
+		_pos_est_data = _pos_est_sub.get();
+		_mag_data = _mag_sub.get();
 
 		write();
 	}
@@ -18,7 +32,7 @@ void Storage::update()
 
 void Storage::update_background()
 {
-	if (_plane->system_mode != Plane::System_mode::CONFIG)
+	if (_modes_data.system_mode != System_mode::CONFIG)
 	{
 		flush();
 	}
@@ -97,19 +111,19 @@ void Storage::flush()
 Storage_payload Storage::create_payload()
 {
 	Storage_payload payload = {
-		_plane->loop_iteration,
-		_plane->time_us + _plane->us_since_epoch,
-		{imu_data.gx, imu_data.gy, imu_data.gz},
-		{imu_data.ax, imu_data.ay, imu_data.az},
-		{mag_data.x, mag_data.y, mag_data.z},
-		{pos_est_data.pos_n, pos_est_data.pos_e, pos_est_data.pos_d},
-		{pos_est_data.vel_n, pos_est_data.vel_e, pos_est_data.vel_d},
-		baro_data.alt,
-		{_plane->rc_ail_norm, _plane->rc_ele_norm, _plane->rc_rud_norm, _plane->rc_thr_norm},
-		gnss_data.lat,
-		gnss_data.lon,
-		gnss_data.fix,
-		static_cast<uint8_t>(_plane->flight_mode)
+		_time_data.loop_iteration,
+		_time_data.timestamp + _time_data.us_since_epoch,
+		{_imu_data.gx, _imu_data.gy, _imu_data.gz},
+		{_imu_data.ax, _imu_data.ay, _imu_data.az},
+		{_mag_data.x, _mag_data.y, _mag_data.z},
+		{_pos_est_data.pos_n, _pos_est_data.pos_e, _pos_est_data.pos_d},
+		{_pos_est_data.vel_n, _pos_est_data.vel_e, _pos_est_data.vel_d},
+		_baro_data.alt,
+		{_rc_data.ail_norm, _rc_data.ele_norm, _rc_data.rud_norm, _rc_data.thr_norm},
+		_gnss_data.lat,
+		_gnss_data.lon,
+		_gnss_data.fix,
+		static_cast<uint8_t>(_modes_data.flight_mode)
 	};
 
 	return payload;

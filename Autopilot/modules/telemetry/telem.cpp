@@ -1,12 +1,24 @@
 #include "modules/telemetry/telem.h"
 
-Telem::Telem(HAL* hal, Plane* plane) : Module(hal, plane) {}
+Telem::Telem(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
+	  _pos_est_sub(data_bus->pos_est_node),
+	  _ahrs_sub(data_bus->ahrs_node),
+	  _gnss_sub(data_bus->gnss_node),
+	  _modes_sub(data_bus->modes_node),
+	  _telem_sub(data_bus->telem_node),
+	  _l1_sub(data_bus->l1_node),
+	  _navigator_sub(data_bus->navigator_node),
+	  _power_sub(data_bus->power_node),
+	  _tecs_sub(data_bus->tecs_node),
+	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
+	  _telem_pub(data_bus->telem_node)
+{
+}
 
 void Telem::update()
 {
-	ahrs_data = _plane->ahrs_data.get(ahrs_handle);
-	gnss_data = _plane->gnss_data.get(gnss_handle);
-	pos_est_data = _plane->pos_est_data.get(pos_est_handle);
+	_modes_data = _modes_sub.get();
 
 	while (!_hal->telem_buffer_empty())
 	{
@@ -56,10 +68,16 @@ void Telem::update()
 		}
 	}
 
-	if (_plane->system_mode != Plane::System_mode::CONFIG)
+	if (_modes_data.system_mode != System_mode::CONFIG)
 	{
+		_ahrs_data = _ahrs_sub.get();
+		_gnss_data = _gnss_sub.get();
+		_pos_est_data = _pos_est_sub.get();
+
 		transmit_telem();
 	}
+
+	_telem_pub.publish(_telem_data);
 }
 
 void Telem::transmit_telem()
@@ -126,7 +144,7 @@ bool Telem::parse_packet()
 	{
 		// Determine type of payload from message ID
 		if (_msg_id == WPT_MSG_ID &&
-			_plane->system_mode == Plane::System_mode::CONFIG &&
+			_modes_data.system_mode == System_mode::CONFIG &&
 			_payload_len == sizeof(Waypoint_payload))
 		{
 			Waypoint_payload waypoint_payload;
@@ -134,11 +152,11 @@ bool Telem::parse_packet()
 
 			if (waypoint_payload.waypoint_index == waypoint_payload.total_waypoints - 1)
 			{
-				_plane->waypoints_loaded = true;
+				_telem_data.waypoints_loaded = true;
 			}
 
-			_plane->num_waypoints = waypoint_payload.total_waypoints;
-			_plane->waypoints[waypoint_payload.waypoint_index] = (Plane::Waypoint){
+			_telem_data.num_waypoints = waypoint_payload.total_waypoints;
+			_telem_data.waypoints[waypoint_payload.waypoint_index] = Waypoint{
 				(double)waypoint_payload.lat * 1E-7,
 				(double)waypoint_payload.lon * 1E-7,
 				(float)waypoint_payload.alt * 1E-1f
@@ -149,7 +167,7 @@ bool Telem::parse_packet()
 			return true;
 		}
 		else if (_msg_id == PARAMS_MSG_ID &&
-				 _plane->system_mode == Plane::System_mode::CONFIG &&
+				 _modes_data.system_mode == System_mode::CONFIG &&
 				 _payload_len == sizeof(Params_payload))
 		{
 			Params_payload params_payload;
@@ -187,27 +205,27 @@ void Telem::transmit_packet(uint8_t packet[], uint16_t size)
 Telem_payload Telem::create_telem_payload()
 {
 	Telem_payload payload = {
-		(int16_t)(ahrs_data.roll * 100),
-		(int16_t)(ahrs_data.pitch * 100),
-		(uint16_t)(ahrs_data.yaw * 10),
-		(int16_t)(-pos_est_data.pos_d * 10),
-		(uint16_t)(pos_est_data.gnd_spd * 10),
-		(int16_t)(-_plane->guidance_d_setpoint * 10),
-		(int32_t)(gnss_data.lat * 1E7),
-		(int32_t)(gnss_data.lon * 1E7),
-		pos_est_data.pos_n,
-		pos_est_data.pos_e,
+		(int16_t)(_ahrs_data.roll * 100),
+		(int16_t)(_ahrs_data.pitch * 100),
+		(uint16_t)(_ahrs_data.yaw * 10),
+		(int16_t)(-_pos_est_data.pos_d * 10),
+		(uint16_t)(_pos_est_data.gnd_spd * 10),
+		(int16_t)(-_l1_data.d_setpoint * 10),
+		(int32_t)(_gnss_data.lat * 1E7),
+		(int32_t)(_gnss_data.lon * 1E7),
+		_pos_est_data.pos_n,
+		_pos_est_data.pos_e,
 		get_current_state(),
-		_plane->waypoint_index,
+		_navigator_data.waypoint_index,
 		0,
 		0,
 		0,
-		(uint16_t)(_plane->autopilot_current * 1000.0f),
-		gnss_data.sats,
-		gnss_data.fix,
-		(uint8_t)(_plane->rud_cmd * 100),
-		(uint8_t)(_plane->ele_cmd * 100),
-		(uint8_t)(_plane->thr_cmd * 100)
+		(uint16_t)(_power_data.autopilot_current * 1000.0f),
+		_gnss_data.sats,
+		_gnss_data.fix,
+		(uint8_t)(_ctrl_cmd_data.rud_cmd * 100),
+		(uint8_t)(_ctrl_cmd_data.ele_cmd * 100),
+		(uint8_t)(_tecs_data.thr_cmd * 100)
 	};
 
 	return payload;
@@ -217,35 +235,35 @@ Telem_payload Telem::create_telem_payload()
 // Returns 255 if unknown state
 uint8_t Telem::get_current_state()
 {
-    switch (_plane->system_mode)
+    switch (_modes_data.system_mode)
     {
-	case Plane::System_mode::CONFIG:
+	case System_mode::CONFIG:
 		return 0;
-	case Plane::System_mode::STARTUP:
+	case System_mode::STARTUP:
 		return 1;
-	case Plane::System_mode::FLIGHT:
-		switch (_plane->flight_mode)
+	case System_mode::FLIGHT:
+		switch (_modes_data.flight_mode)
 		{
-		case Plane::Flight_mode::AUTO:
-			switch (_plane->auto_mode)
+		case Flight_mode::AUTO:
+			switch (_modes_data.auto_mode)
 			{
-			case Plane::Auto_mode::TAKEOFF:
+			case Auto_mode::TAKEOFF:
 				return 2;
-			case Plane::Auto_mode::MISSION:
+			case Auto_mode::MISSION:
 				return 3;
-			case Plane::Auto_mode::LAND:
+			case Auto_mode::LAND:
 				return 4;
-			case Plane::Auto_mode::FLARE:
+			case Auto_mode::FLARE:
 				return 5;
-			case Plane::Auto_mode::TOUCHDOWN:
+			case Auto_mode::TOUCHDOWN:
 				return 6;
 			}
-		case Plane::Flight_mode::MANUAL:
-			switch (_plane->manual_mode)
+		case Flight_mode::MANUAL:
+			switch (_modes_data.manual_mode)
 			{
-				case Plane::Manual_mode::DIRECT:
+				case Manual_mode::DIRECT:
 					return 7;
-				case Plane::Manual_mode::STABILIZED:
+				case Manual_mode::STABILIZED:
 					return 8;
 			}
 		}

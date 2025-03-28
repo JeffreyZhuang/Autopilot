@@ -1,9 +1,9 @@
 #include "modules/rc_handler/rc_handler.h"
 
-Rc_handler::Rc_handler(HAL* hal)
-	: Module(hal),
-	  _modes_sub(Data_bus::get_instance().modes_node),
-	  _rc_pub(Data_bus::get_instance().rc_node)
+Rc_handler::Rc_handler(HAL* hal, Data_bus* data_bus)
+	: Module(hal, data_bus),
+	  _modes_sub(data_bus->modes_node),
+	  _rc_pub(data_bus->rc_node)
 {
 }
 
