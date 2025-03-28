@@ -53,15 +53,15 @@ private:
 
     Publisher<Pos_est_data> _pos_est_pub;
 
-    Pos_est_data _pos_est_data;
-    OF_data _of_data;
-    Modes_data _modes_data;
-    GNSS_data _gnss_data;
-    Baro_data _baro_data;
-    AHRS_data _ahrs_data;
-    IMU_data _imu_data;
-    Time_data _time_data;
-    Telem_data _telem_data;
+    Pos_est_data _pos_est_data{};
+    OF_data _of_data{};
+    Modes_data _modes_data{};
+    GNSS_data _gnss_data{};
+    Baro_data _baro_data{};
+    AHRS_data _ahrs_data{};
+    IMU_data _imu_data{};
+    Time_data _time_data{};
+    Telem_data _telem_data{};
 
     void update_initialization();
     void update_running();

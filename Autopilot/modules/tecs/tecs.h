@@ -32,12 +32,12 @@ private:
 
 	Publisher<TECS_data> _tecs_pub;
 
-	Pos_est_data _pos_est_data;
-	Modes_data _modes_data;
-	Time_data _time_data;
-	RC_data _rc_data;
-	TECS_data _tecs_data;
-	L1_data _l1_data;
+	Pos_est_data _pos_est_data{};
+	Modes_data _modes_data{};
+	Time_data _time_data{};
+	RC_data _rc_data{};
+	TECS_data _tecs_data{};
+	L1_data _l1_data{};
 
 	void handle_manual_mode();
 	void handle_auto_mode();

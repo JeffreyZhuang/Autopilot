@@ -40,7 +40,8 @@ private:
     Navigator _navigator;
 
     Publisher<Time_data> _time_pub;
-    Time_data _time_data;
+
+    Time_data _time_data{};
 
     // Helper functions
     void update_time();

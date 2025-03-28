@@ -68,6 +68,8 @@ void Autopilot::update_time()
 
 	_time_data.timestamp = time;
 	_time_data.loop_iteration++;
+
+	_time_pub.publish(_time_data);
 }
 
 // View in web serial plotter

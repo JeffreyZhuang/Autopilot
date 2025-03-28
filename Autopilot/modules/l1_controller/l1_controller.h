@@ -27,14 +27,14 @@ private:
 
 	Publisher<L1_data> _l1_pub;
 
-	Modes_data _modes_data;
-	AHRS_data _ahrs_data;
-	Pos_est_data _pos_est_data;
-	Telem_data _telem_data;
-	Navigator_data _navigator_data;
-	L1_data _l1_data;
-	RC_data _rc_data;
-	Time_data _time_data;
+	Modes_data _modes_data{};
+	AHRS_data _ahrs_data{};
+	Pos_est_data _pos_est_data{};
+	Telem_data _telem_data{};
+	Navigator_data _navigator_data{};
+	L1_data _l1_data{};
+	RC_data _rc_data{};
+	Time_data _time_data{};
 
 	void handle_manual_mode();
 	void handle_auto_mode();

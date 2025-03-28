@@ -32,7 +32,7 @@ private:
     Madgwick filter;
     Ahrs_state ahrs_state = Ahrs_state::INITIALIZATION;
 
-    static constexpr size_t window_size = 100;
+    static constexpr size_t window_size = 100; // TODO: Better capitalization
     float window_ax[window_size];
     float window_ay[window_size];
     float window_az[window_size];
@@ -53,10 +53,10 @@ private:
 
 	Publisher<AHRS_data> _ahrs_pub;
 
-	Time_data _time_data;
-	IMU_data _imu_data;
-	Mag_data _mag_data;
-	Modes_data _modes_data;
+	Time_data _time_data{};
+	IMU_data _imu_data{};
+	Mag_data _mag_data{};
+	Modes_data _modes_data{};
 
 	void update_initialization();
 	void update_running();

@@ -23,12 +23,12 @@ private:
 
 	Publisher<Modes_data> _modes_pub;
 
-	Pos_est_data _pos_est_data;
-	AHRS_data _ahrs_data;
-	Modes_data _modes_data;
-	RC_data _rc_data;
-	Navigator_data _navigator_data;
-	Telem_data _telem_data;
+	Pos_est_data _pos_est_data{};
+	AHRS_data _ahrs_data{};
+	Modes_data _modes_data{};
+	RC_data _rc_data{};
+	Navigator_data _navigator_data{};
+	Telem_data _telem_data{};
 
 	void handle_flight_mode();
 	void handle_manual_mode();

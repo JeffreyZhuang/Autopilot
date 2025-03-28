@@ -18,9 +18,9 @@ private:
 	Subscriber<TECS_data> _tecs_sub;
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 
-	Modes_data _modes_data;
-	Ctrl_cmd_data _ctrl_cmd_data;
-	TECS_data _tecs_data;
+	Modes_data _modes_data{};
+	Ctrl_cmd_data _ctrl_cmd_data{};
+	TECS_data _tecs_data{};
 
 	uint16_t _elevator_duty = 0;
 	uint16_t _rudder_duty = 0;
