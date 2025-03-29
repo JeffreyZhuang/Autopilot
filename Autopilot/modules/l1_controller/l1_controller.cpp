@@ -57,7 +57,7 @@ void L1_controller::handle_manual_mode()
 
 void L1_controller::update_stabilized()
 {
-	_l1_data.roll_setpoint = _rc_data.ail_norm * get_params()->att_ctrl.fbw_roll_lim;
+	_l1_data.roll_setpoint = _rc_data.ail_norm * get_params()->l1_ctrl.roll_lim;
 }
 
 void L1_controller::handle_auto_mode()

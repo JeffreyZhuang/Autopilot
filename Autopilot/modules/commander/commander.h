@@ -12,7 +12,7 @@ class Commander : public Module
 public:
 	Commander(HAL* hal, Data_bus* data_bus);
 
-	void update();
+	void update() override;
 
 private:
 	Subscriber<AHRS_data> _ahrs_sub;

@@ -11,12 +11,19 @@ void Flight_hal::init_imu()
 	_imu.setGyroFS(ICM42688::dps500);
 }
 
-void Flight_hal::read_imu()
+bool Flight_hal::read_imu(float *ax, float *ay, float *az, float *gx, float *gy, float *gz)
 {
 	if (_imu.getAGT() == 1)
 	{
-		_imu_pub.publish(IMU_data{-_imu.gyrX(), -_imu.gyrY(), _imu.gyrZ(),
-											 -_imu.accX(), -_imu.accY(), _imu.accZ(),
-											 get_time_us()});
+		*ax = -_imu.accX();
+		*ay = -_imu.accY();
+		*az = _imu.accZ();
+		*gx = -_imu.gyrX();
+		*gy = -_imu.gyrY();
+		*gz = _imu.gyrZ();
+
+		return true;
 	}
+
+	return false;
 }

@@ -11,6 +11,7 @@
 #include "Drivers/mlx90393.h"
 #include "Drivers/sd.h"
 #include "Drivers/uart_stream.h"
+#include "Drivers/usb_stream.h"
 #include "Drivers/cxof.h"
 #include "parameters.h"
 #include "hal.h"
@@ -35,24 +36,6 @@ extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart6;
 
-struct Hitl_rx_packet
-{
-	float ax;
-	float ay;
-	float az;
-	float gx;
-	float gy;
-	float gz;
-	float mx;
-	float my;
-	float mz;
-	float asl;
-	int32_t lat;
-	int32_t lon;
-	int16_t of_x;
-	int16_t of_y;
-};
-
 struct Hitl_tx_packet
 {
 	uint16_t ele_duty = 0;
@@ -67,26 +50,20 @@ public:
 
 	void init() override;
 
-	// imu_hal.cpp
+	bool read_imu(float *ax, float *ay, float *az, float *gx, float *gy, float *gz) override;
+	bool read_mag(float *mx, float *my, float *mz) override;
+	bool read_baro(float *alt) override;
+	bool read_gnss(double *lat, double *lon, float* alt, uint8_t* sats, bool* fix) override;
+	bool read_optical_flow(int16_t *x, int16_t *y) override;
+	bool read_power_monitor(float *voltage, float* current) override;
+
 	void init_imu();
-	void read_imu();
-
-	// baro_hal.cpp
 	void init_baro();
-	void read_baro();
-
-	// gnss_hal.cpp
 	void init_gnss();
-	void read_gnss();
-	static void gnss_dma_complete() { _instance->_gnss.dma_complete(); }
-
-	// compass_hal.cpp
 	void init_compass();
-	void read_compass();
-
-	// optical_flow_hal.cpp
 	void init_of();
-	void read_of();
+
+	static void gnss_dma_complete() { _instance->_gnss.dma_complete(); }
 	static void of_dma_complete() { _instance->cxof.dma_complete(); }
 
 	// logger_hal.cpp
@@ -105,6 +82,8 @@ public:
 
 	// servos_hal.cpp
 	void init_servos();
+	void set_pwm(uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
+				 uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty) override;
 
 	// power_monitor_hal.cpp
 	void read_power_monitor();
@@ -121,15 +100,15 @@ public:
 	static void rc_dma_complete() { _instance->sbus_input.dma_complete(); }
 
 	// USB
-	void usb_rx_callback(uint8_t* Buf, uint32_t Len);
+  	void usb_transmit(uint8_t buf[], int len);
+	bool usb_read(uint8_t *byte);
+	static void usb_rx_callback(uint8_t* Buf, uint32_t Len) { _instance->usb_stream.rx_callback(Buf, Len); };
 
 	// scheduler_hal.cpp
 	void start_main_task(void (*task)(void*), void* arg) override;
 	void start_background_task(void (*task)(void*), void* arg) override;
 	void execute_main_task();
 	static void main_task_callback() { _instance->execute_main_task(); }
-
-	static Flight_hal *get_instance() { return _instance; };
 
 private:
 	Data_bus* _data_bus;
@@ -143,30 +122,7 @@ private:
 	Servo servo1;
 	Servo servo2;
 	Cxof cxof;
-
-	Publisher<IMU_data> _imu_pub;
-	Publisher<Baro_data> _baro_pub;
-	Publisher<GNSS_data> _gnss_pub;
-	Publisher<Mag_data> _mag_pub;
-	Publisher<OF_data> _of_pub;
-	Publisher<Power_data> _power_pub;
-
-	void usb_print_flight(char * str) override;
-
-	void read_sensors_flight() override;
-	void read_sensors_hitl() override;
-
-	void set_pwm_flight(uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
-						uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty) override;
-	void set_pwm_hitl(uint16_t ele_duty, uint16_t rud_duty, uint16_t thr_duty,
-					  uint16_t aux1_duty, uint16_t aux2_duty, uint16_t aux3_duty) override;
-
-	// HITL USB Double Buffering
-	Hitl_rx_packet* usb_buff1;
-	Hitl_rx_packet* usb_buff2;
-	bool buff1_active = true;
-	bool buff1_ready = false;
-	bool buff2_ready = false;
+	USB_stream usb_stream;
 
 	// scheduler_hal.cpp
 	void (*main_task)(void*) = nullptr;

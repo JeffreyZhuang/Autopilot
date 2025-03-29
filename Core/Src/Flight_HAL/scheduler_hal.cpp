@@ -59,5 +59,5 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 
 void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
-	Flight_hal::get_instance()->usb_rx_callback(Buf, Len);
+	Flight_hal::usb_rx_callback(Buf, Len);
 }

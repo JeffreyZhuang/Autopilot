@@ -14,7 +14,7 @@ class Attitude_control : public Module
 public:
 	Attitude_control(HAL* hal, Data_bus* data_bus);
 
-	void update();
+	void update() override;
 
 private:
 	PI_control roll_controller;

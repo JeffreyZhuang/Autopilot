@@ -31,7 +31,7 @@ class Storage : public Module
 public:
 	Storage(HAL* hal, Data_bus* data_bus);
 
-	void update();
+	void update() override;
 	void update_background();
 
 private:

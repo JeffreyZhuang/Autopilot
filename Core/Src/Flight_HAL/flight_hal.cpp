@@ -10,13 +10,7 @@ Flight_hal::Flight_hal(Data_bus* data_bus) :
 	telem(&huart6),
 	servo1(&htim3, TIM_CHANNEL_1),
 	servo2(&htim2, TIM_CHANNEL_1),
-	cxof(&huart2),
-	_imu_pub(data_bus->imu_node),
-	_mag_pub(data_bus->mag_node),
-	_baro_pub(data_bus->baro_node),
-	_of_pub(data_bus->of_node),
-	_gnss_pub(data_bus->gnss_node),
-	_power_pub(data_bus->power_node)
+	cxof(&huart2)
 {
 	_data_bus = data_bus;
 	_instance = this;
@@ -32,14 +26,4 @@ void Flight_hal::init()
 	init_telem();
 	init_servos();
 	init_of();
-}
-
-void Flight_hal::read_sensors_flight()
-{
-	read_imu();
-	read_baro();
-	read_compass();
-	read_gnss();
-	read_power_monitor();
-	read_of();
 }

@@ -11,7 +11,7 @@ class Mixer : public Module
 public:
 	Mixer(HAL* hal, Data_bus* data_bus);
 
-	void update();
+	void update() override;
 
 private:
 	Subscriber<Modes_data> _modes_sub;

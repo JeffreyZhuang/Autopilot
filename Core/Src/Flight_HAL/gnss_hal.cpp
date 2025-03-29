@@ -5,11 +5,18 @@ void Flight_hal::init_gnss()
 	_gnss.setup();
 }
 
-void Flight_hal::read_gnss()
+bool Flight_hal::read_gnss(double *lat, double *lon, float* alt, uint8_t* sats, bool* fix)
 {
 	if (_gnss.read())
 	{
-		_gnss_pub.publish(GNSS_data{_gnss.lat, _gnss.lon, _gnss.alt,
-											   _gnss.sats, _gnss.fix, get_time_us()});
+		*lat = _gnss.lat;
+		*lon = _gnss.lon;
+		*alt = _gnss.alt;
+		*sats = _gnss.sats;
+		*fix = _gnss.fix;
+
+		return true;
 	}
+
+	return false;
 }

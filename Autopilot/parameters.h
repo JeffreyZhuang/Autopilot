@@ -19,8 +19,6 @@ struct __attribute__((packed)) Parameters
 		float ptch_ki;
 		float roll_kp;
 		float roll_ki;
-		float fbw_ptch_lim; // Fly-by-wire pitch limit deg in either direction
-		float fbw_roll_lim; // Fly-by-wire roll limit deg in either direction
 	} att_ctrl;
 
 	// Takeoff

@@ -77,7 +77,7 @@ void Tecs::update_direct()
 
 void Tecs::update_stabilized()
 {
-	_tecs_data.pitch_setpoint = _rc_data.ele_norm * get_params()->att_ctrl.fbw_ptch_lim;
+	_tecs_data.pitch_setpoint = _rc_data.ele_norm * get_params()->tecs.ptch_lim_deg;
 	_tecs_data.thr_cmd = _rc_data.thr_norm;
 }
 

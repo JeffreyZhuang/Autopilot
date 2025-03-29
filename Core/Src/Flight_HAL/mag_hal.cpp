@@ -7,10 +7,16 @@ void Flight_hal::init_compass()
 	_mag.setOversampling(MLX90393_OSR_2);
 }
 
-void Flight_hal::read_compass()
+bool Flight_hal::read_mag(float *mx, float *my, float *mz)
 {
 	if (_mag.readDataNonBlocking())
 	{
-		_mag_pub.publish(Mag_data{-_mag.x, _mag.y, -_mag.z, get_time_us()});
+		*mx = -_mag.x;
+		*my = _mag.y;
+		*mz = -_mag.z;
+
+		return true;
 	}
+
+	return false;
 }

@@ -6,11 +6,7 @@ void Flight_hal::init_baro()
 	Barometer_setOSR(OSR_4096);
 }
 
-void Flight_hal::read_baro()
+bool Flight_hal::read_baro(float *alt)
 {
-	float alt;
-	if (Barometer_getAltitude(&alt))
-	{
-		_baro_pub.publish(Baro_data{alt, get_time_us()});
-	}
+	return Barometer_getAltitude(alt);
 }
