@@ -129,38 +129,31 @@ Storage_payload Storage::create_payload()
 	return payload;
 }
 
+// Read one packet
 void Storage::read()
 {
-	while (true)
-	{
-		// Read storage to look for start byte
-		uint8_t start_byte[1];
-		if (!_hal->read_storage(start_byte, 1))
-		{
-			break; // End of file
-		}
+	uint8_t start_byte[1];
 
+	while (_hal->read_storage(start_byte, 1))
+	{
 		// Detect start byte
 		if (start_byte[0] == 0)
 		{
 			// Read payload with cobs
 			uint8_t payload_cobs[payload_size + 1];
-			_hal->read_storage(payload_cobs, sizeof(payload_cobs));
+			if (_hal->read_storage(payload_cobs, sizeof(payload_cobs)))
+			{
+				// Decode cobs
+				uint8_t payload_arr[payload_size];
+				cobs_decode(payload_arr, sizeof(payload_arr), payload_cobs, sizeof(payload_cobs));
 
-			// Decode cobs
-			uint8_t payload_arr[payload_size];
-			cobs_decode(payload_arr, sizeof(payload_arr), payload_cobs, sizeof(payload_cobs));
+				// Convert byte array into struct
+				Storage_payload payload;
+				memcpy(&payload, payload_arr, sizeof(payload));
 
-			// Convert byte array into struct
-			Storage_payload payload;
-			memcpy(&payload, payload_arr, sizeof(payload));
-
-			// Print payload
-			printf("%d\n", payload.loop_iteration);
-			_hal->delay_us(10000); // Must be here
-			// If there is a corrupt bit, it takes extra long to print and will skip some
-
-			break; // Break after one payload has been read
+				// Print payload
+				printf("%d\n", payload.loop_iteration);
+			}
 		}
 	}
 }

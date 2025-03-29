@@ -16,7 +16,7 @@ bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& msg_id
 		{
 			_payload_len = byte;
 		}
-		else if (_pkt_idx == _payload_len + HEADER_LEN)
+		else if (_pkt_idx == calc_packet_size(_payload_len))
 		{
 			_in_pkt = false;
 			_pkt_idx = 0;

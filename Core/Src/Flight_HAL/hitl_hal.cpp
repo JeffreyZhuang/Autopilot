@@ -23,7 +23,6 @@ void Flight_hal::read_sensors_hitl()
 	_imu_pub.publish(IMU_data{data->gx, data->gy, data->gz, data->ax, data->ay, data->az, time});
 	_mag_pub.publish(Mag_data{data->mx, data->my, data->mz, time});
 	_baro_pub.publish(Baro_data{data->asl, time});
-	_gnss_pub.publish(GNSS_data{(double)data->lat * 1E-7, (double)data->lon * 1E-7,
-									 data->asl, 10, true, time});
+	_gnss_pub.publish(GNSS_data{(double)data->lat * 1E-7, (double)data->lon * 1E-7, data->asl, 10, true, time});
 	_of_pub.publish(OF_data{data->of_x, data->of_y, time});
 }
