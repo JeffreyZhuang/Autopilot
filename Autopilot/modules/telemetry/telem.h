@@ -3,6 +3,7 @@
 
 #include "lib/cobs/cobs.h"
 #include "lib/utils/utils.h"
+#include "lib/autopilot_link/autopilot_link.h"
 #include "hal.h"
 #include "parameters.h"
 #include "constants.h"
@@ -54,17 +55,11 @@ struct __attribute__((packed)) Time_payload
 	uint64_t us_since_epoch;
 };
 
-static constexpr uint8_t START_BYTE = 0; // Move to autopilot_link library
-
 // Message identifiers
 static constexpr uint8_t TELEM_MSG_ID = 1;
 static constexpr uint8_t WPT_MSG_ID = 2;
 static constexpr uint8_t PARAMS_MSG_ID = 3;
 
-// Packet length constants
-static constexpr uint8_t HEADER_LEN = 4;
-static constexpr uint8_t MAX_PAYLOAD_LEN = 255;
-static constexpr uint16_t MAX_PKT_LEN = MAX_PAYLOAD_LEN + HEADER_LEN;
 static constexpr uint16_t MAX_BYTE_RATE = 1500; // Bytes per sec
 
 class Telem : public Module
@@ -96,6 +91,7 @@ private:
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 
 	Publisher<Telem_data> _telem_pub;
+	Publisher<HITL_data> _hitl_pub;
 
 	Ctrl_cmd_data _ctrl_cmd_data;
 	AHRS_data _ahrs_data;
@@ -107,7 +103,13 @@ private:
 	Navigator_data _navigator_data;
 	Power_data _power_data;
 	TECS_data _tecs_data;
+	HITL_data _hitl_data;
 
+	Autopilot_link usb_link;
+	Autopilot_link telem_link;
+
+	void read_telem();
+	void read_usb();
 	void transmit_packet(uint8_t packet[], uint16_t size);
 	void transmit_telem(); // Transmit telemetry packet
 	bool parse_packet();

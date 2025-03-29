@@ -12,6 +12,7 @@
 #include "modules/storage/storage.h"
 #include "modules/tecs/tecs.h"
 #include "modules/telemetry/telem.h"
+#include "modules/sensors/sensors.h"
 #include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -38,6 +39,7 @@ private:
     Commander _commander;
     Tecs _tecs;
     Navigator _navigator;
+    Sensors _sensors;
 
     Publisher<Time_data> _time_pub;
 

@@ -26,3 +26,8 @@ void USB_stream::rx_callback(uint8_t* Buf, uint32_t Len)
 		ring_buffer_write(&ring_buffer, Buf[i]);
 	}
 }
+
+bool USB_stream::buffer_empty()
+{
+	return ring_buffer_empty(&ring_buffer);
+}

@@ -4,24 +4,6 @@
 #include "parameters.h"
 #include "module.h"
 
-struct Hitl_rx_packet
-{
-	float ax;
-	float ay;
-	float az;
-	float gx;
-	float gy;
-	float gz;
-	float mx;
-	float my;
-	float mz;
-	float asl;
-	int32_t lat;
-	int32_t lon;
-	int16_t of_x;
-	int16_t of_y;
-};
-
 class Sensors : Module
 {
 public:
@@ -31,6 +13,7 @@ public:
 
 private:
 	Subscriber<Modes_data> _modes_sub;
+	Subscriber<HITL_data> _hitl_sub;
 
 	Publisher<IMU_data> _imu_pub;
 	Publisher<Mag_data> _mag_pub;
@@ -40,9 +23,7 @@ private:
 	Publisher<Power_data> _power_pub;
 
 	Modes_data _modes_data;
-
-	void read_sensors();
-	void read_hitl();
+	HITL_data _hitl_data;
 };
 
 #endif /* MODULES_SENSORS_SENSORS_H_ */

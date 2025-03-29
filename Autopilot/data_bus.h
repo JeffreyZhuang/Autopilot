@@ -177,6 +177,25 @@ struct Time_data
 	uint64_t timestamp = 0;
 };
 
+struct HITL_data
+{
+	float ax;
+	float ay;
+	float az;
+	float gx;
+	float gy;
+	float gz;
+	float mx;
+	float my;
+	float mz;
+	float asl;
+	int32_t lat;
+	int32_t lon;
+	int16_t of_x;
+	int16_t of_y;
+	uint64_t timestamp = 0;
+};
+
 template<typename T>
 class Node
 {
@@ -263,6 +282,7 @@ struct Data_bus
    	Node<L1_data> l1_node;
    	Node<RC_data> rc_node;
    	Node<Navigator_data> navigator_node;
+   	Node<HITL_data> hitl_node;
 };
 
 // Each node has ID integer. Initialize the nodes in data bus in array. Function to get node given ID that does a search through array.

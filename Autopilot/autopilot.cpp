@@ -12,6 +12,7 @@ Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
 	  _commander(hal, data_bus),
 	  _tecs(hal, data_bus),
 	  _navigator(hal, data_bus),
+	  _sensors(hal, data_bus),
 	  _time_pub(data_bus->time_node)
 {
 	_hal = hal;
@@ -29,7 +30,7 @@ void Autopilot::setup()
 void Autopilot::main_task()
 {
 	update_time();
-	_hal->read_sensors();
+	_sensors.update();
 	_rc_handler.update();
 	_ahrs.update();
 	_position_estimator.update();
@@ -53,7 +54,7 @@ void Autopilot::background_task()
  * Helper functions
  */
 void Autopilot::update_time()
-{
+{ // Need to do this for every module. If AHRS updates at 100hz but imu updates at 30hz, it needs to recalculate
 	uint64_t time = _hal->get_time_us();
 
 	if (_time_data.timestamp > 0)

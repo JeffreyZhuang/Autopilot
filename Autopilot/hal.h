@@ -34,6 +34,7 @@ public:
     virtual void toggle_led() = 0;
 
     // USB
+    virtual bool usb_buffer_empty() = 0;
     virtual void usb_transmit(uint8_t buf[], int len) = 0;
     virtual bool usb_read(uint8_t *byte) = 0;
 

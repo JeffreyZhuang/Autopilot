@@ -115,11 +115,6 @@ void Commander::update_config()
 {
 	if (are_params_set() && _telem_data.waypoints_loaded)
 	{
-		if (get_params()->hitl.enable)
-		{
-			_hal->enable_hitl();
-		}
-
 		_modes_data.system_mode = System_mode::STARTUP;
 	}
 }

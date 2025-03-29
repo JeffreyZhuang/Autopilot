@@ -61,5 +61,13 @@ void Mixer::update_flight()
 		 1,
 		 get_params()->mixer.pwm_min_thr,
 		 get_params()->mixer.pwm_max_thr);
-	_hal->set_pwm(_elevator_duty, _rudder_duty, _throttle_duty, 0, 0, 0);
+
+	if (get_params()->hitl.enable)
+	{
+
+	}
+	else
+	{
+		_hal->set_pwm(_elevator_duty, _rudder_duty, _throttle_duty, 0, 0, 0);
+	}
 }

@@ -15,6 +15,7 @@ public:
 	void transmit(uint8_t tx_buff[], int len);
 	bool read_byte(uint8_t* byte);
 	void rx_callback(uint8_t* Buf, uint32_t Len);
+	bool buffer_empty();
 
 private:
 	ring_buffer_t ring_buffer;

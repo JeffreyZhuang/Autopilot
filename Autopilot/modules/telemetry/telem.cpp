@@ -12,7 +12,8 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 	  _power_sub(data_bus->power_node),
 	  _tecs_sub(data_bus->tecs_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
-	  _telem_pub(data_bus->telem_node)
+	  _telem_pub(data_bus->telem_node),
+	  _hitl_pub(data_bus->hitl_node)
 {
 }
 
@@ -20,53 +21,8 @@ void Telem::update()
 {
 	_modes_data = _modes_sub.get();
 
-	while (!_hal->telem_buffer_empty())
-	{
-		uint8_t byte;
-		_hal->read_telem(&byte);
-
-		if (byte == START_BYTE)
-		{
-			_in_pkt = true;
-			_pkt_idx = 0;
-		}
-
-		if (_in_pkt)
-		{
-			// Append byte to packet
-			_packet[_pkt_idx] = byte;
-			_pkt_idx++;
-
-			switch (_pkt_idx)
-			{
-			case 1:
-				break;
-			case 2:
-				_payload_len = byte;
-				break;
-			case 3:
-				_msg_id = byte;
-				break;
-			case 4:
-				_cobs_byte = byte;
-				break;
-			default:
-				if (_pkt_idx == _payload_len + HEADER_LEN)
-				{
-					// Parse
-					if (parse_packet())
-					{
-						ack();
-					}
-
-					// Reset
-					_pkt_idx = 0;
-					_in_pkt = false;
-				}
-				break;
-			}
-		}
-	}
+	read_telem();
+	read_usb();
 
 	if (_modes_data.system_mode != System_mode::CONFIG)
 	{
@@ -78,6 +34,65 @@ void Telem::update()
 	}
 
 	_telem_pub.publish(_telem_data);
+}
+
+void Telem::read_telem()
+{
+	while (!_hal->telem_buffer_empty())
+	{
+		uint8_t byte;
+		_hal->read_telem(&byte);
+
+		uint8_t* payload;
+		uint8_t msg_id;
+		if (telem_link.parse_byte(byte, payload, &msg_id))
+		{
+			if (_msg_id == WPT_MSG_ID &&
+				_modes_data.system_mode == System_mode::CONFIG &&
+				_payload_len == sizeof(Waypoint_payload))
+			{
+				Waypoint_payload waypoint_payload;
+				memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
+
+				if (waypoint_payload.waypoint_index == waypoint_payload.total_waypoints - 1)
+				{
+					_telem_data.waypoints_loaded = true;
+				}
+
+				_telem_data.num_waypoints = waypoint_payload.total_waypoints;
+				_telem_data.waypoints[waypoint_payload.waypoint_index] = Waypoint{
+					(double)waypoint_payload.lat * 1E-7,
+					(double)waypoint_payload.lon * 1E-7,
+					(float)waypoint_payload.alt * 1E-1f
+				};
+
+				printf("Telem waypoint set\n");
+			}
+			else if (_msg_id == PARAMS_MSG_ID &&
+					 _modes_data.system_mode == System_mode::CONFIG &&
+					 _payload_len == sizeof(Params_payload))
+			{
+				Params_payload params_payload;
+				memcpy(&params_payload, payload, sizeof(Params_payload));
+
+				// Set parameters
+				set_params(&params_payload.params);
+
+				printf("Telem params set\n");
+			}
+
+			ack();
+		}
+	}
+}
+
+void Telem::read_usb()
+{
+	while (!_hal->usb_buffer_empty())
+	{
+		uint8_t byte;
+		_hal->usb_read(&byte);
+	}
 }
 
 void Telem::transmit_telem()
@@ -120,73 +135,6 @@ void Telem::transmit_telem()
 
 		transmit_packet(packet, sizeof(packet));
 	}
-}
-
-bool Telem::parse_packet()
-{
-	printf("Telem msg id: %d\n", _msg_id);
-	printf("Telem payload len: %d\n", _payload_len);
-	printf("Telem waypoint_payload len: %d\n", sizeof(Waypoint_payload));
-	printf("Telem params_payload len: %d\n", sizeof(Params_payload));
-
-	// Remove header except COBS byte
-	uint8_t payload_cobs[_payload_len + 1]; // Add 1 for COBS byte
-	payload_cobs[0] = _cobs_byte;
-	for (uint i = 0; i < _payload_len; i++)
-	{
-		payload_cobs[i + 1] = _packet[i + HEADER_LEN];
-	}
-
-	// Decode consistent overhead byte shuffling
-	uint8_t payload[_payload_len];
-	cobs_decode_result res = cobs_decode(payload, sizeof(payload), payload_cobs, sizeof(payload_cobs));
-	if (res.status == COBS_DECODE_OK)
-	{
-		// Determine type of payload from message ID
-		if (_msg_id == WPT_MSG_ID &&
-			_modes_data.system_mode == System_mode::CONFIG &&
-			_payload_len == sizeof(Waypoint_payload))
-		{
-			Waypoint_payload waypoint_payload;
-			memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
-
-			if (waypoint_payload.waypoint_index == waypoint_payload.total_waypoints - 1)
-			{
-				_telem_data.waypoints_loaded = true;
-			}
-
-			_telem_data.num_waypoints = waypoint_payload.total_waypoints;
-			_telem_data.waypoints[waypoint_payload.waypoint_index] = Waypoint{
-				(double)waypoint_payload.lat * 1E-7,
-				(double)waypoint_payload.lon * 1E-7,
-				(float)waypoint_payload.alt * 1E-1f
-			};
-
-			printf("Telem waypoint set\n");
-
-			return true;
-		}
-		else if (_msg_id == PARAMS_MSG_ID &&
-				 _modes_data.system_mode == System_mode::CONFIG &&
-				 _payload_len == sizeof(Params_payload))
-		{
-			Params_payload params_payload;
-			memcpy(&params_payload, payload, sizeof(Params_payload));
-
-			// Set parameters
-			set_params(&params_payload.params);
-
-			printf("Telem params set\n");
-
-			return true;
-		}
-	}
-	else
-	{
-		printf("COBS DECODE NOT OK\n");
-	}
-
-	return false;
 }
 
 // Send back same message for acknowledgement

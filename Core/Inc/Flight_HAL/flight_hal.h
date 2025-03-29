@@ -100,6 +100,7 @@ public:
 	static void rc_dma_complete() { _instance->sbus_input.dma_complete(); }
 
 	// USB
+	bool usb_buffer_empty() override;
   	void usb_transmit(uint8_t buf[], int len);
 	bool usb_read(uint8_t *byte);
 	static void usb_rx_callback(uint8_t* Buf, uint32_t Len) { _instance->usb_stream.rx_callback(Buf, Len); };

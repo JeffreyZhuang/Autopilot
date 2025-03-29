@@ -9,3 +9,8 @@ bool Flight_hal::usb_read(uint8_t *byte)
 {
 	return usb_stream.read_byte(byte);
 }
+
+bool Flight_hal::usb_buffer_empty()
+{
+	return usb_stream.buffer_empty();
+}
