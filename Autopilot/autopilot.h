@@ -47,7 +47,6 @@ private:
 
     // Helper functions
     void update_time();
-    void debug_serial();
 
     // Scheduler
     void main_task();

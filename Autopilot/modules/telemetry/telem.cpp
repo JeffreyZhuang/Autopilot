@@ -12,6 +12,7 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 	  _power_sub(data_bus->power_node),
 	  _tecs_sub(data_bus->tecs_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
+	  _hitl_output_sub(data_bus->hitl_output_node),
 	  _telem_pub(data_bus->telem_node),
 	  _hitl_pub(data_bus->hitl_node)
 {
@@ -24,6 +25,8 @@ void Telem::update()
 	read_telem();
 	read_usb();
 
+	_telem_pub.publish(_telem_data);
+
 	if (_modes_data.system_mode != System_mode::CONFIG)
 	{
 		_ahrs_data = _ahrs_sub.get();
@@ -31,9 +34,8 @@ void Telem::update()
 		_pos_est_data = _pos_est_sub.get();
 
 		transmit_telem();
+		transmit_usb();
 	}
-
-	_telem_pub.publish(_telem_data);
 }
 
 void Telem::read_telem()
@@ -43,13 +45,14 @@ void Telem::read_telem()
 		uint8_t byte;
 		_hal->read_telem(&byte);
 
-		uint8_t* payload;
+		uint8_t payload[MAX_PAYLOAD_LEN];
+		uint8_t payload_len;
 		uint8_t msg_id;
-		if (telem_link.parse_byte(byte, payload, &msg_id))
+		if (telem_link.parse_byte(byte, payload, payload_len, msg_id))
 		{
-			if (_msg_id == WPT_MSG_ID &&
+			if (msg_id == WPT_MSG_ID &&
 				_modes_data.system_mode == System_mode::CONFIG &&
-				_payload_len == sizeof(Waypoint_payload))
+				payload_len == sizeof(Waypoint_payload))
 			{
 				Waypoint_payload waypoint_payload;
 				memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
@@ -68,9 +71,9 @@ void Telem::read_telem()
 
 				printf("Telem waypoint set\n");
 			}
-			else if (_msg_id == PARAMS_MSG_ID &&
+			else if (msg_id == PARAMS_MSG_ID &&
 					 _modes_data.system_mode == System_mode::CONFIG &&
-					 _payload_len == sizeof(Params_payload))
+					 payload_len == sizeof(Params_payload))
 			{
 				Params_payload params_payload;
 				memcpy(&params_payload, payload, sizeof(Params_payload));
@@ -92,6 +95,31 @@ void Telem::read_usb()
 	{
 		uint8_t byte;
 		_hal->usb_read(&byte);
+
+		uint8_t payload[MAX_PAYLOAD_LEN];
+		uint8_t payload_len;
+		uint8_t msg_id;
+		if (usb_link.parse_byte(byte, payload, payload_len, msg_id))
+		{
+			if (msg_id == HITL_MSG_ID)
+			{
+				_hitl_pub.publish();
+			}
+		}
+	}
+}
+
+void Telem::transmit_usb()
+{
+	if (get_params()->hitl.enable)
+	{
+		HITL_output_data hitl_output_data = hitl_output_sub.get();
+
+		// Send to usb with autopilot link protocol
+	}
+	else
+	{
+		// Send CSV to web serial plotter
 	}
 }
 
@@ -141,7 +169,7 @@ void Telem::transmit_telem()
 void Telem::ack()
 {
 	// Do not use queue and send directly because this is priority
-	transmit_packet(_packet, _payload_len + HEADER_LEN);
+	transmit_packet(telem_link.latest_packet, telem_link.latest_packet_len);
 }
 
 void Telem::transmit_packet(uint8_t packet[], uint16_t size)

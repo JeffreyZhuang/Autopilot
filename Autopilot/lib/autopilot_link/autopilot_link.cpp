@@ -1,6 +1,6 @@
 #include "autopilot_link.h"
 
-bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& msg_id)
+bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& payload_len, uint8_t& msg_id)
 {
 	if (byte == START_BYTE)
 	{
@@ -22,8 +22,11 @@ bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& msg_id
 			_pkt_idx = 0;
 
 			// Parse
-			uint8_t payload_len_result;
-			return unpack(_packet, payload, payload_len_result, msg_id);
+			if (unpack(_packet, payload, payload_len, msg_id))
+			{
+				memcpy(latest_packet, _packet, calc_packet_size(_payload_len));
+				return true;
+			}
 		}
 		else if (_pkt_idx == MAX_PACKET_LEN)
 		{

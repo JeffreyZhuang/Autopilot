@@ -18,6 +18,8 @@ private:
 	Subscriber<TECS_data> _tecs_sub;
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 
+	Publisher<HITL_output_data> _hitl_output_pub;
+
 	Modes_data _modes_data{};
 	Ctrl_cmd_data _ctrl_cmd_data{};
 	TECS_data _tecs_data{};

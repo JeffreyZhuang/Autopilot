@@ -59,6 +59,7 @@ struct __attribute__((packed)) Time_payload
 static constexpr uint8_t TELEM_MSG_ID = 1;
 static constexpr uint8_t WPT_MSG_ID = 2;
 static constexpr uint8_t PARAMS_MSG_ID = 3;
+static constexpr uint8_t HITL_MSG_ID = 4;
 
 static constexpr uint16_t MAX_BYTE_RATE = 1500; // Bytes per sec
 
@@ -70,12 +71,6 @@ public:
 	void update();
 
 private:
-	uint8_t _packet[MAX_PKT_LEN];
-	uint16_t _pkt_idx = 0;
-	bool _in_pkt = false;
-	uint8_t _payload_len = 0;
-	uint8_t _msg_id = 0;
-	uint8_t _cobs_byte = 0;
 	uint64_t _last_tlm_transmit_time = 0; // Time of last telemetry transmission
 	uint16_t _bytes_since_last_tlm_transmit = 0; // Total bytes sent since last telemetry transmission
 
@@ -89,6 +84,7 @@ private:
 	Subscriber<Power_data> _power_sub;
 	Subscriber<TECS_data> _tecs_sub;
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
+	Subscriber<HITL_output_data> _hitl_output_sub;
 
 	Publisher<Telem_data> _telem_pub;
 	Publisher<HITL_data> _hitl_pub;
@@ -110,6 +106,7 @@ private:
 
 	void read_telem();
 	void read_usb();
+	void transmit_usb();
 	void transmit_packet(uint8_t packet[], uint16_t size);
 	void transmit_telem(); // Transmit telemetry packet
 	bool parse_packet();

@@ -42,7 +42,6 @@ void Autopilot::main_task()
 	_mixer.update();
 	_storage.update();
 	_telem.update();
-	debug_serial();
 }
 
 void Autopilot::background_task()

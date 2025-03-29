@@ -4,7 +4,8 @@ Mixer::Mixer(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _modes_sub(data_bus->modes_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
-	  _tecs_sub(data_bus->tecs_node)
+	  _tecs_sub(data_bus->tecs_node),
+	  _hitl_output_pub(data_bus->hitl_output_node)
 {
 }
 
@@ -64,7 +65,8 @@ void Mixer::update_flight()
 
 	if (get_params()->hitl.enable)
 	{
-
+		// Publish HITL commands to data bus, then telem sends through usb
+		_hitl_output_pub.publish(HITL_output_data{_elevator_duty, _rudder_duty, _throttle_duty, _hal->get_time_us()});
 	}
 	else
 	{

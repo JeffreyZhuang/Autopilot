@@ -2,6 +2,7 @@
 #define LIB_AUTOPILOT_LINK_AUTOPILOT_LINK_H_
 
 #include "lib/cobs/cobs.h"
+#include <string.h>
 
 static constexpr uint8_t START_BYTE = 0x00;
 
@@ -17,7 +18,10 @@ static constexpr uint16_t CRC16_INIT = 0xFFFF;  // Initial value
 class Autopilot_link
 {
 public:
-	bool parse_byte(uint8_t byte, uint8_t payload[], uint8_t& msg_id);
+	uint8_t latest_packet[MAX_PACKET_LEN];
+	uint8_t latest_packet_len = 0;
+
+	bool parse_byte(uint8_t byte, uint8_t payload[], uint8_t& payload_len, uint8_t& msg_id);
 	void pack(uint8_t packet[], const uint8_t payload[],
 			  const uint8_t payload_len, const uint8_t msg_id);
 	bool unpack(const uint8_t packet[], uint8_t payload[], uint8_t& payload_len, uint8_t& msg_id);

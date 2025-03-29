@@ -36,13 +36,6 @@ extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart6;
 
-struct Hitl_tx_packet
-{
-	uint16_t ele_duty = 0;
-	uint16_t rud_duty = 0;
-	uint16_t thr_duty = 0;
-};
-
 class Flight_hal : public HAL
 {
 public:
