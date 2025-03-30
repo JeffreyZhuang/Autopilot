@@ -1,18 +1,16 @@
 #include "parameters.h"
 
-static Parameters instance;
+static Params_payload instance;
 static bool params_initialized = false;
 
-// Add default parameters incase you access params before it has been initialized
-
-const Parameters* get_params()
+const Params_payload* get_params()
 {
 	return &instance;
 }
 
-void set_params(const Parameters* params)
+void set_params(const Params_payload* params)
 {
-	memcpy(&instance, params, sizeof(Parameters));
+	memcpy(&instance, params, sizeof(Params_payload));
 	params_initialized = true;
 }
 
