@@ -40,7 +40,6 @@ private:
 	void update_mission();
 	void update_land();
 	void update_flare();
-	void update_touchdown();
 };
 
 #endif /* MODULES_COMMANDER_COMMANDER_H_ */

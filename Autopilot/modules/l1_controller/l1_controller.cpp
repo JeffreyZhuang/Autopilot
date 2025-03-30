@@ -26,8 +26,7 @@ void L1_controller::update()
 	_navigator_data = _navigator_sub.get();
 	_rc_data = _rc_sub.get();
 
-	if (_modes_data.system_mode == System_mode::FLIGHT &&
-		_modes_data.auto_mode != Auto_mode::TOUCHDOWN)
+	if (_modes_data.system_mode == System_mode::FLIGHT)
 	{
 		switch (_modes_data.flight_mode)
 		{
@@ -71,8 +70,6 @@ void L1_controller::handle_auto_mode()
 		break;
 	case Auto_mode::FLARE:
 		update_flare();
-		break;
-	case Auto_mode::TOUCHDOWN:
 		break;
 	}
 }

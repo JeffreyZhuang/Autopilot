@@ -68,7 +68,6 @@ struct __attribute__((packed)) Params_payload
 	{
 		float flare_alt; // Altitude to start flare
 		float flare_sink_rate; // Target sink rate for flare, meters per second
-		float touchdown_speed; // Detect touchdown when speed below this value in meters per second
 	} landing;
 
 	// TECS

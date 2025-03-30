@@ -62,9 +62,6 @@ void Attitude_control::handle_auto_mode()
 	case Auto_mode::FLARE:
 		update_mission();
 		break;
-	case Auto_mode::TOUCHDOWN:
-		update_touchdown();
-		break;
 	}
 }
 
@@ -87,12 +84,6 @@ void Attitude_control::update_takeoff()
 void Attitude_control::update_mission()
 {
 	control_roll_ptch();
-}
-
-void Attitude_control::update_touchdown()
-{
-	_ctrl_cmd_data.rud_cmd = 0;
-	_ctrl_cmd_data.ele_cmd = 0;
 }
 
 void Attitude_control::control_roll_ptch()

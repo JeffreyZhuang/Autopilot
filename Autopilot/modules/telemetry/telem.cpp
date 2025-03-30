@@ -253,16 +253,14 @@ uint8_t Telem::get_current_state()
 				return 4;
 			case Auto_mode::FLARE:
 				return 5;
-			case Auto_mode::TOUCHDOWN:
-				return 6;
 			}
 		case Flight_mode::MANUAL:
 			switch (_modes_data.manual_mode)
 			{
 				case Manual_mode::DIRECT:
-					return 7;
+					return 6;
 				case Manual_mode::STABILIZED:
-					return 8;
+					return 7;
 			}
 		}
     }

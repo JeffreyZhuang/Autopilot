@@ -63,9 +63,6 @@ void Tecs::handle_auto_mode()
 	case Auto_mode::FLARE:
 		update_flare();
 		break;
-	case Auto_mode::TOUCHDOWN:
-		update_touchdown();
-		break;
 	}
 }
 
@@ -105,12 +102,6 @@ void Tecs::update_flare()
 {
 	calculate_energies(0, _l1_data.d_setpoint, 2);
 	_tecs_data.pitch_setpoint = control_energy_balance();
-	_tecs_data.thr_cmd = 0;
-}
-
-void Tecs::update_touchdown()
-{
-	_tecs_data.pitch_setpoint = 0;
 	_tecs_data.thr_cmd = 0;
 }
 

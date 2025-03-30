@@ -82,9 +82,6 @@ void Commander::handle_auto_mode()
 	case Auto_mode::FLARE:
 		update_flare();
 		break;
-	case Auto_mode::TOUCHDOWN:
-		update_touchdown();
-		break;
 	}
 }
 
@@ -159,15 +156,6 @@ void Commander::update_land()
 }
 
 void Commander::update_flare()
-{
-	// Detect touchdown when speed is below TOUCHDOWN_SPD_THR
-	if (_pos_est_data.gnd_spd < get_params()->landing.touchdown_speed)
-	{
-		_modes_data.auto_mode = Auto_mode::TOUCHDOWN;
-	}
-}
-
-void Commander::update_touchdown()
 {
 
 }

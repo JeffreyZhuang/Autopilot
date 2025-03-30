@@ -47,7 +47,6 @@ private:
 	void update_mission();
 	void update_land();
 	void update_flare();
-	void update_touchdown();
 	void calculate_energies(float target_vel_mps, float target_alt_m, float wb);
 	float control_energy_balance();
 	float control_total_energy();

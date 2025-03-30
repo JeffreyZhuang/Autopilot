@@ -28,8 +28,7 @@ enum class Auto_mode
 	TAKEOFF,
 	MISSION,
 	LAND,
-	FLARE,
-	TOUCHDOWN
+	FLARE
 };
 
 enum class Manual_mode
@@ -127,6 +126,7 @@ struct TECS_data
 	uint64_t timestamp = 0;
 };
 
+// Rename to waypoints_data
 struct Telem_data
 {
 	bool waypoints_loaded = false;
