@@ -13,7 +13,6 @@
 #include "Drivers/uart_stream.h"
 #include "Drivers/usb_stream.h"
 #include "Drivers/cxof.h"
-#include "parameters.h"
 #include "hal.h"
 
 extern "C"

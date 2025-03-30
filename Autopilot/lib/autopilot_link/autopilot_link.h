@@ -180,7 +180,7 @@ static constexpr uint8_t WPT_MSG_ID = 2;
 static constexpr uint8_t PARAMS_MSG_ID = 3;
 static constexpr uint8_t HITL_MSG_ID = 4;
 
-static constexpr uint8_t START_BYTE = 0x00;
+static constexpr uint8_t START_BYTE = 0xFE;
 
 static constexpr uint8_t HEADER_LEN = 4;
 static constexpr uint8_t FOOTER_LEN = 2;
@@ -190,6 +190,14 @@ static constexpr uint16_t MAX_PACKET_LEN = MAX_PAYLOAD_LEN + HEADER_LEN + FOOTER
 
 static constexpr uint16_t CRC16_POLY = 0x8005;  // CRC-16-IBM polynomial
 static constexpr uint16_t CRC16_INIT = 0xFFFF;  // Initial value
+
+struct aplink_message_t
+{
+	uint16_t checksum;
+	uint8_t len;
+	uint8_t msg_id;
+	uint8_t payload[MAX_PAYLOAD_LEN];
+};
 
 class Autopilot_link
 {

@@ -4,7 +4,7 @@
 #include "lib/utils/utils.h"
 #include "lib/autopilot_link/autopilot_link.h"
 #include "hal.h"
-#include "parameters.h"
+#include "modes.h"
 #include "constants.h"
 #include "module.h"
 #include <cstdio>
@@ -27,12 +27,12 @@ private:
 	Subscriber<AHRS_data> _ahrs_sub;
 	Subscriber<Pos_est_data> _pos_est_sub;
 	Subscriber<Modes_data> _modes_sub;
-	Subscriber<Telem_data> _telem_sub;
 	Subscriber<L1_data> _l1_sub;
 	Subscriber<Navigator_data> _navigator_sub;
 	Subscriber<Power_data> _power_sub;
 	Subscriber<TECS_data> _tecs_sub;
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
+	Subscriber<Baro_data> _baro_sub;
 	Subscriber<HITL_output_data> _hitl_output_sub;
 
 	Publisher<Telem_data> _telem_pub;
@@ -49,6 +49,7 @@ private:
 	Power_data _power_data;
 	TECS_data _tecs_data;
 	HITL_data _hitl_data;
+	Baro_data _baro_data;
 
 	Autopilot_link usb_link;
 	Autopilot_link telem_link;

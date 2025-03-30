@@ -18,6 +18,7 @@ Sensors::Sensors(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _modes_sub(data_bus->modes_node),
 	  _hitl_sub(data_bus->hitl_node),
+	  _telem_sub(data_bus->telem_node),
 	  _imu_pub(data_bus->imu_node),
 	  _mag_pub(data_bus->mag_node),
 	  _baro_pub(data_bus->baro_node),
@@ -54,7 +55,7 @@ void Sensors::update()
 	{
 		uint64_t time = _hal->get_time_us();
 
-		if (get_params()->hitl.enable)
+		if (_telem_sub.get().hitl_enable)
 		{
 			if (_hitl_sub.check_new())
 			{

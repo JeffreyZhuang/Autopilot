@@ -40,24 +40,9 @@ void Storage::update_background()
 
 void Storage::write()
 {
-	// Create struct
 	Storage_payload payload = create_payload();
-
-	// Convert struct to byte array
-	uint8_t payload_arr[payload_size];
-	memcpy(payload_arr, &payload, payload_size);
-
-	// COBS encode
-	uint8_t payload_cobs[payload_size + 1];
-	cobs_encode(payload_cobs, sizeof(payload_cobs), payload_arr, sizeof(payload_arr));
-
-	// Add start byte to complete packet
-	uint8_t packet[packet_size];
-	packet[0] = 0; // Start byte
-	for (uint i = 1; i < packet_size; i++) // Copy over payload to packet
-	{
-		packet[i] = payload_cobs[i - 1];
-	}
+	uint8_t packet[telem_link.calc_packet_size(sizeof(payload))];
+	telem_link.pack(packet, reinterpret_cast<uint8_t*>(&payload), sizeof(payload), STORAGE_MSG_ID);
 
 	// Double buffering:
 	// If back_buffer is not full, add data to back_buffer

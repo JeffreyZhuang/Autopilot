@@ -1,7 +1,6 @@
 #ifndef MODULES_SENSORS_SENSORS_H_
 #define MODULES_SENSORS_SENSORS_H_
 
-#include "parameters.h"
 #include "module.h"
 #include "constants.h"
 
@@ -15,6 +14,7 @@ public:
 private:
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<HITL_data> _hitl_sub;
+	Subscriber<Telem_data> _telem_sub;
 
 	Publisher<IMU_data> _imu_pub;
 	Publisher<Mag_data> _mag_pub;

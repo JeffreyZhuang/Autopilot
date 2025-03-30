@@ -1,6 +1,8 @@
 #ifndef DATA_BUS_H_
 #define DATA_BUS_H_
 
+#include "modes.h"
+#include "lib/autopilot_link/autopilot_link.h"
 #include <stdint.h>
 
 struct Waypoint
@@ -8,33 +10,6 @@ struct Waypoint
 	double lat;
 	double lon;
 	float alt;
-};
-
-enum class System_mode
-{
-	CONFIG,
-	STARTUP,
-	FLIGHT
-};
-
-enum class Flight_mode
-{
-	AUTO,
-	MANUAL
-};
-
-enum class Auto_mode
-{
-	TAKEOFF,
-	MISSION,
-	LAND,
-	FLARE
-};
-
-enum class Manual_mode
-{
-	DIRECT,
-	STABILIZED
 };
 
 struct IMU_data
@@ -126,12 +101,14 @@ struct TECS_data
 	uint64_t timestamp = 0;
 };
 
-// Rename to waypoints_data
 struct Telem_data
 {
-	bool waypoints_loaded = false;
-	uint8_t num_waypoints = 0;
+	Params_payload params{};
 	Waypoint waypoints[100]; // 100 max waypoints
+	uint8_t num_waypoints = 0;
+	bool waypoints_loaded = false;
+	bool params_loaded = false;
+	bool hitl_enable = false;
 	uint64_t timestamp = 0;
 };
 
@@ -144,10 +121,10 @@ struct L1_data
 
 struct Modes_data
 {
-	System_mode system_mode;
-	Flight_mode flight_mode;
-	Auto_mode auto_mode;
-	Manual_mode manual_mode;
+	System_mode system_mode = System_mode::CONFIG;
+	Flight_mode flight_mode = Flight_mode::MANUAL;
+	Auto_mode auto_mode = Auto_mode::TAKEOFF;
+	Manual_mode manual_mode = Manual_mode::DIRECT;
 	uint64_t timestamp = 0;
 };
 

@@ -110,7 +110,7 @@ void Commander::handle_switches()
 
 void Commander::update_config()
 {
-	if (are_params_set() && _telem_data.waypoints_loaded)
+	if (_telem_data.parameters_loaded && _telem_data.waypoints_loaded)
 	{
 		_modes_data.system_mode = System_mode::STARTUP;
 	}

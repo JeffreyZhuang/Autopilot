@@ -6,13 +6,13 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _gnss_sub(data_bus->gnss_node),
 	  _modes_sub(data_bus->modes_node),
-	  _telem_sub(data_bus->telem_node),
 	  _l1_sub(data_bus->l1_node),
 	  _navigator_sub(data_bus->navigator_node),
 	  _power_sub(data_bus->power_node),
 	  _tecs_sub(data_bus->tecs_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
 	  _hitl_output_sub(data_bus->hitl_output_node),
+	  _baro_sub(data_bus->baro_node),
 	  _telem_pub(data_bus->telem_node),
 	  _hitl_pub(data_bus->hitl_node)
 {
@@ -79,7 +79,8 @@ void Telem::read_telem()
 				memcpy(&params_payload, payload, sizeof(Params_payload));
 
 				// Set parameters
-				set_params(&params_payload.params);
+				_telem_data.params = params_payload;
+				_telem_data.params_loaded = true;
 
 				printf("Telem params set\n");
 			}
@@ -103,7 +104,7 @@ void Telem::read_usb()
 		{
 			if (msg_id == HITL_MSG_ID)
 			{
-				_hitl_pub.publish();
+//				_hitl_pub.publish(HITL_data{});
 			}
 		}
 	}
@@ -111,7 +112,7 @@ void Telem::read_usb()
 
 void Telem::transmit_usb()
 {
-	if (get_params()->hitl.enable)
+	if (_telem_data.hitl_enable)
 	{
 		HITL_output_data hitl_output_data = _hitl_output_sub.get();
 
@@ -141,7 +142,7 @@ void Telem::transmit_usb()
 				-(_baro_data.alt - _pos_est_data.baro_offset),
 				_ahrs_data.yaw);
 
-		_hal->usb_print(tx_buff);
+		_hal->usb_transmit((uint8_t*)tx_buff, strlen(tx_buff));
 	}
 }
 
@@ -161,27 +162,10 @@ void Telem::transmit_telem()
 		_bytes_since_last_tlm_transmit = 0;
 		_last_tlm_transmit_time = _hal->get_time_us();
 
-		// Construct telemetry payload
 		Telem_payload payload = create_telem_payload();
 
-		// Convert struct to byte array
-		uint8_t payload_arr[sizeof(Telem_payload)];
-		memcpy(payload_arr, &payload, sizeof(Telem_payload));
-
-		// Encode with COBS
-		uint8_t packet_cobs[sizeof(Telem_payload) + 1]; // Add 1 for COBS byte
-		cobs_encode(packet_cobs, sizeof(packet_cobs), payload_arr, sizeof(Telem_payload));
-
-		// Construct final packet
-		uint16_t packet_index = 0;
-		uint8_t packet[sizeof(Telem_payload) + HEADER_LEN];
-		packet[packet_index++] = START_BYTE; // Start byte
-		packet[packet_index++] = sizeof(Telem_payload); // Length byte
-		packet[packet_index++] = TELEM_MSG_ID; // Message ID
-		for (uint i = 0; i < sizeof(packet_cobs); i++)
-		{
-			packet[packet_index++] = packet_cobs[i];
-		}
+		uint8_t packet[telem_link.calc_packet_size(sizeof(payload))];
+		telem_link.pack(packet, reinterpret_cast<uint8_t*>(&payload), sizeof(Telem_payload), TELEM_MSG_ID);
 
 		transmit_packet(packet, sizeof(packet));
 	}

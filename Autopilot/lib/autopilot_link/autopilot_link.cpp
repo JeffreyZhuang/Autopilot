@@ -1,5 +1,6 @@
 #include "autopilot_link.h"
 
+// Take struct as parameter and use procedural instead of OOP
 bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& payload_len, uint8_t& msg_id)
 {
 	if (byte == START_BYTE)
