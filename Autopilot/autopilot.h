@@ -27,7 +27,6 @@ public:
 
 private:
     HAL* _hal;
-    Data_bus* _data_bus;
     AHRS _ahrs;
     Position_estimator _position_estimator;
     Attitude_control _att_control;
@@ -40,13 +39,6 @@ private:
     Tecs _tecs;
     Navigator _navigator;
     Sensors _sensors;
-
-    Publisher<Time_data> _time_pub;
-
-    Time_data _time_data{};
-
-    // Helper functions
-    void update_time();
 
     // Scheduler
     void main_task();

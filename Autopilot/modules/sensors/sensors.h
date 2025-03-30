@@ -3,6 +3,7 @@
 
 #include "parameters.h"
 #include "module.h"
+#include "constants.h"
 
 class Sensors : Module
 {
@@ -21,7 +22,9 @@ private:
 	Publisher<OF_data> _of_pub;
 	Publisher<GNSS_data> _gnss_pub;
 	Publisher<Power_data> _power_pub;
+	Publisher<Time_data> _time_pub;
 
+	Time_data _time_data{};
 	Modes_data _modes_data;
 	HITL_data _hitl_data;
 };

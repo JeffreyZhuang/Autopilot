@@ -113,13 +113,35 @@ void Telem::transmit_usb()
 {
 	if (get_params()->hitl.enable)
 	{
-		HITL_output_data hitl_output_data = hitl_output_sub.get();
+		HITL_output_data hitl_output_data = _hitl_output_sub.get();
 
 		// Send to usb with autopilot link protocol
 	}
 	else
 	{
 		// Send CSV to web serial plotter
+
+		double gnss_north_meters, gnss_east_meters;
+		lat_lon_to_meters(_telem_data.waypoints[0].lat,
+						  _telem_data.waypoints[0].lon,
+						  _gnss_data.lat, _gnss_data.lon,
+						  &gnss_north_meters, &gnss_east_meters);
+
+		char tx_buff[200];
+		sprintf(tx_buff,
+				"%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f\n",
+				_pos_est_data.vel_n,
+				_pos_est_data.vel_e,
+				_pos_est_data.vel_d,
+				_pos_est_data.pos_n,
+				_pos_est_data.pos_e,
+				_pos_est_data.pos_d,
+				gnss_north_meters,
+				gnss_east_meters,
+				-(_baro_data.alt - _pos_est_data.baro_offset),
+				_ahrs_data.yaw);
+
+		_hal->usb_print(tx_buff);
 	}
 }
 

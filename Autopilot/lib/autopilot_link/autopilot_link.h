@@ -1,8 +1,58 @@
 #ifndef LIB_AUTOPILOT_LINK_AUTOPILOT_LINK_H_
 #define LIB_AUTOPILOT_LINK_AUTOPILOT_LINK_H_
 
-#include "lib/cobs/cobs.h"
+#include <stdio.h>
 #include <string.h>
+
+struct __attribute__((packed)) Telem_payload
+{
+	int16_t roll;
+	int16_t pitch;
+	uint16_t yaw;
+	int16_t alt;
+	uint16_t spd;
+	int16_t alt_setpoint;
+	int32_t lat;
+	int32_t lon;
+	float nav_north;
+	float nav_east;
+	uint8_t mode_id;
+	uint8_t wp_idx;
+	uint16_t cell_voltage;
+	uint16_t battery_current;
+	uint16_t battery_used;
+	uint16_t autopilot_current;
+	uint8_t gps_sats;
+	bool gps_fix;
+	uint8_t aileron;
+	uint8_t elevator;
+	uint8_t throttle;
+};
+
+struct __attribute__((packed)) Waypoint_payload
+{
+	uint8_t waypoint_index;
+	uint8_t total_waypoints;
+	int32_t lat;
+	int32_t lon;
+	int16_t alt;
+};
+
+struct __attribute__((packed)) Params_payload
+{
+	Parameters params;
+};
+
+struct __attribute__((packed)) Time_payload
+{
+	uint64_t us_since_epoch;
+};
+
+// Message identifiers
+static constexpr uint8_t TELEM_MSG_ID = 1;
+static constexpr uint8_t WPT_MSG_ID = 2;
+static constexpr uint8_t PARAMS_MSG_ID = 3;
+static constexpr uint8_t HITL_MSG_ID = 4;
 
 static constexpr uint8_t START_BYTE = 0x00;
 
