@@ -1,8 +1,8 @@
 #ifndef DATA_BUS_H_
 #define DATA_BUS_H_
 
+#include <lib/aplink/aplink.h>
 #include "modes.h"
-#include "lib/autopilot_link/autopilot_link.h"
 #include <stdint.h>
 
 struct Waypoint

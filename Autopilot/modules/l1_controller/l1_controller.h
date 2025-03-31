@@ -4,7 +4,6 @@
 #include "lib/utils/utils.h"
 #include "hal.h"
 #include "constants.h"
-#include "parameters.h"
 #include "module.h"
 #include <math.h>
 #include <cstdio>

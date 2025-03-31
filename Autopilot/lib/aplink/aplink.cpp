@@ -1,26 +1,26 @@
-#include "autopilot_link.h"
+#include <lib/aplink/aplink.h>
 
-// Take struct as parameter and use procedural instead of OOP
-bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& payload_len, uint8_t& msg_id)
+bool aplink_parse_byte(Autopilot_link_msg* link_msg, uint8_t byte)
 {
 	if (byte == START_BYTE)
 	{
-		_in_pkt = true;
+		link_msg->start_reading = true;
 	}
 
-	if (_in_pkt)
+	if (link_msg->start_reading)
 	{
-		// Append byte to packet
-		_packet[_pkt_idx++] = byte;
-
-		if (_pkt_idx == 2)
+		if (link_msg->packet_idx == 1)
 		{
-			_payload_len = byte;
+			link_msg->payload_len = byte;
 		}
-		else if (_pkt_idx == calc_packet_size(_payload_len))
+		else if (link_msg->packet_idx == 2)
 		{
-			_in_pkt = false;
-			_pkt_idx = 0;
+			link_msg->msg_id = byte;
+		}
+		else if (link_msg->packet_idx == calc_packet_size(link_msg->payload_len))
+		{
+			link_msg->start_reading = false;
+			link_msg->packet_idx = 0;
 
 			// Parse
 			if (unpack(_packet, payload, payload_len, msg_id))
@@ -29,18 +29,23 @@ bool Autopilot_link::parse_byte(uint8_t byte, uint8_t payload[], uint8_t& payloa
 				return true;
 			}
 		}
+		else if (link_msg->packet_idx == calc_packet_size(link_msg->payload_len))
+		{
+
+		}
 		else if (_pkt_idx == MAX_PACKET_LEN)
 		{
-			_in_pkt = false;
-			_pkt_idx = 0;
+			link_msg->start_reading = false;
+			link_msg->packet_idx = 0;
 		}
+
+		link_msg->packet_idx++;
 	}
 
 	return false;
 }
 
-void Autopilot_link::pack(uint8_t packet[], const uint8_t payload[],
-						  const uint8_t payload_len, const uint8_t msg_id)
+void aplink_pack(uint8_t packet[], const uint8_t payload[], const uint8_t payload_len, const uint8_t msg_id)
 {
 	uint16_t index = 0;
 
@@ -65,8 +70,7 @@ void Autopilot_link::pack(uint8_t packet[], const uint8_t payload[],
 	packet[index++] = checksum & 0xFF; // Low byte
 }
 
-bool Autopilot_link::unpack(const uint8_t packet[], uint8_t payload[], uint8_t& payload_len,
-							uint8_t& msg_id)
+bool aplink_unpack(const uint8_t packet[], uint8_t payload[], uint8_t& payload_len, uint8_t& msg_id)
 {
     // Validate start byte
     if (packet[0] != START_BYTE)
@@ -92,12 +96,12 @@ bool Autopilot_link::unpack(const uint8_t packet[], uint8_t payload[], uint8_t& 
     return res.status == COBS_DECODE_OK;
 }
 
-uint16_t Autopilot_link::calc_packet_size(uint8_t payload_size)
+uint16_t aplink_calc_packet_size(uint8_t payload_size)
 {
 	return payload_size + HEADER_LEN + FOOTER_LEN;
 }
 
-uint16_t Autopilot_link::crc16(const uint8_t data[], size_t length)
+uint16_t aplink_crc16(const uint8_t data[], size_t length)
 {
 	uint16_t crc = CRC16_INIT;
 

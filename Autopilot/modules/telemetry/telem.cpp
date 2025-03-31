@@ -97,14 +97,13 @@ void Telem::read_usb()
 		uint8_t byte;
 		_hal->usb_read(&byte);
 
-		uint8_t payload[MAX_PAYLOAD_LEN];
-		uint8_t payload_len;
-		uint8_t msg_id;
-		if (usb_link.parse_byte(byte, payload, payload_len, msg_id))
+		if (aplink_parse_byte(&telem_msg, byte))
 		{
-			if (msg_id == HITL_MSG_ID)
+			switch (telem_msg.msg_id)
 			{
-//				_hitl_pub.publish(HITL_data{});
+			case HITL_MSG_ID:
+				HITL_data data = aplink_hitl_msg_decode();
+				break;
 			}
 		}
 	}

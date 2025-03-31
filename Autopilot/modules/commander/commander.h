@@ -2,7 +2,6 @@
 #define MODULES_COMMANDER_COMMANDER_H_
 
 #include <data_bus.h>
-#include "parameters.h"
 #include "hal.h"
 #include "module.h"
 #include <stdio.h>

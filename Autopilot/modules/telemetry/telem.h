@@ -1,8 +1,8 @@
 #ifndef TELEM_H_
 #define TELEM_H_
 
+#include <lib/aplink/aplink.h>
 #include "lib/utils/utils.h"
-#include "lib/autopilot_link/autopilot_link.h"
 #include "hal.h"
 #include "modes.h"
 #include "constants.h"
@@ -51,8 +51,8 @@ private:
 	HITL_data _hitl_data;
 	Baro_data _baro_data;
 
-	Autopilot_link usb_link;
-	Autopilot_link telem_link;
+	aplink_msg telem_msg;
+	aplink_msg usb_msg;
 
 	void read_telem();
 	void read_usb();

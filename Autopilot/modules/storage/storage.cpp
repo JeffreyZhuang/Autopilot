@@ -41,7 +41,7 @@ void Storage::update_background()
 void Storage::write()
 {
 	Storage_payload payload = create_payload();
-	uint8_t packet[telem_link.calc_packet_size(sizeof(payload))];
+	uint8_t packet[aplink_calc_packet_size(sizeof(payload))];
 	telem_link.pack(packet, reinterpret_cast<uint8_t*>(&payload), sizeof(payload), STORAGE_MSG_ID);
 
 	// Double buffering:

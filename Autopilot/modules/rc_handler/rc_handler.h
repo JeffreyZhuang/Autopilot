@@ -3,7 +3,6 @@
 
 #include <data_bus.h>
 #include <lib/utils/utils.h>
-#include "parameters.h"
 #include "hal.h"
 #include "module.h"
 #include <stdio.h>

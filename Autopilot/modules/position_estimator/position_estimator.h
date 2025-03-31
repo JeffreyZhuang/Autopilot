@@ -5,7 +5,6 @@
 #include "lib/moving_average/moving_avg.h"
 #include "lib/utils/utils.h"
 #include "hal.h"
-#include "parameters.h"
 #include "constants.h"
 #include "module.h"
 #include <stdio.h>
