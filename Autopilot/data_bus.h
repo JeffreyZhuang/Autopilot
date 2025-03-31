@@ -103,11 +103,9 @@ struct TECS_data
 
 struct Telem_data
 {
-	aplink_params params{};
 	Waypoint waypoints[100]; // 100 max waypoints
 	uint8_t num_waypoints = 0;
 	bool waypoints_loaded = false;
-	bool params_loaded = false;
 	bool hitl_enable = false;
 	uint64_t timestamp = 0;
 };

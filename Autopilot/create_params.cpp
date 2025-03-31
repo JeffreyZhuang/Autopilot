@@ -1,15 +1,12 @@
 #include "lib/parameters/parameters.h"
 
-void init_params(void)
+void init_params()
 {
-	// Performance
-	param_add("PERF_THR_CRUISE", PARAM_TYPE_FLOAT); // Steady-state cruise throttle
-
-	// Attitude controller
-	param_add("PTCH_KP", PARAM_TYPE_FLOAT); // Pitch control proportional gain
-	param_add("PTCH_KI", PARAM_TYPE_FLOAT); // Pitch control integral gain
-	param_add("ROLL_KP", PARAM_TYPE_FLOAT); // Roll control proportional gain
-	param_add("ROLL_KI", PARAM_TYPE_FLOAT); // Roll control integral gain
+	// Attitude control
+	param_add("ATT_PTCH_KP", PARAM_TYPE_FLOAT); // Pitch control proportional gain
+	param_add("ATT_PTCH_KI", PARAM_TYPE_FLOAT); // Pitch control integral gain
+	param_add("ATT_ROLL_KP", PARAM_TYPE_FLOAT); // Roll control proportional gain
+	param_add("ATT_ROLL_KI", PARAM_TYPE_FLOAT); // Roll control integral gain
 
 	// Takeoff
 	param_add("TKO_ALT", PARAM_TYPE_FLOAT); // Altitude to detect when takeoff is complete, m
@@ -30,6 +27,7 @@ void init_params(void)
 	param_add("TECS_PTCH_KP", PARAM_TYPE_FLOAT); // Energy balance proportional gain
 	param_add("TECS_PTCH_KI", PARAM_TYPE_FLOAT); // Energy balance integral gain
 	param_add("TECS_PTCH_LIM", PARAM_TYPE_FLOAT); // Maximum pitch angle, deg
+	param_add("TECS_THR_CRUISE", PARAM_TYPE_FLOAT); // Steady-state cruise throttle
 
 	// L1 Controller
 	param_add("L1_PERIOD", PARAM_TYPE_FLOAT); // L1 controller period
@@ -37,11 +35,6 @@ void init_params(void)
 
 	// Navigator
 	param_add("NAV_ACC_RAD", PARAM_TYPE_FLOAT); // Waypoint acceptance radius, m
-
-	// Optical flow
-	param_add("OF_ENABLE", PARAM_TYPE_INT32); // Enable optical flow sensor
-	param_add("OF_MIN", PARAM_TYPE_INT32); // Minimum accepted reading, pixels/sec
-	param_add("OF_MAX", PARAM_TYPE_INT32); // Maximum accepted reading, pixels/sec
 
 	// Mixer
 	param_add("PWM_MIN_ELE", PARAM_TYPE_INT32); // Min duty elevator, us
@@ -87,4 +80,7 @@ void init_params(void)
 	// Kalman filter
 	param_add("EKF_BARO_VAR", PARAM_TYPE_FLOAT); // Barometer variance
 	param_add("EKF_GNSS_VAR", PARAM_TYPE_FLOAT); // GNSS variance
+	param_add("EKF_OF_ENABLE", PARAM_TYPE_INT32); // Enable optical flow sensor
+	param_add("EKF_OF_MIN", PARAM_TYPE_INT32); // Minimum accepted reading, pixels/sec
+	param_add("EKF_OF_MAX", PARAM_TYPE_INT32); // Maximum accepted reading, pixels/sec
 }

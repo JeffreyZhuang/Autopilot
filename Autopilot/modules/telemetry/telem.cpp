@@ -45,12 +45,10 @@ void Telem::read_telem()
 		uint8_t byte;
 		_hal->read_telem(&byte);
 
-		uint8_t payload[MAX_PAYLOAD_LEN];
-		uint8_t payload_len;
-		uint8_t msg_id;
-		if (telem_link.parse_byte(byte, payload, payload_len, msg_id))
+		aplink_msg msg;
+		if (aplink_parse_byte(&msg, byte))
 		{
-			if (msg_id == WPT_MSG_ID &&
+			if (msg.msg_id == WAYPOINT_MSG_ID &&
 				_modes_data.system_mode == System_mode::CONFIG &&
 				payload_len == sizeof(Waypoint_payload))
 			{

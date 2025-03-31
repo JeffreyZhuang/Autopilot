@@ -2,8 +2,9 @@
 #define LIB_APLINK_APLINK_H_
 
 #include "messages/gps_raw.h"
-#include "messages/params.h"
+#include "messages/param_set.h"
 #include "messages/rc_input.h"
+#include "messages/waypoint.h"
 #include <stdio.h>
 #include <string.h>
 

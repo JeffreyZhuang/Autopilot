@@ -62,7 +62,6 @@ private:
 	bool parse_packet();
 	void ack();
 	uint8_t get_current_state();
-	Telem_payload create_telem_payload();
 };
 
 #endif /* TELEM_H_ */
