@@ -1,6 +1,8 @@
 #ifndef LIB_APLINK_MESSAGES_PARAMS_H_
 #define LIB_APLINK_MESSAGES_PARAMS_H_
 
+#include <stdio.h>
+
 static constexpr uint8_t PARAMS_MSG_ID = 3;
 
 struct __attribute__((packed)) aplink_params
