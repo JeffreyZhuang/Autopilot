@@ -1,6 +1,8 @@
 #ifndef LIB_APLINK_MESSAGES_RC_INPUT_H_
 #define LIB_APLINK_MESSAGES_RC_INPUT_H_
 
+#include "lib/aplink/aplink_types.h"
+
 struct aplink_rc_input
 {
 	uint8_t rudder; // Percentage

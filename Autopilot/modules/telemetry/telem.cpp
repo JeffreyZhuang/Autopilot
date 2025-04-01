@@ -99,8 +99,8 @@ void Telem::read_usb()
 		{
 			switch (telem_msg.msg_id)
 			{
-			case HITL_MSG_ID:
-				HITL_data data = aplink_hitl_msg_decode();
+			case HITL_INPUG_MSG_ID:
+				HITL_data data = aplink_hitl_input_msg_decode(&telem_msg);
 				break;
 			}
 		}
@@ -158,6 +158,8 @@ void Telem::transmit_telem()
 	{
 		_bytes_since_last_tlm_transmit = 0;
 		_last_tlm_transmit_time = _hal->get_time_us();
+
+		aplink_vfr_hud vfr_hud;
 
 		Telem_payload payload = create_telem_payload();
 

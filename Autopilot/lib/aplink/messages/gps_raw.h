@@ -1,7 +1,7 @@
 #ifndef LIB_APLINK_MESSAGES_GPS_RAW_H_
 #define LIB_APLINK_MESSAGES_GPS_RAW_H_
 
-#include <stdio.h>
+#include "lib/aplink/aplink_types.h"
 
 static constexpr uint8_t GPS_RAW_MSG_ID = 0;
 

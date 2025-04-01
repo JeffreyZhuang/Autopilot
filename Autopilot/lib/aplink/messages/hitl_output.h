@@ -1,7 +1,7 @@
 #ifndef LIB_APLINK_MESSAGES_HITL_OUTPUT_H_
 #define LIB_APLINK_MESSAGES_HITL_OUTPUT_H_
 
-#include "aplink.h"
+#include "lib/aplink/aplink_types.h"
 
 static constexpr uint8_t HITL_OUTPUT_MSG_ID = 4;
 

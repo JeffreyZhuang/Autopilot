@@ -1,7 +1,7 @@
 #ifndef LIB_APLINK_MESSAGES_COMMAND_H_
 #define LIB_APLINK_MESSAGES_COMMAND_H_
 
-#include <stdio.h>
+#include "lib/aplink/aplink_types.h"
 
 static constexpr uint8_t COMMAND_MSG_ID = 0;
 

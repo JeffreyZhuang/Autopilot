@@ -45,7 +45,7 @@ bool aplink_parse_byte(Autopilot_link_msg* link_msg, uint8_t byte)
 	return false;
 }
 
-void aplink_pack(uint8_t packet[], const uint8_t payload[], const uint8_t payload_len, const uint8_t msg_id)
+uint16_t aplink_pack(uint8_t packet[], const uint8_t payload[], const uint8_t payload_len, const uint8_t msg_id)
 {
 	uint16_t index = 0;
 

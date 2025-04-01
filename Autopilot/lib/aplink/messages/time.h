@@ -1,7 +1,7 @@
 #ifndef LIB_APLINK_MESSAGES_TIME_H_
 #define LIB_APLINK_MESSAGES_TIME_H_
 
-#include "aplink.h"
+#include "lib/aplink/aplink_types.h"
 
 struct aplink_time
 {

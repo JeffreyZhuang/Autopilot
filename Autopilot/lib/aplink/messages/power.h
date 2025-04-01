@@ -1,6 +1,8 @@
 #ifndef LIB_APLINK_MESSAGES_POWER_H_
 #define LIB_APLINK_MESSAGES_POWER_H_
 
+#include "lib/aplink/aplink_types.h"
+
 struct __attribute__((packed)) aplink_power
 {
 	uint16_t battery_voltage;

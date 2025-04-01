@@ -1,7 +1,7 @@
 #ifndef LIB_APLINK_MESSAGES_PARAM_SET_H_
 #define LIB_APLINK_MESSAGES_PARAM_SET_H_
 
-#include <stdio.h>
+#include "lib/aplink/aplink_types.h"
 
 struct __attribute__((packed)) aplink_param_set
 {

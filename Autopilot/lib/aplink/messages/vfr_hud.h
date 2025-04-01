@@ -1,7 +1,7 @@
 #ifndef LIB_APLINK_MESSAGES_VFR_HUD_H_
 #define LIB_APLINK_MESSAGES_VFR_HUD_H_
 
-#include "aplink.h"
+#include "lib/aplink/aplink_types.h"
 
 struct aplink_vfr_hud
 {

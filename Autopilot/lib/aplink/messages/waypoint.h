@@ -1,6 +1,8 @@
 #ifndef LIB_APLINK_MESSAGES_WAYPOINT_H_
 #define LIB_APLINK_MESSAGES_WAYPOINT_H_
 
+#include "lib/aplink/aplink_types.h"
+
 static constexpr uint8_t WAYPOINT_MSG_ID = 4;
 
 struct __attribute__((packed)) aplink_waypoint
