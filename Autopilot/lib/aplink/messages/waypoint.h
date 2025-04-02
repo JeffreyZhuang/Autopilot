@@ -11,7 +11,17 @@ struct __attribute__((packed)) aplink_waypoint
 	uint8_t total_waypoints;
 	int32_t lat;
 	int32_t lon;
-	int16_t alt;
+	float alt;
 };
+
+bool aplink_waypoint_msg_decode(aplink_msg* msg, aplink_waypoint* waypoint)
+{
+	if (msg->payload_len == sizeof(aplink_waypoint))
+	{
+		memcpy(waypoint, msg->payload, msg->payload_len);
+		return true;
+	}
+	return false;
+}
 
 #endif /* LIB_APLINK_MESSAGES_WAYPOINT_H_ */

@@ -15,6 +15,8 @@ Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
 	  _sensors(hal, data_bus)
 {
 	_hal = hal;
+
+	init_params();
 }
 
 void Autopilot::setup()

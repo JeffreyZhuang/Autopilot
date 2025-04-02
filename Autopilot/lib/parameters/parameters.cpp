@@ -31,8 +31,8 @@ void param_init(void) {
     param_count = 0;
 }
 
-// --- Add a New Parameter (Internal) ---
-static param_t param_add(const char *name, param_type_t type) {
+// --- Add a New Parameter ---
+param_t param_add(const char *name, param_type_t type) {
     if (param_count >= MAX_PARAMS) return PARAM_INVALID;
 
     uint32_t hash = param_hash(name);

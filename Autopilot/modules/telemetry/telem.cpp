@@ -20,72 +20,130 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 
 void Telem::update()
 {
-	_modes_data = _modes_sub.get();
-
-	read_telem();
-	read_usb();
-
-	_telem_pub.publish(_telem_data);
-
-	if (_modes_data.system_mode != System_mode::CONFIG)
+	switch (_telem_state)
 	{
-		_ahrs_data = _ahrs_sub.get();
-		_gnss_data = _gnss_sub.get();
-		_pos_est_data = _pos_est_sub.get();
-
-		transmit_telem();
-		transmit_usb();
+	case TelemState::LOAD_PARAMS:
+		update_load_params();
+		break;
+	case TelemState::LOAD_WAYPOINTS:
+		update_load_waypoints();
+		break;
+	case TelemState::SEND_TELEMETRY:
+		update_send_telemetry();
+		break;
 	}
 }
 
-void Telem::read_telem()
+void Telem::update_load_params()
+{
+	if (read_telem(&telem_msg))
+	{
+		if (telem_msg.msg_id == PARAM_SET_MSG_ID &&
+			telem_msg.payload_len == sizeof(aplink_param_set))
+		{
+			aplink_param_set param_set;
+			aplink_param_set_msg_decode(&telem_msg, &param_set);
+
+			// Convert bytes into float
+			float value;
+			memcpy(&value, &param_set.data, sizeof(value));
+
+			// Set parameters
+			param_set_float(param_find(param_set.param_id), value); // Need to handle int32_t
+
+			printf("Telem params set\n");
+		}
+	}
+}
+
+void Telem::update_load_waypoints()
+{
+	if (read_telem(&telem_msg))
+	{
+		if (telem_msg.msg_id == WAYPOINT_MSG_ID &&
+			telem_msg.payload_len == sizeof(aplink_waypoint))
+		{
+			aplink_waypoint waypoint_payload;
+			aplink_waypoint_msg_decode(&telem_msg, &waypoint_payload);
+
+			if (waypoint_payload.waypoint_index == waypoint_payload.total_waypoints - 1)
+			{
+				_telem_data.waypoints_loaded = true;
+			}
+
+			_telem_data.num_waypoints = waypoint_payload.total_waypoints;
+			_telem_data.waypoints[waypoint_payload.waypoint_index] = Waypoint{
+				(double)waypoint_payload.lat * 1E-7,
+				(double)waypoint_payload.lon * 1E-7,
+				(float)waypoint_payload.alt * 1E-1f
+			};
+
+			printf("Telem waypoint set\n");
+		}
+	}
+}
+
+void Telem::update_send_telemetry()
+{
+	float current_time_s =_hal->get_time_us() * US_TO_S;
+
+	if (current_time_s - last_vfr_hud_transmit_s > VFR_HUD_DT)
+	{
+		last_vfr_hud_transmit_s = current_time_s;
+
+		aplink_vfr_hud vfr_hud;
+		vfr_hud.roll = (int16_t)(_ahrs_data.roll * 100);
+		vfr_hud.pitch = (int16_t)(_ahrs_data.pitch * 100);
+		vfr_hud.heading = (uint16_t)(_ahrs_data.yaw * 10);
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_vfr_hud_pack(vfr_hud, packet);
+
+		_hal->transmit_telem(packet, len);
+	}
+
+	if (current_time_s - last_nav_display_transmit_s > NAV_DISPLAY_DT)
+	{
+		last_nav_display_transmit_s = current_time_s;
+
+		aplink_nav_display nav_display;
+		nav_display.pos_est_north = _pos_est_data.pos_n;
+		nav_display.pos_est_east = _pos_est_data.pos_e;
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_nav_display_pack(nav_display, packet);
+
+		_hal->transmit_telem(packet, len);
+	}
+
+	if (current_time_s - last_gps_raw_transmit_s > GPS_RAW_DT)
+	{
+		last_gps_raw_transmit_s = current_time_s;
+
+		aplink_gps_raw gps_raw;
+		gps_raw.lat = (int32_t)(_gnss_data.lat * 1E7);
+		gps_raw.lon = (int32_t)(_gnss_data.lon * 1E7);
+		gps_raw.sats = _gnss_data.sats;
+		gps_raw.fix = _gnss_data.fix;
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_gps_raw_pack(gps_raw, packet);
+
+		_hal->transmit_telem(packet, len);
+	}
+}
+
+bool Telem::read_telem(aplink_msg* msg)
 {
 	while (!_hal->telem_buffer_empty())
 	{
 		uint8_t byte;
 		_hal->read_telem(&byte);
 
-		aplink_msg msg;
-		if (aplink_parse_byte(&msg, byte))
-		{
-			if (msg.msg_id == WAYPOINT_MSG_ID &&
-				_modes_data.system_mode == System_mode::CONFIG &&
-				payload_len == sizeof(Waypoint_payload))
-			{
-				Waypoint_payload waypoint_payload;
-				memcpy(&waypoint_payload, payload, sizeof(Waypoint_payload));
-
-				if (waypoint_payload.waypoint_index == waypoint_payload.total_waypoints - 1)
-				{
-					_telem_data.waypoints_loaded = true;
-				}
-
-				_telem_data.num_waypoints = waypoint_payload.total_waypoints;
-				_telem_data.waypoints[waypoint_payload.waypoint_index] = Waypoint{
-					(double)waypoint_payload.lat * 1E-7,
-					(double)waypoint_payload.lon * 1E-7,
-					(float)waypoint_payload.alt * 1E-1f
-				};
-
-				printf("Telem waypoint set\n");
-			}
-			else if (msg_id == PARAMS_MSG_ID &&
-					 _modes_data.system_mode == System_mode::CONFIG &&
-					 payload_len == sizeof(Params_payload))
-			{
-				Params_payload params_payload;
-				memcpy(&params_payload, payload, sizeof(Params_payload));
-
-				// Set parameters
-				_telem_data.params = params_payload;
-				_telem_data.params_loaded = true;
-
-				printf("Telem params set\n");
-			}
-
-			ack();
-		}
+		return aplink_parse_byte(msg, byte);
 	}
+
+	return false;
 }
 
 void Telem::read_usb()
@@ -99,8 +157,20 @@ void Telem::read_usb()
 		{
 			switch (telem_msg.msg_id)
 			{
-			case HITL_INPUG_MSG_ID:
-				HITL_data data = aplink_hitl_input_msg_decode(&telem_msg);
+			case HITL_INPUT_MSG_ID:
+				aplink_hitl_input hitl_input;
+				aplink_hitl_input_msg_decode(&telem_msg, &hitl_input);
+
+				HITL_data hitl_data;
+				hitl_data.imu_ax = hitl_input.imu_ax;
+				hitl_data.imu_ay = hitl_input.imu_ay;
+				hitl_data.imu_az = hitl_input.imu_az;
+				hitl_data.imu_gx = hitl_input.imu_gx;
+				hitl_data.imu_gy = hitl_input.imu_gy;
+				hitl_data.imu_gz = hitl_input.imu_gz;
+
+				_hitl_pub.publish(hitl_data);
+
 				break;
 			}
 		}
@@ -141,75 +211,6 @@ void Telem::transmit_usb()
 
 		_hal->usb_transmit((uint8_t*)tx_buff, strlen(tx_buff));
 	}
-}
-
-void Telem::transmit_telem()
-{
-	// Limit data rate through radio
-	float sec_since_last_tlm_transmit = (_hal->get_time_us() - _last_tlm_transmit_time) * US_TO_S;
-
-	uint16_t byte_rate = 0;
-	if (sec_since_last_tlm_transmit != 0) // Prevent divide by zero
-	{
-		byte_rate = (_bytes_since_last_tlm_transmit + sizeof(Telem_payload) + HEADER_LEN) / sec_since_last_tlm_transmit;
-	}
-
-	if (byte_rate < MAX_BYTE_RATE)
-	{
-		_bytes_since_last_tlm_transmit = 0;
-		_last_tlm_transmit_time = _hal->get_time_us();
-
-		aplink_vfr_hud vfr_hud;
-
-		Telem_payload payload = create_telem_payload();
-
-		uint8_t packet[telem_link.calc_packet_size(sizeof(payload))];
-		telem_link.pack(packet, reinterpret_cast<uint8_t*>(&payload), sizeof(Telem_payload), TELEM_MSG_ID);
-
-		transmit_packet(packet, sizeof(packet));
-	}
-}
-
-// Send back same message for acknowledgement
-void Telem::ack()
-{
-	// Do not use queue and send directly because this is priority
-	transmit_packet(telem_link.latest_packet, telem_link.latest_packet_len);
-}
-
-void Telem::transmit_packet(uint8_t packet[], uint16_t size)
-{
-	_bytes_since_last_tlm_transmit += size;
-	_hal->transmit_telem(packet, size);
-}
-
-Telem_payload Telem::create_telem_payload()
-{
-	Telem_payload payload = {
-		(int16_t)(_ahrs_data.roll * 100),
-		(int16_t)(_ahrs_data.pitch * 100),
-		(uint16_t)(_ahrs_data.yaw * 10),
-		(int16_t)(-_pos_est_data.pos_d * 10),
-		(uint16_t)(_pos_est_data.gnd_spd * 10),
-		(int16_t)(-_l1_data.d_setpoint * 10),
-		(int32_t)(_gnss_data.lat * 1E7),
-		(int32_t)(_gnss_data.lon * 1E7),
-		_pos_est_data.pos_n,
-		_pos_est_data.pos_e,
-		get_current_state(),
-		_navigator_data.waypoint_index,
-		0,
-		0,
-		0,
-		(uint16_t)(_power_data.autopilot_current * 1000.0f),
-		_gnss_data.sats,
-		_gnss_data.fix,
-		(uint8_t)(_ctrl_cmd_data.rud_cmd * 100),
-		(uint8_t)(_ctrl_cmd_data.ele_cmd * 100),
-		(uint8_t)(_tecs_data.thr_cmd * 100)
-	};
-
-	return payload;
 }
 
 // Returns unique state identifier

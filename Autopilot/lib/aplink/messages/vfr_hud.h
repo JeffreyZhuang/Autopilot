@@ -3,7 +3,9 @@
 
 #include "lib/aplink/aplink_types.h"
 
-struct aplink_vfr_hud
+static constexpr uint8_t VFR_HUD_MSG_ID = 10;
+
+struct __attribute__((packed)) aplink_vfr_hud
 {
 	int16_t roll;
 	int16_t pitch;
@@ -15,5 +17,12 @@ struct aplink_vfr_hud
 	int16_t altitude_setpoint;
 	uint8_t mode_id;
 };
+
+uint16_t aplink_vfr_hud_pack(aplink_vfr_hud vfr_hud, uint8_t packet[])
+{
+	uint8_t buffer[sizeof(vfr_hud)];
+	memcpy(&buffer, &vfr_hud, sizeof(buffer));
+	return aplink_pack(packet, buffer, sizeof(buffer), VFR_HUD_MSG_ID);
+}
 
 #endif /* LIB_APLINK_MESSAGES_VFR_HUD_H_ */

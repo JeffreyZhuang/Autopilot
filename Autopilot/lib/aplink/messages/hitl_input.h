@@ -5,7 +5,7 @@
 
 static constexpr uint8_t HITL_INPUT_MSG_ID = 4;
 
-struct aplink_hitl_input
+struct __attribute__((packed)) aplink_hitl_input
 {
 	float imu_ax;
 	float imu_ay;
@@ -25,15 +25,19 @@ struct aplink_hitl_input
 
 uint16_t aplink_hitl_input_pack(aplink_hitl_input data, uint8_t packet[])
 {
-	return aplink_pack(packet, (uint8_t*)(&data), sizeof(data), HITL_INPUT_MSG_ID);
+	uint8_t buffer[sizeof(data)];
+	memcpy(&buffer, &data, sizeof(buffer));
+	return aplink_pack(packet, buffer, sizeof(buffer), HITL_INPUT_MSG_ID);
 }
 
-aplink_hitl_input aplink_hitl_input_msg_decode(aplink_msg* msg)
+bool aplink_hitl_input_msg_decode(aplink_msg* msg, aplink_hitl_input* hitl_input)
 {
-	// Safer to write each individually
-	aplink_hitl_input data;
-	memcpy(&data, msg->payload, msg->payload_len);
-	return data;
+	if (msg->payload_len == sizeof(aplink_hitl_input))
+	{
+		memcpy(hitl_input, msg->payload, msg->payload_len);
+		return true;
+	}
+	return false;
 }
 
 #endif /* LIB_APLINK_MESSAGES_HITL_INPUT_H_ */

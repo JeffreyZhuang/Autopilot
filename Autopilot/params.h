@@ -1,16 +1,23 @@
 #include "lib/parameters/parameters.h"
 
+#define ATT_PTCH_KP "ATT_PTCH_KP"
+#define ATT_PTCH_KI "ATT_PTCH_KI"
+#define ATT_ROLL_KP "ATT_ROLL_KP"
+#define ATT_ROLL_KI "ATT_ROLL_KI"
+#define TKO_PTCH "TKO_PTCH"
+#define TECS_PTCH_LIM "TECS_PTCH_LIM"
+
 void init_params()
 {
 	// Attitude control
-	param_add("ATT_PTCH_KP", PARAM_TYPE_FLOAT); // Pitch control proportional gain
-	param_add("ATT_PTCH_KI", PARAM_TYPE_FLOAT); // Pitch control integral gain
-	param_add("ATT_ROLL_KP", PARAM_TYPE_FLOAT); // Roll control proportional gain
-	param_add("ATT_ROLL_KI", PARAM_TYPE_FLOAT); // Roll control integral gain
+	param_add(ATT_PTCH_KP, PARAM_TYPE_FLOAT); // Pitch control proportional gain
+	param_add(ATT_PTCH_KI, PARAM_TYPE_FLOAT); // Pitch control integral gain
+	param_add(ATT_ROLL_KP, PARAM_TYPE_FLOAT); // Roll control proportional gain
+	param_add(ATT_ROLL_KI, PARAM_TYPE_FLOAT); // Roll control integral gain
 
 	// Takeoff
 	param_add("TKO_ALT", PARAM_TYPE_FLOAT); // Altitude to detect when takeoff is complete, m
-	param_add("TKO_PTCH", PARAM_TYPE_FLOAT); // Constant pitch hold during takeoff, deg
+	param_add(TKO_PTCH, PARAM_TYPE_FLOAT); // Constant pitch hold during takeoff, deg
 	param_add("TKO_ROLL_LIM", PARAM_TYPE_FLOAT); // Roll limit during takeoff, deg
 
 	// Landing
@@ -26,7 +33,7 @@ void init_params()
 	param_add("TECS_THR_KI", PARAM_TYPE_FLOAT); // Total energy control integral gain
 	param_add("TECS_PTCH_KP", PARAM_TYPE_FLOAT); // Energy balance proportional gain
 	param_add("TECS_PTCH_KI", PARAM_TYPE_FLOAT); // Energy balance integral gain
-	param_add("TECS_PTCH_LIM", PARAM_TYPE_FLOAT); // Maximum pitch angle, deg
+	param_add(TECS_PTCH_LIM, PARAM_TYPE_FLOAT); // Maximum pitch angle, deg
 	param_add("TECS_THR_CRUISE", PARAM_TYPE_FLOAT); // Steady-state cruise throttle
 
 	// L1 Controller

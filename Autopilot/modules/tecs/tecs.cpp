@@ -74,13 +74,19 @@ void Tecs::update_direct()
 
 void Tecs::update_stabilized()
 {
-	_tecs_data.pitch_setpoint = _rc_data.ele_norm * get_params()->tecs.ptch_lim_deg;
+	float tecs_ptch_lim = 0;
+	param_get_float(param_find(TECS_PTCH_LIM), &tecs_ptch_lim);
+
+	_tecs_data.pitch_setpoint = _rc_data.ele_norm * tecs_ptch_lim;
 	_tecs_data.thr_cmd = _rc_data.thr_norm;
 }
 
 void Tecs::update_takeoff()
 {
-	_tecs_data.pitch_setpoint = get_params()->takeoff.ptch;
+	float tko_ptch = 0;
+	param_get_float(param_find(TKO_PTCH), &tko_ptch);
+
+	_tecs_data.pitch_setpoint = tko_ptch;
 	_tecs_data.thr_cmd = _rc_data.thr_norm;
 }
 

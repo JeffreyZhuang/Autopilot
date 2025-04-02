@@ -20,6 +20,9 @@ typedef uint16_t param_t;
 // Initialize the parameter system
 void param_init(void);
 
+// Add parameter
+param_t param_add(const char *name, param_type_t type);
+
 // Find a parameter by name (returns handle)
 param_t param_find(const char *name);
 

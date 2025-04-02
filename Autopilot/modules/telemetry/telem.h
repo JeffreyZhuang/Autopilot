@@ -1,7 +1,9 @@
 #ifndef TELEM_H_
 #define TELEM_H_
 
-#include <lib/aplink/aplink.h>
+#include "lib/aplink/aplink.h"
+#include "lib/aplink/aplink_messages.h"
+#include "lib/parameters/parameters.h"
 #include "lib/utils/utils.h"
 #include "hal.h"
 #include "modes.h"
@@ -10,7 +12,20 @@
 #include <cstdio>
 #include <cstring>
 
-static constexpr uint16_t MAX_BYTE_RATE = 1500; // Bytes per sec
+// Rate to transmit messages
+// Move this to parameters
+static constexpr float VFR_HUD_DT = 0.03;
+static constexpr float NAV_DISPLAY_DT = 0.1;
+static constexpr float GPS_RAW_DT = 0.2;
+
+// 1. Send various packets at various frequencies
+
+enum class TelemState
+{
+	LOAD_PARAMS,
+	LOAD_WAYPOINTS,
+	SEND_TELEMETRY
+};
 
 class Telem : public Module
 {
@@ -20,9 +35,6 @@ public:
 	void update();
 
 private:
-	uint64_t _last_tlm_transmit_time = 0; // Time of last telemetry transmission
-	uint16_t _bytes_since_last_tlm_transmit = 0; // Total bytes sent since last telemetry transmission
-
 	Subscriber<GNSS_data> _gnss_sub;
 	Subscriber<AHRS_data> _ahrs_sub;
 	Subscriber<Pos_est_data> _pos_est_sub;
@@ -54,13 +66,20 @@ private:
 	aplink_msg telem_msg;
 	aplink_msg usb_msg;
 
-	void read_telem();
+	TelemState _telem_state;
+	float last_vfr_hud_transmit_s = 0;
+	float last_nav_display_transmit_s = 0;
+	float last_gps_raw_transmit_s = 0;
+
+	void update_load_params();
+	void update_load_waypoints();
+	void update_send_telemetry();
+
+	bool read_telem(aplink_msg* msg);
 	void read_usb();
 	void transmit_usb();
 	void transmit_packet(uint8_t packet[], uint16_t size);
-	void transmit_telem(); // Transmit telemetry packet
 	bool parse_packet();
-	void ack();
 	uint8_t get_current_state();
 };
 

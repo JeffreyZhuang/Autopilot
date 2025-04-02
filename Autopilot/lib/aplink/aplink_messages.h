@@ -3,10 +3,16 @@
 
 #include "aplink_types.h"
 
+#include "messages/command.h"
 #include "messages/gps_raw.h"
-#include "messages/param_set.h"
-#include "messages/rc_input.h"
-#include "messages/waypoint.h"
 #include "messages/hitl_input.h"
+#include "messages/hitl_output.h"
+#include "messages/nav_display.h"
+#include "messages/param_set.h"
+#include "messages/power.h"
+#include "messages/rc_input.h"
+#include "messages/time.h"
+#include "messages/vfr_hud.h"
+#include "messages/waypoint.h"
 
 #endif /* LIB_APLINK_APLINK_MESSAGES_H_ */
