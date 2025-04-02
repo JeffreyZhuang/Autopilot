@@ -4,6 +4,7 @@
 #include <data_bus.h>
 #include "lib/parameters/parameters.h"
 #include "lib/utils/utils.h"
+#include "params.h"
 #include "hal.h"
 #include "module.h"
 
@@ -19,6 +20,8 @@ private:
 	Subscriber<Telem_data> _telem_sub;
 
 	Publisher<Navigator_data> _navigator_pub;
+
+	param_t param_acceptance_radius;
 
 	uint8_t _curr_wp_idx = 1;
 };

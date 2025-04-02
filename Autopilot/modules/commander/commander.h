@@ -4,6 +4,7 @@
 #include <data_bus.h>
 #include "hal.h"
 #include "module.h"
+#include "params.h"
 #include <stdio.h>
 
 class Commander : public Module
@@ -30,7 +31,6 @@ private:
 	Telem_data _telem_data{};
 
 	void handle_flight_mode();
-	void handle_manual_mode();
 	void handle_auto_mode();
 	void handle_switches();
 	void update_config();
@@ -38,7 +38,6 @@ private:
 	void update_takeoff();
 	void update_mission();
 	void update_land();
-	void update_flare();
 };
 
 #endif /* MODULES_COMMANDER_COMMANDER_H_ */

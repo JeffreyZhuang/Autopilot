@@ -1,9 +1,12 @@
 #include <lib/parameters/parameters.h>
+#include <string.h>
+#include <stdbool.h>
 
 // --- Internal Structures ---
 typedef struct {
     const char *name;      // Parameter name (string)
     param_type_t type;     // Parameter type
+    bool is_set;           // Flag indicating if parameter has been set
     union {
         int32_t i32_val;   // Integer value
         float float_val;   // Float value
@@ -38,6 +41,7 @@ param_t param_add(const char *name, param_type_t type) {
     uint32_t hash = param_hash(name);
     param_table[param_count].name = name;
     param_table[param_count].type = type;
+    param_table[param_count].is_set = false;
 
     return param_count++; // Return handle (index)
 }
@@ -56,20 +60,18 @@ param_t param_find(const char *name) {
 }
 
 // --- Get/Set Functions ---
-int param_get_int32(param_t param, int32_t *val) {
-    if (param >= param_count || param_table[param].type != PARAM_TYPE_INT32) {
-        return -1; // Error
+int32_t param_get_int32(param_t param) {
+    if (param >= param_count || !param_table[param].is_set) {
+        return 0; // Default value if not set
     }
-    *val = param_table[param].value.i32_val;
-    return 0;
+    return param_table[param].value.i32_val;
 }
 
-int param_get_float(param_t param, float *val) {
-    if (param >= param_count || param_table[param].type != PARAM_TYPE_FLOAT) {
-        return -1; // Error
+float param_get_float(param_t param) {
+    if (param >= param_count || !param_table[param].is_set) {
+        return 0.0f; // Default value if not set
     }
-    *val = param_table[param].value.float_val;
-    return 0;
+    return param_table[param].value.float_val;
 }
 
 int param_set_int32(param_t param, int32_t val) {
@@ -77,6 +79,7 @@ int param_set_int32(param_t param, int32_t val) {
         return -1; // Error
     }
     param_table[param].value.i32_val = val;
+    param_table[param].is_set = true;
     return 0;
 }
 
@@ -85,5 +88,16 @@ int param_set_float(param_t param, float val) {
         return -1; // Error
     }
     param_table[param].value.float_val = val;
+    param_table[param].is_set = true;
     return 0;
+}
+
+// --- Check if all parameters have been set ---
+bool param_all_set(void) {
+    for (param_t i = 0; i < param_count; i++) {
+        if (!param_table[i].is_set) {
+            return false;
+        }
+    }
+    return true;
 }

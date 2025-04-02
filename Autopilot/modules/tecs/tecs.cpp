@@ -74,35 +74,26 @@ void Tecs::update_direct()
 
 void Tecs::update_stabilized()
 {
-	float tecs_ptch_lim = 0;
-	param_get_float(param_find(TECS_PTCH_LIM), &tecs_ptch_lim);
-
-	_tecs_data.pitch_setpoint = _rc_data.ele_norm * tecs_ptch_lim;
+	_tecs_data.pitch_setpoint = _rc_data.ele_norm * param_get_float(param_find(TECS_PTCH_LIM));
 	_tecs_data.thr_cmd = _rc_data.thr_norm;
 }
 
 void Tecs::update_takeoff()
 {
-	float tko_ptch = 0;
-	param_get_float(param_find(TKO_PTCH), &tko_ptch);
-
-	_tecs_data.pitch_setpoint = tko_ptch;
+	_tecs_data.pitch_setpoint = param_get_float(param_find(TKO_PTCH));
 	_tecs_data.thr_cmd = _rc_data.thr_norm;
 }
 
 void Tecs::update_mission()
 {
-	float cruise_spd;
-	param_get_float(param_find(TECS_SPD_CRUISE), &cruise_spd);
-
-	calculate_energies(cruise_spd, _l1_data.d_setpoint, 1);
+	calculate_energies(param_get_float(param_find(TECS_SPD_CRUISE)), _l1_data.d_setpoint, 1);
 	_tecs_data.pitch_setpoint = control_energy_balance();
 	_tecs_data.thr_cmd = control_total_energy();
 }
 
 void Tecs::update_land()
 {
-	calculate_energies(get_params()->tecs.aspd_land, _l1_data.d_setpoint, 1);
+	calculate_energies(param_get_float(param_find(TECS_SPD_LND)), _l1_data.d_setpoint, 1);
 	_tecs_data.pitch_setpoint = control_energy_balance();
 	_tecs_data.thr_cmd = control_total_energy();
 }
@@ -135,8 +126,8 @@ void Tecs::calculate_energies(float target_vel_mps, float target_alt_m, float wb
 
 	// Clamp total energy setpoint within allowed airspeed range
 	// Prevent stall/overspeed
-	float min_kin = 0.5 * powf(get_params()->tecs.min_aspd_mps, 2);
-	float max_kin = 0.5 * powf(get_params()->tecs.max_aspd_mps, 2);
+	float min_kin = 0.5 * powf(param_get_float(param_find(TECS_MIN_SPD)), 2);
+	float max_kin = 0.5 * powf(param_get_float(param_find(TECS_MAX_SPD)), 2);
 	target_total = clamp(target_total, energy_pot + min_kin, energy_pot + max_kin);
 
 	// Compute energy difference setpoint and measurement
@@ -159,11 +150,11 @@ float Tecs::control_energy_balance()
 	return energy_balance_controller.get_output(
 		_energy_balance,
 		_energy_balance_setpoint,
-		get_params()->tecs.energy_balance_kp,
-		get_params()->tecs.energy_balance_ki,
-		get_params()->tecs.ptch_lim_deg,
-		-get_params()->tecs.ptch_lim_deg,
-		get_params()->tecs.ptch_lim_deg,
+		param_get_float(param_find(TECS_PTCH_KP)),
+		param_get_float(param_find(TECS_PTCH_KI)),
+		param_get_float(param_find(TECS_PTCH_LIM)),
+		-param_get_float(param_find(TECS_PTCH_LIM)),
+		param_get_float(param_find(TECS_PTCH_LIM)),
 		0,
 		_time_data.dt_s
 	);
@@ -174,12 +165,12 @@ float Tecs::control_total_energy()
 	return total_energy_controller.get_output(
 		_total_energy,
 		_total_energy_setpoint,
-		get_params()->tecs.total_energy_kp,
-		get_params()->tecs.total_energy_ki,
+		param_get_float(param_find(TECS_THR_KP)),
+		param_get_float(param_find(TECS_THR_KI)),
 		1,
 		0,
 		1,
-		get_params()->perf.throttle_cruise,
+		param_get_float(param_find(TECS_THR_CRUISE)),
 		_time_data.dt_s
 	);
 }

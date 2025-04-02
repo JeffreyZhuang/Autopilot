@@ -56,7 +56,7 @@ void L1_controller::handle_manual_mode()
 
 void L1_controller::update_stabilized()
 {
-	_l1_data.roll_setpoint = _rc_data.ail_norm * get_params()->l1_ctrl.roll_lim;
+	_l1_data.roll_setpoint = _rc_data.ail_norm * param_get_float(param_find(L1_ROLL_LIM));
 }
 
 void L1_controller::handle_auto_mode()
@@ -97,7 +97,7 @@ void L1_controller::update_mission()
 	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
 	// Calculate L1 distance and scale with speed
-	const float l1_dist = fmaxf(get_params()->l1_ctrl.period * _pos_est_data.gnd_spd / M_PI, 1.0);
+	const float l1_dist = fmaxf(param_get_float(param_find(L1_PERIOD)) * _pos_est_data.gnd_spd / M_PI, 1.0);
 
 	// Calculate correction angle
 	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
@@ -126,14 +126,14 @@ void L1_controller::update_flare()
 	const float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon,
 													 appr_wp.lat, appr_wp.lon);
 	const float glideslope_angle = atan2f(land_wp.alt - appr_wp.alt,
-										  dist_land_appr - get_params()->navigator.min_dist_wp);
+										  dist_land_appr - param_get_float(param_find(NAV_ACC_RAD)));
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
 	const float final_altitude = 0;
-	const float final_sink_rate = get_params()->landing.flare_sink_rate;
-	const float initial_altitude = fmaxf(get_params()->landing.flare_alt, final_altitude);
-	const float initial_sink_rate = fmaxf(get_params()->tecs.aspd_land * sinf(glideslope_angle),
-								  final_sink_rate);
+	const float final_sink_rate = param_get_float(param_find(LND_FLARE_SINK));
+	const float initial_altitude = fmaxf(param_get_float(param_find(LND_FLARE_ALT)), final_altitude);
+	const float initial_sink_rate = fmaxf(param_get_float(param_find(TECS_SPD_LND))* sinf(glideslope_angle),
+								  	  	  final_sink_rate);
 	const float sink_rate = lerp(
 		initial_altitude, initial_sink_rate,
 		final_altitude, final_sink_rate,
@@ -161,7 +161,7 @@ float L1_controller::calculate_altitude_setpoint(const float prev_north, const f
 		_pos_est_data.pos_n, _pos_est_data.pos_e
 	);
 
-	const float initial_dist = get_params()->navigator.min_dist_wp;
+	const float initial_dist = param_get_float(param_find(NAV_ACC_RAD));
 	float final_dist;
 
 	if (_navigator_data.waypoint_index == _telem_data.num_waypoints - 1)

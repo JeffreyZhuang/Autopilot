@@ -8,16 +8,38 @@
 #define ATT_ROLL_KP "ATT_ROLL_KP"
 #define ATT_ROLL_KI "ATT_ROLL_KI"
 
+#define TKO_ALT "TKO_ALT"
 #define TKO_PTCH "TKO_PTCH"
+#define TKO_ROLL_LIM "TKO_ROLL_LIM"
+
+#define LND_FLARE_ALT "LND_FLARE_ALT"
+#define LND_FLARE_SINK "LND_FLARE_SINK"
 
 #define TECS_SPD_CRUISE "TECS_SPD_CRUISE"
+#define TECS_SPD_LND "TECS_SPD_LND"
+#define TECS_MIN_SPD "TECS_MIN_SPD"
+#define TECS_MAX_SPD "TECS_MAX_SPD"
+#define TECS_THR_KP "TECS_THR_KP"
+#define TECS_THR_KI "TECS_THR_KI"
+#define TECS_PTCH_KP "TECS_PTCH_KP"
+#define TECS_PTCH_KI "TECS_PTCH_KI"
 #define TECS_PTCH_LIM "TECS_PTCH_LIM"
+#define TECS_THR_CRUISE "TECS_THR_CRUISE"
+
+#define L1_PERIOD "L1_PERIOD"
+#define L1_ROLL_LIM "L1_ROLL_LIM"
+
+#define NAV_ACC_RAD "NAV_ACC_RAD"
 
 #define PWM_MIN_ELE "PWM_MIN_ELE"
 #define PWM_MIN_RUD "PWM_MIN_RUD"
 #define PWM_MIN_THR "PWM_MIN_THR"
 #define PWM_MAX_ELE "PWM_MAX_ELE"
+#define PWM_MAX_RUD "PWM_MAX_RUD"
+#define PWM_MAX_THR "PWM_MAX_THR"
 #define PWM_REV_ELE "PWM_REV_ELE"
+#define PWM_REV_RUD "PWM_REV_RUD"
+#define PWM_REV_THR "PWM_REV_THR"
 
 #define RC_MAX_DUTY "RC_MAX_DUTY"
 #define RC_MIN_DUTY "RC_MIN_DUTY"
@@ -36,32 +58,32 @@ void init_params()
 	param_add(ATT_ROLL_KI, PARAM_TYPE_FLOAT); // Roll control integral gain
 
 	// Takeoff
-	param_add("TKO_ALT", PARAM_TYPE_FLOAT); // Altitude to detect when takeoff is complete, m
+	param_add(TKO_ALT, PARAM_TYPE_FLOAT); // Altitude to detect when takeoff is complete, m
 	param_add(TKO_PTCH, PARAM_TYPE_FLOAT); // Constant pitch hold during takeoff, deg
-	param_add("TKO_ROLL_LIM", PARAM_TYPE_FLOAT); // Roll limit during takeoff, deg
+	param_add(TKO_ROLL_LIM, PARAM_TYPE_FLOAT); // Roll limit during takeoff, deg
 
 	// Landing
-	param_add("LND_FLARE_ALT", PARAM_TYPE_FLOAT); // Altitude to start flare, m
-	param_add("LND_FLARE_SINK", PARAM_TYPE_FLOAT); // Target sink rate for flare, m/s
+	param_add(LND_FLARE_ALT, PARAM_TYPE_FLOAT); // Altitude to start flare, m
+	param_add(LND_FLARE_SINK, PARAM_TYPE_FLOAT); // Target sink rate for flare, m/s
 
 	// TECS
 	param_add(TECS_SPD_CRUISE, PARAM_TYPE_FLOAT); // Cruise speed, m/s
-	param_add("TECS_SPD_LND", PARAM_TYPE_FLOAT); // Landing approach speed, m/s
-	param_add("TECS_MIN_SPD", PARAM_TYPE_FLOAT); // Minimum allowed airspeed, m/s
-	param_add("TECS_MAX_SPD", PARAM_TYPE_FLOAT); // Maximum allowed airspeed, m/s
-	param_add("TECS_THR_KP", PARAM_TYPE_FLOAT); // Total energy control proportional gain
-	param_add("TECS_THR_KI", PARAM_TYPE_FLOAT); // Total energy control integral gain
-	param_add("TECS_PTCH_KP", PARAM_TYPE_FLOAT); // Energy balance proportional gain
-	param_add("TECS_PTCH_KI", PARAM_TYPE_FLOAT); // Energy balance integral gain
+	param_add(TECS_SPD_LND, PARAM_TYPE_FLOAT); // Landing approach speed, m/s
+	param_add(TECS_MIN_SPD, PARAM_TYPE_FLOAT); // Minimum allowed airspeed, m/s
+	param_add(TECS_MAX_SPD, PARAM_TYPE_FLOAT); // Maximum allowed airspeed, m/s
+	param_add(TECS_THR_KP, PARAM_TYPE_FLOAT); // Total energy control proportional gain
+	param_add(TECS_THR_KI, PARAM_TYPE_FLOAT); // Total energy control integral gain
+	param_add(TECS_PTCH_KP, PARAM_TYPE_FLOAT); // Energy balance proportional gain
+	param_add(TECS_PTCH_KI, PARAM_TYPE_FLOAT); // Energy balance integral gain
 	param_add(TECS_PTCH_LIM, PARAM_TYPE_FLOAT); // Maximum pitch angle, deg
-	param_add("TECS_THR_CRUISE", PARAM_TYPE_FLOAT); // Steady-state cruise throttle
+	param_add(TECS_THR_CRUISE, PARAM_TYPE_FLOAT); // Steady-state cruise throttle
 
 	// L1 Controller
-	param_add("L1_PERIOD", PARAM_TYPE_FLOAT); // L1 controller period
-	param_add("L1_ROLL_LIM", PARAM_TYPE_FLOAT); // L1 controller roll limit
+	param_add(L1_PERIOD, PARAM_TYPE_FLOAT); // L1 controller period
+	param_add(L1_ROLL_LIM, PARAM_TYPE_FLOAT); // L1 controller roll limit
 
 	// Navigator
-	param_add("NAV_ACC_RAD", PARAM_TYPE_FLOAT); // Waypoint acceptance radius, m
+	param_add(NAV_ACC_RAD, PARAM_TYPE_FLOAT); // Waypoint acceptance radius, m
 
 	// Mixer
 	param_add(PWM_MIN_ELE, PARAM_TYPE_INT32); // Min duty elevator, us
@@ -71,14 +93,14 @@ void init_params()
 	param_add("PWM_MIN_AUX2", PARAM_TYPE_INT32); // Min duty auxiliary channel 2, us
 	param_add("PWM_MIN_AUX3", PARAM_TYPE_INT32); // Min duty auxiliary channel 3, us
 	param_add(PWM_MAX_ELE, PARAM_TYPE_INT32); // Max duty elevator, us
-	param_add("PWM_MAX_RUD", PARAM_TYPE_INT32); // Max duty rudder, us
-	param_add("PWM_MAX_THR", PARAM_TYPE_INT32); // Max duty throttle, us
+	param_add(PWM_MAX_RUD, PARAM_TYPE_INT32); // Max duty rudder, us
+	param_add(PWM_MAX_THR, PARAM_TYPE_INT32); // Max duty throttle, us
 	param_add("PWM_MAX_AUX1", PARAM_TYPE_INT32); // Max duty auxiliary channel 1, us
 	param_add("PWM_MAX_AUX2", PARAM_TYPE_INT32); // Max duty auxiliary channel 2, us
 	param_add("PWM_MAX_AUX3", PARAM_TYPE_INT32); // Max duty auxiliary channel 3, us
 	param_add(PWM_REV_ELE, PARAM_TYPE_INT32); // Reverse elevator channel
-	param_add("PWM_REV_RUD", PARAM_TYPE_INT32); // Reverse rudder channel
-	param_add("PWM_REV_THR", PARAM_TYPE_INT32); // Reverse throttle channel
+	param_add(PWM_REV_RUD, PARAM_TYPE_INT32); // Reverse rudder channel
+	param_add(PWM_REV_THR, PARAM_TYPE_INT32); // Reverse throttle channel
 	param_add("PWM_REV_AUX1", PARAM_TYPE_INT32); // Reverse auxiliary channel 1
 	param_add("PWM_REV_AUX2", PARAM_TYPE_INT32); // Reverse auxiliary channel 2
 	param_add("PWM_REV_AUX3", PARAM_TYPE_INT32); // Reverse auxiliary channel 3

@@ -61,9 +61,9 @@ void Sensors::update()
 			{
 				_hitl_data = _hitl_sub.get();
 
-				_imu_pub.publish(IMU_data{_hitl_data.gx, _hitl_data.gy, _hitl_data.gz,
-										  _hitl_data.ax, _hitl_data.ay, _hitl_data.az});
-				_baro_pub.publish(Baro_data{_hitl_data.asl, time});
+				_imu_pub.publish(IMU_data{_hitl_data.imu_gx, _hitl_data.imu_gy, _hitl_data.imu_gz,
+										  _hitl_data.imu_ax, _hitl_data.imu_ay, _hitl_data.imu_az});
+				_baro_pub.publish(Baro_data{_hitl_data.baro_asl, time});
 			}
 		}
 		else

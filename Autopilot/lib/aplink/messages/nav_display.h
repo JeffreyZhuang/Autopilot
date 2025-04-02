@@ -3,6 +3,8 @@
 
 #include "lib/aplink/aplink_types.h"
 
+static constexpr uint8_t NAV_DISPLAY_MSG_ID = 4;
+
 struct __attribute__((packed)) aplink_nav_display
 {
 	float pos_est_north;

@@ -1,5 +1,12 @@
 #include "modules/storage/storage.h"
 
+#define RING_BUFFER_SIZE (1024) // Must be a power of 2
+
+static uint8_t data_buffer[RING_BUFFER_SIZE] = {0U};
+
+
+// Move ring buffer to sd driver...
+
 Storage::Storage(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _imu_sub(data_bus->imu_node),
@@ -11,6 +18,7 @@ Storage::Storage(HAL* hal, Data_bus* data_bus)
 	  _time_sub(data_bus->time_node),
 	  _rc_sub(data_bus->rc_node)
 {
+
 }
 
 void Storage::update()
@@ -88,8 +96,6 @@ void Storage::flush()
 
 		_hal->write_storage_buffer(front_buffer, buffer_size);
 		front_buff_full = false;
-
-		_hal->flush_storage_buffer();
 	}
 }
 

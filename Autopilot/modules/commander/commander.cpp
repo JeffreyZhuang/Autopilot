@@ -43,27 +43,7 @@ void Commander::update()
 void Commander::handle_flight_mode()
 {
 	handle_switches();
-
-	switch (_modes_data.flight_mode)
-	{
-	case Flight_mode::MANUAL:
-		handle_manual_mode();
-		break;
-	case Flight_mode::AUTO:
-		handle_auto_mode();
-		break;
-	}
-}
-
-void Commander::handle_manual_mode()
-{
-	switch (_modes_data.manual_mode)
-	{
-	case Manual_mode::DIRECT:
-		break;
-	case Manual_mode::STABILIZED:
-		break;
-	}
+	handle_auto_mode();
 }
 
 void Commander::handle_auto_mode()
@@ -80,7 +60,6 @@ void Commander::handle_auto_mode()
 		update_land();
 		break;
 	case Auto_mode::FLARE:
-		update_flare();
 		break;
 	}
 }
@@ -110,7 +89,7 @@ void Commander::handle_switches()
 
 void Commander::update_config()
 {
-	if (_telem_data.parameters_loaded && _telem_data.waypoints_loaded)
+	if (param_all_set() && _telem_data.waypoints_loaded)
 	{
 		_modes_data.system_mode = System_mode::STARTUP;
 	}
@@ -133,7 +112,7 @@ void Commander::update_startup()
 
 void Commander::update_takeoff()
 {
-	if (-_pos_est_data.pos_d > get_params()->takeoff.alt)
+	if (-_pos_est_data.pos_d > param_get_float(param_find(TKO_ALT)))
 	{
 		_modes_data.auto_mode = Auto_mode::MISSION;
 	}
@@ -149,13 +128,8 @@ void Commander::update_mission()
 
 void Commander::update_land()
 {
-	if (-_pos_est_data.pos_d < get_params()->landing.flare_alt)
+	if (-_pos_est_data.pos_d < param_get_float(param_find(LND_FLARE_ALT)))
 	{
 		_modes_data.auto_mode = Auto_mode::FLARE;
 	}
-}
-
-void Commander::update_flare()
-{
-
 }

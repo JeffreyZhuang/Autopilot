@@ -6,13 +6,11 @@ Navigator::Navigator(HAL* hal, Data_bus* data_bus)
 	  _telem_sub(data_bus->telem_node),
 	  _navigator_pub(data_bus->navigator_node)
 {
+	param_acceptance_radius = param_find(NAV_ACC_RAD);
 }
 
 void Navigator::update()
 {
-	float acceptance_radius;
-	param_get_float(param_find("NAV_ACC_RAD"), &acceptance_radius);
-
 	if (_pos_est_sub.check_new())
 	{
 		Pos_est_data pos_est_data = _pos_est_sub.get();
@@ -31,7 +29,7 @@ void Navigator::update()
 		float rel_north = pos_est_data.pos_n - tgt_north;
 		float dist_to_wp = sqrtf(rel_north*rel_north + rel_east*rel_east);
 
-		if (dist_to_wp < acceptance_radius &&
+		if (dist_to_wp < param_get_float(param_acceptance_radius) &&
 			_curr_wp_idx < telem_data.num_waypoints - 1)
 		{
 			_curr_wp_idx++; // Move to next waypoint

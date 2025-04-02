@@ -1,8 +1,9 @@
 #ifndef MODULES_STORAGE_STORAGE_H_
 #define MODULES_STORAGE_STORAGE_H_
 
-#include <data_bus.h>
-#include <lib/aplink/aplink.h>
+#include "lib/ring_buffer/ring_buffer.h"
+#include "lib/aplink/aplink.h"
+#include "data_bus.h"
 #include "hal.h"
 #include "module.h"
 #include <stdint.h>
@@ -60,6 +61,8 @@ private:
 	Modes_data _modes_data{};
 	Time_data _time_data{};
 	RC_data _rc_data{};
+
+	ring_buffer_t ring_buffer;
 
 	void write();
 	void flush();

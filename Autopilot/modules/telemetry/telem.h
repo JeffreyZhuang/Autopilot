@@ -18,8 +18,6 @@ static constexpr float VFR_HUD_DT = 0.03;
 static constexpr float NAV_DISPLAY_DT = 0.1;
 static constexpr float GPS_RAW_DT = 0.2;
 
-// 1. Send various packets at various frequencies
-
 enum class TelemState
 {
 	LOAD_PARAMS,

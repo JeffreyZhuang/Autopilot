@@ -27,9 +27,12 @@ param_t param_add(const char *name, param_type_t type);
 param_t param_find(const char *name);
 
 // Get/set parameter values
-int param_get_int32(param_t param, int32_t *val);
-int param_get_float(param_t param, float *val);
+int32_t param_get_int32(param_t param);
+float param_get_float(param_t param);
 int param_set_int32(param_t param, int32_t val);
 int param_set_float(param_t param, float val);
+
+// Check if all parameters have been set
+bool param_all_set(void);
 
 #endif /* LIB_PARAMETERS_PARAMETERS_H_ */
