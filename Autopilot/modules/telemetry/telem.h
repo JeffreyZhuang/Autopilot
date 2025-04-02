@@ -3,12 +3,12 @@
 
 #include "lib/aplink/aplink.h"
 #include "lib/aplink/aplink_messages.h"
-#include "lib/parameters/parameters.h"
 #include "lib/utils/utils.h"
 #include "hal.h"
 #include "modes.h"
 #include "constants.h"
 #include "module.h"
+#include "params.h"
 #include <cstdio>
 #include <cstring>
 

@@ -5,6 +5,7 @@
 #include <lib/utils/utils.h>
 #include "hal.h"
 #include "module.h"
+#include "params.h"
 #include <stdio.h>
 
 // Channels

@@ -5,9 +5,9 @@
 #include "lib/pi_control/pi_control.h"
 #include "lib/utils/utils.h"
 #include "constants.h"
-#include "params.h"
 #include "module.h"
 #include <math.h>
+#include <params.h>
 
 class Tecs : public Module
 {

@@ -7,6 +7,7 @@
 #include "hal.h"
 #include "constants.h"
 #include "module.h"
+#include "params.h"
 #include <stdio.h>
 
 static constexpr int n = 6;

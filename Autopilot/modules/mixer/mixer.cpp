@@ -37,31 +37,34 @@ void Mixer::update_config()
 
 void Mixer::update_startup()
 {
-	_hal->set_pwm(0, 0, get_params()->mixer.pwm_min_thr, 0, 0, 0);
+	int32_t pwm_min_thr = 0;
+	param_get_int32(param_find(PWM_MIN_THR), &pwm_min_thr);
+
+	_hal->set_pwm(0, 0, pwm_min_thr, 0, 0, 0);
 }
 
 void Mixer::update_flight()
 {
-	_elevator_duty = map(
-		get_params()->mixer.pwm_rev_ele ? -_ctrl_cmd_data.ele_cmd : _ctrl_cmd_data.ele_cmd,
-		 -1,
-		 1,
-		 get_params()->mixer.pwm_min_ele,
-		 get_params()->mixer.pwm_max_ele);
-	_rudder_duty = map(
-		get_params()->mixer.pwm_rev_rud ? -_ctrl_cmd_data.rud_cmd : _ctrl_cmd_data.rud_cmd,
-		 -1,
-		 1,
-		 get_params()->mixer.pwm_min_rud,
-		 get_params()->mixer.pwm_max_rud);
+	int32_t pwm_rev_ele, pwm_rev_rud, pwm_rev_thr,
+			pwm_min_ele, pwm_min_rud, pwm_min_thr,
+			pwm_max_ele, pwm_max_rud, pwm_max_thr;
+	param_get_int32(param_find(PWM_REV_ELE), &pwm_rev_ele);
+	param_get_int32(param_find(PWM_REV_RUD), &pwm_rev_rud);
+	param_get_int32(param_find(PWM_REV_THR), &pwm_rev_thr);
+	param_get_int32(param_find(PWM_MIN_ELE), &pwm_min_ele);
+	param_get_int32(param_find(PWM_MIN_RUD), &pwm_min_rud);
+	param_get_int32(param_find(PWM_MIN_THR), &pwm_min_thr);
+	param_get_int32(param_find(PWM_MAX_ELE), &pwm_max_ele);
+	param_get_int32(param_find(PWM_MAX_RUD), &pwm_max_rud);
+	param_get_int32(param_find(PWM_MAX_THR), &pwm_max_thr);
+
+	_elevator_duty = map(pwm_rev_ele ? -_ctrl_cmd_data.ele_cmd : _ctrl_cmd_data.ele_cmd,
+						 -1,1, pwm_min_ele, pwm_max_ele);
+	_rudder_duty = map(pwm_rev_rud ? -_ctrl_cmd_data.rud_cmd : _ctrl_cmd_data.rud_cmd,
+					   -1, 1, pwm_min_rud, pwm_max_rud);
 
 	// TODO: Remove reverse for throttle
-	_throttle_duty = map(
-		_tecs_data.thr_cmd,
-		 0,
-		 1,
-		 get_params()->mixer.pwm_min_thr,
-		 get_params()->mixer.pwm_max_thr);
+	_throttle_duty = map(_tecs_data.thr_cmd, 0, 1, pwm_min_thr, pwm_max_thr);
 
 	if (get_params()->hitl.enable)
 	{

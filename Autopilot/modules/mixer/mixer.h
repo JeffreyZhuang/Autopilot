@@ -4,6 +4,7 @@
 #include "lib/utils/utils.h"
 #include "hal.h"
 #include "module.h"
+#include "params.h"
 
 class Mixer : public Module
 {

@@ -1,11 +1,31 @@
+#ifndef PARAMS_H_
+#define PARAMS_H_
+
 #include "lib/parameters/parameters.h"
 
 #define ATT_PTCH_KP "ATT_PTCH_KP"
 #define ATT_PTCH_KI "ATT_PTCH_KI"
 #define ATT_ROLL_KP "ATT_ROLL_KP"
 #define ATT_ROLL_KI "ATT_ROLL_KI"
+
 #define TKO_PTCH "TKO_PTCH"
+
+#define TECS_SPD_CRUISE "TECS_SPD_CRUISE"
 #define TECS_PTCH_LIM "TECS_PTCH_LIM"
+
+#define PWM_MIN_ELE "PWM_MIN_ELE"
+#define PWM_MIN_RUD "PWM_MIN_RUD"
+#define PWM_MIN_THR "PWM_MIN_THR"
+#define PWM_MAX_ELE "PWM_MAX_ELE"
+#define PWM_REV_ELE "PWM_REV_ELE"
+
+#define RC_MAX_DUTY "RC_MAX_DUTY"
+#define RC_MIN_DUTY "RC_MIN_DUTY"
+
+#define EKF_GNSS_VAR "EKF_GNSS_VAR"
+#define EKF_BARO_VAR "EKF_BARO_VAR"
+#define EKF_OF_MIN "EKF_OF_MIN"
+#define EKF_OF_MAX "EKF_OF_MAX"
 
 void init_params()
 {
@@ -25,7 +45,7 @@ void init_params()
 	param_add("LND_FLARE_SINK", PARAM_TYPE_FLOAT); // Target sink rate for flare, m/s
 
 	// TECS
-	param_add("TECS_SPD_CRUISE", PARAM_TYPE_FLOAT); // Cruise speed, m/s
+	param_add(TECS_SPD_CRUISE, PARAM_TYPE_FLOAT); // Cruise speed, m/s
 	param_add("TECS_SPD_LND", PARAM_TYPE_FLOAT); // Landing approach speed, m/s
 	param_add("TECS_MIN_SPD", PARAM_TYPE_FLOAT); // Minimum allowed airspeed, m/s
 	param_add("TECS_MAX_SPD", PARAM_TYPE_FLOAT); // Maximum allowed airspeed, m/s
@@ -44,19 +64,19 @@ void init_params()
 	param_add("NAV_ACC_RAD", PARAM_TYPE_FLOAT); // Waypoint acceptance radius, m
 
 	// Mixer
-	param_add("PWM_MIN_ELE", PARAM_TYPE_INT32); // Min duty elevator, us
-	param_add("PWM_MIN_RUD", PARAM_TYPE_INT32); // Min duty rudder, us
-	param_add("PWM_MIN_THR", PARAM_TYPE_INT32); // Min duty throttle, us
+	param_add(PWM_MIN_ELE, PARAM_TYPE_INT32); // Min duty elevator, us
+	param_add(PWM_MIN_RUD, PARAM_TYPE_INT32); // Min duty rudder, us
+	param_add(PWM_MIN_THR, PARAM_TYPE_INT32); // Min duty throttle, us
 	param_add("PWM_MIN_AUX1", PARAM_TYPE_INT32); // Min duty auxiliary channel 1, us
 	param_add("PWM_MIN_AUX2", PARAM_TYPE_INT32); // Min duty auxiliary channel 2, us
 	param_add("PWM_MIN_AUX3", PARAM_TYPE_INT32); // Min duty auxiliary channel 3, us
-	param_add("PWM_MAX_ELE", PARAM_TYPE_INT32); // Max duty elevator, us
+	param_add(PWM_MAX_ELE, PARAM_TYPE_INT32); // Max duty elevator, us
 	param_add("PWM_MAX_RUD", PARAM_TYPE_INT32); // Max duty rudder, us
 	param_add("PWM_MAX_THR", PARAM_TYPE_INT32); // Max duty throttle, us
 	param_add("PWM_MAX_AUX1", PARAM_TYPE_INT32); // Max duty auxiliary channel 1, us
 	param_add("PWM_MAX_AUX2", PARAM_TYPE_INT32); // Max duty auxiliary channel 2, us
 	param_add("PWM_MAX_AUX3", PARAM_TYPE_INT32); // Max duty auxiliary channel 3, us
-	param_add("PWM_REV_ELE", PARAM_TYPE_INT32); // Reverse elevator channel
+	param_add(PWM_REV_ELE, PARAM_TYPE_INT32); // Reverse elevator channel
 	param_add("PWM_REV_RUD", PARAM_TYPE_INT32); // Reverse rudder channel
 	param_add("PWM_REV_THR", PARAM_TYPE_INT32); // Reverse throttle channel
 	param_add("PWM_REV_AUX1", PARAM_TYPE_INT32); // Reverse auxiliary channel 1
@@ -64,8 +84,8 @@ void init_params()
 	param_add("PWM_REV_AUX3", PARAM_TYPE_INT32); // Reverse auxiliary channel 3
 
 	// RC transmitter input
-	param_add("RC_MAX_DUTY", PARAM_TYPE_INT32); // Stick input max duty, us
-	param_add("RC_MIN_DUTY", PARAM_TYPE_INT32); // Stick input min duty, us
+	param_add(RC_MAX_DUTY, PARAM_TYPE_INT32); // Stick input max duty, us
+	param_add(RC_MIN_DUTY, PARAM_TYPE_INT32); // Stick input min duty, us
 
 	// AHRS
 	param_add("AHRS_BETA_GAIN", PARAM_TYPE_FLOAT); // Madgwick filter beta gain
@@ -85,9 +105,11 @@ void init_params()
 	param_add("AHRS_SI_ZZ", PARAM_TYPE_FLOAT);
 
 	// Kalman filter
-	param_add("EKF_BARO_VAR", PARAM_TYPE_FLOAT); // Barometer variance
-	param_add("EKF_GNSS_VAR", PARAM_TYPE_FLOAT); // GNSS variance
+	param_add(EKF_BARO_VAR, PARAM_TYPE_FLOAT); // Barometer variance
+	param_add(EKF_GNSS_VAR, PARAM_TYPE_FLOAT); // GNSS variance
 	param_add("EKF_OF_ENABLE", PARAM_TYPE_INT32); // Enable optical flow sensor
-	param_add("EKF_OF_MIN", PARAM_TYPE_INT32); // Minimum accepted reading, pixels/sec
-	param_add("EKF_OF_MAX", PARAM_TYPE_INT32); // Maximum accepted reading, pixels/sec
+	param_add(EKF_OF_MIN, PARAM_TYPE_INT32); // Minimum accepted reading, pixels/sec
+	param_add(EKF_OF_MAX, PARAM_TYPE_INT32); // Maximum accepted reading, pixels/sec
 }
+
+#endif /* PARAMS_H_ */

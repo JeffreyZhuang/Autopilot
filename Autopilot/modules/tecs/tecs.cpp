@@ -92,7 +92,10 @@ void Tecs::update_takeoff()
 
 void Tecs::update_mission()
 {
-	calculate_energies(get_params()->tecs.aspd_cruise, _l1_data.d_setpoint, 1);
+	float cruise_spd;
+	param_get_float(param_find(TECS_SPD_CRUISE), &cruise_spd);
+
+	calculate_energies(cruise_spd, _l1_data.d_setpoint, 1);
 	_tecs_data.pitch_setpoint = control_energy_balance();
 	_tecs_data.thr_cmd = control_total_energy();
 }
