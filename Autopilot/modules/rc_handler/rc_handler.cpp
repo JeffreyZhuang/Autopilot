@@ -11,7 +11,7 @@ void Rc_handler::update()
 {
 	_modes_data = _modes_sub.get();
 
-	if (_modes_data.system_mode != System_mode::CONFIG)
+	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
 		int32_t min_duty = param_get_int32(RC_MIN_DUTY);
 		int32_t max_duty = param_get_int32(RC_MAX_DUTY);

@@ -1,19 +1,5 @@
 #include "sensors.h"
 
-//Update function:
-//if not config mode
-//if hitl enable
-// use hitl data
-// else
-// use sensor data
-
-// Have a struct in data bus for hitl data
-
-
-// Do calibration for IMU and mag
-
-// hal has bool read_imu(*ax, *ay, *az) and then sensors module publishes
-
 Sensors::Sensors(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _modes_sub(data_bus->modes_node),
@@ -51,7 +37,7 @@ void Sensors::update()
 
 	_modes_data = _modes_sub.get();
 
-	if (_modes_data.system_mode != System_mode::CONFIG)
+	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
 		uint64_t time = _hal->get_time_us();
 
@@ -89,6 +75,12 @@ void Sensors::update()
 			if (_hal->read_mag(&mx, &my, &mz))
 			{
 				_mag_pub.publish(Mag_data{mx, my, mz, time});
+			}
+
+			int16_t of_x, of_y;
+			if (_hal->read_optical_flow(&of_x, &of_y))
+			{
+
 			}
 		}
 	}

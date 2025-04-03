@@ -2,6 +2,7 @@
 #define MODULES_STORAGE_STORAGE_H_
 
 #include "lib/aplink/aplink.h"
+#include "lib/aplink/aplink_messages.h"
 #include "data_bus.h"
 #include "hal.h"
 #include "module.h"
@@ -25,6 +26,7 @@ private:
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<Time_data> _time_sub;
 	Subscriber<RC_data> _rc_sub;
+	Subscriber<AHRS_data> _ahrs_sub;
 
 	IMU_data _imu_data{};
 	Mag_data _mag_data{};
@@ -34,6 +36,9 @@ private:
 	Modes_data _modes_data{};
 	Time_data _time_data{};
 	RC_data _rc_data{};
+	AHRS_data _ahrs_data{};
+
+	aplink_msg msg;
 
 	void write();
 	void flush();

@@ -46,7 +46,6 @@ private:
 	Subscriber<HITL_output_data> _hitl_output_sub;
 
 	Publisher<Telem_data> _telem_pub;
-	Publisher<HITL_data> _hitl_pub;
 
 	Ctrl_cmd_data _ctrl_cmd_data;
 	AHRS_data _ahrs_data;
@@ -62,7 +61,6 @@ private:
 	Baro_data _baro_data;
 
 	aplink_msg telem_msg;
-	aplink_msg usb_msg;
 
 	TelemState _telem_state;
 	float last_vfr_hud_transmit_s = 0;

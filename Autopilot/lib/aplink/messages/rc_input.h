@@ -3,7 +3,7 @@
 
 #include "lib/aplink/aplink_types.h"
 
-struct aplink_rc_input
+struct __attribute__((packed)) aplink_rc_input
 {
 	uint8_t rudder; // Percentage
 	uint8_t elevator;

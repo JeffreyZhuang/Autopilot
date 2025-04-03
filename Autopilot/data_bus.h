@@ -119,7 +119,7 @@ struct L1_data
 
 struct Modes_data
 {
-	System_mode system_mode = System_mode::CONFIG;
+	System_mode system_mode = System_mode::LOAD_PARAMS;
 	Flight_mode flight_mode = Flight_mode::MANUAL;
 	Auto_mode auto_mode = Auto_mode::TAKEOFF;
 	Manual_mode manual_mode = Manual_mode::DIRECT;
@@ -148,7 +148,7 @@ struct Time_data
 {
 	float dt_s = 0;
 	uint32_t loop_iteration = 0;
-	uint64_t us_since_epoch = 0;
+	uint32_t unix_epoch_time = 0;
 	uint64_t timestamp = 0;
 };
 
@@ -267,8 +267,5 @@ struct Data_bus
    	Node<HITL_data> hitl_node;
    	Node<HITL_output_data> hitl_output_node;
 };
-
-// Each node has ID integer. Initialize the nodes in data bus in array. Function to get node given ID that does a search through array.
-// Then you input Node<Time_data>.ID for time data id, or something
 
 #endif /* DATA_BUS_H_ */

@@ -12,7 +12,8 @@ Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
 	  _commander(hal, data_bus),
 	  _tecs(hal, data_bus),
 	  _navigator(hal, data_bus),
-	  _sensors(hal, data_bus)
+	  _sensors(hal, data_bus),
+	  _usb_comm(hal, data_bus)
 {
 	_hal = hal;
 	create_params();
@@ -40,4 +41,5 @@ void Autopilot::main_task()
 	_mixer.update();
 	_storage.update();
 	_telem.update();
+	_usb_comm.update();
 }

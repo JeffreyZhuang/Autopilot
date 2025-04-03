@@ -24,7 +24,7 @@ void Position_estimator::update()
 	_time_data = _time_sub.get();
 	_telem_data = _telem_sub.get();
 
-	if (_modes_data.system_mode != System_mode::CONFIG)
+	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
 		switch (pos_estimator_state)
 		{

@@ -13,6 +13,7 @@
 #include "modules/tecs/tecs.h"
 #include "modules/telemetry/telem.h"
 #include "modules/sensors/sensors.h"
+#include "modules/usb_comm/usb_comm.h"
 #include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -39,6 +40,7 @@ private:
     Tecs _tecs;
     Navigator _navigator;
     Sensors _sensors;
+    USBComm _usb_comm;
 
     // Scheduler
     void main_task();

@@ -25,4 +25,14 @@ inline uint16_t aplink_vfr_hud_pack(aplink_vfr_hud vfr_hud, uint8_t packet[])
 	return aplink_pack(packet, buffer, sizeof(buffer), VFR_HUD_MSG_ID);
 }
 
+inline bool aplink_vfr_hud_msg_decode(aplink_msg* msg, aplink_vfr_hud* vfr_hud)
+{
+	if (msg->payload_len == sizeof(aplink_vfr_hud))
+	{
+		memcpy(vfr_hud, msg->payload, msg->payload_len);
+		return true;
+	}
+	return false;
+}
+
 #endif /* LIB_APLINK_MESSAGES_VFR_HUD_H_ */

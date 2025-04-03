@@ -20,7 +20,7 @@ void Mixer::update()
 
 	switch (_modes_data.system_mode)
 	{
-	case System_mode::CONFIG:
+	case System_mode::LOAD_PARAMS:
 		update_config();
 		break;
 	case System_mode::STARTUP:

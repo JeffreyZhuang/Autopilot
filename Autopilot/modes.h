@@ -3,9 +3,11 @@
 
 enum class System_mode
 {
-	CONFIG,
+	LOAD_PARAMS,
 	STARTUP,
-	FLIGHT
+	FLIGHT,
+	DOWNLOAD_LOGS,
+	CALIBRATION
 };
 
 enum class Flight_mode

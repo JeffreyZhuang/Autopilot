@@ -21,7 +21,7 @@ void AHRS::update()
 	_time_data = _time_sub.get();
 	_modes_data = _modes_sub.get();
 
-	if (_modes_data.system_mode != System_mode::CONFIG)
+	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
 		filter.set_dt(_time_data.dt_s);
 		filter.set_beta(param_get_float(AHRS_BETA_GAIN));

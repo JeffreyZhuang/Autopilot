@@ -5,7 +5,7 @@
 
 static constexpr uint8_t GPS_RAW_MSG_ID = 0;
 
-struct aplink_gps_raw
+struct __attribute__((packed)) aplink_gps_raw
 {
 	int32_t lat;
 	int32_t lon;

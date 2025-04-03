@@ -3,7 +3,7 @@
 
 #include "lib/aplink/aplink_types.h"
 
-struct aplink_time
+struct __attribute__((packed)) aplink_time
 {
 	uint64_t us_since_epoch;
 };

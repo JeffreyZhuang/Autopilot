@@ -9,7 +9,7 @@ Commander::Commander(HAL* hal, Data_bus* data_bus)
 	  _navigator_sub(data_bus->navigator_node),
 	  _modes_pub(data_bus->modes_node)
 {
-	_modes_data.system_mode = System_mode::CONFIG;
+	_modes_data.system_mode = System_mode::LOAD_PARAMS;
 	_modes_data.flight_mode = Flight_mode::MANUAL;
 	_modes_data.manual_mode = Manual_mode::DIRECT;
 	_modes_data.auto_mode = Auto_mode::TAKEOFF;
@@ -26,7 +26,7 @@ void Commander::update()
 
 	switch (_modes_data.system_mode)
 	{
-	case System_mode::CONFIG:
+	case System_mode::LOAD_PARAMS:
 		update_config();
 		break;
 	case System_mode::STARTUP:
@@ -34,6 +34,10 @@ void Commander::update()
 		break;
 	case System_mode::FLIGHT:
 		handle_flight_mode();
+		break;
+	case System_mode::DOWNLOAD_LOGS:
+		break;
+	case System_mode::CALIBRATION:
 		break;
 	}
 
