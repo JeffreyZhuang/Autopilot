@@ -2,9 +2,8 @@
 #define MODULES_NAVIGATOR_NAVIGATOR_H_
 
 #include <data_bus.h>
-#include "lib/parameters/parameters.h"
-#include "lib/utils/utils.h"
 #include "params.h"
+#include "lib/utils/utils.h"
 #include "hal.h"
 #include "module.h"
 

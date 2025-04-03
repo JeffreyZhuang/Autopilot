@@ -23,14 +23,14 @@ struct __attribute__((packed)) aplink_hitl_input
 	int16_t of_y;
 };
 
-uint16_t aplink_hitl_input_pack(aplink_hitl_input data, uint8_t packet[])
+inline uint16_t aplink_hitl_input_pack(aplink_hitl_input data, uint8_t packet[])
 {
 	uint8_t buffer[sizeof(data)];
 	memcpy(&buffer, &data, sizeof(buffer));
 	return aplink_pack(packet, buffer, sizeof(buffer), HITL_INPUT_MSG_ID);
 }
 
-bool aplink_hitl_input_msg_decode(aplink_msg* msg, aplink_hitl_input* hitl_input)
+inline bool aplink_hitl_input_msg_decode(aplink_msg* msg, aplink_hitl_input* hitl_input)
 {
 	if (msg->payload_len == sizeof(aplink_hitl_input))
 	{

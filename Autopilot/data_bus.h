@@ -218,7 +218,6 @@ private:
 	Node<T>& node;
 };
 
-// TODO: Rename handler to node
 template<typename T>
 class Subscriber
 {

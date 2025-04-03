@@ -14,7 +14,7 @@ struct __attribute__((packed)) aplink_waypoint
 	float alt;
 };
 
-bool aplink_waypoint_msg_decode(aplink_msg* msg, aplink_waypoint* waypoint)
+inline bool aplink_waypoint_msg_decode(aplink_msg* msg, aplink_waypoint* waypoint)
 {
 	if (msg->payload_len == sizeof(aplink_waypoint))
 	{

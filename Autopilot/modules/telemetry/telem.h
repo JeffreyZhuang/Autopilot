@@ -6,9 +6,9 @@
 #include "lib/utils/utils.h"
 #include "hal.h"
 #include "modes.h"
+#include "params.h"
 #include "constants.h"
 #include "module.h"
-#include "params.h"
 #include <cstdio>
 #include <cstring>
 

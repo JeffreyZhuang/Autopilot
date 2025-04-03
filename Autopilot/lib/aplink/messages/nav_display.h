@@ -12,7 +12,7 @@ struct __attribute__((packed)) aplink_nav_display
 	uint8_t wp_idx;
 };
 
-uint16_t aplink_nav_display_pack(aplink_nav_display nav_display, uint8_t packet[])
+inline uint16_t aplink_nav_display_pack(aplink_nav_display nav_display, uint8_t packet[])
 {
 	uint8_t buffer[sizeof(nav_display)];
 	memcpy(&buffer, &nav_display, sizeof(buffer));

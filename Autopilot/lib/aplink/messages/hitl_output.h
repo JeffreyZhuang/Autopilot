@@ -12,7 +12,7 @@ struct __attribute__((packed)) aplink_hitl_output
 	uint16_t thr_duty;
 };
 
-bool aplink_hitl_output_msg_decode(aplink_msg msg)
+inline bool aplink_hitl_output_msg_decode(aplink_msg msg)
 {
 	aplink_hitl_output hitl_output;
 

@@ -11,7 +11,7 @@ struct __attribute__((packed)) aplink_param_set
 	uint8_t data[4];
 };
 
-bool aplink_param_set_msg_decode(aplink_msg* msg, aplink_param_set* param_set)
+inline bool aplink_param_set_msg_decode(aplink_msg* msg, aplink_param_set* param_set)
 {
 	if (msg->payload_len == sizeof(param_set))
 	{

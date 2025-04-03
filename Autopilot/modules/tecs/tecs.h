@@ -1,13 +1,13 @@
 #ifndef LIB_TECS_TECS_H_
 #define LIB_TECS_TECS_H_
 
-#include <data_bus.h>
 #include "lib/pi_control/pi_control.h"
 #include "lib/utils/utils.h"
+#include <data_bus.h>
+#include "params.h"
 #include "constants.h"
 #include "module.h"
 #include <math.h>
-#include <params.h>
 
 class Tecs : public Module
 {

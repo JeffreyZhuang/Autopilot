@@ -13,7 +13,7 @@ struct aplink_gps_raw
 	bool fix;
 };
 
-uint16_t aplink_gps_raw_pack(aplink_gps_raw gps_raw, uint8_t packet[])
+inline uint16_t aplink_gps_raw_pack(aplink_gps_raw gps_raw, uint8_t packet[])
 {
 	uint8_t buffer[sizeof(gps_raw)];
 	memcpy(&buffer, &gps_raw, sizeof(buffer));

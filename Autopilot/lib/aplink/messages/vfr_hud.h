@@ -18,7 +18,7 @@ struct __attribute__((packed)) aplink_vfr_hud
 	uint8_t mode_id;
 };
 
-uint16_t aplink_vfr_hud_pack(aplink_vfr_hud vfr_hud, uint8_t packet[])
+inline uint16_t aplink_vfr_hud_pack(aplink_vfr_hud vfr_hud, uint8_t packet[])
 {
 	uint8_t buffer[sizeof(vfr_hud)];
 	memcpy(&buffer, &vfr_hud, sizeof(buffer));

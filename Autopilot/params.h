@@ -3,12 +3,12 @@
 
 #include "lib/parameters/parameters.h"
 
-// Generate all parameter declarations using the X-Macro pattern
-#define PARAM(name, type) extern const param_t name;
+// Declare all parameter handles
+#define PARAM(name, type) extern param_t name;
 #include "params_def.h"
 #undef PARAM
 
-// Initialize all parameters
-void init_params(void);
+// Function to initialize all parameters
+void create_params(void);
 
 #endif /* PARAMS_H_ */

@@ -1,6 +1,3 @@
-#ifndef PARAMS_DEF_H_
-#define PARAMS_DEF_H_
-
 // Attitude control
 PARAM(ATT_PTCH_KP, PARAM_TYPE_FLOAT) // Pitch control proportional gain
 PARAM(ATT_PTCH_KI, PARAM_TYPE_FLOAT) // Pitch control integral gain
@@ -82,5 +79,3 @@ PARAM(EKF_GNSS_VAR, PARAM_TYPE_FLOAT) // GNSS variance
 PARAM(EKF_OF_ENABLE, PARAM_TYPE_INT32) // Enable optical flow sensor
 PARAM(EKF_OF_MIN, PARAM_TYPE_INT32) // Minimum accepted reading, pixels/sec
 PARAM(EKF_OF_MAX, PARAM_TYPE_INT32) // Maximum accepted reading, pixels/sec
-
-#endif /* PARAMS_DEF_H_ */
