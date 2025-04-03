@@ -5,13 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 
-static constexpr uint8_t START_BYTE = 0xFE;
-
-static constexpr uint8_t HEADER_LEN = 3;
-static constexpr uint8_t FOOTER_LEN = 2;
-
-static constexpr uint16_t MAX_PACKET_LEN = MAX_PAYLOAD_LEN + HEADER_LEN + FOOTER_LEN;
-
 // Checksum configuration
 static constexpr uint16_t CRC16_POLY = 0x8005;  // CRC-16-IBM polynomial
 static constexpr uint16_t CRC16_INIT = 0xFFFF;  // Initial value

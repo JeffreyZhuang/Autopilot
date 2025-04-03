@@ -1,13 +1,11 @@
 #ifndef INC_SD_H_
 #define INC_SD_H_
 
-#include "Drivers/ring_buffer.h"
 #include <stdio.h>
 #include <string.h>
 
-static constexpr uint16_t BUFFER_SIZE = 4096;
-
 extern "C" {
+	#include "ring_buffer.h"
 	#include "fatfs.h"
 }
 

@@ -14,6 +14,7 @@
 #include "modules/telemetry/telem.h"
 #include "modules/sensors/sensors.h"
 #include "hal.h"
+#include "params.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <cstring>
