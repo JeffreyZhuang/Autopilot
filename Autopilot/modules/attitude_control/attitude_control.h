@@ -3,6 +3,7 @@
 
 #include "lib/pi_control/pi_control.h"
 #include "lib/utils/utils.h"
+#include "params.h"
 #include "hal.h"
 #include "module.h"
 #include <math.h>

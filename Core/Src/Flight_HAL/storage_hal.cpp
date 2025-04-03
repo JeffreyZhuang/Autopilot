@@ -1,13 +1,13 @@
 #include "Flight_HAL/flight_hal.h"
 
-void Flight_hal::init_logger()
+void Flight_hal::create_file(char name[], uint8_t len)
 {
-	_sd.initialize();
+	_sd.create_file(name, len);
 }
 
-void Flight_hal::write_storage_buffer(uint8_t* packet, uint16_t len)
+bool Flight_hal::write_storage(uint8_t byte)
 {
-	_sd.write(packet, len);
+	return _sd.write_byte(byte);
 }
 
 bool Flight_hal::read_storage(uint8_t* rx_buff, uint16_t size)

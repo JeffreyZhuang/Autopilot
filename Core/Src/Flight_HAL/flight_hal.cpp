@@ -22,7 +22,6 @@ void Flight_hal::init()
 	init_baro();
 	init_compass();
 	init_gnss();
-	init_logger();
 	init_telem();
 	init_servos();
 	init_of();

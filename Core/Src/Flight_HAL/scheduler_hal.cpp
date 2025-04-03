@@ -1,6 +1,6 @@
 #include "Flight_HAL/flight_hal.h"
 
-void Flight_hal::start_main_task(void (*task)(void*), void* arg)
+void Flight_hal::set_main_task(void (*task)(void*), void* arg)
 {
 	main_task = task;
 	main_task_arg = arg;
@@ -19,21 +19,15 @@ void Flight_hal::execute_main_task()
 	}
 }
 
-void Flight_hal::start_background_task(void (*task)(void*), void* arg)
-{
-	background_task = task;
-
-	while (1)
-	{
-		background_task(arg);
-	}
-}
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim == &htim7)
 	{
 		Flight_hal::main_task_callback();
+	}
+	else if (false) // Second interrupt
+	{
+		Flight_hal::sd_interrupt_callback();
 	}
 }
 

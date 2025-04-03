@@ -59,9 +59,10 @@ public:
 	static void of_dma_complete() { _instance->cxof.dma_complete(); }
 
 	// logger_hal.cpp
-	void init_logger();
-	void write_storage_buffer(uint8_t* packet, uint16_t len) override;
+	void create_file(char name[], uint8_t len) override;
+	bool write_storage(uint8_t byte) override;
 	bool read_storage(uint8_t* rx_buff, uint16_t size) override;
+	static void sd_interrupt_callback() { _instance->_sd.interrupt_callback(); }
 
 	// debug_hal.cpp
 	void debug_print(char * str) override;
@@ -97,8 +98,7 @@ public:
 	static void usb_rx_callback(uint8_t* Buf, uint32_t Len) { _instance->usb_stream.rx_callback(Buf, Len); };
 
 	// scheduler_hal.cpp
-	void start_main_task(void (*task)(void*), void* arg) override;
-	void start_background_task(void (*task)(void*), void* arg) override;
+	void set_main_task(void (*task)(void*), void* arg) override;
 	void execute_main_task();
 	static void main_task_callback() { _instance->execute_main_task(); }
 

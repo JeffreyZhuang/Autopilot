@@ -167,12 +167,12 @@ float L1_controller::calculate_altitude_setpoint(const float prev_north, const f
 	if (_navigator_data.waypoint_index == _telem_data.num_waypoints - 1)
 	{
 		// During landing, go directly to landing point
-		final_dist =  dist_prev_tgt;
+		final_dist = dist_prev_tgt;
 	}
 	else
 	{
 		// Reach altitude when within acceptance radius of next waypoint
-		final_dist = dist_prev_tgt - get_params()->navigator.min_dist_wp;
+		final_dist = dist_prev_tgt - param_get_float(param_find(NAV_ACC_RAD));
 	}
 
 	// Altitude first order hold
@@ -189,11 +189,11 @@ float L1_controller::calculate_roll_setpoint(float lateral_accel) const
 
 	if (_modes_data.auto_mode == Auto_mode::TAKEOFF)
 	{
-		return clamp(roll, -get_params()->takeoff.roll_lim, get_params()->takeoff.roll_lim);
+		return clamp(roll, -param_get_float(param_find(TKO_ROLL_LIM)), param_get_float(param_find(TKO_ROLL_LIM)));
 	}
 	else
 	{
-		return clamp(roll, -get_params()->l1_ctrl.roll_lim, get_params()->l1_ctrl.roll_lim);
+		return clamp(roll, -param_get_float(param_find(L1_ROLL_LIM)), param_get_float(param_find(L1_ROLL_LIM)));
 	}
 }
 

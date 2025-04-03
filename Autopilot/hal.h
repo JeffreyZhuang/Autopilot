@@ -25,7 +25,8 @@ public:
     virtual void get_rc_input(uint16_t duty[], uint8_t num_channels) = 0;
 
     // Logger
-    virtual void write_storage_buffer(uint8_t* packet, uint16_t len) = 0;
+    virtual void create_file(char name[], uint8_t len) = 0;
+    virtual bool write_storage(uint8_t byte) = 0;
     virtual bool read_storage(uint8_t* rx_buff, uint16_t size) = 0;
 
     // Debug
@@ -46,8 +47,7 @@ public:
     virtual uint64_t get_time_us() const = 0;
 
     // Scheduler
-    virtual void start_main_task(void (*task)(void*), void* arg) = 0;
-    virtual void start_background_task(void (*task)(void*), void* arg) = 0;
+    virtual void set_main_task(void (*task)(void*), void* arg) = 0;
 };
 
 #endif

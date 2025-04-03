@@ -7,52 +7,78 @@ static uint8_t data_buffer[RING_BUFFER_SIZE] = {0U};
 Sd::Sd()
 {
 	ring_buffer_setup(&ring_buffer, data_buffer, RING_BUFFER_SIZE);
+	f_mount(&fatfs, SDPath, 1);
 }
 
-void Sd::initialize()
+void Sd::create_file(char name[], uint8_t len)
 {
-	f_mount(&fatfs, SDPath, 1);
-
-	// Find next available file name
-	unsigned int file_idx = 1;
-	while (true)
+	if (sd_mode == SDMode::IDLE)
 	{
-		sprintf(filename, "log%u.bin", file_idx);
-		FILINFO fno;
-		if (f_stat(filename, &fno) != FR_OK)
-		{
-			// File does not exist, so we can use this name
-			break;
-		}
-		file_idx++;
-	}
-
-	FRESULT res = f_open(&fil, filename, FA_WRITE | FA_CREATE_NEW);
-	if (res != FR_OK)
-	{
-		printf("SD card failed. Make sure it is inserted.\n");
-		while (1);
+		strncpy(file_name, name, len);
+		sd_mode = SDMode::CREATE_FILE;
 	}
 }
 
 // Append byte to ring buffer
-void Sd::write_byte(uint8_t byte)
+bool Sd::write_byte(uint8_t byte)
 {
-	ring_buffer_write(&ring_buffer, byte);
+	if (sd_mode == SDMode::WRITE)
+	{
+		ring_buffer_write(&ring_buffer, byte);
+
+		return true;
+	}
+
+	return false;
+}
+
+bool Sd::read(uint8_t* rx_buff, uint16_t size)
+{
+	if (sd_mode == SDMode::WRITE)
+	{
+		sd_mode = SDMode::SWITCH_TO_READ;
+	}
+	else if (sd_mode == SDMode::READ)
+	{
+		UINT bytes_read;
+		FRESULT res = f_read(&fil, rx_buff, size, &bytes_read);
+		if (res != FR_OK)
+		{
+			printf("Error during read\n");
+		}
+
+		// Check if end of file is reached
+		return bytes_read == size;
+	}
+
+	return false;
 }
 
 // Empty ring buffer and sync to micro-sd card
 void Sd::interrupt_callback()
 {
-	if (!reading)
+	if (sd_mode == SDMode::CREATE_FILE)
 	{
+		FRESULT res = f_open(&fil, file_name, FA_WRITE | FA_CREATE_NEW);
+		if (res != FR_OK)
+		{
+			printf("SD card failed. Make sure it is inserted.\n");
+			while (1);
+		}
+
+		sd_mode = SDMode::WRITE;
+	}
+	else if (sd_mode == SDMode::WRITE)
+	{
+		// Empty ring buffer
 		uint8_t buffer[RING_BUFFER_SIZE];
 		uint16_t i = 0;
 		while (!ring_buffer_empty(&ring_buffer))
 		{
-			ring_buffer_read(&ring_buffer, buffer[i++]);
+			ring_buffer_read(&ring_buffer, &buffer[i++]);
 		}
 
+		// Save to storage
 		UINT bytes_written;
 		FRESULT res = f_write(&fil, buffer, i, &bytes_written);
 		if (res != FR_OK)
@@ -66,30 +92,16 @@ void Sd::interrupt_callback()
 			printf("Error during sync\n");
 		}
 	}
-}
-
-bool Sd::read(uint8_t* rx_buff, uint16_t size)
-{
-	if (!reading)
+	else if (sd_mode == SDMode::SWITCH_TO_READ)
 	{
-		reading = true;
-
 		f_close(&fil);
 
-		FRESULT res = f_open(&fil, filename, FA_READ);
+		FRESULT res = f_open(&fil, file_name, FA_READ);
 		if (res != FR_OK)
 		{
 			printf("Error when opening file\n");
 		}
-	}
 
-	UINT bytes_read;
-	FRESULT res = f_read(&fil, rx_buff, size, &bytes_read);
-	if (res != FR_OK)
-	{
-		printf("Error during read\n");
+		sd_mode = SDMode::READ;
 	}
-
-	// Check if end of file is reached
-	return bytes_read == size;
 }
