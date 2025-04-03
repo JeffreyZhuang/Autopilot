@@ -6,6 +6,7 @@
 #include "lib/moving_average/moving_avg.h"
 #include "hal.h"
 #include "module.h"
+#include "params.h"
 #include <stdio.h>
 #include <math.h>
 

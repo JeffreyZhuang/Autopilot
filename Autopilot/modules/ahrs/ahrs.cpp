@@ -24,7 +24,7 @@ void AHRS::update()
 	if (_modes_data.system_mode != System_mode::CONFIG)
 	{
 		filter.set_dt(_time_data.dt_s);
-		filter.set_beta(get_params()->ahrs.beta_gain);
+		filter.set_beta(param_get_float(AHRS_BETA_GAIN));
 
 		switch (ahrs_state)
 		{
@@ -119,7 +119,7 @@ void AHRS::publish_ahrs()
 		ahrs_state == Ahrs_state::RUNNING,
 		filter.getRoll(),
 		filter.getPitch(),
-		fmod(filter.getYaw() + get_params()->ahrs.mag_decl + 360.0f, 360.0f),
+		fmod(filter.getYaw() + param_get_float(AHRS_MAG_DECL) + 360.0f, 360.0f),
 		_hal->get_time_us()
 	});
 }
@@ -178,20 +178,20 @@ void AHRS::apply_compass_calibration(float mag_data[3])
 	float hi_cal[3];
 
 	// Apply hard-iron offsets
-	hi_cal[0] = mag_data[0] - get_params()->ahrs.hard_iron_x;
-	hi_cal[1] = mag_data[1] - get_params()->ahrs.hard_iron_y;
-	hi_cal[2] = mag_data[2] - get_params()->ahrs.hard_iron_z;
+	hi_cal[0] = mag_data[0] - param_get_float(AHRS_HI_X);
+	hi_cal[1] = mag_data[1] - param_get_float(AHRS_HI_Y);
+	hi_cal[2] = mag_data[2] - param_get_float(AHRS_HI_Z);
 
 	// Apply soft-iron scaling
-	mag_data[0] = (get_params()->ahrs.soft_iron_xx * hi_cal[0]) +
-				  (get_params()->ahrs.soft_iron_xy * hi_cal[1]) +
-				  (get_params()->ahrs.soft_iron_xz * hi_cal[2]);
-	mag_data[1] = (get_params()->ahrs.soft_iron_yx * hi_cal[0]) +
-				  (get_params()->ahrs.soft_iron_yy * hi_cal[1]) +
-				  (get_params()->ahrs.soft_iron_yz * hi_cal[2]);
-	mag_data[2] = (get_params()->ahrs.soft_iron_zx * hi_cal[0]) +
-				  (get_params()->ahrs.soft_iron_zy * hi_cal[1]) +
-				  (get_params()->ahrs.soft_iron_zz * hi_cal[2]);
+	mag_data[0] = (param_get_float(AHRS_SI_XX) * hi_cal[0]) +
+				  (param_get_float(AHRS_SI_XY) * hi_cal[1]) +
+				  (param_get_float(AHRS_SI_XZ) * hi_cal[2]);
+	mag_data[1] = (param_get_float(AHRS_SI_YX) * hi_cal[0]) +
+				  (param_get_float(AHRS_SI_YY) * hi_cal[1]) +
+				  (param_get_float(AHRS_SI_YZ) * hi_cal[2]);
+	mag_data[2] = (param_get_float(AHRS_SI_ZX) * hi_cal[0]) +
+				  (param_get_float(AHRS_SI_ZY) * hi_cal[1]) +
+				  (param_get_float(AHRS_SI_ZZ) * hi_cal[2]);
 }
 
 bool AHRS::is_accel_reliable()
@@ -201,5 +201,5 @@ bool AHRS::is_accel_reliable()
 								  powf(_imu_data.az, 2));
 
 	// Assuming 1g reference
-	return fabs(accel_magnitude - 1.0f) < get_params()->ahrs.acc_max;
+	return fabs(accel_magnitude - 1.0f) < param_get_float(AHRS_ACC_MAX);
 }

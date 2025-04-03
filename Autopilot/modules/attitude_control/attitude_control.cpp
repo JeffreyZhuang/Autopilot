@@ -91,8 +91,8 @@ void Attitude_control::control_roll_ptch()
 	_ctrl_cmd_data.rud_cmd = roll_controller.get_output(
 		_ahrs_data.roll,
 		_l1_data.roll_setpoint,
-		param_get_float(param_find(ATT_ROLL_KP)),
-		param_get_float(param_find(ATT_ROLL_KI)),
+		param_get_float(ATT_ROLL_KP),
+		param_get_float(ATT_ROLL_KI),
 		1,
 		-1,
 		1,
@@ -103,8 +103,8 @@ void Attitude_control::control_roll_ptch()
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
 		_ahrs_data.pitch,
 		_tecs_data.pitch_setpoint,
-		param_get_float(param_find(ATT_PTCH_KP)),
-		param_get_float(param_find(ATT_PTCH_KI)),
+		param_get_float(ATT_PTCH_KP),
+		param_get_float(ATT_PTCH_KI),
 		1,
 		-1,
 		1,
@@ -118,7 +118,7 @@ void Attitude_control::control_roll_ptch_no_integral()
 	_ctrl_cmd_data.rud_cmd = roll_controller.get_output(
 		_ahrs_data.roll,
 		_l1_data.roll_setpoint,
-		param_get_float(param_find(ATT_ROLL_KP)),
+		param_get_float(ATT_ROLL_KP),
 		0,
 		0,
 		-1,
@@ -130,7 +130,7 @@ void Attitude_control::control_roll_ptch_no_integral()
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
 		_ahrs_data.pitch,
 		_tecs_data.pitch_setpoint,
-		param_get_float(param_find(ATT_PTCH_KP)),
+		param_get_float(ATT_PTCH_KP),
 		0,
 		0,
 		-1,

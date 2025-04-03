@@ -21,8 +21,6 @@ private:
 
 	Publisher<Navigator_data> _navigator_pub;
 
-	param_t param_acceptance_radius;
-
 	uint8_t _curr_wp_idx = 1;
 };
 
