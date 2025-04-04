@@ -1,10 +1,10 @@
 #ifndef AUTOPILOT_H
 #define AUTOPILOT_H
 
+#include <modules/position_control/l1_controller.h>
 #include "modules/ahrs/ahrs.h"
 #include "modules/attitude_control/attitude_control.h"
 #include "modules/commander/commander.h"
-#include "modules/l1_controller/l1_controller.h"
 #include "modules/mixer/mixer.h"
 #include "modules/navigator/navigator.h"
 #include "modules/position_estimator/position_estimator.h"

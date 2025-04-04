@@ -88,13 +88,6 @@ struct Ctrl_cmd_data
 	uint64_t timestamp = 0;
 };
 
-struct TECS_data
-{
-	float pitch_setpoint = 0;
-	float thr_cmd = 0;
-	uint64_t timestamp = 0;
-};
-
 struct Telem_data
 {
 	Waypoint waypoints[256];
@@ -109,6 +102,15 @@ struct L1_data
 	float d_setpoint = 0;
 	float roll_setpoint = 0;
 	uint64_t timestamp = 0;
+};
+
+struct Pos_ctrl_data
+{
+	float d_setpoint;
+	float pitch_setpoint;
+	float roll_setpoint;
+	float throttle_setpoint;
+	uint64_t timestamp;
 };
 
 struct Modes_data

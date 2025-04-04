@@ -1,4 +1,4 @@
-#include "modules/l1_controller/l1_controller.h"
+#include <modules/position_control/l1_controller.h>
 
 // S. Park, J. Deyst, and J. P. How, "A New Nonlinear Guidance Logic for Trajectory Tracking,"
 // Proceedings of the AIAA Guidance, Navigation and Control
@@ -112,8 +112,8 @@ void L1_controller::update_mission()
 	// Update roll and altitude setpoints
 	_l1_data.roll_setpoint = calculate_roll_setpoint(lateral_accel);
 	_l1_data.d_setpoint = calculate_altitude_setpoint(prev_north, prev_east,
-															  tgt_north, tgt_east,
-															  prev_wp, target_wp);
+													  tgt_north, tgt_east,
+													  prev_wp, target_wp);
 }
 
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
@@ -176,8 +176,7 @@ float L1_controller::calculate_altitude_setpoint(const float prev_north, const f
 	}
 
 	// Altitude first order hold
-	return lerp(
-		initial_dist, prev_wp.alt,
+	return lerp(initial_dist, prev_wp.alt,
 		final_dist, target_wp.alt,
 		clamp(along_track_dist, initial_dist, final_dist)
 	);
