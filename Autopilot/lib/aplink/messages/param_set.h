@@ -8,7 +8,11 @@ static constexpr uint8_t PARAM_SET_MSG_ID = 5;
 struct __attribute__((packed)) aplink_param_set
 {
 	char param_id[16];
-	uint8_t data[4];
+	union
+	{
+		float f;
+		int32_t i;
+	};
 };
 
 DECLARE_APLINK_MESSAGE(aplink_param_set, PARAM_SET_MSG_ID);

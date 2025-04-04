@@ -12,6 +12,7 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 	  _tecs_sub(data_bus->tecs_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
 	  _baro_sub(data_bus->baro_node),
+	  _imu_sub(data_bus->imu_node),
 	  _telem_pub(data_bus->telem_node)
 {
 }
@@ -21,6 +22,10 @@ void Telem::update()
 	if (_modes_data.system_mode == System_mode::CALIBRATION)
 	{
 		update_calibration();
+	}
+	else if (_modes_data.system_mode == System_mode::DOWNLOAD_LOGS)
+	{
+		update_download_logs();
 	}
 	else
 	{
@@ -56,18 +61,12 @@ void Telem::update_load_params()
 			}
 			else if (param_get_type(param) == PARAM_TYPE_FLOAT)
 			{
-				float value;
-				memcpy(&value, &param_set.data, sizeof(value));
-				param_set_float(param, value);
-
+				param_set_float(param, param_set.f);
 				printf("Telem params set\n");
 			}
 			else if (param_get_type(param) == PARAM_TYPE_INT32)
 			{
-				int32_t value;
-				memcpy(&value, &param_set.data, sizeof(value));
-				param_set_int32(param, value);
-
+				param_set_int32(param, param_set.i);
 				printf("Telem params set\n");
 			}
 		}
@@ -89,18 +88,25 @@ void Telem::update_load_waypoints()
 			aplink_waypoint waypoint_payload;
 			aplink_waypoint_msg_decode(&telem_msg, &waypoint_payload);
 
-			_telem_data.num_waypoints = waypoint_payload.total_waypoints;
-			_telem_data.waypoints[waypoint_payload.waypoint_index] = Waypoint{
-				(double)waypoint_payload.lat * 1E-7, (double)waypoint_payload.lon * 1E-7,
-				(float)waypoint_payload.alt * 1E-1f
-			};
-
-			if (waypoint_payload.waypoint_index == waypoint_payload.total_waypoints - 1)
+			if (waypoint_payload.waypoint_index == _telem_data.num_waypoints)
 			{
-				_telem_data.waypoints_loaded = true;
-			}
+				_telem_data.waypoints[_telem_data.num_waypoints++] = Waypoint{
+					(double)waypoint_payload.lat * 1E-7, (double)waypoint_payload.lon * 1E-7,
+					(float)waypoint_payload.alt * 1E-1f
+				};
 
-			printf("Telem waypoint set\n");
+				if (waypoint_payload.waypoint_index == _telem_data.num_waypoints - 1)
+				{
+					_telem_data.waypoints_loaded = true;
+					_telem_state = TelemState::SEND_TELEMETRY;
+				}
+
+				printf("Telem waypoint set\n");
+			}
+			else
+			{
+				printf("Missed waypoint\n");
+			}
 		}
 	}
 }
@@ -109,7 +115,7 @@ void Telem::update_send_telemetry()
 {
 	float current_time_s =_hal->get_time_us() * US_TO_S;
 
-	if (current_time_s - last_vfr_hud_transmit_s > VFR_HUD_DT)
+	if (current_time_s - last_vfr_hud_transmit_s >= VFR_HUD_DT)
 	{
 		last_vfr_hud_transmit_s = current_time_s;
 
@@ -124,7 +130,7 @@ void Telem::update_send_telemetry()
 		_hal->transmit_telem(packet, len);
 	}
 
-	if (current_time_s - last_nav_display_transmit_s > NAV_DISPLAY_DT)
+	if (current_time_s - last_nav_display_transmit_s >= NAV_DISPLAY_DT)
 	{
 		last_nav_display_transmit_s = current_time_s;
 
@@ -138,7 +144,7 @@ void Telem::update_send_telemetry()
 		_hal->transmit_telem(packet, len);
 	}
 
-	if (current_time_s - last_gps_raw_transmit_s > GPS_RAW_DT)
+	if (current_time_s - last_gps_raw_transmit_s >= GPS_RAW_DT)
 	{
 		last_gps_raw_transmit_s = current_time_s;
 
@@ -157,7 +163,27 @@ void Telem::update_send_telemetry()
 
 void Telem::update_calibration()
 {
+	float current_time_s =_hal->get_time_us() * US_TO_S;
 
+	if (current_time_s - last_cal_sensors_transmit_s >= CAL_SENSORS_DT)
+	{
+		last_cal_sensors_transmit_s = current_time_s;
+
+		aplink_cal_sensors cal_sensors;
+		cal_sensors.ax = _imu_data.ax;
+		cal_sensors.ay = _imu_data.ay;
+		cal_sensors.az = _imu_data.az;
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_cal_sensors_pack(cal_sensors, packet);
+
+		_hal->transmit_telem(packet, len);
+	}
+}
+
+void Telem::update_download_logs()
+{
+	// Read from storage sub
 }
 
 bool Telem::read_telem(aplink_msg* msg)

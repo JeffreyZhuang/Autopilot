@@ -97,7 +97,7 @@ struct TECS_data
 
 struct Telem_data
 {
-	Waypoint waypoints[100]; // 100 max waypoints
+	Waypoint waypoints[256];
 	uint8_t num_waypoints = 0;
 	bool waypoints_loaded = false;
 	bool hitl_enable = false;

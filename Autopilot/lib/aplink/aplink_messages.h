@@ -3,8 +3,10 @@
 
 #include "aplink_types.h"
 
-#include "messages/command.h"
+#include "messages/calib_cmd.h"
+#include "messages/cal_sensors.h"
 #include "messages/gps_raw.h"
+#include "messages/hitl_cmd.h"
 #include "messages/hitl_input.h"
 #include "messages/hitl_output.h"
 #include "messages/nav_display.h"

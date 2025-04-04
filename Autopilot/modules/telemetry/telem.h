@@ -13,10 +13,10 @@
 #include <cstring>
 
 // Rate to transmit messages
-// Move this to parameters
 static constexpr float VFR_HUD_DT = 0.03;
 static constexpr float NAV_DISPLAY_DT = 0.1;
 static constexpr float GPS_RAW_DT = 0.2;
+static constexpr float CAL_SENSORS_DT = 0.1;
 
 enum class TelemState
 {
@@ -43,6 +43,7 @@ private:
 	Subscriber<TECS_data> _tecs_sub;
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 	Subscriber<Baro_data> _baro_sub;
+	Subscriber<IMU_data> _imu_sub;
 
 	Publisher<Telem_data> _telem_pub;
 
@@ -57,6 +58,7 @@ private:
 	Power_data _power_data;
 	TECS_data _tecs_data;
 	Baro_data _baro_data;
+	IMU_data _imu_data;
 
 	aplink_msg telem_msg;
 
@@ -64,11 +66,13 @@ private:
 	float last_vfr_hud_transmit_s = 0;
 	float last_nav_display_transmit_s = 0;
 	float last_gps_raw_transmit_s = 0;
+	float last_cal_sensors_transmit_s = 0;
 
 	void update_load_params();
 	void update_load_waypoints();
 	void update_send_telemetry();
 	void update_calibration();
+	void update_download_logs();
 
 	bool read_telem(aplink_msg* msg);
 	void read_usb();
