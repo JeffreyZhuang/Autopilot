@@ -57,7 +57,7 @@ void Storage::write()
 	gps_raw.sats = _gnss_data.sats;
 	gps_raw.fix = _gnss_data.fix;
 	uint8_t gps_raw_buff[MAX_PACKET_LEN];
-	uint16_t gps_raw_len = aplink_aplink_gps_raw_pack(gps_raw, gps_raw_buff);
+	uint16_t gps_raw_len = aplink_gps_raw_pack(gps_raw, gps_raw_buff);
 	for (int i = 0; i < gps_raw_len; i++)
 	{
 		_hal->write_storage(gps_raw_buff[i]);

@@ -47,7 +47,7 @@ void Telem::update_load_params()
 			telem_msg.payload_len == sizeof(aplink_param_set))
 		{
 			aplink_param_set param_set;
-			aplink_param_set_msg_decode(&telem_msg, &param_set);
+			aplink_param_set_decode(&telem_msg, &param_set);
 
 			param_t param = param_find(param_set.param_id);
 			if (param == PARAM_INVALID)

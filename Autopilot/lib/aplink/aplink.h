@@ -35,10 +35,10 @@ inline bool aplink_msg_decode(aplink_msg* msg, T* output, uint8_t expected_msg_i
 
 // Macro to declare message-specific functions
 #define DECLARE_APLINK_MESSAGE(MSG_TYPE, MSG_ID) \
-    inline uint16_t aplink_##MSG_TYPE##_pack(const MSG_TYPE& data, uint8_t packet[]) { \
+    inline uint16_t MSG_TYPE##_pack(const MSG_TYPE& data, uint8_t packet[]) { \
         return aplink_msg_pack(data, packet, MSG_ID); \
     } \
-    inline bool aplink_##MSG_TYPE##_decode(aplink_msg* msg, MSG_TYPE* output) { \
+    inline bool MSG_TYPE##_decode(aplink_msg* msg, MSG_TYPE* output) { \
         return aplink_msg_decode(msg, output, MSG_ID); \
     }
 

@@ -12,12 +12,6 @@ struct __attribute__((packed)) aplink_nav_display
 	uint8_t wp_idx;
 };
 
-inline uint16_t aplink_nav_display_pack(aplink_nav_display nav_display, uint8_t packet[])
-{
-	uint8_t buffer[sizeof(nav_display)];
-	memcpy(&buffer, &nav_display, sizeof(buffer));
-	return aplink_pack(packet, buffer, sizeof(buffer), NAV_DISPLAY_MSG_ID);
-}
-
+DECLARE_APLINK_MESSAGE(aplink_nav_display, NAV_DISPLAY_MSG_ID);
 
 #endif /* LIB_APLINK_MESSAGES_NAV_DISPLAY_H_ */

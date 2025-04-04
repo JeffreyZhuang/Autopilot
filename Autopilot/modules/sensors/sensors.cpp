@@ -58,6 +58,13 @@ void Sensors::update()
 			if (_hal->read_imu(&ax, &ay, &az, &gx, &gy, &gz))
 			{
 				// Apply IMU calibration
+				gx -= param_get_float(GYR_OFF_X);
+				gy -= param_get_float(GYR_OFF_Y);
+				gz -= param_get_float(GYR_OFF_Z);
+
+				ax -= param_get_float(ACC_OFF_X);
+				ay -= param_get_float(ACC_OFF_Y);
+				az -= param_get_float(ACC_OFF_Z);
 
 				_imu_pub.publish(IMU_data{gx, gy, gz, ax, ay, az, time});
 			}
@@ -74,6 +81,25 @@ void Sensors::update()
 			float mx, my, mz;
 			if (_hal->read_mag(&mx, &my, &mz))
 			{
+				// Storage for hard-iron calibrated magnetometer data
+				float hi_cal[3];
+
+				// Apply hard-iron offsets
+				hi_cal[0] = mx - param_get_float(AHRS_HI_X);
+				hi_cal[1] = my - param_get_float(AHRS_HI_Y);
+				hi_cal[2] = mz - param_get_float(AHRS_HI_Z);
+
+				// Apply soft-iron scaling
+				mx = (param_get_float(AHRS_SI_XX) * hi_cal[0]) +
+					 (param_get_float(AHRS_SI_XY) * hi_cal[1]) +
+					 (param_get_float(AHRS_SI_XZ) * hi_cal[2]);
+				my = (param_get_float(AHRS_SI_YX) * hi_cal[0]) +
+					 (param_get_float(AHRS_SI_YY) * hi_cal[1]) +
+					 (param_get_float(AHRS_SI_YZ) * hi_cal[2]);
+				mz = (param_get_float(AHRS_SI_ZX) * hi_cal[0]) +
+					 (param_get_float(AHRS_SI_ZY) * hi_cal[1]) +
+					 (param_get_float(AHRS_SI_ZZ) * hi_cal[2]);
+
 				_mag_pub.publish(Mag_data{mx, my, mz, time});
 			}
 

@@ -57,7 +57,7 @@ bool USBComm::read()
 void USBComm::read_hitl()
 {
 	aplink_hitl_input hitl_input;
-	aplink_hitl_input_msg_decode(&msg, &hitl_input);
+	aplink_hitl_input_decode(&msg, &hitl_input);
 
 	HITL_data hitl_data;
 	hitl_data.imu_ax = hitl_input.imu_ax;

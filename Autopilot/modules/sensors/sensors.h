@@ -3,6 +3,7 @@
 
 #include "module.h"
 #include "constants.h"
+#include "params.h"
 
 class Sensors : Module
 {

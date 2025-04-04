@@ -11,14 +11,6 @@ struct __attribute__((packed)) aplink_param_set
 	uint8_t data[4];
 };
 
-inline bool aplink_param_set_msg_decode(aplink_msg* msg, aplink_param_set* param_set)
-{
-	if (msg->payload_len == sizeof(param_set))
-	{
-		memcpy(param_set, msg->payload, msg->payload_len);
-		return true;
-	}
-	return false;
-}
+DECLARE_APLINK_MESSAGE(aplink_param_set, PARAM_SET_MSG_ID);
 
 #endif /* LIB_APLINK_MESSAGES_PARAM_SET_H_ */

@@ -65,7 +65,6 @@ private:
 	void update_imu_mag();
 	void set_initial_angles();
 	void publish_ahrs();
-	void apply_compass_calibration(float mag_data[3]);
 	bool is_accel_reliable();
 };
 

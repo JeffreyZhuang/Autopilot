@@ -45,15 +45,12 @@ void AHRS::update_initialization()
 		_imu_data = _imu_sub.get();
 		_mag_data = _mag_sub.get();
 
-		float mag_calib[3] = {_mag_data.x, _mag_data.y, _mag_data.z};
-		apply_compass_calibration(mag_calib);
-
 		avg_ax.add(_imu_data.ax);
 		avg_ay.add(_imu_data.ay);
 		avg_az.add(_imu_data.az);
-		avg_mx.add(mag_calib[0]);
-		avg_my.add(mag_calib[1]);
-		avg_mz.add(mag_calib[2]);
+		avg_mx.add(_mag_data.x);
+		avg_my.add(_mag_data.y);
+		avg_mz.add(_mag_data.z);
 
 		if (avg_ax.getFilled())
 		{
@@ -98,13 +95,9 @@ void AHRS::update_imu()
 
 void AHRS::update_imu_mag()
 {
-	float mag_calib[3] = {_mag_data.x, _mag_data.y, _mag_data.z};
-
-	apply_compass_calibration(mag_calib);
-
 	filter.update(_imu_data.gx, _imu_data.gy, _imu_data.gz,
 				  -_imu_data.ax, -_imu_data.ay, -_imu_data.az,
-				  -mag_calib[0], -mag_calib[1], -mag_calib[2]);
+				  -_mag_data.x, -_mag_data.y, -_mag_data.z);
 }
 
 void AHRS::update_gyro()
@@ -170,28 +163,6 @@ void AHRS::set_initial_angles()
 	}
 
 	filter.set_state(q0, q1, q2, q3); // Set initial state
-}
-
-void AHRS::apply_compass_calibration(float mag_data[3])
-{
-	// Storage for hard-iron calibrated magnetometer data
-	float hi_cal[3];
-
-	// Apply hard-iron offsets
-	hi_cal[0] = mag_data[0] - param_get_float(AHRS_HI_X);
-	hi_cal[1] = mag_data[1] - param_get_float(AHRS_HI_Y);
-	hi_cal[2] = mag_data[2] - param_get_float(AHRS_HI_Z);
-
-	// Apply soft-iron scaling
-	mag_data[0] = (param_get_float(AHRS_SI_XX) * hi_cal[0]) +
-				  (param_get_float(AHRS_SI_XY) * hi_cal[1]) +
-				  (param_get_float(AHRS_SI_XZ) * hi_cal[2]);
-	mag_data[1] = (param_get_float(AHRS_SI_YX) * hi_cal[0]) +
-				  (param_get_float(AHRS_SI_YY) * hi_cal[1]) +
-				  (param_get_float(AHRS_SI_YZ) * hi_cal[2]);
-	mag_data[2] = (param_get_float(AHRS_SI_ZX) * hi_cal[0]) +
-				  (param_get_float(AHRS_SI_ZY) * hi_cal[1]) +
-				  (param_get_float(AHRS_SI_ZZ) * hi_cal[2]);
 }
 
 bool AHRS::is_accel_reliable()
