@@ -37,7 +37,16 @@ void Sensors::update()
 
 	_modes_data = _modes_sub.get();
 
-	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
+	if (_modes_data.system_mode == System_mode::LOAD_PARAMS)
+	{
+
+	}
+	else if (_modes_data.system_mode == System_mode::CALIBRATION)
+	{
+
+	}
+	else if (_modes_data.system_mode == System_mode::FLIGHT ||
+			 _modes_data.system_mode == System_mode::STARTUP)
 	{
 		uint64_t time = _hal->get_time_us();
 
@@ -72,10 +81,7 @@ void Sensors::update()
 			float baro_alt;
 			if (_hal->read_baro(&baro_alt))
 			{
-				if (baro_alt < 100000)
-				{
-					_baro_pub.publish(Baro_data{baro_alt, time});
-				}
+				_baro_pub.publish(Baro_data{baro_alt, time});
 			}
 
 			float mx, my, mz;

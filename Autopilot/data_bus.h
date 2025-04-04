@@ -3,14 +3,8 @@
 
 #include <lib/aplink/aplink.h>
 #include "modes.h"
+#include "custom_types.h"
 #include <stdint.h>
-
-struct Waypoint
-{
-	double lat;
-	double lon;
-	float alt;
-};
 
 struct IMU_data
 {
@@ -179,19 +173,6 @@ struct HITL_output_data
 	uint64_t timestamp = 0;
 };
 
-struct Cal_sensors
-{
-	float ax;
-	float ay;
-	float az;
-	float gx;
-	float gy;
-	float gz;
-	float mx;
-	float my;
-	float mz;
-};
-
 template<typename T>
 class Node
 {
@@ -279,7 +260,6 @@ struct Data_bus
    	Node<Navigator_data> navigator_node;
    	Node<HITL_data> hitl_node;
    	Node<HITL_output_data> hitl_output_node;
-   	Node<Cal_sensors> cal_sensors;
 };
 
 #endif /* DATA_BUS_H_ */
