@@ -92,6 +92,13 @@ int param_set_float(param_t param, float val) {
     return 0;
 }
 
+param_type_t param_get_type(param_t param) {
+    if (param >= param_count) {
+        return PARAM_TYPE_UNKNOWN;
+    }
+    return param_table[param].type;
+}
+
 // --- Check if all parameters have been set ---
 bool param_all_set(void) {
     for (param_t i = 0; i < param_count; i++) {

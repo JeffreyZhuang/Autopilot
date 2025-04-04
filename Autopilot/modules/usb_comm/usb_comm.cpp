@@ -20,11 +20,25 @@ USBComm::USBComm(HAL* hal, Data_bus* data_bus)
 
 void USBComm::update()
 {
-	read();
-	transmit();
+	if (read())
+	{
+		if (msg.msg_id ==  HITL_INPUT_MSG_ID)
+		{
+			read_hitl();
+		}
+	}
+
+	if (_telem_data.hitl_enable)
+	{
+		transmit_hitl();
+	}
+	else
+	{
+		transmit_debug();
+	}
 }
 
-void USBComm::read()
+bool USBComm::read()
 {
 	while (!_hal->usb_buffer_empty())
 	{
@@ -33,60 +47,57 @@ void USBComm::read()
 
 		if (aplink_parse_byte(&msg, byte))
 		{
-			switch (msg.msg_id)
-			{
-			case HITL_INPUT_MSG_ID:
-				aplink_hitl_input hitl_input;
-				aplink_hitl_input_msg_decode(&msg, &hitl_input);
-
-				HITL_data hitl_data;
-				hitl_data.imu_ax = hitl_input.imu_ax;
-				hitl_data.imu_ay = hitl_input.imu_ay;
-				hitl_data.imu_az = hitl_input.imu_az;
-				hitl_data.imu_gx = hitl_input.imu_gx;
-				hitl_data.imu_gy = hitl_input.imu_gy;
-				hitl_data.imu_gz = hitl_input.imu_gz;
-
-				_hitl_pub.publish(hitl_data);
-
-				break;
-			}
+			return true;
 		}
 	}
+
+	return false;
 }
 
-void USBComm::transmit()
+void USBComm::read_hitl()
 {
-	if (_telem_data.hitl_enable)
-	{
-		HITL_output_data hitl_output_data = _hitl_output_sub.get();
+	aplink_hitl_input hitl_input;
+	aplink_hitl_input_msg_decode(&msg, &hitl_input);
 
-		// Send to usb with autopilot link protocol
-	}
-	else
-	{
-		// Send CSV to web serial plotter
+	HITL_data hitl_data;
+	hitl_data.imu_ax = hitl_input.imu_ax;
+	hitl_data.imu_ay = hitl_input.imu_ay;
+	hitl_data.imu_az = hitl_input.imu_az;
+	hitl_data.imu_gx = hitl_input.imu_gx;
+	hitl_data.imu_gy = hitl_input.imu_gy;
+	hitl_data.imu_gz = hitl_input.imu_gz;
 
-		double gnss_north_meters, gnss_east_meters;
-		lat_lon_to_meters(_telem_data.waypoints[0].lat,
-						  _telem_data.waypoints[0].lon,
-						  _gnss_data.lat, _gnss_data.lon,
-						  &gnss_north_meters, &gnss_east_meters);
+	_hitl_pub.publish(hitl_data);
+}
 
-		char tx_buff[200];
-		sprintf(tx_buff,
-				"%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f\n",
-				_pos_est_data.vel_n,
-				_pos_est_data.vel_e,
-				_pos_est_data.vel_d,
-				_pos_est_data.pos_n,
-				_pos_est_data.pos_e,
-				_pos_est_data.pos_d,
-				gnss_north_meters,
-				gnss_east_meters,
-				-(_baro_data.alt - _pos_est_data.baro_offset),
-				_ahrs_data.yaw);
+void USBComm::transmit_hitl()
+{
+	HITL_output_data hitl_output_data = _hitl_output_sub.get();
 
-		_hal->usb_transmit((uint8_t*)tx_buff, strlen(tx_buff));
-	}
+	aplink_hitl_output hitl_output;
+	hitl_output.ele_duty = hitl_output_data.ele_duty;
+	hitl_output.rud_duty = hitl_output_data.rud_duty;
+	hitl_output.thr_duty = hitl_output_data.thr_duty;
+
+	uint8_t buffer[MAX_PACKET_LEN];
+	uint16_t size = aplink_hitl_output_pack(hitl_output, buffer);
+
+	_hal->usb_transmit(buffer, size);
+}
+
+void USBComm::transmit_debug()
+{
+	// Send comma separated values to web serial plotter for debug
+	double gnss_north_meters, gnss_east_meters;
+	lat_lon_to_meters(_telem_data.waypoints[0].lat, _telem_data.waypoints[0].lon,
+					  _gnss_data.lat, _gnss_data.lon, &gnss_north_meters, &gnss_east_meters);
+
+	char tx_buff[200];
+	sprintf(tx_buff, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f\n",
+			_pos_est_data.vel_n, _pos_est_data.vel_e, _pos_est_data.vel_d,
+			_pos_est_data.pos_n, _pos_est_data.pos_e, _pos_est_data.pos_d,
+			gnss_north_meters, gnss_east_meters, -(_baro_data.alt - _pos_est_data.baro_offset),
+			_ahrs_data.yaw);
+
+	_hal->usb_transmit((uint8_t*)tx_buff, strlen(tx_buff));
 }

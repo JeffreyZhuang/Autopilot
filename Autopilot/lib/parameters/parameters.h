@@ -32,6 +32,9 @@ float param_get_float(param_t param);
 int param_set_int32(param_t param, int32_t val);
 int param_set_float(param_t param, float val);
 
+// Get parameter type
+param_type_t param_get_type(param_t param);
+
 // Check if all parameters have been set
 bool param_all_set(void);
 

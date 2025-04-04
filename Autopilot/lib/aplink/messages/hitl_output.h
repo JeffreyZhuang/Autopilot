@@ -12,10 +12,12 @@ struct __attribute__((packed)) aplink_hitl_output
 	uint16_t thr_duty;
 };
 
-inline bool aplink_hitl_output_msg_decode(aplink_msg msg)
+// Maybe seperate function because scaling factors
+inline uint16_t aplink_hitl_output_pack(aplink_hitl_output data, uint8_t packet[])
 {
-	aplink_hitl_output hitl_output;
-
+	uint8_t buffer[sizeof(data)];
+	memcpy(&buffer, &data, sizeof(buffer));
+	return aplink_pack(packet, buffer, sizeof(buffer), HITL_OUTPUT_MSG_ID);
 }
 
 #endif /* LIB_APLINK_MESSAGES_HITL_OUTPUT_H_ */

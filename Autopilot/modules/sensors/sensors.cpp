@@ -80,7 +80,7 @@ void Sensors::update()
 			int16_t of_x, of_y;
 			if (_hal->read_optical_flow(&of_x, &of_y))
 			{
-
+				_of_pub.publish(OF_data{of_x, of_y, time});
 			}
 		}
 	}

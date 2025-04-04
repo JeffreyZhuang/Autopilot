@@ -11,7 +11,6 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 	  _power_sub(data_bus->power_node),
 	  _tecs_sub(data_bus->tecs_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
-	  _hitl_output_sub(data_bus->hitl_output_node),
 	  _baro_sub(data_bus->baro_node),
 	  _telem_pub(data_bus->telem_node)
 {
@@ -19,17 +18,24 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 
 void Telem::update()
 {
-	switch (_telem_state)
+	if (_modes_data.system_mode == System_mode::CALIBRATION)
 	{
-	case TelemState::LOAD_PARAMS:
-		update_load_params();
-		break;
-	case TelemState::LOAD_WAYPOINTS:
-		update_load_waypoints();
-		break;
-	case TelemState::SEND_TELEMETRY:
-		update_send_telemetry();
-		break;
+		update_calibration();
+	}
+	else
+	{
+		switch (_telem_state)
+		{
+		case TelemState::LOAD_PARAMS:
+			update_load_params();
+			break;
+		case TelemState::LOAD_WAYPOINTS:
+			update_load_waypoints();
+			break;
+		case TelemState::SEND_TELEMETRY:
+			update_send_telemetry();
+			break;
+		}
 	}
 }
 
@@ -43,15 +49,33 @@ void Telem::update_load_params()
 			aplink_param_set param_set;
 			aplink_param_set_msg_decode(&telem_msg, &param_set);
 
-			// Convert bytes into float
-			float value;
-			memcpy(&value, &param_set.data, sizeof(value));
+			param_t param = param_find(param_set.param_id);
+			if (param == PARAM_INVALID)
+			{
+				printf("Param invalid\n");
+			}
+			else if (param_get_type(param) == PARAM_TYPE_FLOAT)
+			{
+				float value;
+				memcpy(&value, &param_set.data, sizeof(value));
+				param_set_float(param, value);
 
-			// Set parameters
-			param_set_float(param_find(param_set.param_id), value); // Need to handle int32_t
+				printf("Telem params set\n");
+			}
+			else if (param_get_type(param) == PARAM_TYPE_INT32)
+			{
+				int32_t value;
+				memcpy(&value, &param_set.data, sizeof(value));
+				param_set_int32(param, value);
 
-			printf("Telem params set\n");
+				printf("Telem params set\n");
+			}
 		}
+	}
+
+	if (param_all_set())
+	{
+		_telem_state = TelemState::LOAD_WAYPOINTS;
 	}
 }
 
@@ -65,17 +89,16 @@ void Telem::update_load_waypoints()
 			aplink_waypoint waypoint_payload;
 			aplink_waypoint_msg_decode(&telem_msg, &waypoint_payload);
 
+			_telem_data.num_waypoints = waypoint_payload.total_waypoints;
+			_telem_data.waypoints[waypoint_payload.waypoint_index] = Waypoint{
+				(double)waypoint_payload.lat * 1E-7, (double)waypoint_payload.lon * 1E-7,
+				(float)waypoint_payload.alt * 1E-1f
+			};
+
 			if (waypoint_payload.waypoint_index == waypoint_payload.total_waypoints - 1)
 			{
 				_telem_data.waypoints_loaded = true;
 			}
-
-			_telem_data.num_waypoints = waypoint_payload.total_waypoints;
-			_telem_data.waypoints[waypoint_payload.waypoint_index] = Waypoint{
-				(double)waypoint_payload.lat * 1E-7,
-				(double)waypoint_payload.lon * 1E-7,
-				(float)waypoint_payload.alt * 1E-1f
-			};
 
 			printf("Telem waypoint set\n");
 		}
@@ -130,6 +153,11 @@ void Telem::update_send_telemetry()
 
 		_hal->transmit_telem(packet, len);
 	}
+}
+
+void Telem::update_calibration()
+{
+
 }
 
 bool Telem::read_telem(aplink_msg* msg)

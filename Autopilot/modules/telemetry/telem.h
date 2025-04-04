@@ -43,7 +43,6 @@ private:
 	Subscriber<TECS_data> _tecs_sub;
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 	Subscriber<Baro_data> _baro_sub;
-	Subscriber<HITL_output_data> _hitl_output_sub;
 
 	Publisher<Telem_data> _telem_pub;
 
@@ -57,7 +56,6 @@ private:
 	Navigator_data _navigator_data;
 	Power_data _power_data;
 	TECS_data _tecs_data;
-	HITL_data _hitl_data;
 	Baro_data _baro_data;
 
 	aplink_msg telem_msg;
@@ -70,6 +68,7 @@ private:
 	void update_load_params();
 	void update_load_waypoints();
 	void update_send_telemetry();
+	void update_calibration();
 
 	bool read_telem(aplink_msg* msg);
 	void read_usb();

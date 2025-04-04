@@ -44,8 +44,10 @@ private:
 
 	aplink_msg msg;
 
-	void read();
-	void transmit();
+	bool read();
+	void read_hitl();
+	void transmit_hitl();
+	void transmit_debug();
 };
 
 #endif /* MODULES_USB_COMM_USB_COMM_H_ */
