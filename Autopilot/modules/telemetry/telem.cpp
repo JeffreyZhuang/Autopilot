@@ -88,6 +88,11 @@ void Telem::update_load_waypoints()
 			aplink_waypoint waypoint_payload;
 			aplink_waypoint_msg_decode(&telem_msg, &waypoint_payload);
 
+			if (waypoint_payload.waypoint_index == 0)
+			{
+				_telem_data.num_waypoints = 0; // Reset if its the first waypoint
+			}
+
 			if (waypoint_payload.waypoint_index == _telem_data.num_waypoints)
 			{
 				_telem_data.waypoints[_telem_data.num_waypoints++] = Waypoint{
@@ -173,6 +178,9 @@ void Telem::update_calibration()
 		cal_sensors.ax = _imu_data.ax;
 		cal_sensors.ay = _imu_data.ay;
 		cal_sensors.az = _imu_data.az;
+		cal_sensors.gx = _imu_data.gx;
+		cal_sensors.gy = _imu_data.gy;
+		cal_sensors.gz = _imu_data.gz;
 
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_cal_sensors_pack(cal_sensors, packet);
