@@ -10,7 +10,8 @@ Storage::Storage(HAL* hal, Data_bus* data_bus)
 	  _gnss_sub(data_bus->gnss_node),
 	  _time_sub(data_bus->time_node),
 	  _rc_sub(data_bus->rc_node),
-	  _ahrs_sub(data_bus->ahrs_node)
+	  _ahrs_sub(data_bus->ahrs_node),
+	  _log_pub(data_bus->log_node)
 {
 }
 
@@ -66,7 +67,7 @@ void Storage::write()
 	aplink_vfr_hud vfr_hud;
 	vfr_hud.roll = _ahrs_data.roll;
 	vfr_hud.pitch = _ahrs_data.pitch;
-	vfr_hud.heading = _ahrs_data.yaw;
+	vfr_hud.yaw = _ahrs_data.yaw;
 	uint8_t vfr_hud_buff[MAX_PACKET_LEN];
 	uint16_t vfr_hud_len = aplink_vfr_hud_pack(vfr_hud, vfr_hud_buff);
 	for (int i = 0; i < vfr_hud_len; i++)
@@ -75,31 +76,20 @@ void Storage::write()
 	}
 }
 
-// Read one packet
 void Storage::read()
 {
 	uint8_t byte;
-	while (_hal->read_storage(&byte, 1))
+	while (_hal->read_storage(&byte, 1)) // This is going to be slow if only one byte at a time
 	{
 		if (aplink_parse_byte(&msg, byte))
 		{
-			if (msg.msg_id == VFR_HUD_MSG_ID)
-			{
-				aplink_vfr_hud vfr_hud;
-				if (aplink_vfr_hud_msg_decode(&msg, &vfr_hud))
-				{
-					printf("VFR_HUD: %f\n", vfr_hud.roll);
-					break;
-				}
-			}
-			else if (msg.msg_id == GPS_RAW_MSG_ID)
-			{
-				break;
-			}
-			else
-			{
-				break;
-			}
+			LogData log_data;
+			log_data.packet_len = aplink_calc_packet_size(msg.payload_len);
+			memcpy(log_data.packet, msg.packet, log_data.packet_len);
+
+			_log_pub.publish(log_data);
+
+			break;
 		}
 	}
 }

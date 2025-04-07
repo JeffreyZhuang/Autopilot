@@ -57,7 +57,12 @@ void Telem::update_load_params()
 			param_t param = param_find(param_set.param_id);
 			if (param == PARAM_INVALID)
 			{
-				printf("Param invalid\n");
+				printf("Param not found\n");
+			}
+			else if ((param_get_type(param) == PARAM_TYPE_FLOAT && param_set.type != 0) ||
+					 (param_get_type(param) == PARAM_TYPE_INT32 && param_set.type != 1))
+			{
+				printf("Param type wrong\n");
 			}
 			else if (param_get_type(param) == PARAM_TYPE_FLOAT)
 			{
@@ -82,35 +87,52 @@ void Telem::update_load_waypoints()
 {
 	if (read_telem(&telem_msg))
 	{
-		if (telem_msg.msg_id == WAYPOINT_MSG_ID &&
-			telem_msg.payload_len == sizeof(aplink_waypoint))
+		if (telem_msg.msg_id == LOAD_WAYPOINTS_MSG_ID)
 		{
-			aplink_waypoint waypoint_payload;
-			aplink_waypoint_msg_decode(&telem_msg, &waypoint_payload);
+			aplink_load_waypoints load_waypoints;
+			aplink_load_waypoints_decode(&telem_msg, &load_waypoints);
 
-			if (waypoint_payload.waypoint_index == 0)
+			// Reset counter
+			_last_waypoint_loaded = 0;
+
+			// Get number of waypoints
+			_num_waypoints = load_waypoints.num_waypoints;
+
+			// Request first waypoint
+			aplink_req_waypoint req_waypoint;
+			req_waypoint.index = 0;
+
+			uint8_t packet[MAX_PACKET_LEN];
+			uint16_t len = aplink_req_waypoint_pack(req_waypoint, packet);
+			_hal->transmit_telem(packet, len);
+		}
+		else if (telem_msg.msg_id == WAYPOINT_MSG_ID)
+		{
+			aplink_waypoint waypoint;
+			aplink_waypoint_decode(&telem_msg, &waypoint);
+
+			telem_new_waypoint_s new_waypoint_s;
+			new_waypoint_s.lat = (double)waypoint.lat * 1E-7;
+			new_waypoint_s.lon = (double)waypoint.lon * 1E-7;
+			new_waypoint_s.alt = waypoint.alt;
+			new_waypoint_s.index = _last_waypoint_loaded;
+			_telem_new_waypoint_pub.publish(new_waypoint_s);
+
+			// Check if all waypoints have been loaded
+			if (_last_waypoint_loaded == _num_waypoints - 1)
 			{
-				_telem_data.num_waypoints = 0; // Reset if its the first waypoint
-			}
-
-			if (waypoint_payload.waypoint_index == _telem_data.num_waypoints)
-			{
-				_telem_data.waypoints[_telem_data.num_waypoints++] = Waypoint{
-					(double)waypoint_payload.lat * 1E-7, (double)waypoint_payload.lon * 1E-7,
-					(float)waypoint_payload.alt * 1E-1f
-				};
-
-				if (waypoint_payload.waypoint_index == _telem_data.num_waypoints - 1)
-				{
-					_telem_data.waypoints_loaded = true;
-					_telem_state = TelemState::SEND_TELEMETRY;
-				}
-
-				printf("Telem waypoint set\n");
+				_telem_data.waypoints_loaded = true;
+				_telem_state = TelemState::SEND_TELEMETRY;
 			}
 			else
 			{
-				printf("Missed waypoint\n");
+				// Request next waypoint
+				aplink_req_waypoint req_waypoint;
+				req_waypoint.index = ++_last_waypoint_loaded;
+
+				uint8_t packet[MAX_PACKET_LEN];
+				uint16_t len = aplink_req_waypoint_pack(req_waypoint, packet);
+				_hal->transmit_telem(packet, len);
 			}
 		}
 	}
@@ -127,7 +149,7 @@ void Telem::update_send_telemetry()
 		aplink_vfr_hud vfr_hud;
 		vfr_hud.roll = (int16_t)(_ahrs_data.roll * 100);
 		vfr_hud.pitch = (int16_t)(_ahrs_data.pitch * 100);
-		vfr_hud.heading = (uint16_t)(_ahrs_data.yaw * 10);
+		vfr_hud.yaw = (int16_t)(_ahrs_data.yaw * 10);
 
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_vfr_hud_pack(vfr_hud, packet);
@@ -205,43 +227,4 @@ bool Telem::read_telem(aplink_msg* msg)
 	}
 
 	return false;
-}
-
-// Returns unique state identifier
-// Returns 255 if unknown state
-uint8_t Telem::get_current_state()
-{
-    switch (_modes_data.system_mode)
-    {
-	case System_mode::LOAD_PARAMS:
-		return 0;
-	case System_mode::STARTUP:
-		return 1;
-	case System_mode::FLIGHT:
-		switch (_modes_data.flight_mode)
-		{
-		case Flight_mode::AUTO:
-			switch (_modes_data.auto_mode)
-			{
-			case Auto_mode::TAKEOFF:
-				return 2;
-			case Auto_mode::MISSION:
-				return 3;
-			case Auto_mode::LAND:
-				return 4;
-			case Auto_mode::FLARE:
-				return 5;
-			}
-		case Flight_mode::MANUAL:
-			switch (_modes_data.manual_mode)
-			{
-				case Manual_mode::DIRECT:
-					return 6;
-				case Manual_mode::STABILIZED:
-					return 7;
-			}
-		}
-    }
-
-    return 255;
 }

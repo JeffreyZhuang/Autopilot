@@ -16,5 +16,8 @@
 #include "messages/time.h"
 #include "messages/vfr_hud.h"
 #include "messages/waypoint.h"
+#include "messages/load_waypoints.h"
+#include "messages/req_waypoint.h"
+#include "messages/waypoint.h"
 
 #endif /* LIB_APLINK_APLINK_MESSAGES_H_ */

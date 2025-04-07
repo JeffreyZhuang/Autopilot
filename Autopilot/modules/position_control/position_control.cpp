@@ -1,4 +1,4 @@
-#include <modules/position_control/l1_controller.h>
+#include <modules/position_control/position_control.h>
 
 // S. Park, J. Deyst, and J. P. How, "A New Nonlinear Guidance Logic for Trajectory Tracking,"
 // Proceedings of the AIAA Guidance, Navigation and Control
@@ -104,7 +104,7 @@ void L1_controller::update_mission()
 	const float hdg_setpoint = trk_hdg - correction_angle;
 
 	// Calculate plane heading error
-	const float hdg_err = hdg_setpoint - wrap_pi(_ahrs_data.yaw * DEG_TO_RAD);
+	const float hdg_err = hdg_setpoint - _ahrs_data.yaw * DEG_TO_RAD;
 
 	// Calculate lateral acceleration using l1 guidance
 	const float lateral_accel = 2 * powf(_pos_est_data.gnd_spd, 2) / l1_dist * sinf(hdg_err);
@@ -130,9 +130,9 @@ void L1_controller::update_flare()
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
 	const float final_altitude = 0;
-	const float final_sink_rate = param_get_float(LND_FLARE_SINK);
-	const float initial_altitude = fmaxf(param_get_float(LND_FLARE_ALT), final_altitude);
-	const float initial_sink_rate = fmaxf(param_get_float(TECS_SPD_LND)* sinf(glideslope_angle),
+	const float final_sink_rate = param_get_float(LND_FL_SINK);
+	const float initial_altitude = fmaxf(param_get_float(LND_FL_ALT), final_altitude);
+	const float initial_sink_rate = fmaxf(param_get_float(LND_SPD)* sinf(glideslope_angle),
 								  	  	  final_sink_rate);
 	const float sink_rate = lerp(
 		initial_altitude, initial_sink_rate,
@@ -188,7 +188,7 @@ float L1_controller::calculate_roll_setpoint(float lateral_accel) const
 
 	if (_modes_data.auto_mode == Auto_mode::TAKEOFF)
 	{
-		return clamp(roll, -param_get_float(TKO_ROLL_LIM), param_get_float(TKO_ROLL_LIM));
+		return 0; // Keep wings level during takeoff
 	}
 	else
 	{

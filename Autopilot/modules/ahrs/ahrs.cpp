@@ -107,12 +107,12 @@ void AHRS::update_gyro()
 
 void AHRS::publish_ahrs()
 {
-	// Account yaw for magnetic declination and normalize to [0, 360]
+	// Account yaw for magnetic declination and normalize to [-180, 180]
 	_ahrs_pub.publish(AHRS_data{
 		ahrs_state == Ahrs_state::RUNNING,
 		filter.getRoll(),
 		filter.getPitch(),
-		fmod(filter.getYaw() + param_get_float(AHRS_MAG_DECL) + 360.0f, 360.0f),
+		fmod(filter.getYaw() + param_get_float(AHRS_MAG_DECL) + 180.0f, 360.0f) - 180.0f,
 		_hal->get_time_us()
 	});
 }

@@ -7,6 +7,13 @@
 #include "hal.h"
 #include "module.h"
 
+struct Waypoint
+{
+	double lat;
+	double lon;
+	float alt;
+};
+
 class Navigator : public Module
 {
 public:
@@ -21,6 +28,7 @@ private:
 	Publisher<Navigator_data> _navigator_pub;
 
 	uint8_t _curr_wp_idx = 1;
+	Waypoint _waypoints[50];
 };
 
 

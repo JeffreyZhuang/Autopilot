@@ -28,6 +28,8 @@ private:
 	Subscriber<RC_data> _rc_sub;
 	Subscriber<AHRS_data> _ahrs_sub;
 
+	Publisher<LogData> _log_pub;
+
 	IMU_data _imu_data{};
 	Mag_data _mag_data{};
 	GNSS_data _gnss_data{};

@@ -3,7 +3,6 @@
 
 #include <lib/aplink/aplink.h>
 #include "modes.h"
-#include "custom_types.h"
 #include <stdint.h>
 
 struct IMU_data
@@ -90,22 +89,25 @@ struct Ctrl_cmd_data
 
 struct Telem_data
 {
-	Waypoint waypoints[256];
 	uint8_t num_waypoints = 0;
 	bool waypoints_loaded = false;
 	bool hitl_enable = false;
 	uint64_t timestamp = 0;
 };
 
-struct L1_data
+struct telem_new_waypoint_s
 {
-	float d_setpoint = 0;
-	float roll_setpoint = 0;
-	uint64_t timestamp = 0;
+	double lat;
+	double lon;
+	float alt;
+	uint8_t index;
+	uint8_t num_waypoints;
+	uint16_t timestamp;
 };
 
-struct Pos_ctrl_data
+struct pos_control_s
 {
+	float cross_trk_err;
 	float d_setpoint;
 	float pitch_setpoint;
 	float roll_setpoint;
@@ -172,6 +174,13 @@ struct HITL_output_data
 	uint16_t ele_duty = 0;
 	uint16_t rud_duty = 0;
 	uint16_t thr_duty = 0;
+	uint64_t timestamp = 0;
+};
+
+struct LogData
+{
+	uint8_t packet[MAX_PACKET_LEN];
+	uint16_t packet_len;
 	uint64_t timestamp = 0;
 };
 
@@ -254,14 +263,14 @@ struct Data_bus
     Node<AHRS_data> ahrs_node;
     Node<Pos_est_data> pos_est_node;
     Node<Power_data> power_node;
-    Node<TECS_data> tecs_node;
     Node<Telem_data> telem_node;
    	Node<Ctrl_cmd_data> ctrl_cmd_node;
-   	Node<L1_data> l1_node;
    	Node<RC_data> rc_node;
    	Node<Navigator_data> navigator_node;
    	Node<HITL_data> hitl_node;
    	Node<HITL_output_data> hitl_output_node;
+   	Node<LogData> log_node;
+   	Node<telem_new_waypoint_s> telem_new_waypoint_node;
 };
 
 #endif /* DATA_BUS_H_ */

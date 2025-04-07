@@ -44,8 +44,10 @@ private:
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<IMU_data> _imu_sub;
+	Subscriber<LogData> _log_sub;
 
 	Publisher<Telem_data> _telem_pub;
+	Publisher<telem_new_waypoint_s> _telem_new_waypoint_pub;
 
 	Ctrl_cmd_data _ctrl_cmd_data;
 	AHRS_data _ahrs_data;
@@ -68,6 +70,9 @@ private:
 	float last_gps_raw_transmit_s = 0;
 	float last_cal_sensors_transmit_s = 0;
 
+	uint8_t _num_waypoints = 0; // Number of waypoints to load
+	uint8_t _last_waypoint_loaded = 0;
+
 	void update_load_params();
 	void update_load_waypoints();
 	void update_send_telemetry();
@@ -79,7 +84,6 @@ private:
 	void transmit_usb();
 	void transmit_packet(uint8_t packet[], uint16_t size);
 	bool parse_packet();
-	uint8_t get_current_state();
 };
 
 #endif /* TELEM_H_ */

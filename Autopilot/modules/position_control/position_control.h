@@ -9,10 +9,10 @@
 #include <math.h>
 #include <cstdio>
 
-class L1_controller : public Module
+class PositionControl : public Module
 {
 public:
-	L1_controller(HAL* hal, Data_bus* data_bus);
+	PositionControl(HAL* hal, Data_bus* data_bus);
 
 	void update() override;
 

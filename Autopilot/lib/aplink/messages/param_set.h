@@ -13,6 +13,7 @@ struct __attribute__((packed)) aplink_param_set
 		float f;
 		int32_t i;
 	};
+	uint8_t type; // 0 for float, 1 for int32_t
 };
 
 DECLARE_APLINK_MESSAGE(aplink_param_set, PARAM_SET_MSG_ID);

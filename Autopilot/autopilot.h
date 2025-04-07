@@ -1,7 +1,7 @@
 #ifndef AUTOPILOT_H
 #define AUTOPILOT_H
 
-#include <modules/position_control/l1_controller.h>
+#include <modules/position_control/position_control.h>
 #include "modules/ahrs/ahrs.h"
 #include "modules/attitude_control/attitude_control.h"
 #include "modules/commander/commander.h"

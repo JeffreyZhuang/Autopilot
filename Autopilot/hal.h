@@ -27,7 +27,6 @@ public:
     // Logger
     virtual void create_file(char name[], uint8_t len) = 0;
     virtual bool write_storage(uint8_t byte) = 0;
-    virtual bool read_storage(uint8_t* rx_buff, uint16_t size) = 0;
 
     // Debug
     virtual void debug_print(char* str) = 0;
