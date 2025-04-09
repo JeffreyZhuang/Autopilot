@@ -9,8 +9,3 @@ bool Flight_hal::write_storage(uint8_t byte)
 {
 	return _sd.write_byte(byte);
 }
-
-bool Flight_hal::read_storage(uint8_t* rx_buff, uint16_t size)
-{
-	return _sd.read(rx_buff, size);
-}

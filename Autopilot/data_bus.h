@@ -91,7 +91,6 @@ struct Telem_data
 {
 	uint8_t num_waypoints = 0;
 	bool waypoints_loaded = false;
-	bool hitl_enable = false;
 	uint64_t timestamp = 0;
 };
 

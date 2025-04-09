@@ -1,10 +1,3 @@
-/*
- * request_waypoint.h
- *
- *  Created on: Apr. 6, 2025
- *      Author: jeffr
- */
-
 #ifndef LIB_APLINK_MESSAGES_REQ_WAYPOINT_H_
 #define LIB_APLINK_MESSAGES_REQ_WAYPOINT_H_
 

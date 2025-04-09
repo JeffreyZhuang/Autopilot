@@ -4,7 +4,7 @@
 // Proceedings of the AIAA Guidance, Navigation and Control
 // Conference, Aug 2004. AIAA-2004-4900.
 
-L1_controller::L1_controller(HAL* hal, Data_bus* data_bus)
+PositionControl::PositionControl(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _pos_est_sub(data_bus->pos_est_node),
@@ -17,7 +17,7 @@ L1_controller::L1_controller(HAL* hal, Data_bus* data_bus)
 {
 }
 
-void L1_controller::update()
+void PositionControl::update()
 {
 	_ahrs_data = _ahrs_sub.get();
 	_pos_est_data = _pos_est_sub.get();
@@ -42,7 +42,7 @@ void L1_controller::update()
 	_l1_pub.publish(_l1_data);
 }
 
-void L1_controller::handle_manual_mode()
+void PositionControl::handle_manual_mode()
 {
 	switch (_modes_data.manual_mode)
 	{
@@ -54,12 +54,12 @@ void L1_controller::handle_manual_mode()
 	}
 }
 
-void L1_controller::update_stabilized()
+void PositionControl::update_stabilized()
 {
 	_l1_data.roll_setpoint = _rc_data.ail_norm * param_get_float(L1_ROLL_LIM);
 }
 
-void L1_controller::handle_auto_mode()
+void PositionControl::handle_auto_mode()
 {
 	switch (_modes_data.auto_mode)
 	{
@@ -75,7 +75,7 @@ void L1_controller::handle_auto_mode()
 }
 
 // Update roll and altitude setpoints
-void L1_controller::update_mission()
+void PositionControl::update_mission()
 {
 	// Determine target and previous waypoints
 	const Waypoint& prev_wp = _telem_data.waypoints[_navigator_data.waypoint_index - 1];
@@ -117,7 +117,7 @@ void L1_controller::update_mission()
 }
 
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
-void L1_controller::update_flare()
+void PositionControl::update_flare()
 {
 	const Waypoint& land_wp = _telem_data.waypoints[-1];
 	const Waypoint& appr_wp = _telem_data.waypoints[-2];
@@ -145,7 +145,7 @@ void L1_controller::update_flare()
 	_l1_data.roll_setpoint = 0;
 }
 
-float L1_controller::calculate_altitude_setpoint(const float prev_north, const float prev_east,
+float PositionControl::calculate_altitude_setpoint(const float prev_north, const float prev_east,
 		  	  	  	  	  	  	  	  	  	  	 const float tgt_north, const float tgt_east,
 												 const Waypoint& prev_wp, const Waypoint& target_wp)
 {
@@ -182,7 +182,7 @@ float L1_controller::calculate_altitude_setpoint(const float prev_north, const f
 	);
 }
 
-float L1_controller::calculate_roll_setpoint(float lateral_accel) const
+float PositionControl::calculate_roll_setpoint(float lateral_accel) const
 {
 	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
 
@@ -197,7 +197,7 @@ float L1_controller::calculate_roll_setpoint(float lateral_accel) const
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)
-float L1_controller::compute_along_track_distance(float start_n, float start_e,
+float PositionControl::compute_along_track_distance(float start_n, float start_e,
 												  float end_n, float end_e,
 											 	  float pos_n, float pos_e)
 {
@@ -213,7 +213,7 @@ float L1_controller::compute_along_track_distance(float start_n, float start_e,
 }
 
 // Helper function to compute Euclidean distance
-float L1_controller::distance(float n1, float e1, float n2, float e2)
+float PositionControl::distance(float n1, float e1, float n2, float e2)
 {
 	const float dn = n2 - n1;
 	const float de = e2 - e1;

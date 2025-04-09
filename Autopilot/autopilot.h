@@ -31,7 +31,7 @@ private:
     AHRS _ahrs;
     Position_estimator _position_estimator;
     Attitude_control _att_control;
-    L1_controller _l1_controller;
+    PositionControl _position_control;
     Telem _telem;
     Storage _storage;
     Mixer _mixer;

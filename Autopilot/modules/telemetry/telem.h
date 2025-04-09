@@ -16,6 +16,7 @@
 static constexpr float VFR_HUD_DT = 0.03;
 static constexpr float NAV_DISPLAY_DT = 0.1;
 static constexpr float GPS_RAW_DT = 0.2;
+static constexpr float POWER_DT = 1;
 static constexpr float CAL_SENSORS_DT = 0.1;
 
 enum class TelemState
@@ -69,6 +70,7 @@ private:
 	float last_nav_display_transmit_s = 0;
 	float last_gps_raw_transmit_s = 0;
 	float last_cal_sensors_transmit_s = 0;
+	float last_power_transmit_s = 0;
 
 	uint8_t _num_waypoints = 0; // Number of waypoints to load
 	uint8_t _last_waypoint_loaded = 0;
@@ -77,7 +79,6 @@ private:
 	void update_load_waypoints();
 	void update_send_telemetry();
 	void update_calibration();
-	void update_download_logs();
 
 	bool read_telem(aplink_msg* msg);
 	void read_usb();

@@ -44,7 +44,6 @@ private:
 
 	void write();
 	void flush();
-	void read();
 };
 
 #endif /* MODULES_STORAGE_STORAGE_H_ */

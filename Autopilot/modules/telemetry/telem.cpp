@@ -23,12 +23,17 @@ void Telem::update()
 	{
 		update_calibration();
 	}
-	else if (_modes_data.system_mode == System_mode::DOWNLOAD_LOGS)
-	{
-		update_download_logs();
-	}
 	else
 	{
+		if (read_telem(&telem_msg))
+			{
+
+			// Determine msg ID, and then select TelemState
+
+			}
+
+
+
 		switch (_telem_state)
 		{
 		case TelemState::LOAD_PARAMS:
@@ -153,7 +158,6 @@ void Telem::update_send_telemetry()
 
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_vfr_hud_pack(vfr_hud, packet);
-
 		_hal->transmit_telem(packet, len);
 	}
 
@@ -167,7 +171,6 @@ void Telem::update_send_telemetry()
 
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_nav_display_pack(nav_display, packet);
-
 		_hal->transmit_telem(packet, len);
 	}
 
@@ -183,7 +186,21 @@ void Telem::update_send_telemetry()
 
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_gps_raw_pack(gps_raw, packet);
+		_hal->transmit_telem(packet, len);
+	}
 
+	if (current_time_s - last_power_transmit_s >= POWER_DT)
+	{
+		last_power_transmit_s = current_time_s;
+
+		aplink_power power;
+		power.autopilot_current = 0;
+		power.battery_current = 0;
+		power.battery_voltage = 0;
+		power.battery_used = 0;
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_power_pack(power, packet);
 		_hal->transmit_telem(packet, len);
 	}
 }
@@ -209,11 +226,6 @@ void Telem::update_calibration()
 
 		_hal->transmit_telem(packet, len);
 	}
-}
-
-void Telem::update_download_logs()
-{
-	// Read from storage sub
 }
 
 bool Telem::read_telem(aplink_msg* msg)

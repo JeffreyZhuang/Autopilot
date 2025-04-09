@@ -3,13 +3,23 @@
 Navigator::Navigator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _pos_est_sub(data_bus->pos_est_node),
-	  _telem_sub(data_bus->telem_node),
+	  _telem_new_waypoint_sub(data_bus->telem_node),
 	  _navigator_pub(data_bus->navigator_node)
 {
 }
 
 void Navigator::update()
 {
+	if (_telem_new_waypoint_sub.check_new())
+	{
+		telem_new_waypoint_s telem_new_waypoint;
+		waypoints[telem_new_waypoint.index] = Waypoint{
+			telem_new_waypoint.lat,
+			telem_new_waypoint.lon,
+			telem_new_waypoint.alt
+		};
+	}
+
 	Pos_est_data pos_est_data = _pos_est_sub.get();
 	Telem_data telem_data = _telem_sub.get();
 

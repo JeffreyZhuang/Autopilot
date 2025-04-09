@@ -61,7 +61,6 @@ public:
 	// logger_hal.cpp
 	void create_file(char name[], uint8_t len) override;
 	bool write_storage(uint8_t byte) override;
-	bool read_storage(uint8_t* rx_buff, uint16_t size) override;
 	static void sd_interrupt_callback() { _instance->_sd.interrupt_callback(); }
 
 	// debug_hal.cpp

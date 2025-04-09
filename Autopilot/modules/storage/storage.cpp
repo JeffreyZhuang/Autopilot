@@ -75,21 +75,3 @@ void Storage::write()
 		_hal->write_storage(vfr_hud_buff[i]);
 	}
 }
-
-void Storage::read()
-{
-	uint8_t byte;
-	while (_hal->read_storage(&byte, 1)) // This is going to be slow if only one byte at a time
-	{
-		if (aplink_parse_byte(&msg, byte))
-		{
-			LogData log_data;
-			log_data.packet_len = aplink_calc_packet_size(msg.payload_len);
-			memcpy(log_data.packet, msg.packet, log_data.packet_len);
-
-			_log_pub.publish(log_data);
-
-			break;
-		}
-	}
-}

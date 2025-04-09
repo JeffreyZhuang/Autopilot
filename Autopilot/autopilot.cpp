@@ -4,7 +4,7 @@ Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
 	: _ahrs(hal, data_bus),
 	  _position_estimator(hal, data_bus),
 	  _att_control(hal, data_bus),
-	  _l1_controller(hal, data_bus),
+	  _position_control(hal, data_bus),
 	  _telem(hal, data_bus),
 	  _storage(hal, data_bus),
 	  _mixer(hal, data_bus),
@@ -35,7 +35,7 @@ void Autopilot::main_task()
 	_position_estimator.update();
 	_commander.update();
 	_navigator.update();
-	_l1_controller.update();
+	_position_control.update();
 	_tecs.update();
 	_att_control.update();
 	_mixer.update();

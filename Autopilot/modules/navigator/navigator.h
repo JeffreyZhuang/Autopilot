@@ -23,7 +23,7 @@ public:
 
 private:
 	Subscriber<Pos_est_data> _pos_est_sub;
-	Subscriber<Telem_data> _telem_sub;
+	Subscriber<telem_new_waypoint_s> _telem_new_waypoint_sub;
 
 	Publisher<Navigator_data> _navigator_pub;
 

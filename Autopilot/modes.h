@@ -6,7 +6,6 @@ enum class System_mode
 	LOAD_PARAMS,
 	STARTUP,
 	FLIGHT,
-	DOWNLOAD_LOGS,
 	CALIBRATION
 };
 
