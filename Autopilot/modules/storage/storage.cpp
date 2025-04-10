@@ -36,17 +36,9 @@ void Storage::update()
 			_hal->create_file(filename, strlen(filename));
 		}
 	}
-	else if (_modes_data.system_mode == System_mode::STARTUP)
+	else
 	{
 		write();
-	}
-	else if (_modes_data.system_mode == System_mode::FLIGHT)
-	{
-		write();
-	}
-	else if (_modes_data.system_mode == System_mode::DOWNLOAD_LOGS)
-	{
-		read();
 	}
 }
 

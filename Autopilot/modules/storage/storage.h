@@ -43,7 +43,6 @@ private:
 	aplink_msg msg;
 
 	void write();
-	void flush();
 };
 
 #endif /* MODULES_STORAGE_STORAGE_H_ */

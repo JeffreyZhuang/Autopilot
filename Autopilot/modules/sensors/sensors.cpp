@@ -50,7 +50,7 @@ void Sensors::update()
 	{
 		uint64_t time = _hal->get_time_us();
 
-		if (_telem_sub.get().hitl_enable)
+		if (param_get_int32(ENABLE_HITL))
 		{
 			if (_hitl_sub.check_new())
 			{
@@ -91,20 +91,20 @@ void Sensors::update()
 				float hi_cal[3];
 
 				// Apply hard-iron offsets
-				hi_cal[0] = mx - param_get_float(AHRS_HI_X);
-				hi_cal[1] = my - param_get_float(AHRS_HI_Y);
-				hi_cal[2] = mz - param_get_float(AHRS_HI_Z);
+				hi_cal[0] = mx - param_get_float(MAG_HI_X);
+				hi_cal[1] = my - param_get_float(MAG_HI_Y);
+				hi_cal[2] = mz - param_get_float(MAG_HI_Z);
 
 				// Apply soft-iron scaling
-				mx = (param_get_float(AHRS_SI_XX) * hi_cal[0]) +
-					 (param_get_float(AHRS_SI_XY) * hi_cal[1]) +
-					 (param_get_float(AHRS_SI_XZ) * hi_cal[2]);
-				my = (param_get_float(AHRS_SI_YX) * hi_cal[0]) +
-					 (param_get_float(AHRS_SI_YY) * hi_cal[1]) +
-					 (param_get_float(AHRS_SI_YZ) * hi_cal[2]);
-				mz = (param_get_float(AHRS_SI_ZX) * hi_cal[0]) +
-					 (param_get_float(AHRS_SI_ZY) * hi_cal[1]) +
-					 (param_get_float(AHRS_SI_ZZ) * hi_cal[2]);
+				mx = (param_get_float(MAG_SI_XX) * hi_cal[0]) +
+					 (param_get_float(MAG_SI_XY) * hi_cal[1]) +
+					 (param_get_float(MAG_SI_XZ) * hi_cal[2]);
+				my = (param_get_float(MAG_SI_YX) * hi_cal[0]) +
+					 (param_get_float(MAG_SI_YY) * hi_cal[1]) +
+					 (param_get_float(MAG_SI_YZ) * hi_cal[2]);
+				mz = (param_get_float(MAG_SI_ZX) * hi_cal[0]) +
+					 (param_get_float(MAG_SI_ZY) * hi_cal[1]) +
+					 (param_get_float(MAG_SI_ZZ) * hi_cal[2]);
 
 				_mag_pub.publish(Mag_data{mx, my, mz, time});
 			}

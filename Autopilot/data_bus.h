@@ -104,7 +104,7 @@ struct telem_new_waypoint_s
 	uint16_t timestamp;
 };
 
-struct pos_control_s
+struct position_control_s
 {
 	float cross_trk_err;
 	float d_setpoint;
@@ -135,9 +135,15 @@ struct RC_data
 	uint64_t timestamp = 0;
 };
 
-struct Navigator_data
+struct waypoint_s
 {
-	uint8_t waypoint_index = 0; // Current waypoint, default 1 to skip home waypoint
+	float previous_north = 0;
+	float previous_east = 0;
+	float previous_alt = 0;
+	float current_north = 0;
+	float current_east = 0;
+	float current_alt = 0;
+	uint8_t current_index = 0;
 	uint64_t timestamp = 0;
 };
 
@@ -265,11 +271,12 @@ struct Data_bus
     Node<Telem_data> telem_node;
    	Node<Ctrl_cmd_data> ctrl_cmd_node;
    	Node<RC_data> rc_node;
-   	Node<Navigator_data> navigator_node;
+   	Node<waypoint_s> waypoint_node;
    	Node<HITL_data> hitl_node;
    	Node<HITL_output_data> hitl_output_node;
    	Node<LogData> log_node;
    	Node<telem_new_waypoint_s> telem_new_waypoint_node;
+   	Node<position_control_s> position_control_node;
 };
 
 #endif /* DATA_BUS_H_ */

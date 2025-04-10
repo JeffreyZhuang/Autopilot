@@ -27,8 +27,11 @@ private:
 
 	Publisher<Navigator_data> _navigator_pub;
 
+	Pos_est_data _pos_est_data;
 	uint8_t _curr_wp_idx = 1;
 	Waypoint _waypoints[50];
+
+	void poll();
 };
 
 
