@@ -22,7 +22,8 @@ class Rc_handler : public Module
 public:
 	Rc_handler(HAL* hal, Data_bus* data_bus);
 
-	void update();
+	void update() override;
+
 private:
 	Subscriber<Modes_data> _modes_sub;
 

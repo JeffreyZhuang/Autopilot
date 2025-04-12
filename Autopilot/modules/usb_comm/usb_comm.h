@@ -43,7 +43,7 @@ private:
 
 	aplink_msg msg;
 
-	bool read();
+	bool read_usb();
 	void read_hitl();
 	void transmit_hitl();
 	void transmit_debug();

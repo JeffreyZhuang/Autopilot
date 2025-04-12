@@ -11,5 +11,6 @@ void meters_to_lat_lon(double north, double east, double refLat, double refLon, 
 float map(float x, float in_min, float in_max, float out_min, float out_max);
 float lerp(float x0, float y0, float x1, float y1, float x);
 float wrap_pi(float angle);
+float distance(float n1, float e1, float n2, float e2);
 
 #endif /* MODULES_UTILS_H_ */

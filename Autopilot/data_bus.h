@@ -101,7 +101,7 @@ struct telem_new_waypoint_s
 	float alt;
 	uint8_t index;
 	uint8_t num_waypoints;
-	uint16_t timestamp;
+	uint64_t timestamp;
 };
 
 struct position_control_s
@@ -200,9 +200,9 @@ struct LogData
 
 struct home_position_s
 {
-	uint64_t timestamp;
 	double lat;
 	double lon;
+	uint64_t timestamp;
 };
 
 template<typename T>

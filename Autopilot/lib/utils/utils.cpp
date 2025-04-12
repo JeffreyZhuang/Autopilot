@@ -83,3 +83,11 @@ float wrap_pi(float angle)
     while (angle < -M_PI) angle += 2 * M_PI;
     return angle;
 }
+
+// Get distance from north east position meters
+float distance(float n1, float e1, float n2, float e2)
+{
+	const float dn = n2 - n1;
+	const float de = e2 - e1;
+	return sqrtf(dn * dn + de * de);
+}

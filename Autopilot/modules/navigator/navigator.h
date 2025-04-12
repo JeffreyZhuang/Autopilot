@@ -26,6 +26,7 @@ private:
 	Subscriber<telem_new_waypoint_s> _telem_new_waypoint_sub;
 
 	Publisher<waypoint_s> _waypoint_pub;
+	Publisher<home_position_s> _home_pos_pub;
 
 	Pos_est_data _pos_est_data;
 	telem_new_waypoint_s _telem_new_waypoint;
@@ -33,7 +34,7 @@ private:
 	uint8_t _curr_wp_idx = 1;
 	Waypoint _waypoints[50];
 
-	void poll();
+	void poll_data_bus();
 };
 
 

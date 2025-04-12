@@ -4,13 +4,14 @@ Navigator::Navigator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _pos_est_sub(data_bus->pos_est_node),
 	  _telem_new_waypoint_sub(data_bus->telem_new_waypoint_node),
-	  _waypoint_pub(data_bus->waypoint_node)
+	  _waypoint_pub(data_bus->waypoint_node),
+	  _home_pos_pub(data_bus->home_position_node)
 {
 }
 
 void Navigator::update()
 {
-	poll();
+	poll_data_bus();
 
 	// Get target waypoint
 	const Waypoint& target_wp = _waypoints[_curr_wp_idx];
@@ -29,28 +30,29 @@ void Navigator::update()
 	{
 		_curr_wp_idx++; // Move to next waypoint
 
+		// Publish waypoint
 		const Waypoint& prev_wp = _waypoints[_curr_wp_idx - 1];
 
-		// Convert previous waypoint to north east coordinates
 		double prev_north, prev_east;
 		lat_lon_to_meters(_waypoints[0].lat, _waypoints[0].lon,
 						  prev_wp.lat, prev_wp.lon, &prev_north, &prev_east);
 
-		waypoint_s waypoint;
-		waypoint.current_north = tgt_north;
-		waypoint.current_east = tgt_east;
-		waypoint.current_alt = target_wp.alt;
-		waypoint.previous_north = prev_north;
-		waypoint.previous_east = prev_east;
-		waypoint.previous_alt = prev_wp.alt;
-		waypoint.current_index = _curr_wp_idx;
-		waypoint.timestamp = _hal->get_time_us();
-
-		_waypoint_pub.publish(waypoint);
+		_waypoint_pub.publish(
+			waypoint_s{
+				.previous_north = prev_north,
+				.previous_east = prev_east,
+				.previous_alt = prev_wp.alt,
+				.current_north = tgt_north,
+				.current_east = tgt_east,
+				.current_alt = target_wp.alt,
+				.current_index = _curr_wp_idx,
+				.timestamp = _hal->get_time_us()
+			}
+		);
 	}
 }
 
-void Navigator::poll()
+void Navigator::poll_data_bus()
 {
 	if (_telem_new_waypoint_sub.check_new())
 	{
@@ -61,6 +63,14 @@ void Navigator::poll()
 			_telem_new_waypoint.lon,
 			_telem_new_waypoint.alt
 		};
+
+		_home_pos_pub.publish(
+			home_position_s{
+				.lat = _waypoints[0].lat,
+				.lon = _waypoints[0].lon,
+				.timestamp = _hal->get_time_us()
+			}
+		);
 	}
 
 	_pos_est_data = _pos_est_sub.get();

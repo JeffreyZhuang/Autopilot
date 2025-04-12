@@ -27,7 +27,7 @@ class Position_estimator : public Module
 public:
     Position_estimator(HAL* hal, Data_bus* data_bus);
 
-    void update();
+    void update() override;
 
 private:
     Kalman kalman;

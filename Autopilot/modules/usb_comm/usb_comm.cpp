@@ -20,14 +20,16 @@ USBComm::USBComm(HAL* hal, Data_bus* data_bus)
 
 void USBComm::update()
 {
-	if (read())
+	// Read
+	if (read_usb())
 	{
-		if (msg.msg_id ==  HITL_INPUT_MSG_ID)
+		if (msg.msg_id == HITL_INPUT_MSG_ID)
 		{
 			read_hitl();
 		}
 	}
 
+	// Transmit
 	if (param_get_int32(ENABLE_HITL))
 	{
 		transmit_hitl();
@@ -38,7 +40,7 @@ void USBComm::update()
 	}
 }
 
-bool USBComm::read()
+bool USBComm::read_usb()
 {
 	while (!_hal->usb_buffer_empty())
 	{

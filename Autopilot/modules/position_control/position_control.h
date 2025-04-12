@@ -56,10 +56,9 @@ private:
 	void update_flare();
 	float calculate_altitude_setpoint(const float prev_north, const float prev_east, const float prev_down,
 	  	  	  	  	  	 	 	 	  const float tgt_north, const float tgt_east, const float tgt_down);
-	float calculate_roll_setpoint(float lateral_accel) const;
+	float calculate_roll_setpoint() const;
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);
-	float distance(float n1, float e1, float n2, float e2);
 	float tecs_control_total_energy();
 	float tecs_control_energy_balance();
 	void tecs_calculate_energies(float target_vel_mps, float target_alt_m, float wb);

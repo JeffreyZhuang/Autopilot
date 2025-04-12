@@ -25,6 +25,7 @@ void PositionControl::update()
 	_telem_data = _telem_sub.get();
 	_waypoint = _waypoint_sub.get();
 	_rc_data = _rc_sub.get();
+	_time_data = _time_sub.get();
 
 	if (_modes_data.system_mode == System_mode::FLIGHT)
 	{
@@ -97,30 +98,8 @@ void PositionControl::update_takeoff()
 // Update roll and altitude setpoints
 void PositionControl::update_mission()
 {
-	// Calculate track heading (bearing from previous to target waypoint)
-	const float trk_hdg = atan2f(_waypoint.current_east - _waypoint.previous_east,
-								 _waypoint.current_north - _waypoint.previous_north);
-
-	// Compute cross-track error (perpendicular distance from aircraft to path)
-	const float rel_east = _pos_est_data.pos_e - _waypoint.current_east;
-	const float rel_north = _pos_est_data.pos_n - _waypoint.current_north;
-	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
-
-	// Calculate L1 distance and scale with speed
-	const float l1_dist = fmaxf(param_get_float(L1_PERIOD) * _pos_est_data.gnd_spd / M_PI, 1.0);
-
-	// Calculate correction angle
-	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
-	const float hdg_setpoint = trk_hdg - correction_angle;
-
-	// Calculate plane heading error
-	const float hdg_err = hdg_setpoint - _ahrs_data.yaw * DEG_TO_RAD;
-
-	// Calculate lateral acceleration using l1 guidance
-	const float lateral_accel = 2 * powf(_pos_est_data.gnd_spd, 2) / l1_dist * sinf(hdg_err);
-
 	// Update roll setpoint
-	_position_control.roll_setpoint = calculate_roll_setpoint(lateral_accel);
+	_position_control.roll_setpoint = calculate_roll_setpoint();
 
 	// Calculate altitude setpoint
 	_d_setpoint = calculate_altitude_setpoint(
@@ -136,8 +115,16 @@ void PositionControl::update_mission()
 
 void PositionControl::update_land()
 {
-	// Add l1 control stuff here
+	// Update roll setpoint
+		_position_control.roll_setpoint = calculate_roll_setpoint();
 
+	// Calculate altitude setpoint
+	_d_setpoint = calculate_altitude_setpoint(
+		_waypoint.current_north, _waypoint.current_east, _waypoint.current_alt,
+		_waypoint.previous_north, _waypoint.previous_east, _waypoint.previous_alt
+	);
+
+	// Update TECS
 	tecs_calculate_energies(param_get_float(LND_SPD), _d_setpoint, 1);
 	_position_control.pitch_setpoint = tecs_control_energy_balance();
 	_position_control.throttle_setpoint = tecs_control_total_energy();
@@ -174,9 +161,9 @@ void PositionControl::update_flare()
 float PositionControl::calculate_altitude_setpoint(const float prev_north, const float prev_east, const float prev_down,
 		  	  	  	  	  	  	  	  	  	  	   const float tgt_north, const float tgt_east, const float tgt_down)
 {
+	// Set altitude setpoint to first waypoint during start of mission
 	if (_waypoint.current_index == 1)
 	{
-		// Takeoff
 		return tgt_down;
 	}
 
@@ -207,24 +194,41 @@ float PositionControl::calculate_altitude_setpoint(const float prev_north, const
 	);
 }
 
-float PositionControl::calculate_roll_setpoint(float lateral_accel) const
+float PositionControl::calculate_roll_setpoint() const
 {
+	// Calculate track heading (bearing from previous to target waypoint)
+	const float trk_hdg = atan2f(_waypoint.current_east - _waypoint.previous_east,
+								 _waypoint.current_north - _waypoint.previous_north);
+
+	// Compute cross-track error (perpendicular distance from aircraft to path)
+	const float rel_east = _pos_est_data.pos_e - _waypoint.current_east;
+	const float rel_north = _pos_est_data.pos_n - _waypoint.current_north;
+	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
+
+	// Calculate L1 distance and scale with speed
+	const float l1_dist = fmaxf(param_get_float(L1_PERIOD) * _pos_est_data.gnd_spd / M_PI, 1.0);
+
+	// Calculate correction angle
+	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
+	const float hdg_setpoint = trk_hdg - correction_angle;
+
+	// Calculate plane heading error
+	const float hdg_err = hdg_setpoint - _ahrs_data.yaw * DEG_TO_RAD;
+
+	// Calculate lateral acceleration using l1 guidance
+	const float lateral_accel = 2 * powf(_pos_est_data.gnd_spd, 2) / l1_dist * sinf(hdg_err);
+
+	// Calculate roll to get desired lateral accel
 	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
 
-	if (_modes_data.auto_mode == Auto_mode::TAKEOFF)
-	{
-		return 0; // Keep wings level during takeoff
-	}
-	else
-	{
-		return clamp(roll, -param_get_float(L1_ROLL_LIM), param_get_float(L1_ROLL_LIM));
-	}
+	// Return clamped roll angle
+	return clamp(roll, -param_get_float(L1_ROLL_LIM), param_get_float(L1_ROLL_LIM));
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)
 float PositionControl::compute_along_track_distance(float start_n, float start_e,
-												  float end_n, float end_e,
-											 	  float pos_n, float pos_e)
+												    float end_n, float end_e,
+											 	    float pos_n, float pos_e)
 {
 	const float vec_north = end_n - start_n;
 	const float vec_east = end_e - start_e;
@@ -235,14 +239,6 @@ float PositionControl::compute_along_track_distance(float start_n, float start_e
 	const float proj_factor = ((pos_n - start_n) * vec_north + (pos_e - start_e) * vec_east) /
 							  (vec_norm * vec_norm);
 	return proj_factor * vec_norm;
-}
-
-// Helper function to compute Euclidean distance
-float PositionControl::distance(float n1, float e1, float n2, float e2)
-{
-	const float dn = n2 - n1;
-	const float de = e2 - e1;
-	return sqrtf(dn * dn + de * de);
 }
 
 // wb: weight balance
