@@ -10,7 +10,7 @@ PositionControl::PositionControl(HAL* hal, Data_bus* data_bus)
 	  _pos_est_sub(data_bus->pos_est_node),
 	  _modes_sub(data_bus->modes_node),
 	  _telem_sub(data_bus->telem_node),
-	  _navigator_sub(data_bus->navigator_node),
+	  _waypoint_sub(data_bus->waypoint_node),
 	  _rc_sub(data_bus->rc_node),
 	  _time_sub(data_bus->time_node),
 	  _position_control_pub(data_bus->position_control_node)
@@ -23,7 +23,7 @@ void PositionControl::update()
 	_pos_est_data = _pos_est_sub.get();
 	_modes_data = _modes_sub.get();
 	_telem_data = _telem_sub.get();
-	_navigator_data = _navigator_sub.get();
+	_waypoint = _waypoint_sub.get();
 	_rc_data = _rc_sub.get();
 
 	if (_modes_data.system_mode == System_mode::FLIGHT)
@@ -47,6 +47,7 @@ void PositionControl::handle_manual_mode()
 	switch (_modes_data.manual_mode)
 	{
 	case Manual_mode::DIRECT:
+		update_direct();
 		break;
 	case Manual_mode::STABILIZED:
 		update_stabilized();
@@ -54,9 +55,18 @@ void PositionControl::handle_manual_mode()
 	}
 }
 
+void PositionControl::update_direct()
+{
+	_position_control.roll_setpoint = 0;
+	_position_control.pitch_setpoint = 0;
+	_position_control.throttle_setpoint = _rc_data.thr_norm;
+}
+
 void PositionControl::update_stabilized()
 {
 	_position_control.roll_setpoint = _rc_data.ail_norm * param_get_float(L1_ROLL_LIM);
+	_position_control.pitch_setpoint = _rc_data.ele_norm * param_get_float(TECS_PTCH_LIM);
+	_position_control.throttle_setpoint = _rc_data.thr_norm;
 }
 
 void PositionControl::handle_auto_mode()
@@ -64,9 +74,12 @@ void PositionControl::handle_auto_mode()
 	switch (_modes_data.auto_mode)
 	{
 	case Auto_mode::TAKEOFF:
+		update_takeoff();
+		break;
 	case Auto_mode::MISSION:
-	case Auto_mode::LAND:
 		update_mission();
+	case Auto_mode::LAND:
+		update_land();
 		break;
 	case Auto_mode::FLARE:
 		update_flare();
@@ -74,26 +87,23 @@ void PositionControl::handle_auto_mode()
 	}
 }
 
+void PositionControl::update_takeoff()
+{
+	_position_control.roll_setpoint = 0;
+	_position_control.pitch_setpoint = param_get_float(TKO_PTCH);
+	_position_control.throttle_setpoint = _rc_data.thr_norm;
+}
+
 // Update roll and altitude setpoints
 void PositionControl::update_mission()
 {
-	// Determine target and previous waypoints
-	const Waypoint& prev_wp = _telem_data.waypoints[_navigator_data.waypoint_index - 1];
-	const Waypoint& target_wp = _telem_data.waypoints[_navigator_data.waypoint_index];
-
-	// Convert waypoints to north east coordinates
-	double prev_north, prev_east, tgt_north, tgt_east;
-	lat_lon_to_meters(_telem_data.waypoints[0].lat, _telem_data.waypoints[0].lon,
-					  prev_wp.lat, prev_wp.lon, &prev_north, &prev_east);
-	lat_lon_to_meters(_telem_data.waypoints[0].lat, _telem_data.waypoints[0].lon,
-					  target_wp.lat, target_wp.lon, &tgt_north, &tgt_east);
-
 	// Calculate track heading (bearing from previous to target waypoint)
-	const float trk_hdg = atan2f(tgt_east - prev_east, tgt_north - prev_north);
+	const float trk_hdg = atan2f(_waypoint.current_east - _waypoint.previous_east,
+								 _waypoint.current_north - _waypoint.previous_north);
 
 	// Compute cross-track error (perpendicular distance from aircraft to path)
-	const float rel_east = _pos_est_data.pos_e - tgt_east;
-	const float rel_north = _pos_est_data.pos_n - tgt_north;
+	const float rel_east = _pos_est_data.pos_e - _waypoint.current_east;
+	const float rel_north = _pos_est_data.pos_n - _waypoint.current_north;
 	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
 	// Calculate L1 distance and scale with speed
@@ -109,23 +119,37 @@ void PositionControl::update_mission()
 	// Calculate lateral acceleration using l1 guidance
 	const float lateral_accel = 2 * powf(_pos_est_data.gnd_spd, 2) / l1_dist * sinf(hdg_err);
 
-	// Update roll and altitude setpoints
+	// Update roll setpoint
 	_position_control.roll_setpoint = calculate_roll_setpoint(lateral_accel);
-	_position_control.d_setpoint = calculate_altitude_setpoint(prev_north, prev_east,
-													  tgt_north, tgt_east,
-													  prev_wp, target_wp);
+
+	// Calculate altitude setpoint
+	_d_setpoint = calculate_altitude_setpoint(
+		_waypoint.current_north, _waypoint.current_east, _waypoint.current_alt,
+		_waypoint.previous_north, _waypoint.previous_east, _waypoint.previous_alt
+	);
+
+	// Update TECS
+	tecs_calculate_energies(param_get_float(TECS_SPD_CRUISE), _d_setpoint, 1);
+	_position_control.pitch_setpoint = tecs_control_energy_balance();
+	_position_control.throttle_setpoint = tecs_control_total_energy();
+}
+
+void PositionControl::update_land()
+{
+	// Add l1 control stuff here
+
+	tecs_calculate_energies(param_get_float(TECS_SPD_LND), _d_setpoint, 1);
+	_position_control.pitch_setpoint = tecs_control_energy_balance();
+	_position_control.throttle_setpoint = tecs_control_total_energy();
 }
 
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
 void PositionControl::update_flare()
 {
-	const Waypoint& land_wp = _telem_data.waypoints[-1];
-	const Waypoint& appr_wp = _telem_data.waypoints[-2];
-
 	// Calculate the glideslope angle based on the altitude difference and horizontal distance
-	const float dist_land_appr = lat_lon_to_distance(land_wp.lat, land_wp.lon,
-													 appr_wp.lat, appr_wp.lon);
-	const float glideslope_angle = atan2f(land_wp.alt - appr_wp.alt,
+	const float dist_land_appr = distance(_waypoint.previous_north, _waypoint.previous_east,
+										  _waypoint.current_north, _waypoint.current_east);
+	const float glideslope_angle = atan2f(_waypoint.current_alt - _waypoint.previous_alt,
 										  dist_land_appr - param_get_float(NAV_ACC_RAD));
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
@@ -134,21 +158,23 @@ void PositionControl::update_flare()
 	const float initial_altitude = fmaxf(param_get_float(LND_FL_ALT), final_altitude);
 	const float initial_sink_rate = fmaxf(param_get_float(LND_SPD)* sinf(glideslope_angle),
 								  	  	  final_sink_rate);
-	const float sink_rate = lerp(
-		initial_altitude, initial_sink_rate,
-		final_altitude, final_sink_rate,
-		clamp(-_pos_est_data.pos_d, final_altitude, initial_altitude)
-	);
+	const float sink_rate = lerp(initial_altitude, initial_sink_rate,
+								 final_altitude, final_sink_rate,
+								 clamp(-_pos_est_data.pos_d, final_altitude, initial_altitude));
 
 	// Update altitude setpoint with the calculated sink rate
-	_position_control.d_setpoint += sink_rate * _time_data.dt_s;
+	_d_setpoint += sink_rate * _time_data.dt_s;
 	_position_control.roll_setpoint = 0;
+
+	calculate_energies(0, _d_setpoint, 2);
+	_position_control.pitch_setpoint = control_energy_balance();
+	_position_control.throttle_setpoint = 0;
 }
 
 float PositionControl::calculate_altitude_setpoint(const float prev_north, const float prev_east, const float prev_down,
 		  	  	  	  	  	  	  	  	  	  	   const float tgt_north, const float tgt_east, const float tgt_down)
 {
-	if (_navigator_data.waypoint_index == 1)
+	if (_waypoint.current_index == 1)
 	{
 		// Takeoff
 		return tgt_down;
@@ -163,7 +189,7 @@ float PositionControl::calculate_altitude_setpoint(const float prev_north, const
 	const float initial_dist = param_get_float(NAV_ACC_RAD);
 	float final_dist;
 
-	if (_navigator_data.waypoint_index == _telem_data.num_waypoints - 1)
+	if (_waypoint.current_index == _telem_data.num_waypoints - 1)
 	{
 		// During landing, go directly to landing point
 		final_dist = dist_prev_tgt;

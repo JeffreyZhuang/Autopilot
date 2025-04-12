@@ -4,7 +4,7 @@ Navigator::Navigator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _pos_est_sub(data_bus->pos_est_node),
 	  _telem_new_waypoint_sub(data_bus->telem_new_waypoint_node),
-	  _navigator_pub(data_bus->navigator_node)
+	  _waypoint_pub(data_bus->waypoint_node)
 {
 }
 
@@ -25,7 +25,7 @@ void Navigator::update()
 	float rel_north = _pos_est_data.pos_n - tgt_north;
 	float dist_to_wp = sqrtf(rel_north * rel_north + rel_east * rel_east);
 	if (dist_to_wp < param_get_float(NAV_ACC_RAD) &&
-		_curr_wp_idx < telem_data.num_waypoints - 1)
+		_curr_wp_idx < _telem_new_waypoint.num_waypoints - 1)
 	{
 		_curr_wp_idx++; // Move to next waypoint
 
@@ -46,7 +46,7 @@ void Navigator::update()
 		waypoint.current_index = _curr_wp_idx;
 		waypoint.timestamp = _hal->get_time_us();
 
-		_navigator_pub.publish(waypoint);
+		_waypoint_pub.publish(waypoint);
 	}
 }
 
@@ -54,11 +54,12 @@ void Navigator::poll()
 {
 	if (_telem_new_waypoint_sub.check_new())
 	{
-		telem_new_waypoint_s telem_new_waypoint;
-		_waypoints[telem_new_waypoint.index] = Waypoint{
-			telem_new_waypoint.lat,
-			telem_new_waypoint.lon,
-			telem_new_waypoint.alt
+		_telem_new_waypoint = _telem_new_waypoint_sub.get();
+
+		_waypoints[_telem_new_waypoint.index] = Waypoint{
+			_telem_new_waypoint.lat,
+			_telem_new_waypoint.lon,
+			_telem_new_waypoint.alt
 		};
 	}
 

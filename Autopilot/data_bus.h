@@ -106,11 +106,20 @@ struct telem_new_waypoint_s
 
 struct position_control_s
 {
-	float cross_trk_err;
-	float d_setpoint;
 	float pitch_setpoint;
 	float roll_setpoint;
 	float throttle_setpoint;
+	uint64_t timestamp;
+};
+
+struct position_control_status_s
+{
+	float cross_trk_err;
+	float d_setpoint;
+	float total_energy_setpoint = 0;
+	float total_energy = 0;
+	float energy_balance_setpoint = 0;
+	float energy_balance = 0;
 	uint64_t timestamp;
 };
 
@@ -187,6 +196,13 @@ struct LogData
 	uint8_t packet[MAX_PACKET_LEN];
 	uint16_t packet_len;
 	uint64_t timestamp = 0;
+};
+
+struct home_position_s
+{
+	uint64_t timestamp;
+	double lat;
+	double lon;
 };
 
 template<typename T>
@@ -277,6 +293,7 @@ struct Data_bus
    	Node<LogData> log_node;
    	Node<telem_new_waypoint_s> telem_new_waypoint_node;
    	Node<position_control_s> position_control_node;
+   	Node<home_position_s> home_position_node;
 };
 
 #endif /* DATA_BUS_H_ */

@@ -3,9 +3,8 @@
 Attitude_control::Attitude_control(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _ahrs_sub(data_bus->ahrs_node),
-	  _tecs_sub(data_bus->tecs_node),
 	  _modes_sub(data_bus->modes_node),
-	  _l1_sub(data_bus->l1_node),
+	  _position_control_sub(data_bus->position_control_s),
 	  _rc_sub(data_bus->rc_node),
 	  _time_sub(data_bus->time_node),
 	  _ctrl_cmd_pub(data_bus->ctrl_cmd_node)
@@ -17,8 +16,7 @@ void Attitude_control::update()
 	_time_data = _time_sub.get();
 	_ahrs_data = _ahrs_sub.get();
 	_modes_data = _modes_sub.get();
-	_l1_data = _l1_sub.get();
-	_tecs_data = _tecs_sub.get();
+	_position_control = _position_control_sub.get();
 	_rc_data = _rc_sub.get();
 
 	if (_modes_data.system_mode == System_mode::FLIGHT)
@@ -90,7 +88,7 @@ void Attitude_control::control_roll_ptch()
 {
 	_ctrl_cmd_data.rud_cmd = roll_controller.get_output(
 		_ahrs_data.roll,
-		_l1_data.roll_setpoint,
+		_position_control.roll_setpoint,
 		param_get_float(ATT_ROLL_KP),
 		param_get_float(ATT_ROLL_KI),
 		1,
@@ -102,7 +100,7 @@ void Attitude_control::control_roll_ptch()
 
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
 		_ahrs_data.pitch,
-		_tecs_data.pitch_setpoint,
+		_position_control.pitch_setpoint,
 		param_get_float(ATT_PTCH_KP),
 		param_get_float(ATT_PTCH_KI),
 		1,
@@ -117,7 +115,7 @@ void Attitude_control::control_roll_ptch_no_integral()
 {
 	_ctrl_cmd_data.rud_cmd = roll_controller.get_output(
 		_ahrs_data.roll,
-		_l1_data.roll_setpoint,
+		_position_control.roll_setpoint,
 		param_get_float(ATT_ROLL_KP),
 		0,
 		0,
@@ -129,7 +127,7 @@ void Attitude_control::control_roll_ptch_no_integral()
 
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
 		_ahrs_data.pitch,
-		_tecs_data.pitch_setpoint,
+		_position_control.pitch_setpoint,
 		param_get_float(ATT_PTCH_KP),
 		0,
 		0,

@@ -50,6 +50,7 @@ private:
     Subscriber<OF_data> _of_sub;
     Subscriber<AHRS_data> _ahrs_sub;
     Subscriber<Telem_data> _telem_sub;
+    Subscriber<home_position_s> _home_position_sub;
 
     Publisher<Pos_est_data> _pos_est_pub;
 

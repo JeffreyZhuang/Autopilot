@@ -21,8 +21,7 @@ private:
 	PI_control pitch_controller;
 
 	Subscriber<AHRS_data> _ahrs_sub;
-	Subscriber<L1_data> _l1_sub;
-	Subscriber<TECS_data> _tecs_sub;
+	Subscriber<position_control_s> _position_control_sub;
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<RC_data> _rc_sub;
 	Subscriber<Time_data> _time_sub;
@@ -31,8 +30,7 @@ private:
 
 	AHRS_data _ahrs_data;
 	RC_data _rc_data;
-	L1_data _l1_data;
-	TECS_data _tecs_data;
+	position_control_s _position_control;
 	Modes_data _modes_data;
 	Ctrl_cmd_data _ctrl_cmd_data;
 	Time_data _time_data;

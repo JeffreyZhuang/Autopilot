@@ -25,9 +25,11 @@ private:
 	Subscriber<Pos_est_data> _pos_est_sub;
 	Subscriber<telem_new_waypoint_s> _telem_new_waypoint_sub;
 
-	Publisher<Navigator_data> _navigator_pub;
+	Publisher<waypoint_s> _waypoint_pub;
 
 	Pos_est_data _pos_est_data;
+	telem_new_waypoint_s _telem_new_waypoint;
+
 	uint8_t _curr_wp_idx = 1;
 	Waypoint _waypoints[50];
 

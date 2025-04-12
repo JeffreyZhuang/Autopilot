@@ -4,7 +4,7 @@ Mixer::Mixer(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _modes_sub(data_bus->modes_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
-	  _tecs_sub(data_bus->tecs_node),
+	  _position_control_sub(data_bus->position_control_node),
 	  _telem_sub(data_bus->telem_node),
 	  _hitl_output_pub(data_bus->hitl_output_node)
 {
@@ -28,6 +28,8 @@ void Mixer::update()
 		break;
 	case System_mode::FLIGHT:
 		update_flight();
+		break;
+	case System_mode::CALIBRATION:
 		break;
 	}
 }
@@ -55,10 +57,10 @@ void Mixer::update_flight()
 	);
 
 	// TODO: Remove reverse for throttle
-	_throttle_duty = map(_tecs_data.thr_cmd, 0, 1, param_get_int32(PWM_MIN_THR),
+	_throttle_duty = map(_position_control.throttle_setpoint, 0, 1, param_get_int32(PWM_MIN_THR),
 						 param_get_int32(PWM_MAX_THR));
 
-	if (_telem_data.hitl_enable)
+	if (param_get_int32(ENABLE_HITL))
 	{
 		// Publish HITL commands to data bus, then telem sends through usb
 		_hitl_output_pub.publish(HITL_output_data{_elevator_duty, _rudder_duty, _throttle_duty,

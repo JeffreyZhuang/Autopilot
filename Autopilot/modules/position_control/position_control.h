@@ -22,7 +22,7 @@ private:
 	Subscriber<Pos_est_data> _pos_est_sub;
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<Telem_data> _telem_sub;
-	Subscriber<Navigator_data> _navigator_sub;
+	Subscriber<waypoint_s> _waypoint_sub;
 	Subscriber<RC_data> _rc_sub;
 	Subscriber<Time_data> _time_sub;
 
@@ -32,22 +32,27 @@ private:
 	AHRS_data _ahrs_data{};
 	Pos_est_data _pos_est_data{};
 	Telem_data _telem_data{};
-	Navigator_data _navigator_data{};
-	position_control_s _position_control;
+	waypoint_s _waypoint{};
+	position_control_s _position_control{};
 	RC_data _rc_data{};
 	Time_data _time_data{};
 
 	PI_control energy_balance_controller;
 	PI_control total_energy_controller;
+
 	float _total_energy_setpoint = 0;
 	float _total_energy = 0;
 	float _energy_balance_setpoint = 0;
 	float _energy_balance = 0;
+	float _d_setpoint = 0;
 
 	void handle_manual_mode();
 	void handle_auto_mode();
+	void update_direct();
 	void update_stabilized();
+	void update_takeoff();
 	void update_mission();
+	void update_land();
 	void update_flare();
 	float calculate_altitude_setpoint(const float prev_north, const float prev_east, const float prev_down,
 	  	  	  	  	  	 	 	 	  const float tgt_north, const float tgt_east, const float tgt_down);

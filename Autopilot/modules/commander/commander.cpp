@@ -6,7 +6,7 @@ Commander::Commander(HAL* hal, Data_bus* data_bus)
 	  _pos_est_sub(data_bus->pos_est_node),
 	  _rc_sub(data_bus->rc_node),
 	  _telem_sub(data_bus->telem_node),
-	  _navigator_sub(data_bus->navigator_node),
+	  _waypoint_sub(data_bus->waypoint_node),
 	  _modes_pub(data_bus->modes_node)
 {
 	_modes_data.system_mode = System_mode::LOAD_PARAMS;
@@ -22,7 +22,7 @@ void Commander::update()
 	_ahrs_data = _ahrs_sub.get();
 	_rc_data = _rc_sub.get();
 	_telem_data = _telem_sub.get();
-	_navigator_data = _navigator_sub.get();
+	_waypoint = _waypoint_sub.get();
 
 	switch (_modes_data.system_mode)
 	{
@@ -34,8 +34,6 @@ void Commander::update()
 		break;
 	case System_mode::FLIGHT:
 		handle_flight_mode();
-		break;
-	case System_mode::DOWNLOAD_LOGS:
 		break;
 	case System_mode::CALIBRATION:
 		break;
@@ -124,7 +122,7 @@ void Commander::update_takeoff()
 
 void Commander::update_mission()
 {
-	if (_navigator_data.waypoint_index == _telem_data.num_waypoints - 1)
+	if (_waypoint.current_index == _telem_data.num_waypoints - 1)
 	{
 		_modes_data.auto_mode = Auto_mode::LAND;
 	}
@@ -132,7 +130,7 @@ void Commander::update_mission()
 
 void Commander::update_land()
 {
-	if (-_pos_est_data.pos_d < param_get_float(LND_FLARE_ALT))
+	if (-_pos_est_data.pos_d < param_get_float(LND_FL_ALT))
 	{
 		_modes_data.auto_mode = Auto_mode::FLARE;
 	}

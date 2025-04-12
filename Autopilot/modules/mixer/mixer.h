@@ -15,7 +15,7 @@ public:
 
 private:
 	Subscriber<Modes_data> _modes_sub;
-	Subscriber<TECS_data> _tecs_sub;
+	Subscriber<position_control_s> _position_control_sub;
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 	Subscriber<Telem_data> _telem_sub;
 
@@ -23,7 +23,7 @@ private:
 
 	Modes_data _modes_data{};
 	Ctrl_cmd_data _ctrl_cmd_data{};
-	TECS_data _tecs_data{};
+	position_control_s _position_control{};
 	Telem_data _telem_data{};
 
 	uint16_t _elevator_duty = 0;

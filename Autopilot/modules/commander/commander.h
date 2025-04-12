@@ -19,7 +19,7 @@ private:
 	Subscriber<Pos_est_data> _pos_est_sub;
 	Subscriber<RC_data> _rc_sub;
 	Subscriber<Telem_data> _telem_sub;
-	Subscriber<Navigator_data> _navigator_sub;
+	Subscriber<waypoint_s> _waypoint_sub;
 
 	Publisher<Modes_data> _modes_pub;
 
@@ -27,7 +27,7 @@ private:
 	AHRS_data _ahrs_data{};
 	Modes_data _modes_data{};
 	RC_data _rc_data{};
-	Navigator_data _navigator_data{};
+	waypoint_s _waypoint{};
 	Telem_data _telem_data{};
 
 	void handle_flight_mode();

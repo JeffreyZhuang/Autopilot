@@ -14,6 +14,7 @@ Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
 	  _of_sub(data_bus->of_node),
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _telem_sub(data_bus->telem_node),
+	  _home_position_sub(data_bus->home_position_node),
 	  _pos_est_pub(data_bus->pos_est_node)
 {
 }
@@ -117,7 +118,7 @@ void Position_estimator::update_gps()
 {
 	// Convert lat/lon to meters
 	double gnss_north_meters, gnss_east_meters;
-	lat_lon_to_meters(_telem_data.waypoints[0].lat, _telem_data.waypoints[0].lon,
+	lat_lon_to_meters(_home_position_sub.get().lat, _home_position_sub.get().lon,
 					  _gnss_data.lat, _gnss_data.lon, &gnss_north_meters, &gnss_east_meters);
 
 	Eigen::VectorXf y(2);
