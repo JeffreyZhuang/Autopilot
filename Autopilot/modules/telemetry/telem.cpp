@@ -6,13 +6,14 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _gnss_sub(data_bus->gnss_node),
 	  _modes_sub(data_bus->modes_node),
-	  _l1_sub(data_bus->l1_node),
-	  _navigator_sub(data_bus->navigator_node),
+	  _position_control_sub(data_bus->position_control_node),
+	  _waypoint_sub(data_bus->waypoint_node),
 	  _power_sub(data_bus->power_node),
-	  _tecs_sub(data_bus->tecs_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
 	  _baro_sub(data_bus->baro_node),
 	  _imu_sub(data_bus->imu_node),
+	  _log_sub(data_bus->log_node),
+	  _telem_new_waypoint_pub(data_bus->telem_new_waypoint_node),
 	  _telem_pub(data_bus->telem_node)
 {
 }

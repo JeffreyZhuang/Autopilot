@@ -38,10 +38,9 @@ private:
 	Subscriber<AHRS_data> _ahrs_sub;
 	Subscriber<Pos_est_data> _pos_est_sub;
 	Subscriber<Modes_data> _modes_sub;
-	Subscriber<L1_data> _l1_sub;
-	Subscriber<Navigator_data> _navigator_sub;
+	Subscriber<position_control_s> _position_control_sub;
+	Subscriber<waypoint_s> _waypoint_sub;
 	Subscriber<Power_data> _power_sub;
-	Subscriber<TECS_data> _tecs_sub;
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<IMU_data> _imu_sub;
@@ -56,10 +55,8 @@ private:
 	Telem_data _telem_data;
 	Pos_est_data _pos_est_data;
 	Modes_data _modes_data;
-	L1_data _l1_data;
-	Navigator_data _navigator_data;
+	position_control_s  _position_control;
 	Power_data _power_data;
-	TECS_data _tecs_data;
 	Baro_data _baro_data;
 	IMU_data _imu_data;
 

@@ -10,7 +10,6 @@
 #include "modules/position_estimator/position_estimator.h"
 #include "modules/rc_handler/rc_handler.h"
 #include "modules/storage/storage.h"
-#include "modules/tecs/tecs.h"
 #include "modules/telemetry/telem.h"
 #include "modules/sensors/sensors.h"
 #include "modules/usb_comm/usb_comm.h"
@@ -37,7 +36,6 @@ private:
     Mixer _mixer;
     Rc_handler _rc_handler;
     Commander _commander;
-    Tecs _tecs;
     Navigator _navigator;
     Sensors _sensors;
     USBComm _usb_comm;

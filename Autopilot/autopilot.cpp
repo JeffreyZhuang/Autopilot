@@ -10,7 +10,6 @@ Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
 	  _mixer(hal, data_bus),
 	  _rc_handler(hal, data_bus),
 	  _commander(hal, data_bus),
-	  _tecs(hal, data_bus),
 	  _navigator(hal, data_bus),
 	  _sensors(hal, data_bus),
 	  _usb_comm(hal, data_bus)
@@ -36,7 +35,6 @@ void Autopilot::main_task()
 	_commander.update();
 	_navigator.update();
 	_position_control.update();
-	_tecs.update();
 	_att_control.update();
 	_mixer.update();
 	_storage.update();

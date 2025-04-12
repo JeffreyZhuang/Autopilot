@@ -129,7 +129,7 @@ void PositionControl::update_mission()
 	);
 
 	// Update TECS
-	tecs_calculate_energies(param_get_float(TECS_SPD_CRUISE), _d_setpoint, 1);
+	tecs_calculate_energies(param_get_float(MIS_SPD), _d_setpoint, 1);
 	_position_control.pitch_setpoint = tecs_control_energy_balance();
 	_position_control.throttle_setpoint = tecs_control_total_energy();
 }
@@ -138,7 +138,7 @@ void PositionControl::update_land()
 {
 	// Add l1 control stuff here
 
-	tecs_calculate_energies(param_get_float(TECS_SPD_LND), _d_setpoint, 1);
+	tecs_calculate_energies(param_get_float(LND_SPD), _d_setpoint, 1);
 	_position_control.pitch_setpoint = tecs_control_energy_balance();
 	_position_control.throttle_setpoint = tecs_control_total_energy();
 }
@@ -166,8 +166,8 @@ void PositionControl::update_flare()
 	_d_setpoint += sink_rate * _time_data.dt_s;
 	_position_control.roll_setpoint = 0;
 
-	calculate_energies(0, _d_setpoint, 2);
-	_position_control.pitch_setpoint = control_energy_balance();
+	tecs_calculate_energies(0, _d_setpoint, 2);
+	_position_control.pitch_setpoint = tecs_control_energy_balance();
 	_position_control.throttle_setpoint = 0;
 }
 

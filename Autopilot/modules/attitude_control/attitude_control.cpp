@@ -4,7 +4,7 @@ Attitude_control::Attitude_control(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _modes_sub(data_bus->modes_node),
-	  _position_control_sub(data_bus->position_control_s),
+	  _position_control_sub(data_bus->position_control_node),
 	  _rc_sub(data_bus->rc_node),
 	  _time_sub(data_bus->time_node),
 	  _ctrl_cmd_pub(data_bus->ctrl_cmd_node)
