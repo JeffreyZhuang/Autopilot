@@ -1,4 +1,4 @@
-#include "modules/position_estimator/position_estimator.h"
+#include <modules/local_position_estimator/position_estimator.h>
 
 Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),

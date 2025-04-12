@@ -1,4 +1,4 @@
-#include "modules/attitude_control/attitude_control.h"
+#include <modules/attitude_control/attitude_control.h>
 
 Attitude_control::Attitude_control(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
