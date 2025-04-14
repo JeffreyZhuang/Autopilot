@@ -57,6 +57,8 @@ void Position_estimator::update_initialization()
 		// Set barometer home position
 		_pos_est_data.baro_offset = avg_baro.getAverage();
 
+		// Call kalman set state and set it to gps position meters, simple one line
+
 		pos_estimator_state = Pos_estimator_state::RUNNING;
 	}
 }

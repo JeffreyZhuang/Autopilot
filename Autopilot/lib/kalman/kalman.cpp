@@ -8,10 +8,8 @@ Kalman::Kalman(int n, int m)
 	_x = Eigen::MatrixXf::Zero(n, 1);
 }
 
-void Kalman::predict(Eigen::MatrixXf u,
-					 Eigen::MatrixXf A,
-					 Eigen::MatrixXf B,
-					 Eigen::MatrixXf Q)
+void Kalman::predict(Eigen::MatrixXf u, Eigen::MatrixXf A,
+					 Eigen::MatrixXf B, Eigen::MatrixXf Q)
 {
     _x = A * _x + B * u;
     _P_mat = A * _P_mat * A.transpose() + Q;
@@ -33,4 +31,9 @@ Eigen::MatrixXf Kalman::get_estimate()
 Eigen::MatrixXf Kalman::get_covariance()
 {
     return _P_mat;
+}
+
+void Kalman::set_x(Eigen::MatrixXf x)
+{
+	_x = x;
 }

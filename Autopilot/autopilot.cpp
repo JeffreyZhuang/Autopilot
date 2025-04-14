@@ -15,6 +15,7 @@ Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
 	  _usb_comm(hal, data_bus)
 {
 	_hal = hal;
+
 	create_params();
 }
 

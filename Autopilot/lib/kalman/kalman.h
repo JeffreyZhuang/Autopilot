@@ -12,6 +12,7 @@ public:
     void update(Eigen::MatrixXf R, Eigen::MatrixXf H, Eigen::MatrixXf y);
     Eigen::MatrixXf get_estimate();
     Eigen::MatrixXf get_covariance();
+    void set_x(Eigen::MatrixXf x);
 
 private:
     Eigen::MatrixXf _x;

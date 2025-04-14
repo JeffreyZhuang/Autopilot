@@ -99,7 +99,7 @@ void PositionControl::update_takeoff()
 void PositionControl::update_mission()
 {
 	// Update roll setpoint
-	_position_control.roll_setpoint = calculate_roll_setpoint();
+	_position_control.roll_setpoint = l1_calculate_roll();
 
 	// Calculate altitude setpoint
 	_d_setpoint = calculate_altitude_setpoint(
@@ -116,7 +116,7 @@ void PositionControl::update_mission()
 void PositionControl::update_land()
 {
 	// Update roll setpoint
-		_position_control.roll_setpoint = calculate_roll_setpoint();
+	_position_control.roll_setpoint = l1_calculate_roll();
 
 	// Calculate altitude setpoint
 	_d_setpoint = calculate_altitude_setpoint(
@@ -194,7 +194,7 @@ float PositionControl::calculate_altitude_setpoint(const float prev_north, const
 	);
 }
 
-float PositionControl::calculate_roll_setpoint() const
+float PositionControl::l1_calculate_roll() const
 {
 	// Calculate track heading (bearing from previous to target waypoint)
 	const float trk_hdg = atan2f(_waypoint.current_east - _waypoint.previous_east,
@@ -210,10 +210,15 @@ float PositionControl::calculate_roll_setpoint() const
 
 	// Calculate correction angle
 	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
+
+	// Apply correction angle to track heading to compute heading setpoint
 	const float hdg_setpoint = trk_hdg - correction_angle;
 
+	// Calculate plane velocity heading
+	const float plane_hdg = atan2f(_pos_est_data.vel_e, _pos_est_data.vel_n);
+
 	// Calculate plane heading error
-	const float hdg_err = hdg_setpoint - _ahrs_data.yaw * DEG_TO_RAD;
+	const float hdg_err = hdg_setpoint - plane_hdg;
 
 	// Calculate lateral acceleration using l1 guidance
 	const float lateral_accel = 2 * powf(_pos_est_data.gnd_spd, 2) / l1_dist * sinf(hdg_err);

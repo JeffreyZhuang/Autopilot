@@ -1,6 +1,6 @@
-#include <lib/aplink/aplink.h>
+#include "aplink.h"
 
-bool aplink_parse_byte(aplink_msg* link_msg, uint8_t byte)
+bool aplink_parse_byte(aplink_msg_t* link_msg, uint8_t byte)
 {
 	if (byte == START_BYTE)
 	{
@@ -59,7 +59,7 @@ uint16_t aplink_pack(uint8_t packet[], const uint8_t payload[], const uint8_t pa
 	return index; // Return packet size
 }
 
-bool aplink_unpack(const uint8_t packet[], uint8_t payload[], uint8_t& payload_len, uint8_t& msg_id)
+bool aplink_unpack(const uint8_t packet[], uint8_t payload[], uint8_t* payload_len, uint8_t* msg_id)
 {
     // Validate start byte
     if (packet[0] != START_BYTE)
@@ -67,12 +67,12 @@ bool aplink_unpack(const uint8_t packet[], uint8_t payload[], uint8_t& payload_l
         return false; // Invalid packet
     }
 
-    payload_len = packet[1];
-    msg_id = packet[2];
+    *payload_len = packet[1];
+    *msg_id = packet[2];
 
     // Compute expected checksum
     uint16_t expected_checksum = aplink_crc16(&packet[1], payload_len + HEADER_LEN - 1);
-    uint16_t received_checksum = (packet[payload_len + HEADER_LEN] << 8) | packet[payload_len + HEADER_LEN + 1];
+    uint16_t received_checksum = (packet[*payload_len + HEADER_LEN] << 8) | packet[*payload_len + HEADER_LEN + 1];
 
     if (expected_checksum != received_checksum)
     {
