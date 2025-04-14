@@ -14,7 +14,7 @@ USBComm::USBComm(HAL* hal, Data_bus* data_bus)
 	  _baro_sub(data_bus->baro_node),
 	  _telem_sub(data_bus->telem_node),
 	  _home_pos_sub(data_bus->home_position_node),
-	  _hitl_pub(data_bus->hitl_node)
+	  _hitl_sensors_pub(data_bus->hitl_sensors_node)
 {
 }
 
@@ -61,7 +61,7 @@ void USBComm::read_hitl()
 	aplink_hitl_sensors hitl_sensors;
 	aplink_hitl_sensors_unpack(&msg, &hitl_sensors);
 
-	HITL_data hitl_data;
+	hitl_sensors_s hitl_data;
 	hitl_data.imu_ax = hitl_sensors.imu_ax;
 	hitl_data.imu_ay = hitl_sensors.imu_ay;
 	hitl_data.imu_az = hitl_sensors.imu_az;
@@ -69,7 +69,7 @@ void USBComm::read_hitl()
 	hitl_data.imu_gy = hitl_sensors.imu_gy;
 	hitl_data.imu_gz = hitl_sensors.imu_gz;
 
-	_hitl_pub.publish(hitl_data);
+	_hitl_sensors_pub.publish(hitl_data);
 }
 
 void USBComm::transmit_hitl()

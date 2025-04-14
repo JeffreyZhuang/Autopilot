@@ -14,7 +14,7 @@ public:
 
 private:
 	Subscriber<Modes_data> _modes_sub;
-	Subscriber<HITL_data> _hitl_sub;
+	Subscriber<hitl_sensors_s> _hitl_sensors_sub;
 	Subscriber<Telem_data> _telem_sub;
 
 	Publisher<IMU_data> _imu_pub;
@@ -23,11 +23,11 @@ private:
 	Publisher<OF_data> _of_pub;
 	Publisher<GNSS_data> _gnss_pub;
 	Publisher<Power_data> _power_pub;
-	Publisher<Time_data> _time_pub;
+	Publisher<time_s> _time_pub;
 
-	Time_data _time_data{};
+	time_s _time{};
 	Modes_data _modes_data;
-	HITL_data _hitl_data;
+	hitl_sensors_s _hitl_sensors;
 };
 
 #endif /* MODULES_SENSORS_SENSORS_H_ */

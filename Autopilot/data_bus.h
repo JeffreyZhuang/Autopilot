@@ -155,7 +155,7 @@ struct waypoint_s
 	uint64_t timestamp = 0;
 };
 
-struct Time_data
+struct time_s
 {
 	float dt_s = 0;
 	uint32_t loop_iteration = 0;
@@ -163,7 +163,7 @@ struct Time_data
 	uint64_t timestamp = 0;
 };
 
-struct HITL_data
+struct hitl_sensors_s
 {
 	float imu_ax;
 	float imu_ay;
@@ -266,7 +266,7 @@ private:
  */
 struct Data_bus
 {
-	Node<Time_data> time_node;
+	Node<time_s> time_node;
 	Node<Modes_data> modes_node;
     Node<IMU_data> imu_node;
     Node<Mag_data> mag_node;
@@ -280,7 +280,7 @@ struct Data_bus
    	Node<Ctrl_cmd_data> ctrl_cmd_node;
    	Node<RC_data> rc_node;
    	Node<waypoint_s> waypoint_node;
-   	Node<HITL_data> hitl_node;
+   	Node<hitl_sensors_s> hitl_sensors_node;
    	Node<HITL_output_data> hitl_output_node;
    	Node<telem_new_waypoint_s> telem_new_waypoint_node;
    	Node<position_control_s> position_control_node;

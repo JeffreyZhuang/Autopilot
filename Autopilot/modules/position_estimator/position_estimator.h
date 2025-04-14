@@ -42,7 +42,7 @@ private:
     float window_lat[window_len];
     float window_lon[window_len];
 
-    Subscriber<Time_data> _time_sub;
+    Subscriber<time_s> _time_sub;
     Subscriber<Modes_data> _modes_sub;
     Subscriber<IMU_data> _imu_sub;
     Subscriber<Baro_data> _baro_sub;
@@ -61,7 +61,7 @@ private:
     Baro_data _baro_data{};
     AHRS_data _ahrs_data{};
     IMU_data _imu_data{};
-    Time_data _time_data{};
+    time_s _time{};
     Telem_data _telem_data{};
 
     void update_initialization();

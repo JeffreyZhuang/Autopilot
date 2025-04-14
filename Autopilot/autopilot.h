@@ -2,8 +2,8 @@
 #define AUTOPILOT_H
 
 #include <modules/attitude_control/attitude_control.h>
-#include <modules/local_position_estimator/position_estimator.h>
 #include <modules/position_control/position_control.h>
+#include <modules/position_estimator/position_estimator.h>
 #include "modules/ahrs/ahrs.h"
 #include "modules/commander/commander.h"
 #include "modules/mixer/mixer.h"

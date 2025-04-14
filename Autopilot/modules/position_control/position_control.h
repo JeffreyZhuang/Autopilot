@@ -24,7 +24,7 @@ private:
 	Subscriber<Telem_data> _telem_sub;
 	Subscriber<waypoint_s> _waypoint_sub;
 	Subscriber<RC_data> _rc_sub;
-	Subscriber<Time_data> _time_sub;
+	Subscriber<time_s> _time_sub;
 
 	Publisher<position_control_s> _position_control_pub;
 
@@ -35,7 +35,7 @@ private:
 	waypoint_s _waypoint{};
 	position_control_s _position_control{};
 	RC_data _rc_data{};
-	Time_data _time_data{};
+	time_s _time_data{};
 
 	PI_control energy_balance_controller;
 	PI_control total_energy_controller;

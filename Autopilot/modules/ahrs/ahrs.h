@@ -48,11 +48,11 @@ private:
 	Subscriber<IMU_data> _imu_sub;
 	Subscriber<Mag_data> _mag_sub;
 	Subscriber<Modes_data> _modes_sub;
-	Subscriber<Time_data> _time_sub;
+	Subscriber<time_s> _time_sub;
 
 	Publisher<AHRS_data> _ahrs_pub;
 
-	Time_data _time_data{};
+	time_s _time{};
 	IMU_data _imu_data{};
 	Mag_data _mag_data{};
 	Modes_data _modes_data{};

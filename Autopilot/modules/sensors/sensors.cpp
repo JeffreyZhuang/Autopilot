@@ -3,7 +3,7 @@
 Sensors::Sensors(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _modes_sub(data_bus->modes_node),
-	  _hitl_sub(data_bus->hitl_node),
+	  _hitl_sensors_sub(data_bus->hitl_sensors_node),
 	  _telem_sub(data_bus->telem_node),
 	  _imu_pub(data_bus->imu_node),
 	  _mag_pub(data_bus->mag_node),
@@ -20,20 +20,20 @@ void Sensors::update()
 	// Need to do this for every module. If AHRS updates at 100hz but imu updates at 30hz, it needs to recalculate
 	uint64_t time = _hal->get_time_us();
 
-	if (_time_data.timestamp > 0)
+	if (_time.timestamp > 0)
 	{
-		_time_data.dt_s = (time - _time_data.timestamp) * US_TO_S;
+		_time.dt_s = (time - _time.timestamp) * US_TO_S;
 	}
 	else
 	{
 		// Initialize
-		_time_data.dt_s = 0;
+		_time.dt_s = 0;
 	}
 
-	_time_data.timestamp = time;
-	_time_data.loop_iteration++;
+	_time.timestamp = time;
+	_time.loop_iteration++;
 
-	_time_pub.publish(_time_data);
+	_time_pub.publish(_time);
 
 	_modes_data = _modes_sub.get();
 
@@ -52,13 +52,13 @@ void Sensors::update()
 
 		if (param_get_int32(ENABLE_HITL))
 		{
-			if (_hitl_sub.check_new())
+			if (_hitl_sensors_sub.check_new())
 			{
-				_hitl_data = _hitl_sub.get();
+				_hitl_sensors = _hitl_sensors_sub.get();
 
-				_imu_pub.publish(IMU_data{_hitl_data.imu_gx, _hitl_data.imu_gy, _hitl_data.imu_gz,
-										  _hitl_data.imu_ax, _hitl_data.imu_ay, _hitl_data.imu_az});
-				_baro_pub.publish(Baro_data{_hitl_data.baro_asl, time});
+				_imu_pub.publish(IMU_data{_hitl_sensors.imu_gx, _hitl_sensors.imu_gy, _hitl_sensors.imu_gz,
+										  _hitl_sensors.imu_ax, _hitl_sensors.imu_ay, _hitl_sensors.imu_az});
+				_baro_pub.publish(Baro_data{_hitl_sensors.baro_asl, time});
 			}
 		}
 		else

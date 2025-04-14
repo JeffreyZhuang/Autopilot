@@ -28,7 +28,7 @@ private:
 	Subscriber<Pos_est_data> _pos_est_sub;
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<Modes_data> _modes_sub;
-	Subscriber<Time_data> _time_sub;
+	Subscriber<time_s> _time_sub;
 	Subscriber<RC_data> _rc_sub;
 	Subscriber<AHRS_data> _ahrs_sub;
 
@@ -38,7 +38,7 @@ private:
 	Pos_est_data _pos_est_data{};
 	Baro_data _baro_data{};
 	Modes_data _modes_data{};
-	Time_data _time_data{};
+	time_s _time{};
 	RC_data _rc_data{};
 	AHRS_data _ahrs_data{};
 

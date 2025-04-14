@@ -32,7 +32,7 @@ private:
 	Subscriber<Telem_data> _telem_sub;
 	Subscriber<home_position_s> _home_pos_sub;
 
-	Publisher<HITL_data> _hitl_pub;
+	Publisher<hitl_sensors_s> _hitl_sensors_pub;
 
 	Ctrl_cmd_data _ctrl_cmd_data;
 	AHRS_data _ahrs_data;
@@ -42,7 +42,7 @@ private:
 	Modes_data _modes_data{};
 	position_control_s _position_control{};
 	Power_data _power_data{};
-	HITL_data _hitl_data;
+	hitl_sensors_s _hitl_sensors;
 	Baro_data _baro_data;
 
 	aplink_msg msg;

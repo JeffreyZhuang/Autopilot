@@ -18,12 +18,12 @@ AHRS::AHRS(HAL* hal, Data_bus* data_bus)
 
 void AHRS::update()
 {
-	_time_data = _time_sub.get();
+	_time = _time_sub.get();
 	_modes_data = _modes_sub.get();
 
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
-		filter.set_dt(_time_data.dt_s);
+		filter.set_dt(_time.dt_s);
 		filter.set_beta(param_get_float(AHRS_BETA_GAIN));
 
 		switch (ahrs_state)

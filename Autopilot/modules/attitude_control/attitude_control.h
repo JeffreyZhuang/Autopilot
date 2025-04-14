@@ -24,7 +24,7 @@ private:
 	Subscriber<position_control_s> _position_control_sub;
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<RC_data> _rc_sub;
-	Subscriber<Time_data> _time_sub;
+	Subscriber<time_s> _time_sub;
 
 	Publisher<Ctrl_cmd_data> _ctrl_cmd_pub;
 
@@ -33,7 +33,7 @@ private:
 	position_control_s _position_control;
 	Modes_data _modes_data;
 	Ctrl_cmd_data _ctrl_cmd_data;
-	Time_data _time_data;
+	time_s _time;
 
 	void handle_manual_mode();
 	void handle_auto_mode();

@@ -13,7 +13,7 @@ Attitude_control::Attitude_control(HAL* hal, Data_bus* data_bus)
 
 void Attitude_control::update()
 {
-	_time_data = _time_sub.get();
+	_time = _time_sub.get();
 	_ahrs_data = _ahrs_sub.get();
 	_modes_data = _modes_sub.get();
 	_position_control = _position_control_sub.get();
@@ -95,7 +95,7 @@ void Attitude_control::control_roll_ptch()
 		-1,
 		1,
 		0,
-		_time_data.dt_s
+		_time.dt_s
 	);
 
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
@@ -107,7 +107,7 @@ void Attitude_control::control_roll_ptch()
 		-1,
 		1,
 		0,
-		_time_data.dt_s
+		_time.dt_s
 	);
 }
 
@@ -122,7 +122,7 @@ void Attitude_control::control_roll_ptch_no_integral()
 		-1,
 		1,
 		0,
-		_time_data.dt_s
+		_time.dt_s
 	);
 
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
@@ -134,6 +134,6 @@ void Attitude_control::control_roll_ptch_no_integral()
 		-1,
 		1,
 		0,
-		_time_data.dt_s
+		_time.dt_s
 	);
 }

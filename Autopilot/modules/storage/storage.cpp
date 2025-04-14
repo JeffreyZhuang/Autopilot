@@ -16,7 +16,7 @@ Storage::Storage(HAL* hal, Data_bus* data_bus)
 
 void Storage::update()
 {
-	_time_data = _time_sub.get();
+	_time = _time_sub.get();
 	_imu_data = _imu_sub.get();
 	_baro_data = _baro_sub.get();
 	_rc_data = _rc_sub.get();
@@ -28,10 +28,10 @@ void Storage::update()
 
 	if (_modes_data.system_mode == System_mode::LOAD_PARAMS)
 	{
-		if (_time_data.unix_epoch_time > 0)
+		if (_time.unix_epoch_time > 0)
 		{
 			char filename[20];
-			sprintf(filename, "%ld", _time_data.unix_epoch_time);
+			sprintf(filename, "%ld", _time.unix_epoch_time);
 			_hal->create_file(filename, strlen(filename));
 		}
 	}

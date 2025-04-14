@@ -1,4 +1,4 @@
-#include <modules/local_position_estimator/position_estimator.h>
+#include <modules/position_estimator/position_estimator.h>
 
 Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
@@ -22,7 +22,7 @@ Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
 void Position_estimator::update()
 {
 	_modes_data = _modes_sub.get();
-	_time_data = _time_sub.get();
+	_time = _time_sub.get();
 	_telem_data = _telem_sub.get();
 
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
@@ -111,7 +111,7 @@ void Position_estimator::predict_accel()
 											  _ahrs_data.yaw * DEG_TO_RAD);
 	acc_ned(2) += G; // Gravity correction
 
-	kalman.predict(acc_ned, get_a(_time_data.dt_s), get_b(_time_data.dt_s), get_q());
+	kalman.predict(acc_ned, get_a(_time.dt_s), get_b(_time.dt_s), get_q());
 
 	update_plane();
 }
