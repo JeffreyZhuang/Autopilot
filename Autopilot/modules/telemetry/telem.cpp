@@ -12,7 +12,6 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
 	  _baro_sub(data_bus->baro_node),
 	  _imu_sub(data_bus->imu_node),
-	  _log_sub(data_bus->log_node),
 	  _telem_new_waypoint_pub(data_bus->telem_new_waypoint_node),
 	  _telem_pub(data_bus->telem_node)
 {
@@ -58,27 +57,32 @@ void Telem::update_load_params()
 			telem_msg.payload_len == sizeof(aplink_param_set))
 		{
 			aplink_param_set param_set;
-			aplink_param_set_decode(&telem_msg, &param_set);
+			aplink_param_set_unpack(&telem_msg, &param_set);
 
-			param_t param = param_find(param_set.param_id);
+			param_t param = param_find(param_set.name);
 			if (param == PARAM_INVALID)
 			{
 				printf("Param not found\n");
 			}
-			else if ((param_get_type(param) == PARAM_TYPE_FLOAT && param_set.type != 0) ||
-					 (param_get_type(param) == PARAM_TYPE_INT32 && param_set.type != 1))
+			else if (param_get_type(param) == PARAM_TYPE_FLOAT &&
+					 param_set.type == PARAM_TYPE::FLOAT)
+			{
+				float value;
+				memcpy(&value, param_set.value, sizeof(value));
+				param_set_float(param, value);
+				printf("Telem params set\n");
+			}
+			else if (param_get_type(param) == PARAM_TYPE_INT32 &&
+					 param_set.type == PARAM_TYPE::INT32)
+			{
+				int32_t value;
+				memcpy(&value, param_set.value, sizeof(value));
+				param_set_int32(param, value);
+				printf("Telem params set\n");
+			}
+			else
 			{
 				printf("Param type wrong\n");
-			}
-			else if (param_get_type(param) == PARAM_TYPE_FLOAT)
-			{
-				param_set_float(param, param_set.f);
-				printf("Telem params set\n");
-			}
-			else if (param_get_type(param) == PARAM_TYPE_INT32)
-			{
-				param_set_int32(param, param_set.i);
-				printf("Telem params set\n");
 			}
 		}
 	}
@@ -93,29 +97,29 @@ void Telem::update_load_waypoints()
 {
 	if (read_telem(&telem_msg))
 	{
-		if (telem_msg.msg_id == LOAD_WAYPOINTS_MSG_ID)
+		if (telem_msg.msg_id == WAYPOINTS_COUNT_MSG_ID)
 		{
-			aplink_load_waypoints load_waypoints;
-			aplink_load_waypoints_decode(&telem_msg, &load_waypoints);
+			aplink_waypoints_count waypoints_count;
+			aplink_waypoints_count_unpack(&telem_msg, &waypoints_count);
 
 			// Reset counter
 			_last_waypoint_loaded = 0;
 
 			// Get number of waypoints
-			_num_waypoints = load_waypoints.num_waypoints;
+			_num_waypoints = waypoints_count.num_waypoints;
 
 			// Request first waypoint
-			aplink_req_waypoint req_waypoint;
+			aplink_request_waypoint req_waypoint;
 			req_waypoint.index = 0;
 
 			uint8_t packet[MAX_PACKET_LEN];
-			uint16_t len = aplink_req_waypoint_pack(req_waypoint, packet);
+			uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
 			_hal->transmit_telem(packet, len);
 		}
 		else if (telem_msg.msg_id == WAYPOINT_MSG_ID)
 		{
 			aplink_waypoint waypoint;
-			aplink_waypoint_decode(&telem_msg, &waypoint);
+			aplink_waypoint_unpack(&telem_msg, &waypoint);
 
 			telem_new_waypoint_s new_waypoint_s;
 			new_waypoint_s.lat = (double)waypoint.lat * 1E-7;
@@ -133,11 +137,11 @@ void Telem::update_load_waypoints()
 			else
 			{
 				// Request next waypoint
-				aplink_req_waypoint req_waypoint;
+				aplink_request_waypoint req_waypoint;
 				req_waypoint.index = ++_last_waypoint_loaded;
 
 				uint8_t packet[MAX_PACKET_LEN];
-				uint16_t len = aplink_req_waypoint_pack(req_waypoint, packet);
+				uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
 				_hal->transmit_telem(packet, len);
 			}
 		}
@@ -195,10 +199,10 @@ void Telem::update_send_telemetry()
 		last_power_transmit_s = current_time_s;
 
 		aplink_power power;
-		power.autopilot_current = 0;
-		power.battery_current = 0;
-		power.battery_voltage = 0;
-		power.battery_used = 0;
+		power.ap_curr = 0;
+		power.batt_curr = 0;
+		power.batt_volt = 0;
+		power.batt_used = 0;
 
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_power_pack(power, packet);

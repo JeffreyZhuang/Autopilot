@@ -1,11 +1,15 @@
 #ifndef MODULES_USB_COMM_USB_COMM_H_
 #define MODULES_USB_COMM_USB_COMM_H_
 
-#include "lib/aplink/aplink.h"
-#include "lib/aplink/aplink_messages.h"
 #include "lib/utils/utils.h"
 #include "params.h"
 #include "module.h"
+
+extern "C"
+{
+#include "lib/aplink_c/aplink.h"
+#include "lib/aplink_c/aplink_messages.h"
+}
 
 class USBComm : Module
 {

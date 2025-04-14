@@ -10,8 +10,7 @@ Storage::Storage(HAL* hal, Data_bus* data_bus)
 	  _gnss_sub(data_bus->gnss_node),
 	  _time_sub(data_bus->time_node),
 	  _rc_sub(data_bus->rc_node),
-	  _ahrs_sub(data_bus->ahrs_node),
-	  _log_pub(data_bus->log_node)
+	  _ahrs_sub(data_bus->ahrs_node)
 {
 }
 

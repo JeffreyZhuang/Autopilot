@@ -23,7 +23,7 @@ void USBComm::update()
 	// Read
 	if (read_usb())
 	{
-		if (msg.msg_id == HITL_INPUT_MSG_ID)
+		if (msg.msg_id == HITL_SENSORS_MSG_ID)
 		{
 			read_hitl();
 		}
@@ -58,16 +58,16 @@ bool USBComm::read_usb()
 
 void USBComm::read_hitl()
 {
-	aplink_hitl_input hitl_input;
-	aplink_hitl_input_decode(&msg, &hitl_input);
+	aplink_hitl_sensors hitl_sensors;
+	aplink_hitl_sensors_unpack(&msg, &hitl_sensors);
 
 	HITL_data hitl_data;
-	hitl_data.imu_ax = hitl_input.imu_ax;
-	hitl_data.imu_ay = hitl_input.imu_ay;
-	hitl_data.imu_az = hitl_input.imu_az;
-	hitl_data.imu_gx = hitl_input.imu_gx;
-	hitl_data.imu_gy = hitl_input.imu_gy;
-	hitl_data.imu_gz = hitl_input.imu_gz;
+	hitl_data.imu_ax = hitl_sensors.imu_ax;
+	hitl_data.imu_ay = hitl_sensors.imu_ay;
+	hitl_data.imu_az = hitl_sensors.imu_az;
+	hitl_data.imu_gx = hitl_sensors.imu_gx;
+	hitl_data.imu_gy = hitl_sensors.imu_gy;
+	hitl_data.imu_gz = hitl_sensors.imu_gz;
 
 	_hitl_pub.publish(hitl_data);
 }
@@ -76,13 +76,13 @@ void USBComm::transmit_hitl()
 {
 	HITL_output_data hitl_output_data = _hitl_output_sub.get();
 
-	aplink_hitl_output hitl_output;
-	hitl_output.ele_duty = hitl_output_data.ele_duty;
-	hitl_output.rud_duty = hitl_output_data.rud_duty;
-	hitl_output.thr_duty = hitl_output_data.thr_duty;
+	aplink_hitl_commands hitl_commands;
+	hitl_commands.ele_pwm = hitl_output_data.ele_duty;
+	hitl_commands.rud_pwm = hitl_output_data.rud_duty;
+	hitl_commands.thr_pwm = hitl_output_data.thr_duty;
 
 	uint8_t buffer[MAX_PACKET_LEN];
-	uint16_t size = aplink_hitl_output_pack(hitl_output, buffer);
+	uint16_t size = aplink_hitl_commands_pack(hitl_commands, buffer);
 
 	_hal->usb_transmit(buffer, size);
 }

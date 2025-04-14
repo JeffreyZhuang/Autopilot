@@ -1,7 +1,6 @@
 #ifndef DATA_BUS_H_
 #define DATA_BUS_H_
 
-#include <lib/aplink/aplink.h>
 #include "modes.h"
 #include <stdint.h>
 
@@ -191,13 +190,6 @@ struct HITL_output_data
 	uint64_t timestamp = 0;
 };
 
-struct LogData
-{
-	uint8_t packet[MAX_PACKET_LEN];
-	uint16_t packet_len;
-	uint64_t timestamp = 0;
-};
-
 struct home_position_s
 {
 	double lat;
@@ -290,7 +282,6 @@ struct Data_bus
    	Node<waypoint_s> waypoint_node;
    	Node<HITL_data> hitl_node;
    	Node<HITL_output_data> hitl_output_node;
-   	Node<LogData> log_node;
    	Node<telem_new_waypoint_s> telem_new_waypoint_node;
    	Node<position_control_s> position_control_node;
    	Node<home_position_s> home_position_node;

@@ -1,8 +1,6 @@
 #ifndef TELEM_H_
 #define TELEM_H_
 
-#include "lib/aplink/aplink.h"
-#include "lib/aplink/aplink_messages.h"
 #include "lib/utils/utils.h"
 #include "hal.h"
 #include "modes.h"
@@ -11,6 +9,12 @@
 #include "module.h"
 #include <cstdio>
 #include <cstring>
+
+extern "C"
+{
+#include "lib/aplink_c/aplink.h"
+#include "lib/aplink_c/aplink_messages.h"
+}
 
 // Rate to transmit messages
 static constexpr float VFR_HUD_DT = 0.03;
@@ -44,7 +48,6 @@ private:
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<IMU_data> _imu_sub;
-	Subscriber<LogData> _log_sub;
 
 	Publisher<Telem_data> _telem_pub;
 	Publisher<telem_new_waypoint_s> _telem_new_waypoint_pub;

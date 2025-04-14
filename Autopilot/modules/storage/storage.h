@@ -1,14 +1,18 @@
 #ifndef MODULES_STORAGE_STORAGE_H_
 #define MODULES_STORAGE_STORAGE_H_
 
-#include "lib/aplink/aplink.h"
-#include "lib/aplink/aplink_messages.h"
 #include "data_bus.h"
 #include "hal.h"
 #include "module.h"
 #include <stdint.h>
 #include <cstring>
 #include <stdio.h>
+
+extern "C"
+{
+#include "lib/aplink_c/aplink.h"
+#include "lib/aplink_c/aplink_messages.h"
+}
 
 class Storage : public Module
 {
@@ -27,8 +31,6 @@ private:
 	Subscriber<Time_data> _time_sub;
 	Subscriber<RC_data> _rc_sub;
 	Subscriber<AHRS_data> _ahrs_sub;
-
-	Publisher<LogData> _log_pub;
 
 	IMU_data _imu_data{};
 	Mag_data _mag_data{};
