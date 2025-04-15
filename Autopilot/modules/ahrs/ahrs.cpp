@@ -23,8 +23,7 @@ void AHRS::update()
 
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
-		filter.set_dt(_time.dt_s);
-		filter.set_beta(param_get_float(AHRS_BETA_GAIN));
+		update_filter_parameters();
 
 		switch (ahrs_state)
 		{
@@ -36,6 +35,12 @@ void AHRS::update()
 			break;
 		}
 	}
+}
+
+void AHRS::update_filter_parameters()
+{
+	filter.set_dt(_time.dt_s);
+	filter.set_beta(param_get_float(AHRS_BETA_GAIN));
 }
 
 void AHRS::update_initialization()

@@ -65,6 +65,7 @@ private:
 	void set_initial_angles();
 	void publish_ahrs();
 	bool is_accel_reliable();
+	void update_filter_parameters();
 };
 
 #endif
