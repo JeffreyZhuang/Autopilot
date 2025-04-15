@@ -65,8 +65,8 @@ void PositionControl::update_direct()
 
 void PositionControl::update_stabilized()
 {
-	_position_control.roll_setpoint = _rc_data.ail_norm * param_get_float(L1_ROLL_LIM);
-	_position_control.pitch_setpoint = _rc_data.ele_norm * param_get_float(TECS_PTCH_LIM);
+	_position_control.roll_setpoint = _rc_data.ail_norm * L1_ROLL_LIM.get();
+	_position_control.pitch_setpoint = _rc_data.ele_norm * TECS_PTCH_LIM.get();
 	_position_control.throttle_setpoint = _rc_data.thr_norm;
 }
 
@@ -91,7 +91,7 @@ void PositionControl::handle_auto_mode()
 void PositionControl::update_takeoff()
 {
 	_position_control.roll_setpoint = 0;
-	_position_control.pitch_setpoint = param_get_float(TKO_PTCH);
+	_position_control.pitch_setpoint = TKO_PTCH.get();
 	_position_control.throttle_setpoint = _rc_data.thr_norm;
 }
 
@@ -108,7 +108,7 @@ void PositionControl::update_mission()
 	);
 
 	// Update TECS
-	tecs_calculate_energies(param_get_float(MIS_SPD), _d_setpoint, 1);
+	tecs_calculate_energies(MIS_SPD.get(), _d_setpoint, 1);
 	_position_control.pitch_setpoint = tecs_control_energy_balance();
 	_position_control.throttle_setpoint = tecs_control_total_energy();
 }
@@ -125,7 +125,7 @@ void PositionControl::update_land()
 	);
 
 	// Update TECS
-	tecs_calculate_energies(param_get_float(LND_SPD), _d_setpoint, 1);
+	tecs_calculate_energies(LND_SPD.get(), _d_setpoint, 1);
 	_position_control.pitch_setpoint = tecs_control_energy_balance();
 	_position_control.throttle_setpoint = tecs_control_total_energy();
 }
@@ -137,13 +137,13 @@ void PositionControl::update_flare()
 	const float dist_land_appr = distance(_waypoint.previous_north, _waypoint.previous_east,
 										  _waypoint.current_north, _waypoint.current_east);
 	const float glideslope_angle = atan2f(_waypoint.current_alt - _waypoint.previous_alt,
-										  dist_land_appr - param_get_float(NAV_ACC_RAD));
+										  dist_land_appr - NAV_ACC_RAD.get());
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
 	const float final_altitude = 0;
-	const float final_sink_rate = param_get_float(LND_FL_SINK);
-	const float initial_altitude = fmaxf(param_get_float(LND_FL_ALT), final_altitude);
-	const float initial_sink_rate = fmaxf(param_get_float(LND_SPD)* sinf(glideslope_angle),
+	const float final_sink_rate = LND_FL_SINK.get();
+	const float initial_altitude = fmaxf(LND_FL_ALT.get(), final_altitude);
+	const float initial_sink_rate = fmaxf(LND_SPD.get() * sinf(glideslope_angle),
 								  	  	  final_sink_rate);
 	const float sink_rate = lerp(initial_altitude, initial_sink_rate,
 								 final_altitude, final_sink_rate,
@@ -173,7 +173,7 @@ float PositionControl::calculate_altitude_setpoint(const float prev_north, const
 		_pos_est_data.pos_n, _pos_est_data.pos_e
 	);
 
-	const float initial_dist = param_get_float(NAV_ACC_RAD);
+	const float initial_dist = NAV_ACC_RAD.get();
 	float final_dist;
 
 	if (_waypoint.current_index == _telem_data.num_waypoints - 1)
@@ -184,7 +184,7 @@ float PositionControl::calculate_altitude_setpoint(const float prev_north, const
 	else
 	{
 		// Reach altitude when within acceptance radius of next waypoint
-		final_dist = dist_prev_tgt - param_get_float(NAV_ACC_RAD);
+		final_dist = dist_prev_tgt - NAV_ACC_RAD.get();
 	}
 
 	// Altitude first order hold
@@ -206,7 +206,7 @@ float PositionControl::l1_calculate_roll() const
 	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
 	// Calculate L1 distance and scale with speed
-	const float l1_dist = fmaxf(param_get_float(L1_PERIOD) * _pos_est_data.gnd_spd / M_PI, 1.0);
+	const float l1_dist = fmaxf(L1_PERIOD.get() * _pos_est_data.gnd_spd / M_PI, 1.0);
 
 	// Calculate correction angle
 	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
@@ -227,7 +227,7 @@ float PositionControl::l1_calculate_roll() const
 	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
 
 	// Return clamped roll angle
-	return clamp(roll, -param_get_float(L1_ROLL_LIM), param_get_float(L1_ROLL_LIM));
+	return clamp(roll, -L1_ROLL_LIM.get(), L1_ROLL_LIM.get());
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)
@@ -267,8 +267,8 @@ void PositionControl::tecs_calculate_energies(float target_vel_mps, float target
 
 	// Clamp total energy setpoint within allowed airspeed range
 	// Prevent stall/overspeed
-	float min_kin = 0.5 * powf(param_get_float(MIN_SPD), 2);
-	float max_kin = 0.5 * powf(param_get_float(MAX_SPD), 2);
+	float min_kin = 0.5 * powf(MIN_SPD.get(), 2);
+	float max_kin = 0.5 * powf(MAX_SPD.get(), 2);
 	target_total = clamp(target_total, energy_pot + min_kin, energy_pot + max_kin);
 
 	// Compute energy difference setpoint and measurement
@@ -291,11 +291,11 @@ float PositionControl::tecs_control_energy_balance()
 	return energy_balance_controller.get_output(
 		_energy_balance,
 		_energy_balance_setpoint,
-		param_get_float(TECS_PTCH_KP),
-		param_get_float(TECS_PTCH_KI),
-		param_get_float(TECS_PTCH_LIM),
-		-param_get_float(TECS_PTCH_LIM),
-		param_get_float(TECS_PTCH_LIM),
+		TECS_PTCH_KP.get(),
+		TECS_PTCH_KI.get(),
+		TECS_PTCH_LIM.get(),
+		-TECS_PTCH_LIM.get(),
+		TECS_PTCH_LIM.get(),
 		0,
 		_time_data.dt_s
 	);
@@ -306,12 +306,12 @@ float PositionControl::tecs_control_total_energy()
 	return total_energy_controller.get_output(
 		_total_energy,
 		_total_energy_setpoint,
-		param_get_float(TECS_THR_KP),
-		param_get_float(TECS_THR_KI),
+		TECS_THR_KP.get(),
+		TECS_THR_KI.get(),
 		1,
 		0,
 		1,
-		param_get_float(MIS_THR),
+		MIS_THR.get(),
 		_time_data.dt_s
 	);
 }

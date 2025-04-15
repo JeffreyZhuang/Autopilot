@@ -3,12 +3,11 @@
 
 #include "lib/parameters/parameters.h"
 
-// Declare all parameter handles
-#define PARAM(name, type) extern param_t name;
+// Forward declarations
+#define PARAM(name, type, default) extern type name;
 #include "params_def.h"
 #undef PARAM
 
-// Function to initialize all parameters
-void create_params(void);
+void params_init(void);
 
 #endif /* PARAMS_H_ */
