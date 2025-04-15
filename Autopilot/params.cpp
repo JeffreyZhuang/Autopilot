@@ -1,13 +1,15 @@
 #include "params.h"
 
-// Instantiate parameters
-#define PARAM(name, type, default) type name(#name, default);
+// Define all parameters
+#define PARAM(name, type) param_t name;
 #include "params_def.h"
 #undef PARAM
 
-void params_init(void) {
-    // Register all parameters
-    #define PARAM(name, type, default) param_register(&name);
+// Function to register parameters
+void create_params(void) {
+    param_init();
+
+    #define PARAM(name, type) name = param_add(#name, type);
     #include "params_def.h"
     #undef PARAM
 }

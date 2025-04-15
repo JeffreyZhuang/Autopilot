@@ -131,7 +131,7 @@ void Position_estimator::update_gps()
 	H << 1, 0, 0, 0, 0, 0,
 		 0, 1, 0, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 2> R(EKF_GNSS_VAR.get(), EKF_GNSS_VAR.get());
+	Eigen::DiagonalMatrix<float, 2> R(param_get_float(EKF_GNSS_VAR), param_get_float(EKF_GNSS_VAR));
 
 	kalman.update(R, H, y);
 
@@ -146,7 +146,7 @@ void Position_estimator::update_baro()
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 1> R(EKF_BARO_VAR.get());
+	Eigen::DiagonalMatrix<float, 1> R(param_get_float(EKF_BARO_VAR));
 
 	kalman.update(R, H, y);
 
@@ -207,7 +207,7 @@ Eigen::Vector3f Position_estimator::inertial_to_ned(const Eigen::Vector3f& imu_m
 bool Position_estimator::is_of_reliable()
 {
 	float flow = sqrtf(powf(_of_data.x, 2) + powf(_of_data.y, 2));
-	return flow > EKF_OF_MIN.get() && flow < param_get_int32(EKF_OF_MAX);
+	return flow > param_get_int32(EKF_OF_MIN) && flow < param_get_int32(EKF_OF_MAX);
 }
 
 Eigen::MatrixXf Position_estimator::get_a(float dt)

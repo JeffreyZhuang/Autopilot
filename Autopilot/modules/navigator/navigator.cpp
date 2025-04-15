@@ -25,7 +25,7 @@ void Navigator::update()
 	float rel_east = _pos_est_data.pos_e - tgt_east;
 	float rel_north = _pos_est_data.pos_n - tgt_north;
 	float dist_to_wp = sqrtf(rel_north * rel_north + rel_east * rel_east);
-	if (dist_to_wp < NAV_ACC_RAD.get() &&
+	if (dist_to_wp < param_get_float(NAV_ACC_RAD) &&
 		_curr_wp_idx < _telem_new_waypoint.num_waypoints - 1)
 	{
 		_curr_wp_idx++; // Move to next waypoint
