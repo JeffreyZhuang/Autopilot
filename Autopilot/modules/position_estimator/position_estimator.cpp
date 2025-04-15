@@ -207,7 +207,7 @@ Eigen::Vector3f Position_estimator::inertial_to_ned(const Eigen::Vector3f& imu_m
 bool Position_estimator::is_of_reliable()
 {
 	float flow = sqrtf(powf(_of_data.x, 2) + powf(_of_data.y, 2));
-	return flow > EKF_OF_MIN.get() && flow < EKF_OF_MAX.get();
+	return flow > EKF_OF_MIN.get() && flow < param_get_int32(EKF_OF_MAX);
 }
 
 Eigen::MatrixXf Position_estimator::get_a(float dt)
