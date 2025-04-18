@@ -25,7 +25,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 		Flight_hal::main_task_callback();
 	}
-	else if (&htim6) // 1hz interrupt lower priority
+	else if (&htim6) // 1hz low priority interrupt
 	{
 		Flight_hal::sd_interrupt_callback();
 	}
