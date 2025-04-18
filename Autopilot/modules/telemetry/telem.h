@@ -17,8 +17,7 @@ extern "C"
 }
 
 // Rate to transmit messages
-static constexpr float VFR_HUD_DT = 0.03;
-static constexpr float NAV_DISPLAY_DT = 0.1;
+static constexpr float VEHICLE_STATUS_FULL_DT = 0.03;
 static constexpr float GPS_RAW_DT = 0.2;
 static constexpr float POWER_DT = 1;
 static constexpr float CAL_SENSORS_DT = 0.1;
@@ -40,7 +39,7 @@ public:
 private:
 	Subscriber<GNSS_data> _gnss_sub;
 	Subscriber<AHRS_data> _ahrs_sub;
-	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<position_control_s> _position_control_sub;
 	Subscriber<waypoint_s> _waypoint_sub;
@@ -56,7 +55,7 @@ private:
 	AHRS_data _ahrs_data;
 	GNSS_data _gnss_data;
 	Telem_data _telem_data;
-	Pos_est_data _pos_est_data;
+	local_position_s _local_pos;
 	Modes_data _modes_data;
 	position_control_s  _position_control;
 	Power_data _power_data;
@@ -66,8 +65,7 @@ private:
 	aplink_msg telem_msg;
 
 	TelemState _telem_state;
-	float last_vfr_hud_transmit_s = 0;
-	float last_nav_display_transmit_s = 0;
+	float last_vehicle_status_full_transmit_s = 0;
 	float last_gps_raw_transmit_s = 0;
 	float last_cal_sensors_transmit_s = 0;
 	float last_power_transmit_s = 0;

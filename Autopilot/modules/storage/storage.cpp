@@ -5,7 +5,7 @@ Storage::Storage(HAL* hal, Data_bus* data_bus)
 	  _imu_sub(data_bus->imu_node),
 	  _baro_sub(data_bus->baro_node),
 	  _modes_sub(data_bus->modes_node),
-	  _pos_est_sub(data_bus->pos_est_node),
+	  _local_pos_sub(data_bus->local_position_node),
 	  _mag_sub(data_bus->mag_node),
 	  _gnss_sub(data_bus->gnss_node),
 	  _time_sub(data_bus->time_node),
@@ -20,7 +20,7 @@ void Storage::update()
 	_imu_data = _imu_sub.get();
 	_baro_data = _baro_sub.get();
 	_rc_data = _rc_sub.get();
-	_pos_est_data = _pos_est_sub.get();
+	_local_pos = _local_pos_sub.get();
 	_mag_data = _mag_sub.get();
 	_modes_data = _modes_sub.get();
 	_gnss_data = _gnss_sub.get();
@@ -55,14 +55,14 @@ void Storage::write()
 		_hal->write_storage(gps_raw_buff[i]);
 	}
 
-	aplink_vfr_hud vfr_hud;
-	vfr_hud.roll = _ahrs_data.roll;
-	vfr_hud.pitch = _ahrs_data.pitch;
-	vfr_hud.yaw = _ahrs_data.yaw;
-	uint8_t vfr_hud_buff[MAX_PACKET_LEN];
-	uint16_t vfr_hud_len = aplink_vfr_hud_pack(vfr_hud, vfr_hud_buff);
-	for (int i = 0; i < vfr_hud_len; i++)
+	aplink_vehicle_status_full vehicle_status_full;
+	vehicle_status_full.roll = _ahrs_data.roll;
+	vehicle_status_full.pitch = _ahrs_data.pitch;
+	vehicle_status_full.yaw = _ahrs_data.yaw;
+	uint8_t vehicle_status_full_buff[MAX_PACKET_LEN];
+	uint16_t vehicle_status_full_len = aplink_vehicle_status_full_pack(vehicle_status_full, vehicle_status_full_buff);
+	for (int i = 0; i < vehicle_status_full_len; i++)
 	{
-		_hal->write_storage(vfr_hud_buff[i]);
+		_hal->write_storage(vehicle_status_full_buff[i]);
 	}
 }

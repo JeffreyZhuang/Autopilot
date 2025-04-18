@@ -25,7 +25,7 @@ private:
 	Subscriber<IMU_data> _imu_sub;
 	Subscriber<Mag_data> _mag_sub;
 	Subscriber<GNSS_data> _gnss_sub;
-	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<time_s> _time_sub;
@@ -35,7 +35,7 @@ private:
 	IMU_data _imu_data{};
 	Mag_data _mag_data{};
 	GNSS_data _gnss_data{};
-	Pos_est_data _pos_est_data{};
+	local_position_s _local_pos;
 	Baro_data _baro_data{};
 	Modes_data _modes_data{};
 	time_s _time{};

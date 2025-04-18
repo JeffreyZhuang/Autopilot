@@ -2,7 +2,6 @@
 #define POSITION_ESTIMATOR_H
 
 #include "lib/kalman/kalman.h"
-#include "lib/moving_average/moving_avg.h"
 #include "lib/utils/utils.h"
 #include "hal.h"
 #include "constants.h"
@@ -12,12 +11,6 @@
 
 static constexpr int n = 6;
 static constexpr int m = 3;
-
-enum class Pos_estimator_state
-{
-	INITIALIZATION,
-	RUNNING
-};
 
 /**
  * @brief Calculates the position and altitude of the plane
@@ -32,16 +25,6 @@ public:
 private:
     Kalman kalman;
 
-    Pos_estimator_state pos_estimator_state = Pos_estimator_state::INITIALIZATION;
-
-    MovingAverage avg_baro;
-    MovingAverage avg_lat;
-    MovingAverage avg_lon;
-    static constexpr uint8_t window_len = 50;
-    float window_baro[window_len];
-    float window_lat[window_len];
-    float window_lon[window_len];
-
     Subscriber<time_s> _time_sub;
     Subscriber<Modes_data> _modes_sub;
     Subscriber<IMU_data> _imu_sub;
@@ -50,11 +33,10 @@ private:
     Subscriber<OF_data> _of_sub;
     Subscriber<AHRS_data> _ahrs_sub;
     Subscriber<Telem_data> _telem_sub;
-    Subscriber<home_position_s> _home_position_sub;
 
-    Publisher<Pos_est_data> _pos_est_pub;
+    Publisher<local_position_s> _local_pos_pub;
 
-    Pos_est_data _pos_est_data{};
+    local_position_s _local_pos{};
     OF_data _of_data{};
     Modes_data _modes_data{};
     GNSS_data _gnss_data{};

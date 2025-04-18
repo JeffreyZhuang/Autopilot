@@ -25,14 +25,13 @@ void AHRS::update()
 	{
 		update_filter_parameters();
 
-		switch (ahrs_state)
+		if (!_ahrs_data.converged)
 		{
-		case Ahrs_state::INITIALIZATION:
 			update_initialization();
-			break;
-		case Ahrs_state::RUNNING:
+		}
+		else
+		{
 			update_running();
-			break;
 		}
 	}
 }
@@ -60,7 +59,8 @@ void AHRS::update_initialization()
 		if (avg_ax.getFilled())
 		{
 			set_initial_angles();
-			ahrs_state = Ahrs_state::RUNNING;
+
+			_ahrs_data.converged = true;
 		}
 	}
 }
@@ -112,14 +112,15 @@ void AHRS::update_gyro()
 
 void AHRS::publish_ahrs()
 {
-	// Account yaw for magnetic declination and normalize to [-180, 180]
-	_ahrs_pub.publish(AHRS_data{
-		ahrs_state == Ahrs_state::RUNNING,
-		filter.getRoll(),
-		filter.getPitch(),
-		fmod(filter.getYaw() + param_get_float(AHRS_MAG_DECL) + 180.0f, 360.0f) - 180.0f,
-		_hal->get_time_us()
-	});
+	_ahrs_data.roll = filter.getRoll();
+	_ahrs_data.pitch = filter.getPitch();
+
+	// Add magnetic declination and normalize to [-180, 180]
+	_ahrs_data.yaw = fmod(filter.getYaw() + param_get_float(AHRS_MAG_DECL) + 180.0f, 360.0f) - 180.0f;
+
+	_ahrs_data.timestamp = _hal->get_time_us();
+
+	_ahrs_pub.publish(_ahrs_data);
 }
 
 void AHRS::set_initial_angles()

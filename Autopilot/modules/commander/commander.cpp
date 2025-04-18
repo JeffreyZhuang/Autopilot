@@ -3,7 +3,7 @@
 Commander::Commander(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _ahrs_sub(data_bus->ahrs_node),
-	  _pos_est_sub(data_bus->pos_est_node),
+	  _local_pos_sub(data_bus->local_position_node),
 	  _rc_sub(data_bus->rc_node),
 	  _telem_sub(data_bus->telem_node),
 	  _waypoint_sub(data_bus->waypoint_node),
@@ -18,7 +18,7 @@ Commander::Commander(HAL* hal, Data_bus* data_bus)
 
 void Commander::update()
 {
-	_pos_est_data = _pos_est_sub.get();
+	_local_pos = _local_pos_sub.get();
 	_ahrs_data = _ahrs_sub.get();
 	_rc_data = _rc_sub.get();
 	_telem_data = _telem_sub.get();
@@ -103,10 +103,8 @@ void Commander::update_startup()
 							!_rc_data.man_sw &&
 							!_rc_data.mod_sw;
 
-	if (_ahrs_data.converged &&
-		_pos_est_data.converged &&
-		_rc_data.tx_conn &&
-		transmitter_safe)
+	if (_ahrs_data.converged && _local_pos.converged &&
+		_rc_data.tx_conn && transmitter_safe)
 	{
 		_modes_data.system_mode = System_mode::FLIGHT;
 	}
@@ -114,7 +112,7 @@ void Commander::update_startup()
 
 void Commander::update_takeoff()
 {
-	if (-_pos_est_data.pos_d > param_get_float(TKO_ALT))
+	if (-_local_pos.z > param_get_float(TKO_ALT))
 	{
 		_modes_data.auto_mode = Auto_mode::MISSION;
 	}
@@ -130,7 +128,7 @@ void Commander::update_mission()
 
 void Commander::update_land()
 {
-	if (-_pos_est_data.pos_d < param_get_float(LND_FL_ALT))
+	if (-_local_pos.z < param_get_float(LND_FL_ALT))
 	{
 		_modes_data.auto_mode = Auto_mode::FLARE;
 	}

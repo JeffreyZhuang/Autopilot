@@ -22,13 +22,12 @@ public:
 	void update() override;
 
 private:
-	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<telem_new_waypoint_s> _telem_new_waypoint_sub;
 
 	Publisher<waypoint_s> _waypoint_pub;
-	Publisher<home_position_s> _home_pos_pub;
 
-	Pos_est_data _pos_est_data;
+	local_position_s _local_pos;
 	telem_new_waypoint_s _telem_new_waypoint;
 
 	uint8_t _curr_wp_idx = 1;

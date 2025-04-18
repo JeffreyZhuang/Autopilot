@@ -7,7 +7,7 @@
 PositionControl::PositionControl(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _ahrs_sub(data_bus->ahrs_node),
-	  _pos_est_sub(data_bus->pos_est_node),
+	  _local_pos_sub(data_bus->local_position_node),
 	  _modes_sub(data_bus->modes_node),
 	  _telem_sub(data_bus->telem_node),
 	  _waypoint_sub(data_bus->waypoint_node),
@@ -20,7 +20,7 @@ PositionControl::PositionControl(HAL* hal, Data_bus* data_bus)
 void PositionControl::update()
 {
 	_ahrs_data = _ahrs_sub.get();
-	_pos_est_data = _pos_est_sub.get();
+	_local_pos = _local_pos_sub.get();
 	_modes_data = _modes_sub.get();
 	_telem_data = _telem_sub.get();
 	_waypoint = _waypoint_sub.get();
@@ -147,7 +147,7 @@ void PositionControl::update_flare()
 								  	  	  final_sink_rate);
 	const float sink_rate = lerp(initial_altitude, initial_sink_rate,
 								 final_altitude, final_sink_rate,
-								 clamp(-_pos_est_data.pos_d, final_altitude, initial_altitude));
+								 clamp(-_local_pos.z, final_altitude, initial_altitude));
 
 	// Update altitude setpoint with the calculated sink rate
 	_d_setpoint += sink_rate * _time_data.dt_s;
@@ -170,7 +170,7 @@ float PositionControl::calculate_altitude_setpoint(const float prev_north, const
 	const float dist_prev_tgt = distance(prev_north, prev_east, tgt_north, tgt_east);
 	const float along_track_dist = compute_along_track_distance(
 		prev_north, prev_east, tgt_north, tgt_east,
-		_pos_est_data.pos_n, _pos_est_data.pos_e
+		_local_pos.x, _local_pos.y
 	);
 
 	const float initial_dist = param_get_float(NAV_ACC_RAD);
@@ -201,12 +201,12 @@ float PositionControl::l1_calculate_roll() const
 								 _waypoint.current_north - _waypoint.previous_north);
 
 	// Compute cross-track error (perpendicular distance from aircraft to path)
-	const float rel_east = _pos_est_data.pos_e - _waypoint.current_east;
-	const float rel_north = _pos_est_data.pos_n - _waypoint.current_north;
+	const float rel_east = _local_pos.y - _waypoint.current_east;
+	const float rel_north = _local_pos.x - _waypoint.current_north;
 	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
 	// Calculate L1 distance and scale with speed
-	const float l1_dist = fmaxf(param_get_float(L1_PERIOD) * _pos_est_data.gnd_spd / M_PI, 1.0);
+	const float l1_dist = fmaxf(param_get_float(L1_PERIOD) * _local_pos.gnd_spd / M_PI, 1.0);
 
 	// Calculate correction angle
 	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
@@ -215,13 +215,13 @@ float PositionControl::l1_calculate_roll() const
 	const float hdg_setpoint = trk_hdg - correction_angle;
 
 	// Calculate plane velocity heading
-	const float plane_hdg = atan2f(_pos_est_data.vel_e, _pos_est_data.vel_n);
+	const float plane_hdg = atan2f(_local_pos.vy, _local_pos.vx);
 
 	// Calculate plane heading error
 	const float hdg_err = hdg_setpoint - plane_hdg;
 
 	// Calculate lateral acceleration using l1 guidance
-	const float lateral_accel = 2 * powf(_pos_est_data.gnd_spd, 2) / l1_dist * sinf(hdg_err);
+	const float lateral_accel = 2 * powf(_local_pos.gnd_spd, 2) / l1_dist * sinf(hdg_err);
 
 	// Calculate roll to get desired lateral accel
 	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
@@ -256,8 +256,8 @@ void PositionControl::tecs_calculate_energies(float target_vel_mps, float target
 	// SPe = gh
 	// SKe = 1/2 v^2
 	// Ignore mass since its the energy ratio that matters
-	float energy_pot = G * (-_pos_est_data.pos_d);
-	float energy_kin = 0.5 * powf(_pos_est_data.gnd_spd, 2);
+	float energy_pot = G * (-_local_pos.z);
+	float energy_kin = 0.5 * powf(_local_pos.gnd_spd, 2);
 	float energy_total = energy_pot + energy_kin;
 
 	// Calculate target energy using same equations

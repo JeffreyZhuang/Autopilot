@@ -23,44 +23,101 @@ enum COMMAND_ID
 
     CALIBRATE,
 
-    LOAD_WAYPOINTS,
+};
 
-    HITL_ENABLE,
+enum MODE_ID
+{
+
+    CONFIG,
+
+    STARTUP,
+
+    MANUAL,
+
+    FBW,
+
+    TAKEOFF,
+
+    MISSION,
+
+    LAND,
+
+    FLARE,
 
 };
 
 
   
-#define NAV_DISPLAY_MSG_ID 0
+#define VEHICLE_STATUS_FULL_MSG_ID 0
 
 #pragma pack(push, 1)
-typedef struct aplink_nav_display 
+typedef struct aplink_vehicle_status_full
 {
     
     
-    float pos_est_north;
+    int16_t roll;
+
+
+
+    int16_t roll_sp;
+
+
+
+    int16_t pitch;
+
+
+
+    int16_t pitch_sp;
+
+
+
+    int16_t yaw;
+
+
+
+    int16_t alt;
+
+
+
+    int16_t alt_sp;
+
+
+
+    int16_t spd;
+
+
+
+    int16_t spd_sp;
+
+
+
+    int32_t lat;
     
     
     
-    float pos_est_east;
+    int32_t lon;
     
     
     
     uint8_t current_waypoint;
     
     
-} aplink_nav_display_t;
+
+    uint8_t mode_id;
+
+
+} aplink_vehicle_status_full_t;
 #pragma pack(pop)
                                    
-inline uint16_t aplink_nav_display_pack(aplink_nav_display_t data, uint8_t packet[]) {
+inline uint16_t aplink_vehicle_status_full_pack(aplink_vehicle_status_full_t data, uint8_t packet[]) {
     uint8_t buffer[sizeof(data)];
     memcpy(buffer, &data, sizeof(data));
-    return aplink_pack(packet, buffer, sizeof(buffer), NAV_DISPLAY_MSG_ID);
+    return aplink_pack(packet, buffer, sizeof(buffer), VEHICLE_STATUS_FULL_MSG_ID);
 }
                     
-inline bool aplink_nav_display_unpack(aplink_msg_t* msg, aplink_nav_display_t* output) {
-    if (msg->payload_len == sizeof(aplink_nav_display_t)) {
-        memcpy(output, msg->payload, sizeof(aplink_nav_display_t));
+inline bool aplink_vehicle_status_full_unpack(aplink_msg_t* msg, aplink_vehicle_status_full_t* output) {
+    if (msg->payload_len == sizeof(aplink_vehicle_status_full_t)) {
+        memcpy(output, msg->payload, sizeof(aplink_vehicle_status_full_t));
         return true;
     }
     return false;
@@ -160,82 +217,7 @@ inline bool aplink_waypoint_unpack(aplink_msg_t* msg, aplink_waypoint_t* output)
     return false;
 }
   
-#define VFR_HUD_MSG_ID 3
-
-#pragma pack(push, 1)
-typedef struct aplink_vfr_hud 
-{
-    
-    
-    int16_t roll;
-    
-    
-    
-    int16_t roll_sp;
-    
-    
-    
-    int16_t pitch;
-    
-    
-    
-    int16_t pitch_sp;
-    
-    
-    
-    int16_t yaw;
-    
-    
-    
-    int16_t alt;
-    
-    
-    
-    int16_t alt_sp;
-    
-    
-    
-    int16_t spd;
-    
-    
-    
-    int16_t spd_sp;
-    
-    
-    
-    uint8_t system_mode;
-    
-    
-    
-    uint8_t flight_mode;
-    
-    
-    
-    uint8_t manual_mode;
-    
-    
-    
-    uint8_t auto_mode;
-    
-    
-} aplink_vfr_hud_t;
-#pragma pack(pop)
-                                   
-inline uint16_t aplink_vfr_hud_pack(aplink_vfr_hud_t data, uint8_t packet[]) {
-    uint8_t buffer[sizeof(data)];
-    memcpy(buffer, &data, sizeof(data));
-    return aplink_pack(packet, buffer, sizeof(buffer), VFR_HUD_MSG_ID);
-}
-                    
-inline bool aplink_vfr_hud_unpack(aplink_msg_t* msg, aplink_vfr_hud_t* output) {
-    if (msg->payload_len == sizeof(aplink_vfr_hud_t)) {
-        memcpy(output, msg->payload, sizeof(aplink_vfr_hud_t));
-        return true;
-    }
-    return false;
-}
-  
-#define GPS_RAW_MSG_ID 4
+#define GPS_RAW_MSG_ID 3
 
 #pragma pack(push, 1)
 typedef struct aplink_gps_raw 
@@ -274,7 +256,7 @@ inline bool aplink_gps_raw_unpack(aplink_msg_t* msg, aplink_gps_raw_t* output) {
     return false;
 }
   
-#define HITL_SENSORS_MSG_ID 5
+#define HITL_SENSORS_MSG_ID 4
 
 #pragma pack(push, 1)
 typedef struct aplink_hitl_sensors 
@@ -353,7 +335,7 @@ inline bool aplink_hitl_sensors_unpack(aplink_msg_t* msg, aplink_hitl_sensors_t*
     return false;
 }
   
-#define HITL_COMMANDS_MSG_ID 6
+#define HITL_COMMANDS_MSG_ID 5
 
 #pragma pack(push, 1)
 typedef struct aplink_hitl_commands 
@@ -388,7 +370,7 @@ inline bool aplink_hitl_commands_unpack(aplink_msg_t* msg, aplink_hitl_commands_
     return false;
 }
   
-#define WAYPOINTS_COUNT_MSG_ID 7
+#define WAYPOINTS_COUNT_MSG_ID 6
 
 #pragma pack(push, 1)
 typedef struct aplink_waypoints_count 
@@ -415,7 +397,7 @@ inline bool aplink_waypoints_count_unpack(aplink_msg_t* msg, aplink_waypoints_co
     return false;
 }
   
-#define REQUEST_WAYPOINT_MSG_ID 8
+#define REQUEST_WAYPOINT_MSG_ID 7
 
 #pragma pack(push, 1)
 typedef struct aplink_request_waypoint 
@@ -442,7 +424,7 @@ inline bool aplink_request_waypoint_unpack(aplink_msg_t* msg, aplink_request_way
     return false;
 }
   
-#define WAYPOINTS_ACK_MSG_ID 9
+#define WAYPOINTS_ACK_MSG_ID 8
 
 #pragma pack(push, 1)
 typedef struct aplink_waypoints_ack 
@@ -469,7 +451,7 @@ inline bool aplink_waypoints_ack_unpack(aplink_msg_t* msg, aplink_waypoints_ack_
     return false;
 }
   
-#define TIME_SINCE_EPOCH_MSG_ID 10
+#define TIME_SINCE_EPOCH_MSG_ID 9
 
 #pragma pack(push, 1)
 typedef struct aplink_time_since_epoch 
@@ -496,7 +478,7 @@ inline bool aplink_time_since_epoch_unpack(aplink_msg_t* msg, aplink_time_since_
     return false;
 }
   
-#define RC_INPUT_MSG_ID 11
+#define RC_INPUT_MSG_ID 10
 
 #pragma pack(push, 1)
 typedef struct aplink_rc_input 
@@ -535,7 +517,7 @@ inline bool aplink_rc_input_unpack(aplink_msg_t* msg, aplink_rc_input_t* output)
     return false;
 }
   
-#define POWER_MSG_ID 12
+#define POWER_MSG_ID 11
 
 #pragma pack(push, 1)
 typedef struct aplink_power 
@@ -574,7 +556,7 @@ inline bool aplink_power_unpack(aplink_msg_t* msg, aplink_power_t* output) {
     return false;
 }
   
-#define PARAM_SET_MSG_ID 13
+#define PARAM_SET_MSG_ID 12
 
 #pragma pack(push, 1)
 typedef struct aplink_param_set 
@@ -609,7 +591,7 @@ inline bool aplink_param_set_unpack(aplink_msg_t* msg, aplink_param_set_t* outpu
     return false;
 }
   
-#define PARAMS_ACK_MSG_ID 14
+#define PARAMS_ACK_MSG_ID 13
 
 #pragma pack(push, 1)
 typedef struct aplink_params_ack 
@@ -636,7 +618,7 @@ inline bool aplink_params_ack_unpack(aplink_msg_t* msg, aplink_params_ack_t* out
     return false;
 }
 
-#define COMMAND_MSG_ID 15
+#define COMMAND_MSG_ID 14
 
 #pragma pack(push, 1)
 typedef struct aplink_command
@@ -663,7 +645,7 @@ inline bool aplink_command_unpack(aplink_msg_t* msg, aplink_command_t* output) {
     return false;
 }
 
-#define ACKNOWLEDGEMENT_MSG_ID 16
+#define ACKNOWLEDGEMENT_MSG_ID 15
 
 #pragma pack(push, 1)
 typedef struct aplink_acknowledgement

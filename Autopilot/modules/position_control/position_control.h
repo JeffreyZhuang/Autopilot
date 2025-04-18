@@ -19,7 +19,7 @@ public:
 
 private:
 	Subscriber<AHRS_data> _ahrs_sub;
-	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<Telem_data> _telem_sub;
 	Subscriber<waypoint_s> _waypoint_sub;
@@ -30,7 +30,7 @@ private:
 
 	Modes_data _modes_data{};
 	AHRS_data _ahrs_data{};
-	Pos_est_data _pos_est_data{};
+	local_position_s _local_pos;
 	Telem_data _telem_data{};
 	waypoint_s _waypoint{};
 	position_control_s _position_control{};

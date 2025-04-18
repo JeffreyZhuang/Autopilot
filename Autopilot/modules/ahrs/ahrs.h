@@ -10,12 +10,6 @@
 #include <stdio.h>
 #include <math.h>
 
-enum class Ahrs_state
-{
-	INITIALIZATION,
-	RUNNING
-};
-
 /**
  * @brief Attitude Heading Reference System
  *
@@ -29,7 +23,6 @@ public:
 
 private:
     Madgwick filter;
-    Ahrs_state ahrs_state = Ahrs_state::INITIALIZATION;
 
     static constexpr size_t window_size = 100; // TODO: Better capitalization
     float window_ax[window_size];
@@ -56,6 +49,7 @@ private:
 	IMU_data _imu_data{};
 	Mag_data _mag_data{};
 	Modes_data _modes_data{};
+	AHRS_data _ahrs_data;
 
 	void update_initialization();
 	void update_running();

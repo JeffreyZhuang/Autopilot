@@ -16,14 +16,14 @@ public:
 
 private:
 	Subscriber<AHRS_data> _ahrs_sub;
-	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<RC_data> _rc_sub;
 	Subscriber<Telem_data> _telem_sub;
 	Subscriber<waypoint_s> _waypoint_sub;
 
 	Publisher<Modes_data> _modes_pub;
 
-	Pos_est_data _pos_est_data{};
+	local_position_s _local_pos;
 	AHRS_data _ahrs_data{};
 	Modes_data _modes_data{};
 	RC_data _rc_data{};

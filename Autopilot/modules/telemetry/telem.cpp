@@ -2,7 +2,7 @@
 
 Telem::Telem(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
-	  _pos_est_sub(data_bus->pos_est_node),
+	  _local_pos_sub(data_bus->local_position_node),
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _gnss_sub(data_bus->gnss_node),
 	  _modes_sub(data_bus->modes_node),
@@ -152,30 +152,17 @@ void Telem::update_send_telemetry()
 {
 	float current_time_s =_hal->get_time_us() * US_TO_S;
 
-	if (current_time_s - last_vfr_hud_transmit_s >= VFR_HUD_DT)
+	if (current_time_s - last_vehicle_status_full_transmit_s >= VEHICLE_STATUS_FULL_DT)
 	{
-		last_vfr_hud_transmit_s = current_time_s;
+		last_vehicle_status_full_transmit_s = current_time_s;
 
-		aplink_vfr_hud vfr_hud;
-		vfr_hud.roll = (int16_t)(_ahrs_data.roll * 100);
-		vfr_hud.pitch = (int16_t)(_ahrs_data.pitch * 100);
-		vfr_hud.yaw = (int16_t)(_ahrs_data.yaw * 10);
+		aplink_vehicle_status_full vehicle_status_full;
+		vehicle_status_full.roll = (int16_t)(_ahrs_data.roll * 100);
+		vehicle_status_full.pitch = (int16_t)(_ahrs_data.pitch * 100);
+		vehicle_status_full.yaw = (int16_t)(_ahrs_data.yaw * 10);
 
 		uint8_t packet[MAX_PACKET_LEN];
-		uint16_t len = aplink_vfr_hud_pack(vfr_hud, packet);
-		_hal->transmit_telem(packet, len);
-	}
-
-	if (current_time_s - last_nav_display_transmit_s >= NAV_DISPLAY_DT)
-	{
-		last_nav_display_transmit_s = current_time_s;
-
-		aplink_nav_display nav_display;
-		nav_display.pos_est_north = _pos_est_data.pos_n;
-		nav_display.pos_est_east = _pos_est_data.pos_e;
-
-		uint8_t packet[MAX_PACKET_LEN];
-		uint16_t len = aplink_nav_display_pack(nav_display, packet);
+		uint16_t len = aplink_vehicle_status_full_pack(vehicle_status_full, packet);
 		_hal->transmit_telem(packet, len);
 	}
 

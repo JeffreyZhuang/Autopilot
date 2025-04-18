@@ -21,11 +21,11 @@ void Flight_hal::execute_main_task()
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if (htim == &htim7)
+	if (htim == &htim7) // 100hz high priority interrupt
 	{
 		Flight_hal::main_task_callback();
 	}
-	else if (false) // Second interrupt
+	else if (&htim6) // 1hz interrupt lower priority
 	{
 		Flight_hal::sd_interrupt_callback();
 	}

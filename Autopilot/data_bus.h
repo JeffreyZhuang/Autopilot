@@ -55,19 +55,31 @@ struct OF_data
 	uint64_t timestamp = 0;
 };
 
-struct Pos_est_data
+struct local_position_s
 {
-	float baro_offset = 0;
-	bool converged = false;
-	float pos_n = 0;
-	float pos_e = 0;
-	float pos_d = 0;
-	float vel_n = 0;
-	float vel_e = 0;
-	float vel_d = 0;
+	uint64_t timestamp = 0;
+
+	// Position in local NED frame
+	float x = 0; // North position in NED earth-fixed frame, (meters)
+	float y = 0; // East position in NED earth-fixed frame, (meters)
+	float z = 0; // Down position (negative altitude) in NED earth-fixed frame, (meters)
+
+	// Velocity in NED frame
+	float vx = 0; // North velocity in NED earth-fixed frame, (meters/sec)
+	float vy = 0; // East velocity in NED earth-fixed frame, (meters/sec)
+	float vz = 0; // Down velocity in NED earth-fixed frame, (meters/sec)
+
 	float gnd_spd = 0;
 	float terr_hgt = 0;
-	uint64_t timestamp = 0;
+
+	// Position of reference point (local NED frame origin) in global (GPS / WGS84) frame
+	bool ref_xy_set = false; // true if position (x, y) has a valid global reference (ref_lat, ref_lon)
+	bool ref_z_set = false; // true if z has a valid global reference (ref_alt)
+	double ref_lat;
+	double ref_lon;
+	float ref_alt; // Reference altitude ASL
+
+	bool converged = false;
 };
 
 struct Power_data
@@ -190,13 +202,6 @@ struct HITL_output_data
 	uint64_t timestamp = 0;
 };
 
-struct home_position_s
-{
-	double lat;
-	double lon;
-	uint64_t timestamp;
-};
-
 template<typename T>
 class Node
 {
@@ -274,7 +279,7 @@ struct Data_bus
     Node<GNSS_data> gnss_node;
     Node<OF_data> of_node;
     Node<AHRS_data> ahrs_node;
-    Node<Pos_est_data> pos_est_node;
+    Node<local_position_s> local_position_node;
     Node<Power_data> power_node;
     Node<Telem_data> telem_node;
    	Node<Ctrl_cmd_data> ctrl_cmd_node;
@@ -284,7 +289,6 @@ struct Data_bus
    	Node<HITL_output_data> hitl_output_node;
    	Node<telem_new_waypoint_s> telem_new_waypoint_node;
    	Node<position_control_s> position_control_node;
-   	Node<home_position_s> home_position_node;
 };
 
 #endif /* DATA_BUS_H_ */

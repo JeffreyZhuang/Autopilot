@@ -3,9 +3,6 @@
 Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  kalman(n, m),
-	  avg_baro(window_len, window_baro),
-	  avg_lat(window_len, window_lat),
-	  avg_lon(window_len, window_lon),
 	  _time_sub(data_bus->time_node),
 	  _modes_sub(data_bus->modes_node),
 	  _imu_sub(data_bus->imu_node),
@@ -14,8 +11,7 @@ Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
 	  _of_sub(data_bus->of_node),
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _telem_sub(data_bus->telem_node),
-	  _home_position_sub(data_bus->home_position_node),
-	  _pos_est_pub(data_bus->pos_est_node)
+	  _local_pos_pub(data_bus->local_position_node)
 {
 }
 
@@ -27,14 +23,13 @@ void Position_estimator::update()
 
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
-		switch (pos_estimator_state)
+		if (!_local_pos.converged)
 		{
-		case Pos_estimator_state::INITIALIZATION:
 			update_initialization();
-			break;
-		case Pos_estimator_state::RUNNING:
+		}
+		else
+		{
 			update_running();
-			break;
 		}
 	}
 }
@@ -42,24 +37,29 @@ void Position_estimator::update()
 void Position_estimator::update_initialization()
 {
 	_ahrs_data = _ahrs_sub.get();
-	_gnss_data = _gnss_sub.get();
+
+	if (_gnss_sub.check_new())
+	{
+		_gnss_data = _gnss_sub.get();
+
+		if (_gnss_data.fix)
+		{
+			_local_pos.ref_lat = _gnss_data.lat;
+			_local_pos.ref_lon = _gnss_data.lon;
+			_local_pos.ref_xy_set = true;
+		}
+	}
 
 	if (_baro_sub.check_new())
 	{
 		_baro_data = _baro_sub.get();
-		avg_baro.add(_baro_data.alt);
+		_local_pos.ref_alt = _baro_data.alt;
+		_local_pos.ref_z_set = true;
 	}
 
-	if (_gnss_data.fix &&
-		avg_baro.getFilled() &&
-		_ahrs_data.converged)
+	if (_local_pos.ref_xy_set && _local_pos.ref_z_set)
 	{
-		// Set barometer home position
-		_pos_est_data.baro_offset = avg_baro.getAverage();
-
-		// Call kalman set state and set it to gps position meters, simple one line
-
-		pos_estimator_state = Pos_estimator_state::RUNNING;
+		_local_pos.converged = true;
 	}
 }
 
@@ -120,7 +120,7 @@ void Position_estimator::update_gps()
 {
 	// Convert lat/lon to meters
 	double gnss_north_meters, gnss_east_meters;
-	lat_lon_to_meters(_home_position_sub.get().lat, _home_position_sub.get().lon,
+	lat_lon_to_meters(_local_pos.ref_lat, _local_pos.ref_lon,
 					  _gnss_data.lat, _gnss_data.lon, &gnss_north_meters, &gnss_east_meters);
 
 	Eigen::VectorXf y(2);
@@ -141,7 +141,7 @@ void Position_estimator::update_gps()
 void Position_estimator::update_baro()
 {
 	Eigen::VectorXf y(1);
-	y << -(_baro_data.alt - _pos_est_data.baro_offset);
+	y << -(_baro_data.alt - _local_pos.ref_alt);
 
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
@@ -157,26 +157,24 @@ void Position_estimator::update_of_agl()
 {
 	float flow = sqrtf(powf(_of_data.x, 2) + powf(_of_data.y, 2));
 	float angular_rate = sqrtf(powf(_imu_data.gx, 2) + powf(_imu_data.gy, 2)) * DEG_TO_RAD;
-	float alt = _pos_est_data.gnd_spd / (flow - angular_rate);
+	float alt = _local_pos.gnd_spd / (flow - angular_rate);
 	printf("OF AGL: %f\n", alt);
 }
 
 void Position_estimator::update_plane()
 {
 	Eigen::MatrixXf est = kalman.get_estimate();
+	_local_pos.x = est(0, 0);
+	_local_pos.y = est(1, 0);
+	_local_pos.z = est(2, 0);
+	_local_pos.vx = est(3, 0);
+	_local_pos.vy = est(4, 0);
+	_local_pos.vz = est(5, 0);
+	_local_pos.gnd_spd = sqrtf(powf(est(3, 0), 2) + powf(est(4, 0), 2));
+	_local_pos.terr_hgt = 0;
+	_local_pos.timestamp = _hal->get_time_us();
 
-	_pos_est_data.converged = pos_estimator_state == Pos_estimator_state::RUNNING;
-	_pos_est_data.pos_n = est(0, 0);
-	_pos_est_data.pos_e = est(1, 0);
-	_pos_est_data.pos_d = est(2, 0);
-	_pos_est_data.vel_n = est(3, 0);
-	_pos_est_data.vel_e = est(4, 0);
-	_pos_est_data.vel_d = est(5, 0);
-	_pos_est_data.gnd_spd = sqrtf(powf(est(3, 0), 2) + powf(est(4, 0), 2));
-	_pos_est_data.terr_hgt = 0;
-	_pos_est_data.timestamp = _hal->get_time_us();
-
-	_pos_est_pub.publish(_pos_est_data);
+	_local_pos_pub.publish(_local_pos);
 }
 
 // Function to rotate IMU measurements from inertial frame to NED frame

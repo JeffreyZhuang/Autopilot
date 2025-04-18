@@ -2,10 +2,9 @@
 
 Navigator::Navigator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
-	  _pos_est_sub(data_bus->pos_est_node),
+	  _local_pos_sub(data_bus->local_position_node),
 	  _telem_new_waypoint_sub(data_bus->telem_new_waypoint_node),
-	  _waypoint_pub(data_bus->waypoint_node),
-	  _home_pos_pub(data_bus->home_position_node)
+	  _waypoint_pub(data_bus->waypoint_node)
 {
 }
 
@@ -22,8 +21,8 @@ void Navigator::update()
 					  target_wp.lat, target_wp.lon, &tgt_north, &tgt_east);
 
 	// Check distance to waypoint to determine if waypoint reached
-	float rel_east = _pos_est_data.pos_e - tgt_east;
-	float rel_north = _pos_est_data.pos_n - tgt_north;
+	float rel_east = _local_pos.y - tgt_east;
+	float rel_north = _local_pos.x - tgt_north;
 	float dist_to_wp = sqrtf(rel_north * rel_north + rel_east * rel_east);
 	if (dist_to_wp < param_get_float(NAV_ACC_RAD) &&
 		_curr_wp_idx < _telem_new_waypoint.num_waypoints - 1)
@@ -63,15 +62,7 @@ void Navigator::poll_data_bus()
 			_telem_new_waypoint.lon,
 			_telem_new_waypoint.alt
 		};
-
-		_home_pos_pub.publish(
-			home_position_s{
-				.lat = _waypoints[0].lat,
-				.lon = _waypoints[0].lon,
-				.timestamp = _hal->get_time_us()
-			}
-		);
 	}
 
-	_pos_est_data = _pos_est_sub.get();
+	_local_pos = _local_pos_sub.get();
 }

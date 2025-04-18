@@ -2,7 +2,7 @@
 
 USBComm::USBComm(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
-	  _pos_est_sub(data_bus->pos_est_node),
+	  _local_pos_sub(data_bus->local_position_node),
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _gnss_sub(data_bus->gnss_node),
 	  _modes_sub(data_bus->modes_node),
@@ -13,7 +13,6 @@ USBComm::USBComm(HAL* hal, Data_bus* data_bus)
 	  _hitl_output_sub(data_bus->hitl_output_node),
 	  _baro_sub(data_bus->baro_node),
 	  _telem_sub(data_bus->telem_node),
-	  _home_pos_sub(data_bus->home_position_node),
 	  _hitl_sensors_pub(data_bus->hitl_sensors_node)
 {
 }
@@ -91,15 +90,13 @@ void USBComm::transmit_debug()
 {
 	// Send comma separated values to web serial plotter for debug
 	double gnss_north_meters, gnss_east_meters;
-	lat_lon_to_meters(_home_pos_sub.get().lat, _home_pos_sub.get().lon,
+	lat_lon_to_meters(_local_pos.ref_lat, _local_pos.ref_lon,
 					  _gnss_data.lat, _gnss_data.lon, &gnss_north_meters, &gnss_east_meters);
 
 	char tx_buff[200];
-	sprintf(tx_buff, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f\n",
-			_pos_est_data.vel_n, _pos_est_data.vel_e, _pos_est_data.vel_d,
-			_pos_est_data.pos_n, _pos_est_data.pos_e, _pos_est_data.pos_d,
-			gnss_north_meters, gnss_east_meters, -(_baro_data.alt - _pos_est_data.baro_offset),
-			_ahrs_data.yaw);
+	sprintf(tx_buff, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
+			_local_pos.vx, _local_pos.vy, _local_pos.vz,
+			_local_pos.x, _local_pos.y, _local_pos.z);
 
 	_hal->usb_transmit((uint8_t*)tx_buff, strlen(tx_buff));
 }

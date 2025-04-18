@@ -21,7 +21,7 @@ public:
 private:
 	Subscriber<GNSS_data> _gnss_sub;
 	Subscriber<AHRS_data> _ahrs_sub;
-	Subscriber<Pos_est_data> _pos_est_sub;
+	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<position_control_s> _position_control_sub;
 	Subscriber<waypoint_s> _waypoint_sub;
@@ -30,7 +30,6 @@ private:
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<HITL_output_data> _hitl_output_sub;
 	Subscriber<Telem_data> _telem_sub;
-	Subscriber<home_position_s> _home_pos_sub;
 
 	Publisher<hitl_sensors_s> _hitl_sensors_pub;
 
@@ -38,7 +37,7 @@ private:
 	AHRS_data _ahrs_data;
 	GNSS_data _gnss_data;
 	Telem_data _telem_data;
-	Pos_est_data _pos_est_data{};
+	local_position_s _local_pos;
 	Modes_data _modes_data{};
 	position_control_s _position_control{};
 	Power_data _power_data{};
