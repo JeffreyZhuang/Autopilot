@@ -5,7 +5,6 @@ Mixer::Mixer(HAL* hal, Data_bus* data_bus)
 	  _modes_sub(data_bus->modes_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
 	  _position_control_sub(data_bus->position_control_node),
-	  _telem_sub(data_bus->telem_node),
 	  _hitl_output_pub(data_bus->hitl_output_node)
 {
 }
@@ -16,7 +15,6 @@ void Mixer::update()
 {
 	_modes_data = _modes_sub.get();
 	_ctrl_cmd_data = _ctrl_cmd_sub.get();
-	_telem_data = _telem_sub.get();
 
 	switch (_modes_data.system_mode)
 	{

@@ -1,5 +1,10 @@
 #include "modules/navigator/navigator.h"
 
+// TODO: Get EKF center (or maybe just choose random point on earth as center)
+
+// Maybe publish global position and use global for everything
+// You can calculate displacement between plane lat/lon and waypoint lat/lon in NED frame
+
 Navigator::Navigator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _local_pos_sub(data_bus->local_position_node),
@@ -15,7 +20,7 @@ void Navigator::update()
 	// Get target waypoint
 	const Waypoint& target_wp = _waypoints[_curr_wp_idx];
 
-	// Convert waypoint to north east coordinates
+	// Convert waypoint to local NED coordinates
 	double tgt_north, tgt_east;
 	lat_lon_to_meters(_waypoints[0].lat, _waypoints[0].lon,
 					  target_wp.lat, target_wp.lon, &tgt_north, &tgt_east);
@@ -45,6 +50,7 @@ void Navigator::update()
 				.current_east = tgt_east,
 				.current_alt = target_wp.alt,
 				.current_index = _curr_wp_idx,
+				.num_waypoints = _telem_new_waypoint.num_waypoints,
 				.timestamp = _hal->get_time_us()
 			}
 		);

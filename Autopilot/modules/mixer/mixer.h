@@ -17,14 +17,12 @@ private:
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<position_control_s> _position_control_sub;
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
-	Subscriber<Telem_data> _telem_sub;
 
 	Publisher<HITL_output_data> _hitl_output_pub;
 
 	Modes_data _modes_data{};
 	Ctrl_cmd_data _ctrl_cmd_data{};
 	position_control_s _position_control{};
-	Telem_data _telem_data{};
 
 	uint16_t _elevator_duty = 0;
 	uint16_t _rudder_duty = 0;

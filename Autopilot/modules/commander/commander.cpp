@@ -5,7 +5,6 @@ Commander::Commander(HAL* hal, Data_bus* data_bus)
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _local_pos_sub(data_bus->local_position_node),
 	  _rc_sub(data_bus->rc_node),
-	  _telem_sub(data_bus->telem_node),
 	  _waypoint_sub(data_bus->waypoint_node),
 	  _modes_pub(data_bus->modes_node)
 {
@@ -21,7 +20,6 @@ void Commander::update()
 	_local_pos = _local_pos_sub.get();
 	_ahrs_data = _ahrs_sub.get();
 	_rc_data = _rc_sub.get();
-	_telem_data = _telem_sub.get();
 	_waypoint = _waypoint_sub.get();
 
 	switch (_modes_data.system_mode)
@@ -91,7 +89,7 @@ void Commander::handle_switches()
 
 void Commander::update_config()
 {
-	if (param_all_set() && _telem_data.waypoints_loaded)
+	if (param_all_set())
 	{
 		_modes_data.system_mode = System_mode::STARTUP;
 	}
@@ -120,7 +118,7 @@ void Commander::update_takeoff()
 
 void Commander::update_mission()
 {
-	if (_waypoint.current_index == _telem_data.num_waypoints - 1)
+	if (_waypoint.current_index == _waypoint.num_waypoints - 1)
 	{
 		_modes_data.auto_mode = Auto_mode::LAND;
 	}

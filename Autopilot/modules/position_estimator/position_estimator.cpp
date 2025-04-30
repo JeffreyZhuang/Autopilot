@@ -10,7 +10,6 @@ Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
 	  _gnss_sub(data_bus->gnss_node),
 	  _of_sub(data_bus->of_node),
 	  _ahrs_sub(data_bus->ahrs_node),
-	  _telem_sub(data_bus->telem_node),
 	  _local_pos_pub(data_bus->local_position_node)
 {
 }
@@ -19,7 +18,6 @@ void Position_estimator::update()
 {
 	_modes_data = _modes_sub.get();
 	_time = _time_sub.get();
-	_telem_data = _telem_sub.get();
 
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{

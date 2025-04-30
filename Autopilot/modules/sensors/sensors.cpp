@@ -4,7 +4,6 @@ Sensors::Sensors(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _modes_sub(data_bus->modes_node),
 	  _hitl_sensors_sub(data_bus->hitl_sensors_node),
-	  _telem_sub(data_bus->telem_node),
 	  _imu_pub(data_bus->imu_node),
 	  _mag_pub(data_bus->mag_node),
 	  _baro_pub(data_bus->baro_node),

@@ -14,8 +14,7 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
 	  _baro_sub(data_bus->baro_node),
 	  _imu_sub(data_bus->imu_node),
-	  _telem_new_waypoint_pub(data_bus->telem_new_waypoint_node),
-	  _telem_pub(data_bus->telem_node)
+	  _telem_new_waypoint_pub(data_bus->telem_new_waypoint_node)
 {
 }
 
@@ -25,73 +24,11 @@ void Telem::update()
 
 	if (_modes_data.system_mode == System_mode::CALIBRATION)
 	{
-		float current_time_s =_hal->get_time_us() * US_TO_S;
-
-		if (current_time_s - last_cal_sensors_transmit_s >= CAL_SENSORS_DT)
-		{
-			last_cal_sensors_transmit_s = current_time_s;
-
-			aplink_cal_sensors cal_sensors;
-			cal_sensors.ax = _imu_data.ax;
-			cal_sensors.ay = _imu_data.ay;
-			cal_sensors.az = _imu_data.az;
-			cal_sensors.gx = _imu_data.gx;
-			cal_sensors.gy = _imu_data.gy;
-			cal_sensors.gz = _imu_data.gz;
-
-			uint8_t packet[MAX_PACKET_LEN];
-			uint16_t len = aplink_cal_sensors_pack(cal_sensors, packet);
-
-			_hal->transmit_telem(packet, len);
-		}
+		send_calibration();
 	}
 	else
 	{
-		float current_time_s =_hal->get_time_us() * US_TO_S;
-
-		if (current_time_s - last_vehicle_status_full_transmit_s >= VEHICLE_STATUS_FULL_DT)
-		{
-			last_vehicle_status_full_transmit_s = current_time_s;
-
-			aplink_vehicle_status_full vehicle_status_full;
-			vehicle_status_full.roll = (int16_t)(_ahrs_data.roll * 100);
-			vehicle_status_full.pitch = (int16_t)(_ahrs_data.pitch * 100);
-			vehicle_status_full.yaw = (int16_t)(_ahrs_data.yaw * 10);
-
-			uint8_t packet[MAX_PACKET_LEN];
-			uint16_t len = aplink_vehicle_status_full_pack(vehicle_status_full, packet);
-			_hal->transmit_telem(packet, len);
-		}
-
-		if (current_time_s - last_gps_raw_transmit_s >= GPS_RAW_DT)
-		{
-			last_gps_raw_transmit_s = current_time_s;
-
-			aplink_gps_raw gps_raw;
-			gps_raw.lat = (int32_t)(_gnss_data.lat * 1E7);
-			gps_raw.lon = (int32_t)(_gnss_data.lon * 1E7);
-			gps_raw.sats = _gnss_data.sats;
-			gps_raw.fix = _gnss_data.fix;
-
-			uint8_t packet[MAX_PACKET_LEN];
-			uint16_t len = aplink_gps_raw_pack(gps_raw, packet);
-			_hal->transmit_telem(packet, len);
-		}
-
-		if (current_time_s - last_power_transmit_s >= POWER_DT)
-		{
-			last_power_transmit_s = current_time_s;
-
-			aplink_power power;
-			power.ap_curr = 0;
-			power.batt_curr = 0;
-			power.batt_volt = 0;
-			power.batt_used = 0;
-
-			uint8_t packet[MAX_PACKET_LEN];
-			uint16_t len = aplink_power_pack(power, packet);
-			_hal->transmit_telem(packet, len);
-		}
+		send_telemetry();
 	}
 
 	if (read_telem(&telem_msg))
@@ -109,6 +46,78 @@ void Telem::update()
 		{
 			update_waypoint();
 		}
+	}
+}
+
+void Telem::send_telemetry()
+{
+	float current_time_s =_hal->get_time_us() * US_TO_S;
+
+	if (current_time_s - last_vehicle_status_full_transmit_s >= VEHICLE_STATUS_FULL_DT)
+	{
+		last_vehicle_status_full_transmit_s = current_time_s;
+
+		aplink_vehicle_status_full vehicle_status_full;
+		vehicle_status_full.roll = (int16_t)(_ahrs_data.roll * 100);
+		vehicle_status_full.pitch = (int16_t)(_ahrs_data.pitch * 100);
+		vehicle_status_full.yaw = (int16_t)(_ahrs_data.yaw * 10);
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_vehicle_status_full_pack(vehicle_status_full, packet);
+		_hal->transmit_telem(packet, len);
+	}
+
+	if (current_time_s - last_gps_raw_transmit_s >= GPS_RAW_DT)
+	{
+		last_gps_raw_transmit_s = current_time_s;
+
+		aplink_gps_raw gps_raw;
+		gps_raw.lat = (int32_t)(_gnss_data.lat * 1E7);
+		gps_raw.lon = (int32_t)(_gnss_data.lon * 1E7);
+		gps_raw.sats = _gnss_data.sats;
+		gps_raw.fix = _gnss_data.fix;
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_gps_raw_pack(gps_raw, packet);
+		_hal->transmit_telem(packet, len);
+	}
+
+	if (current_time_s - last_power_transmit_s >= POWER_DT)
+	{
+		last_power_transmit_s = current_time_s;
+
+		aplink_power power;
+		power.ap_curr = 0;
+		power.batt_curr = 0;
+		power.batt_volt = 0;
+		power.batt_used = 0;
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_power_pack(power, packet);
+		_hal->transmit_telem(packet, len);
+	}
+}
+
+void Telem::send_calibration()
+{
+	float current_time_s =_hal->get_time_us() * US_TO_S;
+
+	if (current_time_s - last_cal_sensors_transmit_s >= CAL_SENSORS_DT)
+	{
+		last_cal_sensors_transmit_s = current_time_s;
+
+		aplink_cal_sensors cal_sensors;
+		cal_sensors.ax = _imu_data.ax;
+		cal_sensors.ay = _imu_data.ay;
+		cal_sensors.az = _imu_data.az;
+		cal_sensors.gx = _imu_data.gx;
+		cal_sensors.gy = _imu_data.gy;
+		cal_sensors.gz = _imu_data.gz;
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_cal_sensors_pack(cal_sensors, packet);
+
+		_hal->transmit_telem(packet, len);
 	}
 }
 
@@ -187,6 +196,8 @@ void Telem::update_waypoint()
 	new_waypoint_s.lon = (double)waypoint.lon * 1E-7;
 	new_waypoint_s.alt = -waypoint.alt;
 	new_waypoint_s.index = _last_waypoint_loaded;
+	new_waypoint_s.num_waypoints = _num_waypoints;
+	new_waypoint_s.timestamp = _hal->get_time_us();
 	_telem_new_waypoint_pub.publish(new_waypoint_s);
 
 	// Check if all waypoints have been loaded
@@ -199,8 +210,6 @@ void Telem::update_waypoint()
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_waypoints_ack_pack(waypoints_ack, packet);
 		_hal->transmit_telem(packet, len);
-
-		_telem_data.waypoints_loaded = true;
 	}
 	else
 	{

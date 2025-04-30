@@ -41,13 +41,11 @@ private:
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<IMU_data> _imu_sub;
 
-	Publisher<Telem_data> _telem_pub;
 	Publisher<telem_new_waypoint_s> _telem_new_waypoint_pub;
 
 	Ctrl_cmd_data _ctrl_cmd_data;
 	AHRS_data _ahrs_data;
 	GNSS_data _gnss_data;
-	Telem_data _telem_data;
 	local_position_s _local_pos;
 	Modes_data _modes_data;
 	position_control_s  _position_control;
@@ -68,6 +66,8 @@ private:
 	void update_param_set();
 	void update_waypoints_count();
 	void update_waypoint();
+	void send_telemetry();
+	void send_calibration();
 
 	bool read_telem(aplink_msg* msg);
 	void read_usb();

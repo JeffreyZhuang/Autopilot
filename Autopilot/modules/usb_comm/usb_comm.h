@@ -29,14 +29,12 @@ private:
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<HITL_output_data> _hitl_output_sub;
-	Subscriber<Telem_data> _telem_sub;
 
 	Publisher<hitl_sensors_s> _hitl_sensors_pub;
 
 	Ctrl_cmd_data _ctrl_cmd_data;
 	AHRS_data _ahrs_data;
 	GNSS_data _gnss_data;
-	Telem_data _telem_data;
 	local_position_s _local_pos;
 	Modes_data _modes_data{};
 	position_control_s _position_control{};

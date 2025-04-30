@@ -98,13 +98,6 @@ struct Ctrl_cmd_data
 	uint64_t timestamp = 0;
 };
 
-struct Telem_data
-{
-	uint8_t num_waypoints = 0;
-	bool waypoints_loaded = false;
-	uint64_t timestamp = 0;
-};
-
 struct telem_new_waypoint_s
 {
 	double lat;
@@ -164,6 +157,7 @@ struct waypoint_s
 	float current_east = 0;
 	float current_alt = 0;
 	uint8_t current_index = 0;
+	uint8_t num_waypoints = 0;
 	uint64_t timestamp = 0;
 };
 
@@ -281,7 +275,6 @@ struct Data_bus
     Node<AHRS_data> ahrs_node;
     Node<local_position_s> local_position_node;
     Node<Power_data> power_node;
-    Node<Telem_data> telem_node;
    	Node<Ctrl_cmd_data> ctrl_cmd_node;
    	Node<RC_data> rc_node;
    	Node<waypoint_s> waypoint_node;

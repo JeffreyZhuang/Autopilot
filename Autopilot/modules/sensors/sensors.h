@@ -15,7 +15,6 @@ public:
 private:
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<hitl_sensors_s> _hitl_sensors_sub;
-	Subscriber<Telem_data> _telem_sub;
 
 	Publisher<IMU_data> _imu_pub;
 	Publisher<Mag_data> _mag_pub;

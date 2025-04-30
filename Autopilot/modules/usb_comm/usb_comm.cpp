@@ -12,7 +12,6 @@ USBComm::USBComm(HAL* hal, Data_bus* data_bus)
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
 	  _hitl_output_sub(data_bus->hitl_output_node),
 	  _baro_sub(data_bus->baro_node),
-	  _telem_sub(data_bus->telem_node),
 	  _hitl_sensors_pub(data_bus->hitl_sensors_node)
 {
 }

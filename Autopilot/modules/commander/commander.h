@@ -18,7 +18,6 @@ private:
 	Subscriber<AHRS_data> _ahrs_sub;
 	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<RC_data> _rc_sub;
-	Subscriber<Telem_data> _telem_sub;
 	Subscriber<waypoint_s> _waypoint_sub;
 
 	Publisher<Modes_data> _modes_pub;
@@ -28,7 +27,6 @@ private:
 	Modes_data _modes_data{};
 	RC_data _rc_data{};
 	waypoint_s _waypoint{};
-	Telem_data _telem_data{};
 
 	void handle_flight_mode();
 	void handle_auto_mode();

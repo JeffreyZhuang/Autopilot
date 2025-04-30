@@ -32,7 +32,6 @@ private:
     Subscriber<GNSS_data> _gnss_sub;
     Subscriber<OF_data> _of_sub;
     Subscriber<AHRS_data> _ahrs_sub;
-    Subscriber<Telem_data> _telem_sub;
 
     Publisher<local_position_s> _local_pos_pub;
 
@@ -44,7 +43,6 @@ private:
     AHRS_data _ahrs_data{};
     IMU_data _imu_data{};
     time_s _time{};
-    Telem_data _telem_data{};
 
     void update_initialization();
     void update_running();

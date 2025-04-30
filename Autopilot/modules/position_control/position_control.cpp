@@ -9,7 +9,6 @@ PositionControl::PositionControl(HAL* hal, Data_bus* data_bus)
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _local_pos_sub(data_bus->local_position_node),
 	  _modes_sub(data_bus->modes_node),
-	  _telem_sub(data_bus->telem_node),
 	  _waypoint_sub(data_bus->waypoint_node),
 	  _rc_sub(data_bus->rc_node),
 	  _time_sub(data_bus->time_node),
@@ -22,7 +21,6 @@ void PositionControl::update()
 	_ahrs_data = _ahrs_sub.get();
 	_local_pos = _local_pos_sub.get();
 	_modes_data = _modes_sub.get();
-	_telem_data = _telem_sub.get();
 	_waypoint = _waypoint_sub.get();
 	_rc_data = _rc_sub.get();
 	_time_data = _time_sub.get();
@@ -176,7 +174,7 @@ float PositionControl::calculate_altitude_setpoint(const float prev_north, const
 	const float initial_dist = param_get_float(NAV_ACC_RAD);
 	float final_dist;
 
-	if (_waypoint.current_index == _telem_data.num_waypoints - 1)
+	if (_modes_data.auto_mode == Auto_mode::LAND)
 	{
 		// During landing, go directly to landing point
 		final_dist = dist_prev_tgt;
