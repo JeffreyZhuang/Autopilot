@@ -68,7 +68,7 @@ void Commander::handle_auto_mode()
 
 void Commander::handle_switches()
 {
-	// Manual switch overrides Mode switch and toggles between manual
+	// Manual switch overrides mode switch and toggles between manual
 	if (_rc_data.man_sw)
 	{
 		// Mode switch toggles between stabilized and auto

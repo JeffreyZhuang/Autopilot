@@ -18,6 +18,8 @@ Flight_hal::Flight_hal(Data_bus* data_bus) :
 
 void Flight_hal::init()
 {
+	printf("HAL init\n");
+
 	init_imu();
 	init_baro();
 	init_compass();
@@ -25,4 +27,6 @@ void Flight_hal::init()
 	init_telem();
 	init_servos();
 	init_of();
+
+	printf("HAL init done\n");
 }

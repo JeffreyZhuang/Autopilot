@@ -28,6 +28,10 @@ private:
 	time_s _time{};
 	Modes_data _modes_data;
 	hitl_sensors_s _hitl_sensors;
+
+	void update_calibration();
+	void update_flight();
+	void update_hitl();
 };
 
 #endif /* MODULES_SENSORS_SENSORS_H_ */

@@ -9,6 +9,11 @@ void Flight_hal::set_main_task(void (*task)(void*), void* arg)
 	{
 		Error_Handler();
 	}
+
+	if (HAL_TIM_Base_Start_IT(&htim6) != HAL_OK)
+	{
+		Error_Handler();
+	}
 }
 
 void Flight_hal::execute_main_task()
@@ -21,11 +26,13 @@ void Flight_hal::execute_main_task()
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
+//	printf("int\n");
+
 	if (htim == &htim7) // 100hz high priority interrupt
 	{
 		Flight_hal::main_task_callback();
 	}
-	else if (&htim6) // 1hz low priority interrupt
+	else if (htim == &htim6) // 1hz low priority interrupt
 	{
 		Flight_hal::sd_interrupt_callback();
 	}
@@ -33,6 +40,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
+	// Hardfault handler when one of these uncommented
 	if (huart == &huart2)
 	{
 		Flight_hal::of_dma_complete();

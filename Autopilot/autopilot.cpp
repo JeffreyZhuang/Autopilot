@@ -29,16 +29,18 @@ void Autopilot::setup()
 
 void Autopilot::main_task()
 {
+//	printf("Autopilot main task\n");
+
 	_sensors.update();
-	_rc_handler.update();
-	_ahrs.update();
-	_position_estimator.update();
-	_commander.update();
-	_navigator.update();
-	_position_control.update();
-	_att_control.update();
-	_mixer.update();
-	_storage.update();
-	_telem.update();
-	_usb_comm.update();
+//	_rc_handler.update();
+//	_ahrs.update();
+//	_position_estimator.update();
+//	_commander.update();
+//	_navigator.update();
+//	_position_control.update();
+//	_att_control.update();
+//	_mixer.update();
+//	_storage.update();
+//	_telem.update();
+//	_usb_comm.update();
 }

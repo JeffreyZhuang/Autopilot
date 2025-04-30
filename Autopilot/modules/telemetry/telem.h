@@ -22,13 +22,6 @@ static constexpr float GPS_RAW_DT = 0.2;
 static constexpr float POWER_DT = 1;
 static constexpr float CAL_SENSORS_DT = 0.1;
 
-enum class TelemState
-{
-	LOAD_PARAMS,
-	LOAD_WAYPOINTS,
-	SEND_TELEMETRY
-};
-
 class Telem : public Module
 {
 public:
@@ -64,7 +57,6 @@ private:
 
 	aplink_msg telem_msg;
 
-	TelemState _telem_state;
 	float last_vehicle_status_full_transmit_s = 0;
 	float last_gps_raw_transmit_s = 0;
 	float last_cal_sensors_transmit_s = 0;
@@ -73,10 +65,9 @@ private:
 	uint8_t _num_waypoints = 0; // Number of waypoints to load
 	uint8_t _last_waypoint_loaded = 0;
 
-	void update_load_params();
-	void update_load_waypoints();
-	void update_send_telemetry();
-	void update_calibration();
+	void update_param_set();
+	void update_waypoints_count();
+	void update_waypoint();
 
 	bool read_telem(aplink_msg* msg);
 	void read_usb();

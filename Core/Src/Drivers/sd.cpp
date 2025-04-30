@@ -57,6 +57,8 @@ bool Sd::read(uint8_t* rx_buff, uint16_t size)
 // Empty ring buffer and sync to micro-sd card
 void Sd::interrupt_callback()
 {
+	printf("SD driver interrupt\n");
+
 	if (sd_mode == SDMode::CREATE_FILE)
 	{
 		FRESULT res = f_open(&fil, file_name, FA_WRITE | FA_CREATE_NEW);
