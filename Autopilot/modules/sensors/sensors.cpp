@@ -62,7 +62,6 @@ void Sensors::update_flight()
 		gx -= param_get_float(GYR_OFF_X);
 		gy -= param_get_float(GYR_OFF_Y);
 		gz -= param_get_float(GYR_OFF_Z);
-
 		ax -= param_get_float(ACC_OFF_X);
 		ay -= param_get_float(ACC_OFF_Y);
 		az -= param_get_float(ACC_OFF_Z);

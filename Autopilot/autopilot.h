@@ -42,7 +42,9 @@ private:
 
     // Scheduler
     void main_task();
-    static void static_main_task(void* arg) { static_cast<Autopilot*>(arg)->main_task(); }
+    static void static_main_task() { _instance->main_task(); }
+
+    static Autopilot* _instance;
 };
 
 #endif

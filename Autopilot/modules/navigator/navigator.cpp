@@ -5,6 +5,10 @@
 // Maybe publish global position and use global for everything
 // You can calculate displacement between plane lat/lon and waypoint lat/lon in NED frame
 
+// Yeah switch everything to lat/lon, position control only needs lat/lon
+
+// PX4 uses local position and converts waypoint lat/lon to NED
+
 Navigator::Navigator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _local_pos_sub(data_bus->local_position_node),
@@ -22,13 +26,11 @@ void Navigator::update()
 
 	// Convert waypoint to local NED coordinates
 	double tgt_north, tgt_east;
-	lat_lon_to_meters(_waypoints[0].lat, _waypoints[0].lon,
+	lat_lon_to_meters(_local_pos.ref_lat, _local_pos.ref_lon,
 					  target_wp.lat, target_wp.lon, &tgt_north, &tgt_east);
 
 	// Check distance to waypoint to determine if waypoint reached
-	float rel_east = _local_pos.y - tgt_east;
-	float rel_north = _local_pos.x - tgt_north;
-	float dist_to_wp = sqrtf(rel_north * rel_north + rel_east * rel_east);
+	float dist_to_wp = distance(_local_pos.x, tgt_north, _local_pos.y, tgt_east);
 	if (dist_to_wp < param_get_float(NAV_ACC_RAD) &&
 		_curr_wp_idx < _telem_new_waypoint.num_waypoints - 1)
 	{
@@ -38,7 +40,7 @@ void Navigator::update()
 		const Waypoint& prev_wp = _waypoints[_curr_wp_idx - 1];
 
 		double prev_north, prev_east;
-		lat_lon_to_meters(_waypoints[0].lat, _waypoints[0].lon,
+		lat_lon_to_meters(_local_pos.ref_lat, _local_pos.ref_lon,
 						  prev_wp.lat, prev_wp.lon, &prev_north, &prev_east);
 
 		_waypoint_pub.publish(

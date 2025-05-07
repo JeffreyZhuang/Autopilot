@@ -98,7 +98,7 @@ public:
 	static void usb_rx_callback(uint8_t* Buf, uint32_t Len) { _instance->usb_stream.rx_callback(Buf, Len); };
 
 	// scheduler_hal.cpp
-	void set_main_task(void (*task)(void*), void* arg) override;
+	void set_main_task(void (*task)()) override;
 	void execute_main_task();
 	static void main_task_callback() { _instance->execute_main_task(); }
 
@@ -117,9 +117,7 @@ private:
 	USB_stream usb_stream;
 
 	// scheduler_hal.cpp
-	void (*main_task)(void*) = nullptr;
-	void (*background_task)(void*) = nullptr;
-	void* main_task_arg = nullptr;
+	void (*main_task)() = nullptr;
 
 	static Flight_hal* _instance;
 };

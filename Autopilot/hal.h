@@ -46,7 +46,7 @@ public:
     virtual uint64_t get_time_us() const = 0;
 
     // Scheduler
-    virtual void set_main_task(void (*task)(void*), void* arg) = 0;
+    virtual void set_main_task(void (*task)()) = 0;
 };
 
 #endif

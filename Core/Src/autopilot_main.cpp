@@ -8,4 +8,9 @@ void autopilot_main_c()
 	Flight_hal hal(&data_bus);
 	Autopilot autopilot(&hal, &data_bus);
 	autopilot.setup();
+
+	while (1)
+	{
+		// For some reason I get hardfault handler when this removed
+	};
 }
