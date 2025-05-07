@@ -1,5 +1,5 @@
-#ifndef MODES_H_
-#define MODES_H_
+#ifndef LIB_DATA_BUS_MODES_H_
+#define LIB_DATA_BUS_MODES_H_
 
 enum class System_mode
 {
@@ -29,4 +29,4 @@ enum class Manual_mode
 	STABILIZED
 };
 
-#endif /* MODES_H_ */
+#endif /* LIB_DATA_BUS_MODES_H_ */

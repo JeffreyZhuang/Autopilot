@@ -9,30 +9,12 @@ Sensors::Sensors(HAL* hal, Data_bus* data_bus)
 	  _baro_pub(data_bus->baro_node),
 	  _of_pub(data_bus->of_node),
 	  _gnss_pub(data_bus->gnss_node),
-	  _power_pub(data_bus->power_node),
-	  _time_pub(data_bus->time_node)
+	  _power_pub(data_bus->power_node)
 {
 }
 
 void Sensors::update()
 {
-	// Need to do this for every module. If AHRS updates at 100hz but imu updates at 30hz, it needs to recalculate
-	uint64_t time = _hal->get_time_us();
-
-	if (_time.timestamp > 0)
-	{
-		_time.dt_s = (time - _time.timestamp) * US_TO_S;
-	}
-	else
-	{
-		// Initialize
-		_time.dt_s = 0;
-	}
-
-	_time.timestamp = time;
-	_time.loop_iteration++;
-	_time_pub.publish(_time);
-
 	_modes_data = _modes_sub.get();
 
 	if (_modes_data.system_mode == System_mode::CALIBRATION)

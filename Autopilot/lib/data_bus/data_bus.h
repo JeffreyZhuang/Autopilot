@@ -1,7 +1,7 @@
-#ifndef DATA_BUS_H_
-#define DATA_BUS_H_
+#ifndef LIB_DATA_BUS_DATA_BUS_H_
+#define LIB_DATA_BUS_DATA_BUS_H_
 
-#include "modes.h"
+#include <lib/data_bus/modes.h>
 #include <stdint.h>
 
 struct IMU_data
@@ -36,6 +36,12 @@ struct GNSS_data
 	float asl = 0;
 	uint8_t sats = 0;
 	bool fix = false;
+	int year;
+	int month;
+	int day;
+	int hours;
+	int minutes;
+	int seconds;
 	uint64_t timestamp = 0;
 };
 
@@ -161,14 +167,6 @@ struct waypoint_s
 	uint64_t timestamp = 0;
 };
 
-struct time_s
-{
-	float dt_s = 0;
-	uint32_t loop_iteration = 0;
-	uint32_t unix_epoch_time = 0;
-	uint64_t timestamp = 0;
-};
-
 struct hitl_sensors_s
 {
 	float imu_ax;
@@ -265,7 +263,6 @@ private:
  */
 struct Data_bus
 {
-	Node<time_s> time_node;
 	Node<Modes_data> modes_node;
     Node<IMU_data> imu_node;
     Node<Mag_data> mag_node;
@@ -284,4 +281,4 @@ struct Data_bus
    	Node<position_control_s> position_control_node;
 };
 
-#endif /* DATA_BUS_H_ */
+#endif /* LIB_DATA_BUS_DATA_BUS_H_ */

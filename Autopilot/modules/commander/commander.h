@@ -1,7 +1,7 @@
 #ifndef MODULES_COMMANDER_COMMANDER_H_
 #define MODULES_COMMANDER_COMMANDER_H_
 
-#include <data_bus.h>
+#include <lib/data_bus/data_bus.h>
 #include "hal.h"
 #include "module.h"
 #include "params.h"

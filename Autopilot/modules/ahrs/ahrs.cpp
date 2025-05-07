@@ -11,14 +11,16 @@ AHRS::AHRS(HAL* hal, Data_bus* data_bus)
 	  _modes_sub(data_bus->modes_node),
 	  _mag_sub(data_bus->mag_node),
 	  _imu_sub(data_bus->imu_node),
-	  _time_sub(data_bus->time_node),
 	  _ahrs_pub(data_bus->ahrs_node)
 {
 }
 
 void AHRS::update()
 {
-	_time = _time_sub.get();
+	const uint64_t time = _hal->get_time_us();
+	const float dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
+	_last_time = time;
+
 	_modes_data = _modes_sub.get();
 
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)

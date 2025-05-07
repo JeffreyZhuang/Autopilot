@@ -1,9 +1,9 @@
 #ifndef TELEM_H_
 #define TELEM_H_
 
+#include <lib/data_bus/modes.h>
 #include "lib/utils/utils.h"
 #include "hal.h"
-#include "modes.h"
 #include "params.h"
 #include "constants.h"
 #include "module.h"
@@ -18,7 +18,7 @@ extern "C"
 
 // Rate to transmit messages
 static constexpr float VEHICLE_STATUS_FULL_DT = 0.03;
-static constexpr float GPS_RAW_DT = 0.2;
+static constexpr float GPS_RAW_DT = 0.5;
 static constexpr float POWER_DT = 1;
 static constexpr float CAL_SENSORS_DT = 0.1;
 

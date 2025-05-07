@@ -20,34 +20,35 @@ Telem::Telem(HAL* hal, Data_bus* data_bus)
 
 void Telem::update()
 {
-//	_modes_data = _modes_sub.get();
-//	_ahrs_data = _ahrs_sub.get();
-//
-//	if (_modes_data.system_mode == System_mode::CALIBRATION)
-//	{
-//		send_calibration();
-//	}
-//	else
-//	{
-		send_telemetry();
-//	}
+	_modes_data = _modes_sub.get();
+	_ahrs_data = _ahrs_sub.get();
+	_gnss_data = _gnss_sub.get();
 
-//	if (read_telem(&telem_msg))
-//	{
-//		if (telem_msg.msg_id == WAYPOINTS_COUNT_MSG_ID)
-//		{
-//			update_waypoints_count();
-//		}
-//		else if (telem_msg.msg_id == PARAM_SET_MSG_ID &&
-//				 telem_msg.payload_len == sizeof(aplink_param_set))
-//		{
-//			update_param_set();
-//		}
-//		else if (telem_msg.msg_id == WAYPOINT_MSG_ID)
-//		{
-//			update_waypoint();
-//		}
-//	}
+	if (_modes_data.system_mode == System_mode::CALIBRATION)
+	{
+		send_calibration();
+	}
+	else
+	{
+		send_telemetry();
+	}
+
+	if (read_telem(&telem_msg))
+	{
+		if (telem_msg.msg_id == WAYPOINTS_COUNT_MSG_ID)
+		{
+			update_waypoints_count();
+		}
+		else if (telem_msg.msg_id == PARAM_SET_MSG_ID &&
+				 telem_msg.payload_len == sizeof(aplink_param_set))
+		{
+			update_param_set();
+		}
+		else if (telem_msg.msg_id == WAYPOINT_MSG_ID)
+		{
+			update_waypoint();
+		}
+	}
 }
 
 void Telem::send_telemetry()
@@ -73,35 +74,35 @@ void Telem::send_telemetry()
 		printf("transmit telem\n");
 	}
 
-//	if (current_time_s - last_gps_raw_transmit_s >= GPS_RAW_DT)
-//	{
-//		last_gps_raw_transmit_s = current_time_s;
-//
-//		aplink_gps_raw gps_raw;
-//		gps_raw.lat = (int32_t)(_gnss_data.lat * 1E7);
-//		gps_raw.lon = (int32_t)(_gnss_data.lon * 1E7);
-//		gps_raw.sats = _gnss_data.sats;
-//		gps_raw.fix = _gnss_data.fix;
-//
-//		uint8_t packet[MAX_PACKET_LEN];
-//		uint16_t len = aplink_gps_raw_pack(gps_raw, packet);
-//		_hal->transmit_telem(packet, len);
-//	}
-//
-//	if (current_time_s - last_power_transmit_s >= POWER_DT)
-//	{
-//		last_power_transmit_s = current_time_s;
-//
-//		aplink_power power;
-//		power.ap_curr = 0;
-//		power.batt_curr = 0;
-//		power.batt_volt = 0;
-//		power.batt_used = 0;
-//
-//		uint8_t packet[MAX_PACKET_LEN];
-//		uint16_t len = aplink_power_pack(power, packet);
-//		_hal->transmit_telem(packet, len);
-//	}
+	if (current_time_s - last_gps_raw_transmit_s >= GPS_RAW_DT)
+	{
+		last_gps_raw_transmit_s = current_time_s;
+
+		aplink_gps_raw gps_raw;
+		gps_raw.lat = (int32_t)(_gnss_data.lat * 1E7);
+		gps_raw.lon = (int32_t)(_gnss_data.lon * 1E7);
+		gps_raw.sats = _gnss_data.sats;
+		gps_raw.fix = _gnss_data.fix;
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_gps_raw_pack(gps_raw, packet);
+		_hal->transmit_telem(packet, len);
+	}
+
+	if (current_time_s - last_power_transmit_s >= POWER_DT)
+	{
+		last_power_transmit_s = current_time_s;
+
+		aplink_power power;
+		power.ap_curr = 0;
+		power.batt_curr = 0;
+		power.batt_volt = 0;
+		power.batt_used = 0;
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_power_pack(power, packet);
+		_hal->transmit_telem(packet, len);
+	}
 }
 
 void Telem::send_calibration()

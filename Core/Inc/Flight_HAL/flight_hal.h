@@ -1,8 +1,8 @@
 #ifndef INC_FLIGHT_HAL_H_
 #define INC_FLIGHT_HAL_H_
 
-#include <data_bus.h>
 #include <Drivers/sbus_input.h>
+#include <lib/data_bus/data_bus.h>
 #include <lib/utils/utils.h>
 #include "Drivers/servo.h"
 #include "Drivers/gnss.h"

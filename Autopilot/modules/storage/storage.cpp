@@ -8,7 +8,6 @@ Storage::Storage(HAL* hal, Data_bus* data_bus)
 	  _local_pos_sub(data_bus->local_position_node),
 	  _mag_sub(data_bus->mag_node),
 	  _gnss_sub(data_bus->gnss_node),
-	  _time_sub(data_bus->time_node),
 	  _rc_sub(data_bus->rc_node),
 	  _ahrs_sub(data_bus->ahrs_node)
 {
@@ -16,7 +15,6 @@ Storage::Storage(HAL* hal, Data_bus* data_bus)
 
 void Storage::update()
 {
-	_time = _time_sub.get();
 	_imu_data = _imu_sub.get();
 	_baro_data = _baro_sub.get();
 	_rc_data = _rc_sub.get();
@@ -26,18 +24,24 @@ void Storage::update()
 	_gnss_data = _gnss_sub.get();
 	_ahrs_data = _ahrs_sub.get();
 
-	if (_modes_data.system_mode == System_mode::LOAD_PARAMS)
+	if (_modes_data.system_mode == System_mode::FLIGHT)
 	{
-		if (_time.unix_epoch_time > 0)
+		if (!file_created)
 		{
-			char filename[20];
-			sprintf(filename, "%ld", _time.unix_epoch_time);
-			_hal->create_file(filename, strlen(filename));
+			if (_gnss_data.fix)
+			{
+				char filename[50];
+				sprintf(filename, "%d-%d-%d-%d-%d-%d",
+						_gnss_data.year, _gnss_data.month,
+						_gnss_data.day, _gnss_data.hours,
+						_gnss_data.minutes, _gnss_data.seconds);
+				_hal->create_file(filename, strlen(filename));
+			}
 		}
-	}
-	else
-	{
-		write();
+		else
+		{
+			write();
+		}
 	}
 }
 

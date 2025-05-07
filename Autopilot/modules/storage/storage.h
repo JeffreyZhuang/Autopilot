@@ -1,7 +1,7 @@
 #ifndef MODULES_STORAGE_STORAGE_H_
 #define MODULES_STORAGE_STORAGE_H_
 
-#include "data_bus.h"
+#include <lib/data_bus/data_bus.h>
 #include "hal.h"
 #include "module.h"
 #include <stdint.h>
@@ -22,13 +22,14 @@ public:
 	void update() override;
 
 private:
+	bool file_created = false;
+
 	Subscriber<IMU_data> _imu_sub;
 	Subscriber<Mag_data> _mag_sub;
 	Subscriber<GNSS_data> _gnss_sub;
 	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<Modes_data> _modes_sub;
-	Subscriber<time_s> _time_sub;
 	Subscriber<RC_data> _rc_sub;
 	Subscriber<AHRS_data> _ahrs_sub;
 
@@ -38,7 +39,6 @@ private:
 	local_position_s _local_pos;
 	Baro_data _baro_data{};
 	Modes_data _modes_data{};
-	time_s _time{};
 	RC_data _rc_data{};
 	AHRS_data _ahrs_data{};
 

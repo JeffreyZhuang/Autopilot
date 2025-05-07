@@ -37,25 +37,25 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
-//	if (huart == &huart2)
-//	{
-//		Flight_hal::of_dma_complete();
-//	}
-//	else if (huart == &huart3)
-//	{
-//		Flight_hal::gnss_dma_complete();
-//	}
-//	else if (huart == &huart4)
-//	{
-//		Flight_hal::rc_dma_complete();
-//	}
-//	else if (huart == &huart6)
-//	{
-//		Flight_hal::telemetry_dma_complete();
-//	}
+	if (huart == &huart2)
+	{
+		Flight_hal::of_dma_complete();
+	}
+	else if (huart == &huart3)
+	{
+		Flight_hal::gnss_dma_complete();
+	}
+	else if (huart == &huart4)
+	{
+		Flight_hal::rc_dma_complete();
+	}
+	else if (huart == &huart6)
+	{
+		Flight_hal::telemetry_dma_complete();
+	}
 }
 
 void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
-//	Flight_hal::usb_rx_callback(Buf, Len);
+	Flight_hal::usb_rx_callback(Buf, Len);
 }

@@ -1,9 +1,10 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include <data_bus.h>
+#include <lib/data_bus/data_bus.h>
 #include "lib/madgwick/madgwick.h"
 #include "lib/moving_average/moving_avg.h"
+#include "lib/utils/util.h"
 #include "hal.h"
 #include "module.h"
 #include "params.h"
@@ -22,6 +23,8 @@ public:
     void update() override;
 
 private:
+    uint64_t _last_time = 0;
+
     Madgwick filter;
 
     static constexpr size_t window_size = 100; // TODO: Better capitalization
@@ -41,11 +44,9 @@ private:
 	Subscriber<IMU_data> _imu_sub;
 	Subscriber<Mag_data> _mag_sub;
 	Subscriber<Modes_data> _modes_sub;
-	Subscriber<time_s> _time_sub;
 
 	Publisher<AHRS_data> _ahrs_pub;
 
-	time_s _time{};
 	IMU_data _imu_data{};
 	Mag_data _mag_data{};
 	Modes_data _modes_data{};

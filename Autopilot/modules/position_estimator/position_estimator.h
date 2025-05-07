@@ -42,7 +42,6 @@ private:
     Baro_data _baro_data{};
     AHRS_data _ahrs_data{};
     IMU_data _imu_data{};
-    time_s _time{};
 
     void update_initialization();
     void update_running();

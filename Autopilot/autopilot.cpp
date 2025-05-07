@@ -22,6 +22,16 @@ Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
 	create_params();
 }
 
+// TODO: param set single get function (just switch based on parameter type)
+
+// Move params_def to lib
+// Move data_bus to lib
+// Move hal to lib
+
+// Create file when switching from disarmed to armed (switching from startup to flight)
+// So it already has GPS fix or recieves time from GCS in that case
+// File format: YYYY-MM-DD-HH-MM-SS
+
 void Autopilot::setup()
 {
 	printf("Autopilot: Setup\n");

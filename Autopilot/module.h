@@ -1,7 +1,7 @@
 #ifndef MODULE_H_
 #define MODULE_H_
 
-#include "data_bus.h"
+#include <lib/data_bus/data_bus.h>
 #include "hal.h"
 
 /**
