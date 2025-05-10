@@ -1,6 +1,6 @@
-#include "Flight_HAL/flight_hal.h"
+#include "Autopilot_HAL/Autopilot_HAL.h"
 
-void Flight_hal::init_imu()
+void AutopilotHAL::init_imu()
 {
 	_imu.begin();
 
@@ -11,7 +11,7 @@ void Flight_hal::init_imu()
 	_imu.setGyroFS(ICM42688::dps500);
 }
 
-bool Flight_hal::read_imu(float *ax, float *ay, float *az, float *gx, float *gy, float *gz)
+bool AutopilotHAL::read_imu(float *ax, float *ay, float *az, float *gx, float *gy, float *gz)
 {
 	if (_imu.getAGT() == 1)
 	{

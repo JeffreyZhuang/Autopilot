@@ -1,11 +1,11 @@
-#include "Flight_HAL/flight_hal.h"
+#include "Autopilot_HAL/Autopilot_HAL.h"
 
-void Flight_hal::init_of()
+void AutopilotHAL::init_of()
 {
 	cxof.setup();
 }
 
-bool Flight_hal::read_optical_flow(int16_t *x, int16_t *y)
+bool AutopilotHAL::read_optical_flow(int16_t *x, int16_t *y)
 {
 	Cxof_frame result;
 	if (cxof.read(&result))

@@ -1,11 +1,11 @@
-#include "Flight_HAL/flight_hal.h"
+#include "Autopilot_HAL/Autopilot_HAL.h"
 
-void Flight_hal::init_gnss()
+void AutopilotHAL::init_gnss()
 {
 	_gnss.setup();
 }
 
-bool Flight_hal::read_gnss(double *lat, double *lon, float* alt, uint8_t* sats, bool* fix)
+bool AutopilotHAL::read_gnss(double *lat, double *lon, float* alt, uint8_t* sats, bool* fix)
 {
 	if (_gnss.read())
 	{

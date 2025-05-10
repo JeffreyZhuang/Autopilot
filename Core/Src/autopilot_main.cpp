@@ -1,6 +1,6 @@
+#include "Autopilot_HAL/Autopilot_HAL.h"
 #include "autopilot_main.h"
 #include "autopilot.h"
-#include "Flight_HAL/flight_hal.h"
 
 void autopilot_main_c()
 {
@@ -8,6 +8,6 @@ void autopilot_main_c()
 	Autopilot autopilot(&hal);
 	autopilot.setup();
 
-	// For some reason I get hardfault handler when this removed
+	// Bug: Hardfault handler when this removed
 	while (1);
 }

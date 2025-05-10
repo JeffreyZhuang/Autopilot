@@ -1,5 +1,5 @@
-#ifndef INC_FLIGHT_HAL_H_
-#define INC_FLIGHT_HAL_H_
+#ifndef INC_AUTOPILOT_HAL_H_
+#define INC_AUTOPILOT_HAL_H_
 
 #include "lib/utils/utils.h"
 #include "Drivers/sbus_input.h"
@@ -35,10 +35,10 @@ extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart6;
 
-class Flight_hal : public HAL
+class AutopilotHAL : public HAL
 {
 public:
-	Flight_hal();
+	AutopilotHAL();
 
 	void init() override;
 
@@ -117,7 +117,7 @@ private:
 	// scheduler_hal.cpp
 	void (*main_task)() = nullptr;
 
-	static Flight_hal* _instance;
+	static AutopilotHAL* _instance;
 };
 
-#endif /* INC_FLIGHT_HAL_H_ */
+#endif /* INC_AUTOPILOT_HAL_H_ */
