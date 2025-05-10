@@ -14,21 +14,17 @@ typedef uint16_t param_t;
 
 #define PARAM_INVALID 0xFFFF
 
+// Declare all parameter handles
+#define PARAM(name, type) extern param_t name;
+#include "params_def.h"
+#undef PARAM
+
 void param_init(void);
-param_t param_add(const char *name, param_type_t type);
 param_t param_find(const char *name);
 int param_get(param_t param, void *val);
 int param_set_int32(param_t param, int32_t val);
 int param_set_float(param_t param, float val);
 param_type_t param_get_type(param_t param);
 bool param_all_set(void);
-
-// Declare all parameter handles
-#define PARAM(name, type) extern param_t name;
-#include "params_def.h"
-#undef PARAM
-
-// Function to initialize all parameters
-void create_params(void);
 
 #endif /* LIB_PARAMETERS_PARAMS_H_ */

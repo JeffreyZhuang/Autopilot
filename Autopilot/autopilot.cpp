@@ -19,7 +19,7 @@ Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
 	_hal = hal;
 	_instance = this;
 
-	create_params();
+	param_init();
 }
 
 // Create file when switching from disarmed to armed (switching from startup to flight)

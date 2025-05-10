@@ -52,22 +52,32 @@ void Mixer::update_flight()
 			pwm_min_thr, pwm_max_thr;
 
 	param_get(PWM_REV_ELE, &rev_ele);
+	param_get(PWM_MIN_ELE, &pwm_min_ele);
+	param_get(PWM_MAX_ELE, &pwm_max_ele);
+	param_get(PWM_REV_RUD, &rev_rud);
+	param_get(PWM_MIN_RUD, &pwm_min_rud);
+	param_get(PWM_MAX_RUD, &pwm_max_rud);
+	param_get(PWM_MIN_THR, &pwm_min_thr);
+	param_get(PWM_MAX_THR, &pwm_max_thr);
 
 	_elevator_duty = map(
 		rev_ele ? -_ctrl_cmd_data.ele_cmd : _ctrl_cmd_data.ele_cmd,
-		-1,1, param_get_int32(PWM_MIN_ELE), param_get_int32(PWM_MAX_ELE)
+		-1,1, pwm_min_ele, pwm_max_ele
 	);
 
 	_rudder_duty = map(
-		param_get_int32(PWM_REV_RUD) ? -_ctrl_cmd_data.rud_cmd : _ctrl_cmd_data.rud_cmd,
-	    -1, 1, param_get_int32(PWM_MIN_RUD), param_get_int32(PWM_MAX_RUD)
+		rev_rud ? -_ctrl_cmd_data.rud_cmd : _ctrl_cmd_data.rud_cmd,
+	    -1, 1, pwm_min_rud, pwm_max_rud
 	);
 
 	// TODO: Remove reverse for throttle
-	_throttle_duty = map(_position_control.throttle_setpoint, 0, 1, param_get_int32(PWM_MIN_THR),
-						 param_get_int32(PWM_MAX_THR));
+	_throttle_duty = map(_position_control.throttle_setpoint, 0, 1, pwm_min_thr,
+						 pwm_max_thr);
 
-	if (param_get_int32(ENABLE_HITL))
+	bool enable_hitl;
+	param_get(ENABLE_HITL, &enable_hitl);
+
+	if (enable_hitl)
 	{
 		// Publish HITL commands to data bus, then telem sends through usb
 		_hitl_output_pub.publish(HITL_output_data{_elevator_duty, _rudder_duty, _throttle_duty,

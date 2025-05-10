@@ -76,10 +76,23 @@ void Sensors::update_flight()
 	float mx, my, mz;
 	if (_hal->read_mag(&mx, &my, &mz))
 	{
-		float hi_x, hi_y, hi_z;
+		float hi_x, hi_y, hi_z,
+			  si_xx, si_xy, si_xz,
+			  si_yx, si_yy, si_yz,
+			  si_zx, si_zy, si_zz;
+
 		param_get(MAG_HI_X, &hi_x);
 		param_get(MAG_HI_Y, &hi_y);
 		param_get(MAG_HI_Z, &hi_z);
+		param_get(MAG_SI_XX, &si_xx);
+		param_get(MAG_SI_XY, &si_xy);
+		param_get(MAG_SI_XZ, &si_xz);
+		param_get(MAG_SI_YX, &si_yx);
+		param_get(MAG_SI_YY, &si_yy);
+		param_get(MAG_SI_YZ, &si_yz);
+		param_get(MAG_SI_ZX, &si_zx);
+		param_get(MAG_SI_ZY, &si_zy);
+		param_get(MAG_SI_ZZ, &si_zz);
 
 		// Apply hard-iron offsets
 		float hi_cal[3];
@@ -88,15 +101,15 @@ void Sensors::update_flight()
 		hi_cal[2] = mz - hi_z;
 
 		// Apply soft-iron scaling
-		mx = (param_get_float(MAG_SI_XX) * hi_cal[0]) +
-			 (param_get_float(MAG_SI_XY) * hi_cal[1]) +
-			 (param_get_float(MAG_SI_XZ) * hi_cal[2]);
-		my = (param_get_float(MAG_SI_YX) * hi_cal[0]) +
-			 (param_get_float(MAG_SI_YY) * hi_cal[1]) +
-			 (param_get_float(MAG_SI_YZ) * hi_cal[2]);
-		mz = (param_get_float(MAG_SI_ZX) * hi_cal[0]) +
-			 (param_get_float(MAG_SI_ZY) * hi_cal[1]) +
-			 (param_get_float(MAG_SI_ZZ) * hi_cal[2]);
+		mx = (si_xx * hi_cal[0]) +
+			 (si_xy * hi_cal[1]) +
+			 (si_xz * hi_cal[2]);
+		my = (si_yx * hi_cal[0]) +
+			 (si_yy * hi_cal[1]) +
+			 (si_yz * hi_cal[2]);
+		mz = (si_zx * hi_cal[0]) +
+			 (si_zy * hi_cal[1]) +
+			 (si_zz * hi_cal[2]);
 
 		_mag_pub.publish(Mag_data{mx, my, mz, _hal->get_time_us()});
 	}

@@ -18,6 +18,9 @@ public:
 	void update() override;
 
 private:
+	uint64_t _last_time = 0;
+	float _dt = 0;
+
 	Subscriber<AHRS_data> _ahrs_sub;
 	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<Modes_data> _modes_sub;

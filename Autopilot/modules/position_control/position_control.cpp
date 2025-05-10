@@ -1,4 +1,4 @@
-#include <modules/position_control/position_control.h>
+#include "position_control.h"
 
 // S. Park, J. Deyst, and J. P. How, "A New Nonlinear Guidance Logic for Trajectory Tracking,"
 // Proceedings of the AIAA Guidance, Navigation and Control
@@ -17,6 +17,10 @@ PositionControl::PositionControl(HAL* hal, Data_bus* data_bus)
 
 void PositionControl::update()
 {
+	const uint64_t time = _hal->get_time_us();
+	_dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
+	_last_time = time;
+
 	_ahrs_data = _ahrs_sub.get();
 	_local_pos = _local_pos_sub.get();
 	_modes_data = _modes_sub.get();
@@ -61,8 +65,13 @@ void PositionControl::update_direct()
 
 void PositionControl::update_stabilized()
 {
-	_position_control.roll_setpoint = _rc_data.ail_norm * param_get_float(L1_ROLL_LIM);
-	_position_control.pitch_setpoint = _rc_data.ele_norm * param_get_float(TECS_PTCH_LIM);
+	float roll_lim, ptch_lim;
+
+	param_get(L1_ROLL_LIM, &roll_lim);
+	param_get(TECS_PTCH_LIM, &ptch_lim);
+
+	_position_control.roll_setpoint = _rc_data.ail_norm * roll_lim;
+	_position_control.pitch_setpoint = _rc_data.ele_norm * ptch_lim;
 	_position_control.throttle_setpoint = _rc_data.thr_norm;
 }
 
@@ -86,14 +95,22 @@ void PositionControl::handle_auto_mode()
 
 void PositionControl::update_takeoff()
 {
+	float takeoff_pitch;
+
+	param_get(TKO_PTCH, &takeoff_pitch);
+
 	_position_control.roll_setpoint = 0;
-	_position_control.pitch_setpoint = param_get_float(TKO_PTCH);
+	_position_control.pitch_setpoint = takeoff_pitch;
 	_position_control.throttle_setpoint = _rc_data.thr_norm;
 }
 
 // Update roll and altitude setpoints
 void PositionControl::update_mission()
 {
+	float cruise_speed;
+
+	param_get(MIS_SPD, &cruise_speed);
+
 	// Update roll setpoint
 	_position_control.roll_setpoint = l1_calculate_roll();
 
@@ -104,13 +121,17 @@ void PositionControl::update_mission()
 	);
 
 	// Update TECS
-	tecs_calculate_energies(param_get_float(MIS_SPD), _d_setpoint, 1);
+	tecs_calculate_energies(cruise_speed, _d_setpoint, 1);
 	_position_control.pitch_setpoint = tecs_control_energy_balance();
 	_position_control.throttle_setpoint = tecs_control_total_energy();
 }
 
 void PositionControl::update_land()
 {
+	float landing_speed;
+
+	param_get(LND_SPD, &landing_speed);
+
 	// Update roll setpoint
 	_position_control.roll_setpoint = l1_calculate_roll();
 
@@ -121,7 +142,7 @@ void PositionControl::update_land()
 	);
 
 	// Update TECS
-	tecs_calculate_energies(param_get_float(LND_SPD), _d_setpoint, 1);
+	tecs_calculate_energies(landing_speed, _d_setpoint, 1);
 	_position_control.pitch_setpoint = tecs_control_energy_balance();
 	_position_control.throttle_setpoint = tecs_control_total_energy();
 }
@@ -129,24 +150,32 @@ void PositionControl::update_land()
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
 void PositionControl::update_flare()
 {
+	float acceptance_radius, flare_sink_rate, flare_alt,
+		  landing_speed;
+
+	param_get(NAV_ACC_RAD, &acceptance_radius);
+	param_get(LND_FL_SINK, &flare_sink_rate);
+	param_get(LND_FL_ALT, &flare_alt);
+	param_get(LND_SPD, &landing_speed);
+
 	// Calculate the glideslope angle based on the altitude difference and horizontal distance
 	const float dist_land_appr = distance(_waypoint.previous_north, _waypoint.previous_east,
 										  _waypoint.current_north, _waypoint.current_east);
 	const float glideslope_angle = atan2f(_waypoint.current_alt - _waypoint.previous_alt,
-										  dist_land_appr - param_get_float(NAV_ACC_RAD));
+										  dist_land_appr - acceptance_radius);
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
 	const float final_altitude = 0;
-	const float final_sink_rate = param_get_float(LND_FL_SINK);
-	const float initial_altitude = fmaxf(param_get_float(LND_FL_ALT), final_altitude);
-	const float initial_sink_rate = fmaxf(param_get_float(LND_SPD)* sinf(glideslope_angle),
+	const float final_sink_rate = flare_sink_rate;
+	const float initial_altitude = fmaxf(flare_alt, final_altitude);
+	const float initial_sink_rate = fmaxf(landing_speed * sinf(glideslope_angle),
 								  	  	  final_sink_rate);
 	const float sink_rate = lerp(initial_altitude, initial_sink_rate,
 								 final_altitude, final_sink_rate,
 								 clamp(-_local_pos.z, final_altitude, initial_altitude));
 
 	// Update altitude setpoint with the calculated sink rate
-	_d_setpoint += sink_rate * _time_data.dt_s;
+	_d_setpoint += sink_rate * _dt;
 	_position_control.roll_setpoint = 0;
 
 	tecs_calculate_energies(0, _d_setpoint, 2);
@@ -157,6 +186,10 @@ void PositionControl::update_flare()
 float PositionControl::calculate_altitude_setpoint(const float prev_north, const float prev_east, const float prev_down,
 		  	  	  	  	  	  	  	  	  	  	   const float tgt_north, const float tgt_east, const float tgt_down)
 {
+	float acceptance_radius;
+
+	param_get(NAV_ACC_RAD, &acceptance_radius);
+
 	// Set altitude setpoint to first waypoint during start of mission
 	if (_waypoint.current_index == 1)
 	{
@@ -169,7 +202,7 @@ float PositionControl::calculate_altitude_setpoint(const float prev_north, const
 		_local_pos.x, _local_pos.y
 	);
 
-	const float initial_dist = param_get_float(NAV_ACC_RAD);
+	const float initial_dist = acceptance_radius;
 	float final_dist;
 
 	if (_modes_data.auto_mode == Auto_mode::LAND)
@@ -180,7 +213,7 @@ float PositionControl::calculate_altitude_setpoint(const float prev_north, const
 	else
 	{
 		// Reach altitude when within acceptance radius of next waypoint
-		final_dist = dist_prev_tgt - param_get_float(NAV_ACC_RAD);
+		final_dist = dist_prev_tgt - acceptance_radius;
 	}
 
 	// Altitude first order hold
@@ -192,6 +225,11 @@ float PositionControl::calculate_altitude_setpoint(const float prev_north, const
 
 float PositionControl::l1_calculate_roll() const
 {
+	float l1_period, roll_lim;
+
+	param_get(L1_PERIOD, &l1_period);
+	param_get(L1_ROLL_LIM, &roll_lim);
+
 	// Calculate track heading (bearing from previous to target waypoint)
 	const float trk_hdg = atan2f(_waypoint.current_east - _waypoint.previous_east,
 								 _waypoint.current_north - _waypoint.previous_north);
@@ -202,7 +240,7 @@ float PositionControl::l1_calculate_roll() const
 	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
 
 	// Calculate L1 distance and scale with speed
-	const float l1_dist = fmaxf(param_get_float(L1_PERIOD) * _local_pos.gnd_spd / M_PI, 1.0);
+	const float l1_dist = fmaxf(l1_period * _local_pos.gnd_spd / M_PI, 1.0);
 
 	// Calculate correction angle
 	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
@@ -223,7 +261,7 @@ float PositionControl::l1_calculate_roll() const
 	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
 
 	// Return clamped roll angle
-	return clamp(roll, -param_get_float(L1_ROLL_LIM), param_get_float(L1_ROLL_LIM));
+	return clamp(roll, -roll_lim, roll_lim);
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)
@@ -248,6 +286,11 @@ float PositionControl::compute_along_track_distance(float start_n, float start_e
 // wb = 2: only alt
 void PositionControl::tecs_calculate_energies(float target_vel_mps, float target_alt_m, float wb)
 {
+	float min_spd, max_spd;
+
+	param_get(MIN_SPD, &min_spd);
+	param_get(MAX_SPD, &max_spd);
+
 	// Calculate specific energy
 	// SPe = gh
 	// SKe = 1/2 v^2
@@ -263,8 +306,8 @@ void PositionControl::tecs_calculate_energies(float target_vel_mps, float target
 
 	// Clamp total energy setpoint within allowed airspeed range
 	// Prevent stall/overspeed
-	float min_kin = 0.5 * powf(param_get_float(MIN_SPD), 2);
-	float max_kin = 0.5 * powf(param_get_float(MAX_SPD), 2);
+	float min_kin = 0.5 * powf(min_spd, 2);
+	float max_kin = 0.5 * powf(max_spd, 2);
 	target_total = clamp(target_total, energy_pot + min_kin, energy_pot + max_kin);
 
 	// Compute energy difference setpoint and measurement
@@ -284,30 +327,28 @@ void PositionControl::tecs_calculate_energies(float target_vel_mps, float target
 
 float PositionControl::tecs_control_energy_balance()
 {
+	float kP, kI, ptch_lim;
+
+	param_get(TECS_PTCH_KP, &kP);
+	param_get(TECS_PTCH_KI, &kI);
+	param_get(TECS_PTCH_LIM, &ptch_lim);
+
 	return energy_balance_controller.get_output(
-		_energy_balance,
-		_energy_balance_setpoint,
-		param_get_float(TECS_PTCH_KP),
-		param_get_float(TECS_PTCH_KI),
-		param_get_float(TECS_PTCH_LIM),
-		-param_get_float(TECS_PTCH_LIM),
-		param_get_float(TECS_PTCH_LIM),
-		0,
-		_time_data.dt_s
+		_energy_balance, _energy_balance_setpoint,
+		kP, kI, ptch_lim, -ptch_lim, ptch_lim, 0, _dt
 	);
 }
 
 float PositionControl::tecs_control_total_energy()
 {
+	float kP, kI, cruise_thr_trim;
+
+	param_get(TECS_THR_KP, &kP);
+	param_get(TECS_THR_KI, &kI);
+	param_get(MIS_THR, &cruise_thr_trim);
+
 	return total_energy_controller.get_output(
-		_total_energy,
-		_total_energy_setpoint,
-		param_get_float(TECS_THR_KP),
-		param_get_float(TECS_THR_KI),
-		1,
-		0,
-		1,
-		param_get_float(MIS_THR),
-		_time_data.dt_s
+		_total_energy, _total_energy_setpoint,
+		kP, kI, 1, 0, 1, cruise_thr_trim, _dt
 	);
 }

@@ -1,4 +1,4 @@
-#include <lib/parameters/params.h>
+#include "params.h"
 #include <string.h>
 #include <stdbool.h>
 
@@ -25,12 +25,7 @@ static uint32_t param_hash(const char *str) {
     return hash;
 }
 
-void param_init(void) {
-    memset(param_table, 0, sizeof(param_table));
-    param_count = 0;
-}
-
-param_t param_add(const char *name, param_type_t type) {
+static param_t param_add(const char *name, param_type_t type) {
     if (param_count >= MAX_PARAMS) return PARAM_INVALID;
 
     uint32_t hash = param_hash(name);
@@ -39,6 +34,21 @@ param_t param_add(const char *name, param_type_t type) {
     param_table[param_count].is_set = false;
 
     return param_count++; // Return handle (index)
+}
+
+// Define all parameters
+#define PARAM(name, type) param_t name;
+#include "params_def.h"
+#undef PARAM
+
+void param_init(void) {
+    memset(param_table, 0, sizeof(param_table));
+    param_count = 0;
+
+    // Register parameters
+	#define PARAM(name, type) name = param_add(#name, type);
+    #include "params_def.h"
+    #undef PARAM
 }
 
 param_t param_find(const char *name) {
@@ -103,18 +113,4 @@ bool param_all_set(void) {
         }
     }
     return true;
-}
-
-// Define all parameters
-#define PARAM(name, type) param_t name;
-#include "params_def.h"
-#undef PARAM
-
-// Function to register parameters
-void create_params(void) {
-    param_init();
-
-    #define PARAM(name, type) name = param_add(#name, type);
-    #include "params_def.h"
-    #undef PARAM
 }
