@@ -24,7 +24,9 @@ void Sensors::update()
 	else if (_modes_data.system_mode == System_mode::FLIGHT ||
 			 _modes_data.system_mode == System_mode::STARTUP)
 	{
-		if (param_get_int32(ENABLE_HITL))
+		bool enable_hitl;
+		param_get(ENABLE_HITL, &enable_hitl);
+		if (enable_hitl)
 		{
 			update_hitl();
 		}
@@ -41,32 +43,49 @@ void Sensors::update_flight()
 	if (_hal->read_imu(&ax, &ay, &az, &gx, &gy, &gz))
 	{
 		// Apply IMU calibration
-		gx -= param_get_float(GYR_OFF_X);
-		gy -= param_get_float(GYR_OFF_Y);
-		gz -= param_get_float(GYR_OFF_Z);
-		ax -= param_get_float(ACC_OFF_X);
-		ay -= param_get_float(ACC_OFF_Y);
-		az -= param_get_float(ACC_OFF_Z);
+		float gyr_off_x;
+		float gyr_off_y;
+		float gyr_off_z;
+		float acc_off_x;
+		float acc_off_y;
+		float acc_off_z;
 
-		_imu_pub.publish(IMU_data{gx, gy, gz, ax, ay, az, _time.timestamp});
+		param_get(GYR_OFF_X, &gyr_off_x);
+		param_get(GYR_OFF_Y, &gyr_off_y);
+		param_get(GYR_OFF_Z, &gyr_off_z);
+		param_get(ACC_OFF_X, &acc_off_x);
+		param_get(ACC_OFF_Y, &acc_off_y);
+		param_get(ACC_OFF_Z, &acc_off_z);
+
+		gx -= gyr_off_x;
+		gy -= gyr_off_y;
+		gz -= gyr_off_z;
+		ax -= acc_off_x;
+		ay -= acc_off_y;
+		az -= acc_off_z;
+
+		_imu_pub.publish(IMU_data{gx, gy, gz, ax, ay, az, _hal->get_time_us()});
 	}
 
 	float baro_alt;
 	if (_hal->read_baro(&baro_alt))
 	{
-		_baro_pub.publish(Baro_data{baro_alt, _time.timestamp});
+		_baro_pub.publish(Baro_data{baro_alt, _hal->get_time_us()});
 	}
 
 	float mx, my, mz;
 	if (_hal->read_mag(&mx, &my, &mz))
 	{
-		// Storage for hard-iron calibrated magnetometer data
-		float hi_cal[3];
+		float hi_x, hi_y, hi_z;
+		param_get(MAG_HI_X, &hi_x);
+		param_get(MAG_HI_Y, &hi_y);
+		param_get(MAG_HI_Z, &hi_z);
 
 		// Apply hard-iron offsets
-		hi_cal[0] = mx - param_get_float(MAG_HI_X);
-		hi_cal[1] = my - param_get_float(MAG_HI_Y);
-		hi_cal[2] = mz - param_get_float(MAG_HI_Z);
+		float hi_cal[3];
+		hi_cal[0] = mx - hi_x;
+		hi_cal[1] = my - hi_y;
+		hi_cal[2] = mz - hi_z;
 
 		// Apply soft-iron scaling
 		mx = (param_get_float(MAG_SI_XX) * hi_cal[0]) +
@@ -79,13 +98,13 @@ void Sensors::update_flight()
 			 (param_get_float(MAG_SI_ZY) * hi_cal[1]) +
 			 (param_get_float(MAG_SI_ZZ) * hi_cal[2]);
 
-		_mag_pub.publish(Mag_data{mx, my, mz, _time.timestamp});
+		_mag_pub.publish(Mag_data{mx, my, mz, _hal->get_time_us()});
 	}
 
 	int16_t of_x, of_y;
 	if (_hal->read_optical_flow(&of_x, &of_y))
 	{
-		_of_pub.publish(OF_data{of_x, of_y, _time.timestamp});
+		_of_pub.publish(OF_data{of_x, of_y, _hal->get_time_us()});
 	}
 }
 
@@ -95,19 +114,19 @@ void Sensors::update_calibration()
 	float ax, ay, az, gx, gy, gz;
 	if (_hal->read_imu(&ax, &ay, &az, &gx, &gy, &gz))
 	{
-		_imu_pub.publish(IMU_data{gx, gy, gz, ax, ay, az, _time.timestamp});
+		_imu_pub.publish(IMU_data{gx, gy, gz, ax, ay, az, _hal->get_time_us()});
 	}
 
 	float baro_alt;
 	if (_hal->read_baro(&baro_alt))
 	{
-		_baro_pub.publish(Baro_data{baro_alt, _time.timestamp});
+		_baro_pub.publish(Baro_data{baro_alt, _hal->get_time_us()});
 	}
 
 	float mx, my, mz;
 	if (_hal->read_mag(&mx, &my, &mz))
 	{
-		_mag_pub.publish(Mag_data{mx, my, mz, _time.timestamp});
+		_mag_pub.publish(Mag_data{mx, my, mz, _hal->get_time_us()});
 	}
 }
 
@@ -119,11 +138,11 @@ void Sensors::update_hitl()
 
 		_imu_pub.publish(IMU_data{_hitl_sensors.imu_gx, _hitl_sensors.imu_gy, _hitl_sensors.imu_gz,
 								  _hitl_sensors.imu_ax, _hitl_sensors.imu_ay, _hitl_sensors.imu_az});
-		_baro_pub.publish(Baro_data{_hitl_sensors.baro_asl, _time.timestamp});
+		_baro_pub.publish(Baro_data{_hitl_sensors.baro_asl, _hal->get_time_us()});
 		_gnss_pub.publish(GNSS_data{
 			.lat = (double)_hitl_sensors.gps_lat / 1E7,
 			.lon = (double)_hitl_sensors.gps_lon / 1E7,
-			.timestamp = _time.timestamp
+			.timestamp = _hal->get_time_us()
 		});
 	}
 }

@@ -18,7 +18,7 @@ AHRS::AHRS(HAL* hal, Data_bus* data_bus)
 void AHRS::update()
 {
 	const uint64_t time = _hal->get_time_us();
-	const float dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
+	_dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
 	_last_time = time;
 
 	_modes_data = _modes_sub.get();
@@ -40,8 +40,11 @@ void AHRS::update()
 
 void AHRS::update_filter_parameters()
 {
-	filter.set_dt(_time.dt_s);
-	filter.set_beta(param_get_float(AHRS_BETA_GAIN));
+	float beta;
+	param_get(AHRS_BETA_GAIN, &beta);
+
+	filter.set_dt(_dt);
+	filter.set_beta(beta);
 }
 
 void AHRS::update_initialization()
@@ -118,7 +121,9 @@ void AHRS::publish_ahrs()
 	_ahrs_data.pitch = filter.getPitch();
 
 	// Add magnetic declination and normalize to [-180, 180]
-	_ahrs_data.yaw = fmod(filter.getYaw() + param_get_float(AHRS_MAG_DECL) + 180.0f, 360.0f) - 180.0f;
+	float mag_decl;
+	param_get(AHRS_MAG_DECL, &mag_decl);
+	_ahrs_data.yaw = fmod(filter.getYaw() + mag_decl + 180.0f, 360.0f) - 180.0f;
 
 	_ahrs_data.timestamp = _hal->get_time_us();
 
@@ -175,10 +180,13 @@ void AHRS::set_initial_angles()
 
 bool AHRS::is_accel_reliable()
 {
+	float acc_max;
+	param_get(AHRS_ACC_MAX, &acc_max);
+
 	float accel_magnitude = sqrtf(powf(_imu_data.ax, 2) +
 								  powf(_imu_data.ay, 2) +
 								  powf(_imu_data.az, 2));
 
 	// Assuming 1g reference
-	return fabs(accel_magnitude - 1.0f) < param_get_float(AHRS_ACC_MAX);
+	return fabs(accel_magnitude - 1.0f) < acc_max;
 }

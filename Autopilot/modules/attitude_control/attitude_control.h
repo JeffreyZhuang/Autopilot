@@ -3,7 +3,8 @@
 
 #include "lib/pi_control/pi_control.h"
 #include "lib/utils/utils.h"
-#include "params.h"
+#include "lib/parameters/params.h"
+#include "constants.h"
 #include "hal.h"
 #include "module.h"
 #include <math.h>
@@ -17,6 +18,9 @@ public:
 	void update() override;
 
 private:
+	uint64_t _last_time = 0;
+	float _dt = 0;
+
 	PI_control roll_controller;
 	PI_control pitch_controller;
 
@@ -24,7 +28,6 @@ private:
 	Subscriber<position_control_s> _position_control_sub;
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<RC_data> _rc_sub;
-	Subscriber<time_s> _time_sub;
 
 	Publisher<Ctrl_cmd_data> _ctrl_cmd_pub;
 
@@ -33,7 +36,6 @@ private:
 	position_control_s _position_control;
 	Modes_data _modes_data;
 	Ctrl_cmd_data _ctrl_cmd_data;
-	time_s _time;
 
 	void handle_manual_mode();
 	void handle_auto_mode();

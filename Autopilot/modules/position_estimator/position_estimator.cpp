@@ -3,7 +3,6 @@
 Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  kalman(n, m),
-	  _time_sub(data_bus->time_node),
 	  _modes_sub(data_bus->modes_node),
 	  _imu_sub(data_bus->imu_node),
 	  _baro_sub(data_bus->baro_node),
@@ -16,8 +15,11 @@ Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
 
 void Position_estimator::update()
 {
+	const uint64_t time = _hal->get_time_us();
+	_dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
+	_last_time = time;
+
 	_modes_data = _modes_sub.get();
-	_time = _time_sub.get();
 
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
@@ -109,13 +111,16 @@ void Position_estimator::predict_accel()
 											  _ahrs_data.yaw * DEG_TO_RAD);
 	acc_ned(2) += G; // Gravity correction
 
-	kalman.predict(acc_ned, get_a(_time.dt_s), get_b(_time.dt_s), get_q());
+	kalman.predict(acc_ned, get_a(_dt), get_b(_dt), get_q());
 
 	update_plane();
 }
 
 void Position_estimator::update_gps()
 {
+	float gnss_variance;
+	param_get(EKF_GNSS_VAR, &gnss_variance);
+
 	// Convert lat/lon to meters
 	double gnss_north_meters, gnss_east_meters;
 	lat_lon_to_meters(_local_pos.ref_lat, _local_pos.ref_lon,
@@ -129,7 +134,7 @@ void Position_estimator::update_gps()
 	H << 1, 0, 0, 0, 0, 0,
 		 0, 1, 0, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 2> R(param_get_float(EKF_GNSS_VAR), param_get_float(EKF_GNSS_VAR));
+	Eigen::DiagonalMatrix<float, 2> R(gnss_variance, gnss_variance);
 
 	kalman.update(R, H, y);
 
@@ -138,13 +143,16 @@ void Position_estimator::update_gps()
 
 void Position_estimator::update_baro()
 {
+	float baro_variance;
+	param_get(EKF_BARO_VAR, &baro_variance);
+
 	Eigen::VectorXf y(1);
 	y << -(_baro_data.alt - _local_pos.ref_alt);
 
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 1> R(param_get_float(EKF_BARO_VAR));
+	Eigen::DiagonalMatrix<float, 1> R(baro_variance);
 
 	kalman.update(R, H, y);
 
@@ -202,8 +210,12 @@ Eigen::Vector3f Position_estimator::inertial_to_ned(const Eigen::Vector3f& imu_m
 
 bool Position_estimator::is_of_reliable()
 {
+	int32_t of_min, of_max;
+	param_get(EKF_OF_MIN, &of_min);
+	param_get(EKF_OF_MAX, &of_max);
+
 	float flow = sqrtf(powf(_of_data.x, 2) + powf(_of_data.y, 2));
-	return flow > param_get_int32(EKF_OF_MIN) && flow < param_get_int32(EKF_OF_MAX);
+	return flow > of_min && flow < of_max;
 }
 
 Eigen::MatrixXf Position_estimator::get_a(float dt)

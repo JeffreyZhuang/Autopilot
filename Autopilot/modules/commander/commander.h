@@ -1,10 +1,10 @@
 #ifndef MODULES_COMMANDER_COMMANDER_H_
 #define MODULES_COMMANDER_COMMANDER_H_
 
-#include <lib/data_bus/data_bus.h>
+#include "lib/parameters/params.h"
+#include "lib/data_bus/data_bus.h"
 #include "hal.h"
 #include "module.h"
-#include "params.h"
 #include <stdio.h>
 
 class Commander : public Module

@@ -28,7 +28,9 @@ void USBComm::update()
 	}
 
 	// Transmit
-	if (param_get_int32(ENABLE_HITL))
+	bool enable_hitl;
+	param_get(ENABLE_HITL, &enable_hitl);
+	if (enable_hitl)
 	{
 		transmit_hitl();
 	}

@@ -11,7 +11,6 @@ PositionControl::PositionControl(HAL* hal, Data_bus* data_bus)
 	  _modes_sub(data_bus->modes_node),
 	  _waypoint_sub(data_bus->waypoint_node),
 	  _rc_sub(data_bus->rc_node),
-	  _time_sub(data_bus->time_node),
 	  _position_control_pub(data_bus->position_control_node)
 {
 }
@@ -23,7 +22,6 @@ void PositionControl::update()
 	_modes_data = _modes_sub.get();
 	_waypoint = _waypoint_sub.get();
 	_rc_data = _rc_sub.get();
-	_time_data = _time_sub.get();
 
 	if (_modes_data.system_mode == System_mode::FLIGHT)
 	{

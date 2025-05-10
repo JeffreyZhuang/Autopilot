@@ -1,12 +1,12 @@
 #ifndef POSITION_ESTIMATOR_H
 #define POSITION_ESTIMATOR_H
 
+#include "lib/parameters/params.h"
 #include "lib/kalman/kalman.h"
 #include "lib/utils/utils.h"
 #include "hal.h"
 #include "constants.h"
 #include "module.h"
-#include "params.h"
 #include <stdio.h>
 
 static constexpr int n = 6;
@@ -23,9 +23,11 @@ public:
     void update() override;
 
 private:
+    uint64_t _last_time = 0;
+	float _dt = 0;
+
     Kalman kalman;
 
-    Subscriber<time_s> _time_sub;
     Subscriber<Modes_data> _modes_sub;
     Subscriber<IMU_data> _imu_sub;
     Subscriber<Baro_data> _baro_sub;

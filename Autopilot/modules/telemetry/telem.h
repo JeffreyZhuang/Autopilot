@@ -1,10 +1,10 @@
 #ifndef TELEM_H_
 #define TELEM_H_
 
-#include <lib/data_bus/modes.h>
+#include "lib/parameters/params.h"
+#include "lib/data_bus/modes.h"
 #include "lib/utils/utils.h"
 #include "hal.h"
-#include "params.h"
 #include "constants.h"
 #include "module.h"
 #include <cstdio>

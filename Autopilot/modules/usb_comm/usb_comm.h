@@ -2,7 +2,7 @@
 #define MODULES_USB_COMM_USB_COMM_H_
 
 #include "lib/utils/utils.h"
-#include "params.h"
+#include "lib/parameters/params.h"
 #include "module.h"
 
 extern "C"

@@ -13,8 +13,9 @@ void Rc_handler::update()
 
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
-		int32_t min_duty = param_get_int32(RC_MIN_DUTY);
-		int32_t max_duty = param_get_int32(RC_MAX_DUTY);
+		int32_t min_duty, max_duty;
+		param_get(RC_MIN_DUTY, &min_duty);
+		param_get(RC_MAX_DUTY, &max_duty);
 
 		// Get RC input duty cycle
 		uint16_t rc_input[NUM_CH];

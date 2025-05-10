@@ -110,7 +110,9 @@ void Commander::update_startup()
 
 void Commander::update_takeoff()
 {
-	if (-_local_pos.z > param_get_float(TKO_ALT))
+	float takeoff_alt;
+	param_get(TKO_ALT, &takeoff_alt);
+	if (-_local_pos.z > takeoff_alt)
 	{
 		_modes_data.auto_mode = Auto_mode::MISSION;
 	}
@@ -126,7 +128,9 @@ void Commander::update_mission()
 
 void Commander::update_land()
 {
-	if (-_local_pos.z < param_get_float(LND_FL_ALT))
+	float flare_alt;
+	param_get(LND_FL_ALT, &flare_alt);
+	if (-_local_pos.z < flare_alt)
 	{
 		_modes_data.auto_mode = Auto_mode::FLARE;
 	}

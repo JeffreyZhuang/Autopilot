@@ -1,12 +1,12 @@
 #ifndef L1_CONTROLLER_H_
 #define L1_CONTROLLER_H_
 
+#include "lib/parameters/params.h"
 #include "lib/pi_control/pi_control.h"
 #include "lib/utils/utils.h"
 #include "hal.h"
 #include "constants.h"
 #include "module.h"
-#include "params.h"
 #include <math.h>
 #include <cstdio>
 
@@ -23,7 +23,6 @@ private:
 	Subscriber<Modes_data> _modes_sub;
 	Subscriber<waypoint_s> _waypoint_sub;
 	Subscriber<RC_data> _rc_sub;
-	Subscriber<time_s> _time_sub;
 
 	Publisher<position_control_s> _position_control_pub;
 
@@ -33,7 +32,6 @@ private:
 	waypoint_s _waypoint{};
 	position_control_s _position_control{};
 	RC_data _rc_data{};
-	time_s _time_data{};
 
 	PI_control energy_balance_controller;
 	PI_control total_energy_controller;

@@ -1,13 +1,14 @@
 #ifndef AHRS_H
 #define AHRS_H
 
-#include <lib/data_bus/data_bus.h>
+#include "lib/data_bus/data_bus.h"
 #include "lib/madgwick/madgwick.h"
 #include "lib/moving_average/moving_avg.h"
-#include "lib/utils/util.h"
+#include "lib/parameters/params.h"
+#include "lib/utils/utils.h"
+#include "constants.h"
 #include "hal.h"
 #include "module.h"
-#include "params.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -24,6 +25,7 @@ public:
 
 private:
     uint64_t _last_time = 0;
+    float _dt = 0;
 
     Madgwick filter;
 

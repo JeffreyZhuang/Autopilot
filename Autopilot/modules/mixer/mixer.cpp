@@ -39,13 +39,22 @@ void Mixer::update_config()
 
 void Mixer::update_startup()
 {
-	_hal->set_pwm(0, 0, param_get_int32(PWM_MIN_THR), 0, 0, 0);
+	int32_t pwm_min_thr;
+	param_get(PWM_MIN_THR, &pwm_min_thr);
+
+	_hal->set_pwm(0, 0, pwm_min_thr, 0, 0, 0);
 }
 
 void Mixer::update_flight()
 {
+	int32_t rev_ele, pwm_min_ele, pwm_max_ele,
+			rev_rud, pwm_min_rud, pwm_max_rud,
+			pwm_min_thr, pwm_max_thr;
+
+	param_get(PWM_REV_ELE, &rev_ele);
+
 	_elevator_duty = map(
-		param_get_int32(PWM_REV_ELE) ? -_ctrl_cmd_data.ele_cmd : _ctrl_cmd_data.ele_cmd,
+		rev_ele ? -_ctrl_cmd_data.ele_cmd : _ctrl_cmd_data.ele_cmd,
 		-1,1, param_get_int32(PWM_MIN_ELE), param_get_int32(PWM_MAX_ELE)
 	);
 

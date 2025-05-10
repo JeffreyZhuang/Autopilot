@@ -1,4 +1,4 @@
-#include <modules/attitude_control/attitude_control.h>
+#include "modules/attitude_control/attitude_control.h"
 
 Attitude_control::Attitude_control(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
@@ -6,14 +6,16 @@ Attitude_control::Attitude_control(HAL* hal, Data_bus* data_bus)
 	  _modes_sub(data_bus->modes_node),
 	  _position_control_sub(data_bus->position_control_node),
 	  _rc_sub(data_bus->rc_node),
-	  _time_sub(data_bus->time_node),
 	  _ctrl_cmd_pub(data_bus->ctrl_cmd_node)
 {
 }
 
 void Attitude_control::update()
 {
-	_time = _time_sub.get();
+	const uint64_t time = _hal->get_time_us();
+	_dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
+	_last_time = time;
+
 	_ahrs_data = _ahrs_sub.get();
 	_modes_data = _modes_sub.get();
 	_position_control = _position_control_sub.get();
@@ -86,54 +88,42 @@ void Attitude_control::update_mission()
 
 void Attitude_control::control_roll_ptch()
 {
+	float roll_kp, roll_ki, ptch_kp, ptch_ki;
+
+	// Get roll and pitch P and I gains
+	param_get(ATT_ROLL_KP, &roll_kp);
+	param_get(ATT_ROLL_KI, &roll_ki);
+	param_get(ATT_PTCH_KP, &ptch_kp);
+	param_get(ATT_PTCH_KI, &ptch_ki);
+
 	_ctrl_cmd_data.rud_cmd = roll_controller.get_output(
-		_ahrs_data.roll,
-		_position_control.roll_setpoint,
-		param_get_float(ATT_ROLL_KP),
-		param_get_float(ATT_ROLL_KI),
-		1,
-		-1,
-		1,
-		0,
-		_time.dt_s
+		_ahrs_data.roll, _position_control.roll_setpoint,
+		roll_kp, roll_ki, 1, -1, 1, 0, _dt
 	);
 
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
-		_ahrs_data.pitch,
-		_position_control.pitch_setpoint,
-		param_get_float(ATT_PTCH_KP),
-		param_get_float(ATT_PTCH_KI),
-		1,
-		-1,
-		1,
-		0,
-		_time.dt_s
+		_ahrs_data.pitch, _position_control.pitch_setpoint,
+		ptch_kp, ptch_ki, 1, -1, 1, 0, _dt
 	);
 }
 
+// Use update parameters function like PX4
+
 void Attitude_control::control_roll_ptch_no_integral()
 {
+	float roll_kp, ptch_kp;
+
+	// Get roll and pitch P gains
+	param_get(ATT_ROLL_KP, &roll_kp);
+	param_get(ATT_PTCH_KP, &ptch_kp);
+
 	_ctrl_cmd_data.rud_cmd = roll_controller.get_output(
-		_ahrs_data.roll,
-		_position_control.roll_setpoint,
-		param_get_float(ATT_ROLL_KP),
-		0,
-		0,
-		-1,
-		1,
-		0,
-		_time.dt_s
+		_ahrs_data.roll, _position_control.roll_setpoint,
+		roll_kp, 0, 0, -1, 1, 0, _dt
 	);
 
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
-		_ahrs_data.pitch,
-		_position_control.pitch_setpoint,
-		param_get_float(ATT_PTCH_KP),
-		0,
-		0,
-		-1,
-		1,
-		0,
-		_time.dt_s
+		_ahrs_data.pitch, _position_control.pitch_setpoint,
+		ptch_kp, 0, 0, -1, 1, 0, _dt
 	);
 }
