@@ -19,6 +19,10 @@ Navigator::Navigator(HAL* hal, Data_bus* data_bus)
 
 void Navigator::update()
 {
+	float acc_rad;
+
+	param_get(NAV_ACC_RAD, &acc_rad);
+
 	poll_data_bus();
 
 	// Get target waypoint
@@ -31,8 +35,6 @@ void Navigator::update()
 
 	// Check distance to waypoint to determine if waypoint reached
 	float dist_to_wp = distance(_local_pos.x, tgt_north, _local_pos.y, tgt_east);
-	float acc_rad;
-	param_get(NAV_ACC_RAD, &acc_rad);
 	if (dist_to_wp < acc_rad &&
 		_curr_wp_idx < _telem_new_waypoint.num_waypoints - 1)
 	{
@@ -68,9 +70,9 @@ void Navigator::poll_data_bus()
 		_telem_new_waypoint = _telem_new_waypoint_sub.get();
 
 		_waypoints[_telem_new_waypoint.index] = Waypoint{
-			_telem_new_waypoint.lat,
-			_telem_new_waypoint.lon,
-			_telem_new_waypoint.alt
+			.lat = _telem_new_waypoint.lat,
+			.lon = _telem_new_waypoint.lon,
+			.alt = _telem_new_waypoint.alt
 		};
 	}
 

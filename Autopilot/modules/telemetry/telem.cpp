@@ -198,35 +198,40 @@ void Telem::update_waypoint()
 	aplink_waypoint waypoint;
 	aplink_waypoint_unpack(&telem_msg, &waypoint);
 
-	telem_new_waypoint_s new_waypoint_s;
-	new_waypoint_s.lat = (double)waypoint.lat * 1E-7;
-	new_waypoint_s.lon = (double)waypoint.lon * 1E-7;
-	new_waypoint_s.alt = -waypoint.alt;
-	new_waypoint_s.index = _last_waypoint_loaded;
-	new_waypoint_s.num_waypoints = _num_waypoints;
-	new_waypoint_s.timestamp = _hal->get_time_us();
-	_telem_new_waypoint_pub.publish(new_waypoint_s);
-
-	// Check if all waypoints have been loaded
-	if (_last_waypoint_loaded == _num_waypoints - 1)
+	// Make sure takeoff and landing waypoint altitudes set to 0
+	if ((_last_waypoint_loaded == 0 || _last_waypoint_loaded == _num_waypoints - 1) && waypoint.alt == 0)
 	{
-		// Send acknowledgement
-		aplink_waypoints_ack waypoints_ack;
-		waypoints_ack.waypoints_loaded = 0;
+		// TODO: Instead of storing waypoints in commander, maybe use a global waypoints storage library like parameters
+		telem_new_waypoint_s new_waypoint_s;
+		new_waypoint_s.lat = (double)waypoint.lat * 1E-7;
+		new_waypoint_s.lon = (double)waypoint.lon * 1E-7;
+		new_waypoint_s.alt = -waypoint.alt;
+		new_waypoint_s.index = _last_waypoint_loaded;
+		new_waypoint_s.num_waypoints = _num_waypoints;
+		new_waypoint_s.timestamp = _hal->get_time_us();
+		_telem_new_waypoint_pub.publish(new_waypoint_s);
 
-		uint8_t packet[MAX_PACKET_LEN];
-		uint16_t len = aplink_waypoints_ack_pack(waypoints_ack, packet);
-		_hal->transmit_telem(packet, len);
-	}
-	else
-	{
-		// Request next waypoint
-		aplink_request_waypoint req_waypoint;
-		req_waypoint.index = ++_last_waypoint_loaded;
+		// Check if all waypoints have been loaded
+		if (_last_waypoint_loaded == _num_waypoints - 1)
+		{
+			// Send acknowledgement
+			aplink_waypoints_ack waypoints_ack;
+			waypoints_ack.waypoints_loaded = 0;
 
-		uint8_t packet[MAX_PACKET_LEN];
-		uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
-		_hal->transmit_telem(packet, len);
+			uint8_t packet[MAX_PACKET_LEN];
+			uint16_t len = aplink_waypoints_ack_pack(waypoints_ack, packet);
+			_hal->transmit_telem(packet, len);
+		}
+		else
+		{
+			// Request next waypoint
+			aplink_request_waypoint req_waypoint;
+			req_waypoint.index = ++_last_waypoint_loaded;
+
+			uint8_t packet[MAX_PACKET_LEN];
+			uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
+			_hal->transmit_telem(packet, len);
+		}
 	}
 }
 

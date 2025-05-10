@@ -13,7 +13,7 @@ typedef struct {
 } param_entry_t;
 
 #define MAX_PARAMS 256
-static param_entry_t param_table[MAX_PARAMS];
+static param_entry_t param_table[MAX_PARAMS] = {0};
 static uint16_t param_count = 0;
 
 static uint32_t param_hash(const char *str) {
@@ -28,7 +28,6 @@ static uint32_t param_hash(const char *str) {
 static param_t param_add(const char *name, param_type_t type) {
     if (param_count >= MAX_PARAMS) return PARAM_INVALID;
 
-    uint32_t hash = param_hash(name);
     param_table[param_count].name = name;
     param_table[param_count].type = type;
     param_table[param_count].is_set = false;
@@ -41,11 +40,8 @@ static param_t param_add(const char *name, param_type_t type) {
 #include "params_def.h"
 #undef PARAM
 
+// Register parameters
 void param_init(void) {
-    memset(param_table, 0, sizeof(param_table));
-    param_count = 0;
-
-    // Register parameters
 	#define PARAM(name, type) name = param_add(#name, type);
     #include "params_def.h"
     #undef PARAM

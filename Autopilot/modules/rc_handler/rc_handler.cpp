@@ -14,6 +14,7 @@ void Rc_handler::update()
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
 		int32_t min_duty, max_duty;
+
 		param_get(RC_MIN_DUTY, &min_duty);
 		param_get(RC_MAX_DUTY, &max_duty);
 
@@ -32,7 +33,7 @@ void Rc_handler::update()
 		_rc_data.mod_sw = rc_input[MOD_CH] > midpoint;
 
 		// TODO: Need more proper way to detect tx connected
-		_rc_data.tx_conn = rc_input[THR_CH] - 100;
+		_rc_data.tx_conn = rc_input[THR_CH] > 500;
 
 		_rc_pub.publish(_rc_data);
 	}
