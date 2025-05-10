@@ -95,21 +95,14 @@ void Sensors::update_flight()
 		param_get(MAG_SI_ZZ, &si_zz);
 
 		// Apply hard-iron offsets
-		float hi_cal[3];
-		hi_cal[0] = mx - hi_x;
-		hi_cal[1] = my - hi_y;
-		hi_cal[2] = mz - hi_z;
+		mx -= hi_x;
+		my -= hi_y;
+		mz -= hi_z;
 
 		// Apply soft-iron scaling
-		mx = (si_xx * hi_cal[0]) +
-			 (si_xy * hi_cal[1]) +
-			 (si_xz * hi_cal[2]);
-		my = (si_yx * hi_cal[0]) +
-			 (si_yy * hi_cal[1]) +
-			 (si_yz * hi_cal[2]);
-		mz = (si_zx * hi_cal[0]) +
-			 (si_zy * hi_cal[1]) +
-			 (si_zz * hi_cal[2]);
+		mx = si_xx * mx + si_xy * my + si_xz * mz;
+		my = si_yx * mx + si_yy * my + si_yz * mz;
+		mz = si_zx * mx + si_zy * my + si_zz * mz;
 
 		_mag_pub.publish(Mag_data{mx, my, mz, _hal->get_time_us()});
 	}
@@ -149,9 +142,18 @@ void Sensors::update_hitl()
 	{
 		_hitl_sensors = _hitl_sensors_sub.get();
 
-		_imu_pub.publish(IMU_data{_hitl_sensors.imu_gx, _hitl_sensors.imu_gy, _hitl_sensors.imu_gz,
-								  _hitl_sensors.imu_ax, _hitl_sensors.imu_ay, _hitl_sensors.imu_az});
+		_imu_pub.publish(IMU_data{
+			.gx = _hitl_sensors.imu_gx,
+			.gy = _hitl_sensors.imu_gy,
+			.gz = _hitl_sensors.imu_gz,
+			.ax = _hitl_sensors.imu_ax,
+			.ay = _hitl_sensors.imu_ay,
+			.az = _hitl_sensors.imu_az,
+			.timestamp = _hal->get_time_us()
+		});
+
 		_baro_pub.publish(Baro_data{_hitl_sensors.baro_asl, _hal->get_time_us()});
+
 		_gnss_pub.publish(GNSS_data{
 			.lat = (double)_hitl_sensors.gps_lat / 1E7,
 			.lon = (double)_hitl_sensors.gps_lon / 1E7,

@@ -1,9 +1,8 @@
 #ifndef INC_FLIGHT_HAL_H_
 #define INC_FLIGHT_HAL_H_
 
-#include <Drivers/sbus_input.h>
-#include <lib/data_bus/data_bus.h>
-#include <lib/utils/utils.h>
+#include "lib/utils/utils.h"
+#include "Drivers/sbus_input.h"
 #include "Drivers/servo.h"
 #include "Drivers/gnss.h"
 #include "Drivers/icm42688p.h"
@@ -39,7 +38,7 @@ extern UART_HandleTypeDef huart6;
 class Flight_hal : public HAL
 {
 public:
-	Flight_hal(Data_bus* data_bus);
+	Flight_hal();
 
 	void init() override;
 
@@ -103,7 +102,6 @@ public:
 	static void main_task_callback() { _instance->execute_main_task(); }
 
 private:
-	Data_bus* _data_bus;
 	ICM42688 _imu;
 	INA219 _ina219;
 	Adafruit_MLX90393 _mag;

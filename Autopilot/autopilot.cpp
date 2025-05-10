@@ -14,21 +14,25 @@
 
 // Enabing calibration mode
 
+// Use xyz instead of NED, z_setpoint instead of d_setpoint
+
+// For personal website, put each image in container with desired width and height, then set image to 100% width and 100% height and object-fit: contain;
+
 Autopilot* Autopilot::_instance = nullptr;
 
-Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)
-	: _ahrs(hal, data_bus),
-	  _position_estimator(hal, data_bus),
-	  _att_control(hal, data_bus),
-	  _position_control(hal, data_bus),
-	  _telem(hal, data_bus),
-	  _storage(hal, data_bus),
-	  _mixer(hal, data_bus),
-	  _rc_handler(hal, data_bus),
-	  _commander(hal, data_bus),
-	  _navigator(hal, data_bus),
-	  _sensors(hal, data_bus),
-	  _usb_comm(hal, data_bus)
+Autopilot::Autopilot(HAL* hal)
+	: _ahrs(hal, &_data_bus),
+	  _position_estimator(hal, &_data_bus),
+	  _att_control(hal, &_data_bus),
+	  _position_control(hal, &_data_bus),
+	  _telem(hal, &_data_bus),
+	  _storage(hal, &_data_bus),
+	  _mixer(hal, &_data_bus),
+	  _rc_handler(hal, &_data_bus),
+	  _commander(hal, &_data_bus),
+	  _navigator(hal, &_data_bus),
+	  _sensors(hal, &_data_bus),
+	  _usb_comm(hal, &_data_bus)
 {
 	_hal = hal;
 	_instance = this;

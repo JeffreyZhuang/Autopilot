@@ -4,13 +4,10 @@
 
 void autopilot_main_c()
 {
-	Data_bus data_bus;
-	Flight_hal hal(&data_bus);
-	Autopilot autopilot(&hal, &data_bus);
+	Flight_hal hal;
+	Autopilot autopilot(&hal);
 	autopilot.setup();
 
-	while (1)
-	{
-		// For some reason I get hardfault handler when this removed
-	};
+	// For some reason I get hardfault handler when this removed
+	while (1);
 }

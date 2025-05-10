@@ -1,9 +1,9 @@
 #ifndef AUTOPILOT_H
 #define AUTOPILOT_H
 
-#include <modules/attitude_control/attitude_control.h>
-#include <modules/position_control/position_control.h>
-#include <modules/position_estimator/position_estimator.h>
+#include "modules/attitude_control/attitude_control.h"
+#include "modules/position_control/position_control.h"
+#include "modules/position_estimator/position_estimator.h"
 #include "modules/ahrs/ahrs.h"
 #include "modules/commander/commander.h"
 #include "modules/mixer/mixer.h"
@@ -21,12 +21,13 @@
 class Autopilot
 {
 public:
-	Autopilot(HAL* hal, Data_bus* data_bus);
+	Autopilot(HAL* hal);
 
     void setup();
 
 private:
     HAL* _hal;
+    Data_bus _data_bus;
     AHRS _ahrs;
     PositionEstimator _position_estimator;
     AttitudeControl _att_control;

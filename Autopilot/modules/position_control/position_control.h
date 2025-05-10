@@ -46,13 +46,15 @@ private:
 	float _d_setpoint = 0;
 
 	void handle_manual_mode();
-	void handle_auto_mode();
 	void update_direct();
 	void update_stabilized();
+
+	void handle_auto_mode();
 	void update_takeoff();
 	void update_mission();
 	void update_land();
 	void update_flare();
+
 	float calculate_altitude_setpoint(const float prev_north, const float prev_east, const float prev_down,
 	  	  	  	  	  	 	 	 	  const float tgt_north, const float tgt_east, const float tgt_down);
 	float l1_calculate_roll() const;

@@ -2,7 +2,7 @@
 
 Flight_hal* Flight_hal::_instance = nullptr;
 
-Flight_hal::Flight_hal(Data_bus* data_bus) :
+Flight_hal::Flight_hal() :
 	_imu(&hspi1, GPIOC, GPIO_PIN_15, SPI_BAUDRATEPRESCALER_128, SPI_BAUDRATEPRESCALER_4),
 	_ina219(&hi2c1, 0.01),
 	_gnss(&huart3),
@@ -12,7 +12,6 @@ Flight_hal::Flight_hal(Data_bus* data_bus) :
 	servo2(&htim2, TIM_CHANNEL_1),
 	cxof(&huart2)
 {
-	_data_bus = data_bus;
 	_instance = this;
 }
 
