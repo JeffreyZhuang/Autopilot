@@ -25,7 +25,7 @@ void AHRS::update()
 
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
-		update_filter_parameters();
+		update_parameters();
 
 		if (!_ahrs_data.converged)
 		{
@@ -38,9 +38,10 @@ void AHRS::update()
 	}
 }
 
-void AHRS::update_filter_parameters()
+void AHRS::update_parameters()
 {
 	float beta;
+
 	param_get(AHRS_BETA_GAIN, &beta);
 
 	filter.set_dt(_dt);
@@ -117,12 +118,14 @@ void AHRS::update_gyro()
 
 void AHRS::publish_ahrs()
 {
+	float mag_decl;
+
+	param_get(AHRS_MAG_DECL, &mag_decl);
+
 	_ahrs_data.roll = filter.getRoll();
 	_ahrs_data.pitch = filter.getPitch();
 
 	// Add magnetic declination and normalize to [-180, 180]
-	float mag_decl;
-	param_get(AHRS_MAG_DECL, &mag_decl);
 	_ahrs_data.yaw = fmod(filter.getYaw() + mag_decl + 180.0f, 360.0f) - 180.0f;
 
 	_ahrs_data.timestamp = _hal->get_time_us();

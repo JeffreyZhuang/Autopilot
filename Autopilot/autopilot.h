@@ -34,7 +34,7 @@ private:
     Telem _telem;
     Storage _storage;
     Mixer _mixer;
-    Rc_handler _rc_handler;
+    RCHandler _rc_handler;
     Commander _commander;
     Navigator _navigator;
     Sensors _sensors;

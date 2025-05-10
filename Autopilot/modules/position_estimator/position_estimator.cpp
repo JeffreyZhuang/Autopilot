@@ -105,11 +105,15 @@ void PositionEstimator::predict_accel()
 	Eigen::Vector3f acc_inertial(_imu_data.ax, _imu_data.ay, _imu_data.az);
 
 	// Rotate inertial frame to NED
-	Eigen::Vector3f acc_ned = inertial_to_ned(acc_inertial * G,
-										  	  _ahrs_data.roll * DEG_TO_RAD,
-											  _ahrs_data.pitch * DEG_TO_RAD,
-											  _ahrs_data.yaw * DEG_TO_RAD);
-	acc_ned(2) += G; // Gravity correction
+	Eigen::Vector3f acc_ned = inertial_to_ned(
+		acc_inertial * G,
+		_ahrs_data.roll * DEG_TO_RAD,
+		_ahrs_data.pitch * DEG_TO_RAD,
+		_ahrs_data.yaw * DEG_TO_RAD
+	);
+
+	// Gravity correction
+	acc_ned(2) += G;
 
 	kalman.predict(acc_ned, get_a(_dt), get_b(_dt), get_q());
 
@@ -124,7 +128,8 @@ void PositionEstimator::update_gps()
 	// Convert lat/lon to meters
 	double gnss_north_meters, gnss_east_meters;
 	lat_lon_to_meters(_local_pos.ref_lat, _local_pos.ref_lon,
-					  _gnss_data.lat, _gnss_data.lon, &gnss_north_meters, &gnss_east_meters);
+					  _gnss_data.lat, _gnss_data.lon,
+					  &gnss_north_meters, &gnss_east_meters);
 
 	Eigen::VectorXf y(2);
 	y << gnss_north_meters,

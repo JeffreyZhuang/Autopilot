@@ -17,10 +17,10 @@ constexpr uint8_t MAN_CH = 4;
 constexpr uint8_t MOD_CH = 5;
 constexpr uint8_t NUM_CH = 6;
 
-class Rc_handler : public Module
+class RCHandler : public Module
 {
 public:
-	Rc_handler(HAL* hal, Data_bus* data_bus);
+	RCHandler(HAL* hal, Data_bus* data_bus);
 
 	void update() override;
 
