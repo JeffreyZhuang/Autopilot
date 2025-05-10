@@ -101,10 +101,7 @@ void PositionEstimator::update_running()
 
 void PositionEstimator::predict_accel()
 {
-	// Get IMU data
 	Eigen::Vector3f acc_inertial(_imu_data.ax, _imu_data.ay, _imu_data.az);
-
-	// Rotate inertial frame to NED
 	Eigen::Vector3f acc_ned = inertial_to_ned(
 		acc_inertial * G,
 		_ahrs_data.roll * DEG_TO_RAD,
@@ -116,7 +113,6 @@ void PositionEstimator::predict_accel()
 	acc_ned(2) += G;
 
 	kalman.predict(acc_ned, get_a(_dt), get_b(_dt), get_q());
-
 	update_plane();
 }
 
@@ -132,8 +128,7 @@ void PositionEstimator::update_gps()
 					  &gnss_north_meters, &gnss_east_meters);
 
 	Eigen::VectorXf y(2);
-	y << gnss_north_meters,
-		 gnss_east_meters;
+	y << gnss_north_meters, gnss_east_meters;
 
 	Eigen::MatrixXf H(2, n);
 	H << 1, 0, 0, 0, 0, 0,
@@ -142,7 +137,6 @@ void PositionEstimator::update_gps()
 	Eigen::DiagonalMatrix<float, 2> R(gnss_variance, gnss_variance);
 
 	kalman.update(R, H, y);
-
 	update_plane();
 }
 
@@ -175,6 +169,7 @@ void PositionEstimator::update_of_agl()
 void PositionEstimator::update_plane()
 {
 	Eigen::MatrixXf est = kalman.get_estimate();
+
 	_local_pos.x = est(0, 0);
 	_local_pos.y = est(1, 0);
 	_local_pos.z = est(2, 0);
@@ -189,28 +184,25 @@ void PositionEstimator::update_plane()
 }
 
 // Function to rotate IMU measurements from inertial frame to NED frame
-Eigen::Vector3f PositionEstimator::inertial_to_ned(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw) {
+Eigen::Vector3f PositionEstimator::inertial_to_ned(const Eigen::Vector3f& imu_measurement,
+												   float roll, float pitch, float yaw)
+{
     // Precompute trigonometric functions
-    float cr = cosf(roll);  float sr = sinf(roll);
-    float cp = cosf(pitch); float sp = sinf(pitch);
-    float cy = cosf(yaw);   float sy = sinf(yaw);
+    float cr = cosf(roll);
+    float sr = sinf(roll);
+    float cp = cosf(pitch);
+    float sp = sinf(pitch);
+    float cy = cosf(yaw);
+    float sy = sinf(yaw);
 
     // Construct the rotation matrix (ZYX convention: yaw -> pitch -> roll)
     Eigen::Matrix3f R;
-    R(0, 0) = cy * cp;
-    R(0, 1) = cy * sp * sr - sy * cr;
-    R(0, 2) = cy * sp * cr + sy * sr;
-    R(1, 0) = sy * cp;
-    R(1, 1) = sy * sp * sr + cy * cr;
-    R(1, 2) = sy * sp * cr - cy * sr;
-    R(2, 0) = -sp;
-    R(2, 1) = cp * sr;
-    R(2, 2) = cp * cr;
+	R << cy*cp, cy*sp*sr - sy*cr, cy*sp*cr + sy*sr,
+		 sy*cp, sy*sp*sr + cy*cr, sy*sp*cr - cy*sr,
+		 -sp,   cp*sr,            cp*cr;
 
     // Rotate the measurement
-    Eigen::Vector3f ned_measurement = R * imu_measurement;
-
-    return ned_measurement;
+    return R * imu_measurement;
 }
 
 bool PositionEstimator::is_of_reliable()
@@ -239,19 +231,17 @@ Eigen::MatrixXf PositionEstimator::get_a(float dt)
 Eigen::MatrixXf PositionEstimator::get_b(float dt)
 {
 	Eigen::MatrixXf B(n, m);
-	B << 0.5*dt*dt, 0, 0,
-		 0, 0.5*dt*dt, 0,
-		 0, 0, 0.5*dt*dt,
-	     dt, 0, 0,
-		 0, dt, 0,
-		 0, 0, dt;
+	B << 0.5*dt*dt, 0,         0,
+		 0,         0.5*dt*dt, 0,
+		 0,         0,         0.5*dt*dt,
+	     dt,        0,         0,
+		 0,         dt,        0,
+		 0,         0,         dt;
 
 	return B;
 }
 
 Eigen::MatrixXf PositionEstimator::get_q()
 {
-	Eigen::DiagonalMatrix<float, n> Q(1, 1, 1, 1, 1, 1);
-
-	return Q;
+	return Eigen::DiagonalMatrix<float, n>(1, 1, 1, 1, 1, 1);
 }
