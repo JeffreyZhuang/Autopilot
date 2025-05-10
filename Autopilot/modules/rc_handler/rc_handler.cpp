@@ -1,6 +1,6 @@
 #include "modules/rc_handler/rc_handler.h"
 
-RCHandler::RCHandler(HAL* hal, Data_bus* data_bus)
+RCHandler::RCHandler(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  _modes_sub(data_bus->modes_node),
 	  _rc_pub(data_bus->rc_node)

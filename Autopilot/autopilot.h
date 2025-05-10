@@ -27,7 +27,7 @@ public:
 
 private:
     HAL* _hal;
-    Data_bus _data_bus;
+    DataBus _data_bus;
     AHRS _ahrs;
     PositionEstimator _position_estimator;
     AttitudeControl _att_control;

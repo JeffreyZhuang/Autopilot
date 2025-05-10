@@ -10,7 +10,7 @@
 class Commander : public Module
 {
 public:
-	Commander(HAL* hal, Data_bus* data_bus);
+	Commander(HAL* hal, DataBus* data_bus);
 
 	void update() override;
 

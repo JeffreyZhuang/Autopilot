@@ -1,6 +1,6 @@
 #include "modules/mixer/mixer.h"
 
-Mixer::Mixer(HAL* hal, Data_bus* data_bus)
+Mixer::Mixer(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  _modes_sub(data_bus->modes_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),

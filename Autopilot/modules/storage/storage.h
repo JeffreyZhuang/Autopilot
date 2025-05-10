@@ -17,7 +17,7 @@ extern "C"
 class Storage : public Module
 {
 public:
-	Storage(HAL* hal, Data_bus* data_bus);
+	Storage(HAL* hal, DataBus* data_bus);
 
 	void update() override;
 

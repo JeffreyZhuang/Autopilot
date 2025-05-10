@@ -1,7 +1,7 @@
 #ifndef HAL_H_
 #define HAL_H_
 
-#include <lib/data_bus/data_bus.h>
+#include "lib/data_bus/data_bus.h"
 
 class HAL
 {
@@ -22,6 +22,8 @@ public:
     virtual void transmit_telem(uint8_t tx_buff[], int len) = 0;
     virtual bool read_telem(uint8_t* byte) = 0;
     virtual bool telem_buffer_empty() = 0;
+
+    // RC
     virtual void get_rc_input(uint16_t duty[], uint8_t num_channels) = 0;
 
     // Logger

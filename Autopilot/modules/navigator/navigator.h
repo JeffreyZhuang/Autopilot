@@ -17,7 +17,7 @@ struct Waypoint
 class Navigator : public Module
 {
 public:
-	Navigator(HAL* hal, Data_bus* data_bus);
+	Navigator(HAL* hal, DataBus* data_bus);
 
 	void update() override;
 

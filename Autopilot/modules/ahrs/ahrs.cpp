@@ -1,6 +1,6 @@
 #include "modules/ahrs/ahrs.h"
 
-AHRS::AHRS(HAL* hal, Data_bus* data_bus)
+AHRS::AHRS(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  avg_ax(window_size, window_ax),
 	  avg_ay(window_size, window_ay),

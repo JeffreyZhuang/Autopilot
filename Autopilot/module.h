@@ -10,14 +10,14 @@
 class Module
 {
 public:
-	Module(HAL* hal, Data_bus* data_bus);
+	Module(HAL* hal, DataBus* data_bus);
 	virtual ~Module() {};
 
 	virtual void update() = 0;
 
 protected:
 	HAL* _hal;
-	Data_bus* _data_bus;
+	DataBus* _data_bus;
 };
 
 #endif /* MODULE_H_ */

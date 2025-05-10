@@ -9,7 +9,7 @@
 class Mixer : public Module
 {
 public:
-	Mixer(HAL* hal, Data_bus* data_bus);
+	Mixer(HAL* hal, DataBus* data_bus);
 
 	void update() override;
 

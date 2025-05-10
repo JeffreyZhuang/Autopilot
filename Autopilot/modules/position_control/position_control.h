@@ -13,7 +13,7 @@
 class PositionControl : public Module
 {
 public:
-	PositionControl(HAL* hal, Data_bus* data_bus);
+	PositionControl(HAL* hal, DataBus* data_bus);
 
 	void update() override;
 

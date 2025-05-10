@@ -1,6 +1,6 @@
 #include "usb_comm.h"
 
-USBComm::USBComm(HAL* hal, Data_bus* data_bus)
+USBComm::USBComm(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  _local_pos_sub(data_bus->local_position_node),
 	  _ahrs_sub(data_bus->ahrs_node),
@@ -18,6 +18,10 @@ USBComm::USBComm(HAL* hal, Data_bus* data_bus)
 
 void USBComm::update()
 {
+	bool enable_hitl;
+
+	param_get(ENABLE_HITL, &enable_hitl);
+
 	// Read
 	if (read_usb())
 	{
@@ -28,8 +32,6 @@ void USBComm::update()
 	}
 
 	// Transmit
-	bool enable_hitl;
-	param_get(ENABLE_HITL, &enable_hitl);
 	if (enable_hitl)
 	{
 		transmit_hitl();

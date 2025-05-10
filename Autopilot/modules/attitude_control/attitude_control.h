@@ -13,7 +13,7 @@
 class AttitudeControl : public Module
 {
 public:
-	AttitudeControl(HAL* hal, Data_bus* data_bus);
+	AttitudeControl(HAL* hal, DataBus* data_bus);
 
 	void update() override;
 
@@ -38,11 +38,10 @@ private:
 	Ctrl_cmd_data _ctrl_cmd_data;
 
 	void handle_manual_mode();
-	void handle_auto_mode();
-
 	void update_direct();
 	void update_stabilized();
 
+	void handle_auto_mode();
 	void update_takeoff();
 	void update_mission();
 	void update_touchdown();

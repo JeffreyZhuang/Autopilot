@@ -19,7 +19,7 @@
 class AHRS : public Module
 {
 public:
-    AHRS(HAL* hal, Data_bus* data_bus);
+    AHRS(HAL* hal, DataBus* data_bus);
 
     void update() override;
 

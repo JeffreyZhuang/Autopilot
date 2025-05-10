@@ -2,7 +2,7 @@
 
 // How to notify all other classes that waypoints have been loaded?
 
-Telem::Telem(HAL* hal, Data_bus* data_bus)
+Telem::Telem(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  _local_pos_sub(data_bus->local_position_node),
 	  _ahrs_sub(data_bus->ahrs_node),
@@ -70,8 +70,6 @@ void Telem::send_telemetry()
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_vehicle_status_full_pack(vehicle_status_full, packet);
 		_hal->transmit_telem(packet, len);
-
-		printf("transmit telem\n");
 	}
 
 	if (current_time_s - last_gps_raw_transmit_s >= GPS_RAW_DT)

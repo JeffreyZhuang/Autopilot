@@ -20,7 +20,7 @@ constexpr uint8_t NUM_CH = 6;
 class RCHandler : public Module
 {
 public:
-	RCHandler(HAL* hal, Data_bus* data_bus);
+	RCHandler(HAL* hal, DataBus* data_bus);
 
 	void update() override;
 

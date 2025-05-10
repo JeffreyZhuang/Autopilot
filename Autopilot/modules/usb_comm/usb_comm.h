@@ -14,7 +14,7 @@ extern "C"
 class USBComm : Module
 {
 public:
-	USBComm(HAL* hal, Data_bus* data_bus);
+	USBComm(HAL* hal, DataBus* data_bus);
 
 	void update() override;
 

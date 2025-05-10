@@ -8,7 +8,7 @@
 class Sensors : Module
 {
 public:
-	Sensors(HAL* hal, Data_bus* data_bus);
+	Sensors(HAL* hal, DataBus* data_bus);
 
 	void update() override;
 

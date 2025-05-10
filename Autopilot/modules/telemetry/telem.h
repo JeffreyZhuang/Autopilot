@@ -25,7 +25,7 @@ static constexpr float CAL_SENSORS_DT = 0.1;
 class Telem : public Module
 {
 public:
-	Telem(HAL* hal, Data_bus* data_bus);
+	Telem(HAL* hal, DataBus* data_bus);
 
 	void update();
 

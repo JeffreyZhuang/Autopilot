@@ -1,6 +1,6 @@
 #include "attitude_control.h"
 
-AttitudeControl::AttitudeControl(HAL* hal, Data_bus* data_bus)
+AttitudeControl::AttitudeControl(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _modes_sub(data_bus->modes_node),

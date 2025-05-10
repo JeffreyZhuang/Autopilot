@@ -1,6 +1,6 @@
 #include "modules/commander/commander.h"
 
-Commander::Commander(HAL* hal, Data_bus* data_bus)
+Commander::Commander(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _local_pos_sub(data_bus->local_position_node),

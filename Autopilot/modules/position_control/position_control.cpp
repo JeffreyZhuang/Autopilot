@@ -4,7 +4,7 @@
 // Proceedings of the AIAA Guidance, Navigation and Control
 // Conference, Aug 2004. AIAA-2004-4900.
 
-PositionControl::PositionControl(HAL* hal, Data_bus* data_bus)
+PositionControl::PositionControl(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _local_pos_sub(data_bus->local_position_node),

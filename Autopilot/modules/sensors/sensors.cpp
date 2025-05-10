@@ -1,6 +1,6 @@
 #include "sensors.h"
 
-Sensors::Sensors(HAL* hal, Data_bus* data_bus)
+Sensors::Sensors(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  _modes_sub(data_bus->modes_node),
 	  _hitl_sensors_sub(data_bus->hitl_sensors_node),

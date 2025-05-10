@@ -18,7 +18,7 @@ static constexpr int m = 3;
 class PositionEstimator : public Module
 {
 public:
-    PositionEstimator(HAL* hal, Data_bus* data_bus);
+    PositionEstimator(HAL* hal, DataBus* data_bus);
 
     void update() override;
 

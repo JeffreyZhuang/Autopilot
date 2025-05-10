@@ -1,21 +1,13 @@
 #include "autopilot.h"
 
 // TODO:
-
 // How to get parameters. Do it in update_parameters function? Or
-
 // REmove reverse throttle
-
 // Calibration
-
 // Rename data bus
-
-// Renaming classes
-
+// Renaming classes in lib too
 // Enabing calibration mode
-
 // Use xyz instead of NED, z_setpoint instead of d_setpoint
-
 // For personal website, put each image in container with desired width and height, then set image to 100% width and 100% height and object-fit: contain;
 
 Autopilot* Autopilot::_instance = nullptr;

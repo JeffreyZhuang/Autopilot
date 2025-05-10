@@ -1,6 +1,6 @@
 #include "position_estimator.h"
 
-PositionEstimator::PositionEstimator(HAL* hal, Data_bus* data_bus)
+PositionEstimator::PositionEstimator(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  kalman(n, m),
 	  _modes_sub(data_bus->modes_node),

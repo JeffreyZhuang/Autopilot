@@ -1,6 +1,6 @@
 #include "modules/storage/storage.h"
 
-Storage::Storage(HAL* hal, Data_bus* data_bus)
+Storage::Storage(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  _imu_sub(data_bus->imu_node),
 	  _baro_sub(data_bus->baro_node),
