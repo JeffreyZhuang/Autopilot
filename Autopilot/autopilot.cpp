@@ -12,6 +12,8 @@
 
 // Renaming classes
 
+// Enabing calibration mode
+
 Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal, Data_bus* data_bus)

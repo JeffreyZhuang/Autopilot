@@ -188,12 +188,12 @@ Eigen::Vector3f PositionEstimator::inertial_to_ned(const Eigen::Vector3f& imu_me
 												   float roll, float pitch, float yaw)
 {
     // Precompute trigonometric functions
-    float cr = cosf(roll);
-    float sr = sinf(roll);
-    float cp = cosf(pitch);
-    float sp = sinf(pitch);
-    float cy = cosf(yaw);
-    float sy = sinf(yaw);
+    const float cr = cosf(roll);
+    const float sr = sinf(roll);
+    const float cp = cosf(pitch);
+    const float sp = sinf(pitch);
+    const float cy = cosf(yaw);
+    const float sy = sinf(yaw);
 
     // Construct the rotation matrix (ZYX convention: yaw -> pitch -> roll)
     Eigen::Matrix3f R;
