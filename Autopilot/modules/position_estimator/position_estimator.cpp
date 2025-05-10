@@ -1,6 +1,6 @@
-#include <modules/position_estimator/position_estimator.h>
+#include "position_estimator.h"
 
-Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
+PositionEstimator::PositionEstimator(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  kalman(n, m),
 	  _modes_sub(data_bus->modes_node),
@@ -13,7 +13,7 @@ Position_estimator::Position_estimator(HAL* hal, Data_bus* data_bus)
 {
 }
 
-void Position_estimator::update()
+void PositionEstimator::update()
 {
 	const uint64_t time = _hal->get_time_us();
 	_dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
@@ -34,7 +34,7 @@ void Position_estimator::update()
 	}
 }
 
-void Position_estimator::update_initialization()
+void PositionEstimator::update_initialization()
 {
 	_ahrs_data = _ahrs_sub.get();
 
@@ -63,7 +63,7 @@ void Position_estimator::update_initialization()
 	}
 }
 
-void Position_estimator::update_running()
+void PositionEstimator::update_running()
 {
 	if (_imu_sub.check_new())
 	{
@@ -99,7 +99,7 @@ void Position_estimator::update_running()
 	}
 }
 
-void Position_estimator::predict_accel()
+void PositionEstimator::predict_accel()
 {
 	// Get IMU data
 	Eigen::Vector3f acc_inertial(_imu_data.ax, _imu_data.ay, _imu_data.az);
@@ -116,7 +116,7 @@ void Position_estimator::predict_accel()
 	update_plane();
 }
 
-void Position_estimator::update_gps()
+void PositionEstimator::update_gps()
 {
 	float gnss_variance;
 	param_get(EKF_GNSS_VAR, &gnss_variance);
@@ -141,7 +141,7 @@ void Position_estimator::update_gps()
 	update_plane();
 }
 
-void Position_estimator::update_baro()
+void PositionEstimator::update_baro()
 {
 	float baro_variance;
 	param_get(EKF_BARO_VAR, &baro_variance);
@@ -159,7 +159,7 @@ void Position_estimator::update_baro()
 	update_plane();
 }
 
-void Position_estimator::update_of_agl()
+void PositionEstimator::update_of_agl()
 {
 	float flow = sqrtf(powf(_of_data.x, 2) + powf(_of_data.y, 2));
 	float angular_rate = sqrtf(powf(_imu_data.gx, 2) + powf(_imu_data.gy, 2)) * DEG_TO_RAD;
@@ -167,7 +167,7 @@ void Position_estimator::update_of_agl()
 	printf("OF AGL: %f\n", alt);
 }
 
-void Position_estimator::update_plane()
+void PositionEstimator::update_plane()
 {
 	Eigen::MatrixXf est = kalman.get_estimate();
 	_local_pos.x = est(0, 0);
@@ -184,7 +184,7 @@ void Position_estimator::update_plane()
 }
 
 // Function to rotate IMU measurements from inertial frame to NED frame
-Eigen::Vector3f Position_estimator::inertial_to_ned(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw) {
+Eigen::Vector3f PositionEstimator::inertial_to_ned(const Eigen::Vector3f& imu_measurement, float roll, float pitch, float yaw) {
     // Precompute trigonometric functions
     float cr = cosf(roll);  float sr = sinf(roll);
     float cp = cosf(pitch); float sp = sinf(pitch);
@@ -208,7 +208,7 @@ Eigen::Vector3f Position_estimator::inertial_to_ned(const Eigen::Vector3f& imu_m
     return ned_measurement;
 }
 
-bool Position_estimator::is_of_reliable()
+bool PositionEstimator::is_of_reliable()
 {
 	int32_t of_min, of_max;
 	param_get(EKF_OF_MIN, &of_min);
@@ -218,7 +218,7 @@ bool Position_estimator::is_of_reliable()
 	return flow > of_min && flow < of_max;
 }
 
-Eigen::MatrixXf Position_estimator::get_a(float dt)
+Eigen::MatrixXf PositionEstimator::get_a(float dt)
 {
 	Eigen::MatrixXf A(n, n);
 	A << 1, 0, 0, dt, 0, 0,
@@ -231,7 +231,7 @@ Eigen::MatrixXf Position_estimator::get_a(float dt)
 	return A;
 }
 
-Eigen::MatrixXf Position_estimator::get_b(float dt)
+Eigen::MatrixXf PositionEstimator::get_b(float dt)
 {
 	Eigen::MatrixXf B(n, m);
 	B << 0.5*dt*dt, 0, 0,
@@ -244,7 +244,7 @@ Eigen::MatrixXf Position_estimator::get_b(float dt)
 	return B;
 }
 
-Eigen::MatrixXf Position_estimator::get_q()
+Eigen::MatrixXf PositionEstimator::get_q()
 {
 	Eigen::DiagonalMatrix<float, n> Q(1, 1, 1, 1, 1, 1);
 

@@ -28,8 +28,8 @@ public:
 private:
     HAL* _hal;
     AHRS _ahrs;
-    Position_estimator _position_estimator;
-    Attitude_control _att_control;
+    PositionEstimator _position_estimator;
+    AttitudeControl _att_control;
     PositionControl _position_control;
     Telem _telem;
     Storage _storage;

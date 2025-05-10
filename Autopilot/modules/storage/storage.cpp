@@ -36,6 +36,7 @@ void Storage::update()
 						_gnss_data.day, _gnss_data.hours,
 						_gnss_data.minutes, _gnss_data.seconds);
 				_hal->create_file(filename, strlen(filename));
+				file_created = true;
 			}
 		}
 		else

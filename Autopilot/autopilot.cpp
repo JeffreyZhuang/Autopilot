@@ -1,9 +1,6 @@
 #include "autopilot.h"
 
 // TODO:
-// Create file when switching from disarmed to armed (switching from startup to flight)
-// So it already has GPS fix or recieves time from GCS in that case
-// File format: YYYY-MM-DD-HH-MM-SS
 
 // How to get parameters. Do it in update_parameters function? Or
 

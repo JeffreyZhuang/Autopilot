@@ -1,6 +1,6 @@
-#include "modules/attitude_control/attitude_control.h"
+#include "attitude_control.h"
 
-Attitude_control::Attitude_control(HAL* hal, Data_bus* data_bus)
+AttitudeControl::AttitudeControl(HAL* hal, Data_bus* data_bus)
 	: Module(hal, data_bus),
 	  _ahrs_sub(data_bus->ahrs_node),
 	  _modes_sub(data_bus->modes_node),
@@ -10,7 +10,7 @@ Attitude_control::Attitude_control(HAL* hal, Data_bus* data_bus)
 {
 }
 
-void Attitude_control::update()
+void AttitudeControl::update()
 {
 	const uint64_t time = _hal->get_time_us();
 	_dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
@@ -37,7 +37,7 @@ void Attitude_control::update()
 	_ctrl_cmd_pub.publish(_ctrl_cmd_data);
 }
 
-void Attitude_control::handle_manual_mode()
+void AttitudeControl::handle_manual_mode()
 {
 	switch (_modes_data.manual_mode)
 	{
@@ -50,7 +50,7 @@ void Attitude_control::handle_manual_mode()
 	}
 }
 
-void Attitude_control::handle_auto_mode()
+void AttitudeControl::handle_auto_mode()
 {
 	switch (_modes_data.auto_mode)
 	{
@@ -65,28 +65,28 @@ void Attitude_control::handle_auto_mode()
 	}
 }
 
-void Attitude_control::update_direct()
+void AttitudeControl::update_direct()
 {
 	_ctrl_cmd_data.rud_cmd = _rc_data.ail_norm;
 	_ctrl_cmd_data.ele_cmd = _rc_data.ele_norm;
 }
 
-void Attitude_control::update_stabilized()
+void AttitudeControl::update_stabilized()
 {
 	control_roll_ptch();
 }
 
-void Attitude_control::update_takeoff()
+void AttitudeControl::update_takeoff()
 {
 	control_roll_ptch_no_integral();
 }
 
-void Attitude_control::update_mission()
+void AttitudeControl::update_mission()
 {
 	control_roll_ptch();
 }
 
-void Attitude_control::control_roll_ptch()
+void AttitudeControl::control_roll_ptch()
 {
 	float roll_kp, roll_ki, ptch_kp, ptch_ki;
 
@@ -109,7 +109,7 @@ void Attitude_control::control_roll_ptch()
 
 // Use update parameters function like PX4
 
-void Attitude_control::control_roll_ptch_no_integral()
+void AttitudeControl::control_roll_ptch_no_integral()
 {
 	float roll_kp, ptch_kp;
 

@@ -15,10 +15,10 @@ static constexpr int m = 3;
 /**
  * @brief Calculates the position and altitude of the plane
  */
-class Position_estimator : public Module
+class PositionEstimator : public Module
 {
 public:
-    Position_estimator(HAL* hal, Data_bus* data_bus);
+    PositionEstimator(HAL* hal, Data_bus* data_bus);
 
     void update() override;
 

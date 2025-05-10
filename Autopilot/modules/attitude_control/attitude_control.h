@@ -10,10 +10,10 @@
 #include <math.h>
 #include <cstdio>
 
-class Attitude_control : public Module
+class AttitudeControl : public Module
 {
 public:
-	Attitude_control(HAL* hal, Data_bus* data_bus);
+	AttitudeControl(HAL* hal, Data_bus* data_bus);
 
 	void update() override;
 
