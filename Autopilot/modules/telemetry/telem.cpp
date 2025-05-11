@@ -66,6 +66,8 @@ void Telem::send_telemetry()
 		vehicle_status_full.pitch = (int16_t)(_ahrs_data.pitch * 100);
 		vehicle_status_full.yaw = (int16_t)(_ahrs_data.yaw * 10);
 		vehicle_status_full.alt = 1;
+		vehicle_status_full.spd = 2;
+		vehicle_status_full.mode_id = get_mode_id();
 
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_vehicle_status_full_pack(vehicle_status_full, packet);
@@ -247,4 +249,53 @@ bool Telem::read_telem(aplink_msg* msg)
 	}
 
 	return false;
+}
+
+uint8_t Telem::get_mode_id()
+{
+	// Handle system modes first
+	switch (_modes_data.system_mode)
+	{
+	case System_mode::LOAD_PARAMS:
+		return MODE_ID::CONFIG;
+	case System_mode::STARTUP:
+		return MODE_ID::STARTUP;
+	case System_mode::FLIGHT:
+		break;
+	default:
+		return MODE_ID::UNKNOWN;
+	}
+
+	// Handle flight modes
+	switch (_modes_data.flight_mode)
+	{
+	case Flight_mode::MANUAL:
+		// Handle manual sub-modes
+		switch (_modes_data.manual_mode)
+		{
+		case Manual_mode::DIRECT:
+			return MODE_ID::MANUAL;
+		case Manual_mode::STABILIZED:
+			return MODE_ID::FBW;
+		default:
+			return MODE_ID::UNKNOWN;
+		}
+	case Flight_mode::AUTO:
+		// Handle auto sub-modes
+		switch (_modes_data.auto_mode)
+		{
+		case Auto_mode::TAKEOFF:
+			return MODE_ID::TAKEOFF;
+		case Auto_mode::MISSION:
+			return MODE_ID::MISSION;
+		case Auto_mode::LAND:
+			return MODE_ID::LAND;
+		case Auto_mode::FLARE:
+			return MODE_ID::FLARE;
+		default:
+			return MODE_ID::UNKNOWN;
+		}
+	default:
+		return MODE_ID::UNKNOWN;
+	}
 }

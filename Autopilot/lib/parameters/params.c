@@ -16,8 +16,9 @@ typedef struct {
 static param_entry_t param_table[MAX_PARAMS] = {0};
 static uint16_t param_count = 0;
 
+// TODO: Switch to CRC32 checksum to reduce collisions
 static uint32_t param_hash(const char *str) {
-    uint32_t hash = 5381;
+    uint32_t hash = 5381; // DJB2
     int c;
     while ((c = *str++)) {
         hash = ((hash << 5) + hash) + c; // hash * 33 + c

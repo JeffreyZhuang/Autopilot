@@ -44,6 +44,8 @@ enum MODE_ID
 
     FLARE,
 
+    UNKNOWN,
+
 };
 
 
@@ -431,7 +433,7 @@ typedef struct aplink_waypoints_ack
 {
     
     
-    uint8_t waypoints_loaded;
+    bool success;
     
     
 } aplink_waypoints_ack_t;
@@ -591,46 +593,19 @@ inline bool aplink_param_set_unpack(aplink_msg_t* msg, aplink_param_set_t* outpu
     return false;
 }
   
-#define PARAMS_ACK_MSG_ID 13
-
-#pragma pack(push, 1)
-typedef struct aplink_params_ack 
-{
-    
-    
-    uint8_t params_loaded;
-    
-    
-} aplink_params_ack_t;
-#pragma pack(pop)
-                                   
-inline uint16_t aplink_params_ack_pack(aplink_params_ack_t data, uint8_t packet[]) {
-    uint8_t buffer[sizeof(data)];
-    memcpy(buffer, &data, sizeof(data));
-    return aplink_pack(packet, buffer, sizeof(buffer), PARAMS_ACK_MSG_ID);
-}
-                    
-inline bool aplink_params_ack_unpack(aplink_msg_t* msg, aplink_params_ack_t* output) {
-    if (msg->payload_len == sizeof(aplink_params_ack_t)) {
-        memcpy(output, msg->payload, sizeof(aplink_params_ack_t));
-        return true;
-    }
-    return false;
-}
-
-#define COMMAND_MSG_ID 14
+#define COMMAND_MSG_ID 13
 
 #pragma pack(push, 1)
 typedef struct aplink_command
 {
-
-
+    
+    
     uint8_t command_id;
-
-
+    
+    
 } aplink_command_t;
 #pragma pack(pop)
-
+                                   
 inline uint16_t aplink_command_pack(aplink_command_t data, uint8_t packet[]) {
     uint8_t buffer[sizeof(data)];
     memcpy(buffer, &data, sizeof(data));
@@ -645,32 +620,5 @@ inline bool aplink_command_unpack(aplink_msg_t* msg, aplink_command_t* output) {
     return false;
 }
 
-#define ACKNOWLEDGEMENT_MSG_ID 15
-
-#pragma pack(push, 1)
-typedef struct aplink_acknowledgement
-{
-
-
-    uint8_t command_id;
-
-
-} aplink_acknowledgement_t;
-#pragma pack(pop)
-
-inline uint16_t aplink_acknowledgement_pack(aplink_acknowledgement_t data, uint8_t packet[]) {
-    uint8_t buffer[sizeof(data)];
-    memcpy(buffer, &data, sizeof(data));
-    return aplink_pack(packet, buffer, sizeof(buffer), ACKNOWLEDGEMENT_MSG_ID);
-}
                     
-inline bool aplink_acknowledgement_unpack(aplink_msg_t* msg, aplink_acknowledgement_t* output) {
-    if (msg->payload_len == sizeof(aplink_acknowledgement_t)) {
-        memcpy(output, msg->payload, sizeof(aplink_acknowledgement_t));
-        return true;
-    }
-    return false;
-}
-
-
 #endif /* APLINK_MESSAGES_H_ */

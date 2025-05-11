@@ -1,7 +1,7 @@
 #include "autopilot.h"
 
 // TODO:
-// Aplink set param maybe use hash instead of string for param name
+// Aplink set param maybe use hash (uint32_t hash instead of uint8_t because collisions) instead of string for param name
 // Use int32_t for value so you just set integer and union automatically converts to float, then you dont need array in code generator
 // How to get parameters. Do it in update_parameters function? Or
 // REmove reverse throttle
@@ -11,6 +11,8 @@
 // Enabing calibration mode
 // Use xyz instead of NED, z_setpoint instead of d_setpoint
 // For personal website, put each image in container with desired width and height, then set image to 100% width and 100% height and object-fit: contain;
+
+// Its good for param set to keep checking if correct type, because if incorrect type then param_all_set will not be true
 
 Autopilot* Autopilot::_instance = nullptr;
 
