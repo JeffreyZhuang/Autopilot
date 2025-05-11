@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     PARAM_TYPE_INT32,
     PARAM_TYPE_FLOAT,
@@ -26,5 +30,9 @@ int param_set_int32(param_t param, int32_t val);
 int param_set_float(param_t param, float val);
 param_type_t param_get_type(param_t param);
 bool param_all_set(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LIB_PARAMETERS_PARAMS_H_ */

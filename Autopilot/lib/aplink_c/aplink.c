@@ -2,11 +2,8 @@
 
 bool aplink_parse_byte(aplink_msg_t* link_msg, uint8_t byte)
 {
-	printf("aplink: start reading %d packet idx %d\n", link_msg->start_reading, link_msg->packet_idx);
-
 	if (byte == START_BYTE)
 	{
-		printf("aplink: start byte detected\n");
 		link_msg->start_reading = true;
 	}
 
@@ -17,17 +14,13 @@ bool aplink_parse_byte(aplink_msg_t* link_msg, uint8_t byte)
 		if (link_msg->packet_idx == 1)
 		{
 			link_msg->payload_len = byte;
-			printf("aplink lib: payload_len %d\n", byte);
 		}
 		else if (link_msg->packet_idx == 2)
 		{
 			link_msg->msg_id = byte;
-			printf("aplink lib: msg_id %d\n", byte);
 		}
 		else if (link_msg->packet_idx == aplink_calc_packet_size(link_msg->payload_len) - 1)
 		{
-			printf("aplink lib: complete packet\n");
-
 			link_msg->start_reading = false;
 			link_msg->packet_idx = 0;
 

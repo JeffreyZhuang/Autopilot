@@ -146,7 +146,7 @@ void Telem::update_param_set()
 		memcpy(&value, param_set.value, sizeof(value));
 		param_set_float(param, value);
 		success = true;
-		printf("Telem params set\n");
+		printf("Telem params set, value: %f\n", value);
 	}
 	else if (param_get_type(param) == PARAM_TYPE_INT32 &&
 			 param_set.type == PARAM_TYPE::INT32)
@@ -155,7 +155,7 @@ void Telem::update_param_set()
 		memcpy(&value, param_set.value, sizeof(value));
 		param_set_int32(param, value);
 		success = true;
-		printf("Telem params set\n");
+		printf("Telem params set, value: %d\n", value);
 	}
 	else
 	{
@@ -240,11 +240,8 @@ bool Telem::read_telem(aplink_msg* msg)
 		uint8_t byte;
 		_hal->read_telem(&byte);
 
-		printf("Telem: recv %d\n", byte);
-
 		if (aplink_parse_byte(msg, byte))
 		{
-			printf("Telem: aplink_parse_byte success\n");
 			return true;
 		}
 	}

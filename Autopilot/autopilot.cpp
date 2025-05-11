@@ -1,6 +1,8 @@
 #include "autopilot.h"
 
 // TODO:
+// Aplink set param maybe use hash instead of string for param name
+// Use int32_t for value so you just set integer and union automatically converts to float, then you dont need array in code generator
 // How to get parameters. Do it in update_parameters function? Or
 // REmove reverse throttle
 // Calibration
