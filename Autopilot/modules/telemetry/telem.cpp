@@ -175,7 +175,7 @@ void Telem::update_param_set()
 
 void Telem::update_waypoints_count()
 {
-	aplink_waypoints_count waypoints_count;
+	aplink_waypoints_count waypoints_count{};
 	aplink_waypoints_count_unpack(&telem_msg, &waypoints_count);
 
 	// Reset Counter
@@ -195,7 +195,7 @@ void Telem::update_waypoints_count()
 
 void Telem::update_waypoint()
 {
-	aplink_waypoint waypoint;
+	aplink_waypoint waypoint{};
 	aplink_waypoint_unpack(&telem_msg, &waypoint);
 
 	// Make sure takeoff and landing waypoint altitudes set to 0
@@ -214,9 +214,9 @@ void Telem::update_waypoint()
 		// Check if all waypoints have been loaded
 		if (_last_waypoint_loaded == _num_waypoints - 1)
 		{
-			// Send acknowledgement
+			// Send acknowledgement if waypoints finished loading
 			aplink_waypoints_ack waypoints_ack;
-			waypoints_ack.waypoints_loaded = 0;
+			waypoints_ack.success = true;
 
 			uint8_t packet[MAX_PACKET_LEN];
 			uint16_t len = aplink_waypoints_ack_pack(waypoints_ack, packet);
@@ -224,7 +224,7 @@ void Telem::update_waypoint()
 		}
 		else
 		{
-			// Request next waypoint
+			// Request next waypoint if waypoints not finished loading
 			aplink_request_waypoint req_waypoint;
 			req_waypoint.index = ++_last_waypoint_loaded;
 
