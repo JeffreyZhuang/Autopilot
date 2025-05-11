@@ -32,7 +32,7 @@ typedef struct aplink_msg
 
 bool aplink_parse_byte(aplink_msg_t* link_msg, uint8_t byte);
 uint16_t aplink_pack(uint8_t packet[], const uint8_t payload[], const uint8_t payload_len, const uint8_t msg_id);
-bool aplink_unpack(const uint8_t packet[], uint8_t payload[], uint8_t* payload_len, uint8_t* msg_id);
+bool aplink_unpack(const uint8_t packet[], uint8_t payload[], uint16_t payload_len);
 uint16_t aplink_calc_packet_size(uint8_t payload_size);
 uint16_t aplink_crc16(const uint8_t data[], size_t length);
 

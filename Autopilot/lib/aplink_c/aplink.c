@@ -2,27 +2,36 @@
 
 bool aplink_parse_byte(aplink_msg_t* link_msg, uint8_t byte)
 {
+	printf("aplink: start reading %d packet idx %d\n", link_msg->start_reading, link_msg->packet_idx);
+
 	if (byte == START_BYTE)
 	{
+		printf("aplink: start byte detected\n");
 		link_msg->start_reading = true;
 	}
 
 	if (link_msg->start_reading)
 	{
+		link_msg->packet[link_msg->packet_idx] = byte;
+
 		if (link_msg->packet_idx == 1)
 		{
 			link_msg->payload_len = byte;
+			printf("aplink lib: payload_len %d\n", byte);
 		}
 		else if (link_msg->packet_idx == 2)
 		{
 			link_msg->msg_id = byte;
+			printf("aplink lib: msg_id %d\n", byte);
 		}
-		else if (link_msg->packet_idx == aplink_calc_packet_size(link_msg->payload_len))
+		else if (link_msg->packet_idx == aplink_calc_packet_size(link_msg->payload_len) - 1)
 		{
+			printf("aplink lib: complete packet\n");
+
 			link_msg->start_reading = false;
 			link_msg->packet_idx = 0;
 
-			return aplink_unpack(link_msg->packet, link_msg->payload, link_msg->payload_len, link_msg->msg_id);
+			return aplink_unpack(link_msg->packet, link_msg->payload, link_msg->payload_len);
 		}
 		else if (link_msg->packet_idx == MAX_PACKET_LEN)
 		{
@@ -59,20 +68,12 @@ uint16_t aplink_pack(uint8_t packet[], const uint8_t payload[], const uint8_t pa
 	return index; // Return packet size
 }
 
-bool aplink_unpack(const uint8_t packet[], uint8_t payload[], uint8_t* payload_len, uint8_t* msg_id)
+bool aplink_unpack(const uint8_t packet[], uint8_t payload[], uint16_t payload_len)
 {
-    // Validate start byte
-    if (packet[0] != START_BYTE)
-    {
-        return false; // Invalid packet
-    }
-
-    *payload_len = packet[1];
-    *msg_id = packet[2];
-
     // Compute expected checksum
     uint16_t expected_checksum = aplink_crc16(&packet[1], payload_len + HEADER_LEN - 1);
-    uint16_t received_checksum = (packet[*payload_len + HEADER_LEN] << 8) | packet[*payload_len + HEADER_LEN + 1];
+    uint16_t received_checksum = (packet[payload_len + HEADER_LEN] << 8) |
+    							 packet[payload_len + HEADER_LEN + 1];
 
     if (expected_checksum != received_checksum)
     {

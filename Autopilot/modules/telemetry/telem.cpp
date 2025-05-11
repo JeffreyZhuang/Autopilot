@@ -16,6 +16,8 @@ Telem::Telem(HAL* hal, DataBus* data_bus)
 	  _imu_sub(data_bus->imu_node),
 	  _telem_new_waypoint_pub(data_bus->telem_new_waypoint_node)
 {
+	telem_msg.start_reading = false;
+	telem_msg.packet_idx = 0;
 }
 
 void Telem::update()
@@ -58,8 +60,6 @@ void Telem::send_telemetry()
 	if (current_time_s - last_vehicle_status_full_transmit_s >= VEHICLE_STATUS_FULL_DT)
 	{
 		last_vehicle_status_full_transmit_s = current_time_s;
-
-		printf("roll: %f\n", _ahrs_data.roll);
 
 		aplink_vehicle_status_full vehicle_status_full{};
 		vehicle_status_full.roll = (int16_t)(_ahrs_data.roll * 100);
@@ -240,8 +240,11 @@ bool Telem::read_telem(aplink_msg* msg)
 		uint8_t byte;
 		_hal->read_telem(&byte);
 
+		printf("Telem: recv %d\n", byte);
+
 		if (aplink_parse_byte(msg, byte))
 		{
+			printf("Telem: aplink_parse_byte success\n");
 			return true;
 		}
 	}
