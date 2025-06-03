@@ -11,8 +11,10 @@
 // Enabing calibration mode
 // Use xyz instead of NED, z_setpoint instead of d_setpoint
 // For personal website, put each image in container with desired width and height, then set image to 100% width and 100% height and object-fit: contain;
-
+// Update simulator so it supports APLink HITL
 // Its good for param set to keep checking if correct type, because if incorrect type then param_all_set will not be true
+// Optical flow
+// Datalogging
 
 Autopilot* Autopilot::_instance = nullptr;
 

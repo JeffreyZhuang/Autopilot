@@ -179,6 +179,8 @@ void AHRS::set_initial_angles()
 	}
 
 	filter.set_state(q0, q1, q2, q3); // Set initial state
+
+	printf("AHRS Initialized: %.01f %.01f %.01f\n", filter.getRoll(), filter.getPitch(), filter.getYaw());
 }
 
 bool AHRS::is_accel_reliable()

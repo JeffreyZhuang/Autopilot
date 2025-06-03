@@ -64,7 +64,7 @@ void Telem::send_telemetry()
 		aplink_vehicle_status_full vehicle_status_full{};
 		vehicle_status_full.roll = (int16_t)(_ahrs_data.roll * 100);
 		vehicle_status_full.pitch = (int16_t)(_ahrs_data.pitch * 100);
-		vehicle_status_full.yaw = (int16_t)(_ahrs_data.yaw * 10);
+		vehicle_status_full.yaw = (int16_t)(_ahrs_data.yaw * 100);
 		vehicle_status_full.alt = 1;
 		vehicle_status_full.spd = 2;
 		vehicle_status_full.mode_id = get_mode_id();
