@@ -7,37 +7,6 @@
 #include "hal.h"
 #include "module.h"
 
-enum class MissionItemType
-{
-	WAYPOINT,
-	LOITER,
-	LAND
-};
-
-enum class LoiterDirection
-{
-	LEFT,
-	RIGHT
-};
-
-struct MissionItem
-{
-	uint8_t type;
-	double lat;
-	double lon;
-	float loiter_radius;
-	uint8_t loiter_direction;
-	float final_leg;
-	float glideslope;
-};
-
-struct Waypoint
-{
-	double lat;
-	double lon;
-	float alt;
-};
-
 class Navigator : public Module
 {
 public:
