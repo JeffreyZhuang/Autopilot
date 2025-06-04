@@ -5,9 +5,9 @@
 
 typedef enum
 {
-	WAYPOINT,
-	LOITER,
-	LAND
+	MISSION_WAYPOINT,
+	MISSION_LOITER,
+	MISSION_LAND
 } mission_type_t;
 
 typedef enum

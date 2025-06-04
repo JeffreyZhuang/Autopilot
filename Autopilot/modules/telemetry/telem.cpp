@@ -13,8 +13,7 @@ Telem::Telem(HAL* hal, DataBus* data_bus)
 	  _power_sub(data_bus->power_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
 	  _baro_sub(data_bus->baro_node),
-	  _imu_sub(data_bus->imu_node),
-	  _telem_new_waypoint_pub(data_bus->telem_new_waypoint_node)
+	  _imu_sub(data_bus->imu_node)
 {
 	telem_msg.start_reading = false;
 	telem_msg.packet_idx = 0;
@@ -201,6 +200,8 @@ void Telem::update_waypoint()
 	// Make sure takeoff and landing waypoint altitudes set to 0
 	if ((_last_waypoint_loaded == 0 || _last_waypoint_loaded == _num_waypoints - 1) && waypoint.alt == 0)
 	{
+
+
 		// TODO: Instead of storing waypoints in commander, maybe use a global waypoints storage library like parameters
 		telem_new_waypoint_s new_waypoint_s;
 		new_waypoint_s.lat = (double)waypoint.lat * 1E-7;

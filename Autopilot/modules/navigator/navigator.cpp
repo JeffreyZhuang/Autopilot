@@ -12,7 +12,6 @@
 Navigator::Navigator(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
 	  _local_pos_sub(data_bus->local_position_node),
-	  _telem_new_waypoint_sub(data_bus->telem_new_waypoint_node),
 	  _waypoint_pub(data_bus->waypoint_node)
 {
 }

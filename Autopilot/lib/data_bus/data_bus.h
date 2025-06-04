@@ -28,7 +28,6 @@ struct DataBus
    	Node<waypoint_s> waypoint_node;
    	Node<hitl_sensors_s> hitl_sensors_node;
    	Node<HITL_output_data> hitl_output_node;
-   	Node<telem_new_waypoint_s> telem_new_waypoint_node;
    	Node<position_control_s> position_control_node;
 };
 

@@ -18,7 +18,9 @@ enum class Flight_mode
 enum class Auto_mode
 {
 	TAKEOFF,
-	MISSION,
+	WAYPOINT,
+	LOITER,
+	HOLD, // Circular holding pattern for landing
 	LAND,
 	FLARE
 };

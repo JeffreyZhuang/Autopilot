@@ -111,16 +111,6 @@ struct Ctrl_cmd_data
 	uint64_t timestamp = 0;
 };
 
-struct telem_new_waypoint_s
-{
-	double lat;
-	double lon;
-	float alt;
-	uint8_t index;
-	uint8_t num_waypoints;
-	uint64_t timestamp;
-};
-
 struct position_control_s
 {
 	float pitch_setpoint;

@@ -2,6 +2,7 @@
 #define TELEM_H_
 
 #include "lib/parameters/params.h"
+#include "lib/mission/mission.h"
 #include "lib/data_bus/modes.h"
 #include "lib/utils/utils.h"
 #include "hal.h"
@@ -40,8 +41,6 @@ private:
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<IMU_data> _imu_sub;
-
-	Publisher<telem_new_waypoint_s> _telem_new_waypoint_pub;
 
 	Ctrl_cmd_data _ctrl_cmd_data;
 	AHRS_data _ahrs_data;
