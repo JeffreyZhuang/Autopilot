@@ -22,7 +22,11 @@ private:
 	local_position_s _local_pos;
 	uint8_t _curr_wp_idx = 1;
 
-	void poll_data_bus();
+	uint8_t _last_mission_version = 0;
+
+	void update_loiter();
+	void update_waypoint();
+	void update_land();
 };
 
 

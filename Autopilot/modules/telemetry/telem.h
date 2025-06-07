@@ -59,7 +59,7 @@ private:
 	float last_cal_sensors_transmit_s = 0;
 	float last_power_transmit_s = 0;
 
-	uint8_t _num_waypoints = 0; // Number of waypoints to load
+	mission_data_t _mission_data;
 	uint8_t _last_waypoint_loaded = 0;
 
 	void update_param_set();

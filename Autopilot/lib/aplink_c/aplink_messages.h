@@ -8,62 +8,63 @@
 #include <stdint.h>
 #include <string.h>
 
-enum PARAM_TYPE
+
+enum APLINK_PARAM_TYPE
 {
 
-    INT32,
+    APLINK_PARAM_TYPE_INT32,
 
-    FLOAT,
+    APLINK_PARAM_TYPE_FLOAT,
 
 };
 
-enum COMMAND_ID
+enum APLINK_COMMAND_ID
 {
 
-    CALIBRATE,
+    APLINK_COMMAND_ID_CALIBRATE,
 
 };
 
-enum MODE_ID
+enum APLINK_MODE_ID
 {
 
-    CONFIG,
+    APLINK_MODE_ID_CONFIG,
 
-    STARTUP,
+    APLINK_MODE_ID_STARTUP,
 
-    MANUAL,
+    APLINK_MODE_ID_MANUAL,
 
-    FBW,
+    APLINK_MODE_ID_FBW,
 
-    TAKEOFF,
+    APLINK_MODE_ID_TAKEOFF,
 
-    MISSION,
+    APLINK_MODE_ID_MISSION,
 
-    LAND,
+    APLINK_MODE_ID_LAND,
 
-    FLARE,
+    APLINK_MODE_ID_FLARE,
 
-    UNKNOWN,
+    APLINK_MODE_ID_UNKNOWN,
 
 };
 
-enum MISSION_ITEM_TYPE
+enum APLINK_MISSION_ITEM_TYPE
 {
 
-    WAYPOINT,
+    APLINK_MISSION_ITEM_TYPE_WAYPOINT,
 
-    LOITER,
+    APLINK_MISSION_ITEM_TYPE_LOITER,
 
-    LAND,
+    APLINK_MISSION_ITEM_TYPE_LAND,
 
 };
 
-enum LOITER_DIRECTION
+enum APLINK_LOITER_DIRECTION
 {
 
-    LEFT,
+    APLINK_LOITER_DIRECTION_LEFT,
 
-    RIGHT,
+    APLINK_LOITER_DIRECTION_RIGHT,
 
 };
 
@@ -350,31 +351,11 @@ typedef struct aplink_mission_item
 {
     
     
-    uint8_t type;
+    int32_t lat;
     
     
     
-    uint32_t lat;
-    
-    
-    
-    uint32_t lon;
-    
-    
-    
-    float radius;
-    
-    
-    
-    uint8_t direction;
-    
-    
-    
-    float final_leg;
-    
-    
-    
-    float glideslope;
+    int32_t lon;
     
     
 } aplink_mission_item_t;
@@ -508,7 +489,61 @@ inline bool aplink_hitl_commands_unpack(aplink_msg_t* msg, aplink_hitl_commands_
     return false;
 }
   
-#define WAYPOINTS_COUNT_MSG_ID 9
+#define SET_ALTITUDE_MSG_ID 9
+
+#pragma pack(push, 1)
+typedef struct aplink_set_altitude
+{
+
+
+    float altitude;
+
+
+} aplink_set_altitude_t;
+#pragma pack(pop)
+
+inline uint16_t aplink_set_altitude_pack(aplink_set_altitude_t data, uint8_t packet[]) {
+    uint8_t buffer[sizeof(data)];
+    memcpy(buffer, &data, sizeof(data));
+    return aplink_pack(packet, buffer, sizeof(buffer), SET_ALTITUDE_MSG_ID);
+}
+
+inline bool aplink_set_altitude_unpack(aplink_msg_t* msg, aplink_set_altitude_t* output) {
+    if (msg->payload_len == sizeof(aplink_set_altitude_t)) {
+        memcpy(output, msg->payload, sizeof(aplink_set_altitude_t));
+        return true;
+    }
+    return false;
+}
+
+#define SET_ALTITUDE_RESULT_MSG_ID 10
+
+#pragma pack(push, 1)
+typedef struct aplink_set_altitude_result
+{
+
+
+    bool success;
+
+
+} aplink_set_altitude_result_t;
+#pragma pack(pop)
+
+inline uint16_t aplink_set_altitude_result_pack(aplink_set_altitude_result_t data, uint8_t packet[]) {
+    uint8_t buffer[sizeof(data)];
+    memcpy(buffer, &data, sizeof(data));
+    return aplink_pack(packet, buffer, sizeof(buffer), SET_ALTITUDE_RESULT_MSG_ID);
+}
+
+inline bool aplink_set_altitude_result_unpack(aplink_msg_t* msg, aplink_set_altitude_result_t* output) {
+    if (msg->payload_len == sizeof(aplink_set_altitude_result_t)) {
+        memcpy(output, msg->payload, sizeof(aplink_set_altitude_result_t));
+        return true;
+    }
+    return false;
+}
+
+#define WAYPOINTS_COUNT_MSG_ID 11
 
 #pragma pack(push, 1)
 typedef struct aplink_waypoints_count 
@@ -518,6 +553,30 @@ typedef struct aplink_waypoints_count
     uint8_t num_waypoints;
     
     
+
+    uint8_t type;
+
+
+
+    float radius;
+
+
+
+    uint8_t direction;
+
+
+
+    float final_leg;
+
+
+
+    float glideslope;
+
+
+
+    float runway_heading;
+
+
 } aplink_waypoints_count_t;
 #pragma pack(pop)
                                    
@@ -535,7 +594,7 @@ inline bool aplink_waypoints_count_unpack(aplink_msg_t* msg, aplink_waypoints_co
     return false;
 }
   
-#define REQUEST_WAYPOINT_MSG_ID 10
+#define REQUEST_WAYPOINT_MSG_ID 12
 
 #pragma pack(push, 1)
 typedef struct aplink_request_waypoint 
@@ -562,7 +621,7 @@ inline bool aplink_request_waypoint_unpack(aplink_msg_t* msg, aplink_request_way
     return false;
 }
   
-#define WAYPOINTS_ACK_MSG_ID 11
+#define WAYPOINTS_ACK_MSG_ID 13
 
 #pragma pack(push, 1)
 typedef struct aplink_waypoints_ack 
@@ -589,7 +648,7 @@ inline bool aplink_waypoints_ack_unpack(aplink_msg_t* msg, aplink_waypoints_ack_
     return false;
 }
   
-#define TIME_SINCE_EPOCH_MSG_ID 12
+#define TIME_SINCE_EPOCH_MSG_ID 14
 
 #pragma pack(push, 1)
 typedef struct aplink_time_since_epoch 
@@ -616,7 +675,7 @@ inline bool aplink_time_since_epoch_unpack(aplink_msg_t* msg, aplink_time_since_
     return false;
 }
   
-#define PARAM_SET_MSG_ID 13
+#define PARAM_SET_MSG_ID 15
 
 #pragma pack(push, 1)
 typedef struct aplink_param_set 
@@ -651,7 +710,7 @@ inline bool aplink_param_set_unpack(aplink_msg_t* msg, aplink_param_set_t* outpu
     return false;
 }
   
-#define COMMAND_MSG_ID 14
+#define COMMAND_MSG_ID 16
 
 #pragma pack(push, 1)
 typedef struct aplink_command

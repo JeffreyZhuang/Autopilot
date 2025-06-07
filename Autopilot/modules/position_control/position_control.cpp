@@ -115,10 +115,7 @@ void PositionControl::update_mission()
 	_position_control.roll_setpoint = l1_calculate_roll();
 
 	// Calculate altitude setpoint
-	_d_setpoint = calculate_altitude_setpoint(
-		_waypoint.current_north, _waypoint.current_east, _waypoint.current_alt,
-		_waypoint.previous_north, _waypoint.previous_east, _waypoint.previous_alt
-	);
+	_d_setpoint = mission_get_altitude();
 
 	// Update TECS
 	tecs_calculate_energies(cruise_speed, _d_setpoint, 1);
@@ -161,8 +158,7 @@ void PositionControl::update_flare()
 	// Calculate the glideslope angle based on the altitude difference and horizontal distance
 	const float dist_land_appr = distance(_waypoint.previous_north, _waypoint.previous_east,
 										  _waypoint.current_north, _waypoint.current_east);
-	const float glideslope_angle = atan2f(_waypoint.current_alt - _waypoint.previous_alt,
-										  dist_land_appr - acceptance_radius);
+	const float glideslope_angle = atan2f(mission_get_altitude(), dist_land_appr - acceptance_radius);
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
 	const float final_altitude = 0;

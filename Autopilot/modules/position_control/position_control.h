@@ -4,6 +4,7 @@
 #include "lib/parameters/params.h"
 #include "lib/pi_control/pi_control.h"
 #include "lib/utils/utils.h"
+#include "lib/mission/mission.h"
 #include "hal.h"
 #include "constants.h"
 #include "module.h"

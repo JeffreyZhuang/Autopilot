@@ -45,7 +45,7 @@ void Telem::update()
 		{
 			update_param_set();
 		}
-		else if (telem_msg.msg_id == WAYPOINT_MSG_ID)
+		else if (telem_msg.msg_id == MISSION_ITEM_MSG_ID)
 		{
 			update_waypoint();
 		}
@@ -141,7 +141,7 @@ void Telem::update_param_set()
 		printf("Param not found\n");
 	}
 	else if (param_get_type(param) == PARAM_TYPE_FLOAT &&
-			 param_set.type == PARAM_TYPE::FLOAT)
+			 param_set.type == APLINK_PARAM_TYPE::APLINK_PARAM_TYPE_FLOAT)
 	{
 		float value;
 		memcpy(&value, param_set.value, sizeof(value));
@@ -150,7 +150,7 @@ void Telem::update_param_set()
 		printf("Telem params set, value: %f\n", value);
 	}
 	else if (param_get_type(param) == PARAM_TYPE_INT32 &&
-			 param_set.type == PARAM_TYPE::INT32)
+			 param_set.type == APLINK_PARAM_TYPE::APLINK_PARAM_TYPE_INT32)
 	{
 		int32_t value;
 		memcpy(&value, param_set.value, sizeof(value));
@@ -180,12 +180,39 @@ void Telem::update_waypoints_count()
 	// Reset Counter
 	_last_waypoint_loaded = 0;
 
-	// Store number of waypoints
-	_num_waypoints = waypoints_count.num_waypoints;
+	// Store data
+	_mission_data.num_items = waypoints_count.num_waypoints;
+
+	switch (waypoints_count.type)
+	{
+	case APLINK_MISSION_ITEM_TYPE::APLINK_MISSION_ITEM_TYPE_WAYPOINT:
+		_mission_data.mission_type = MISSION_WAYPOINT;
+		break;
+	case APLINK_MISSION_ITEM_TYPE::APLINK_MISSION_ITEM_TYPE_LOITER:
+		_mission_data.mission_type = MISSION_LOITER;
+		break;
+	case APLINK_MISSION_ITEM_TYPE::APLINK_MISSION_ITEM_TYPE_LAND:
+		_mission_data.mission_type = MISSION_LAND;
+		break;
+	}
+
+	switch (waypoints_count.direction)
+	{
+	case APLINK_LOITER_DIRECTION::APLINK_LOITER_DIRECTION_LEFT:
+		_mission_data.loiter_direction = LOITER_LEFT;
+		break;
+	case APLINK_LOITER_DIRECTION::APLINK_LOITER_DIRECTION_RIGHT:
+		_mission_data.loiter_direction = LOITER_RIGHT;
+		break;
+	}
+
+	_mission_data.final_leg_dist = waypoints_count.final_leg;
+	_mission_data.glideslope_angle = waypoints_count.glideslope;
+	_mission_data.loiter_radius = waypoints_count.radius;
+	_mission_data.runway_heading = waypoints_count.runway_heading;
 
 	// Request first waypoint
-	aplink_request_waypoint req_waypoint;
-	req_waypoint.index = 0;
+	aplink_request_waypoint req_waypoint = {0};
 
 	uint8_t packet[MAX_PACKET_LEN];
 	uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
@@ -194,45 +221,37 @@ void Telem::update_waypoints_count()
 
 void Telem::update_waypoint()
 {
-	aplink_waypoint waypoint{};
-	aplink_waypoint_unpack(&telem_msg, &waypoint);
+	aplink_mission_item mission_item{};
+	aplink_mission_item_unpack(&telem_msg, &mission_item);
 
-	// Make sure takeoff and landing waypoint altitudes set to 0
-	if ((_last_waypoint_loaded == 0 || _last_waypoint_loaded == _num_waypoints - 1) && waypoint.alt == 0)
+	_mission_data.mission_items[_last_waypoint_loaded++] = mission_item_t {
+		.latitude = (double)mission_item.lat * 1E-7,
+		.longitude = (double)mission_item.lon * 1E-7,
+	};
+
+	// Check if all waypoints have been loaded
+	if (_last_waypoint_loaded == _mission_data.num_items - 1)
 	{
+		// Update mission if waypoints finished loading
+		mission_set(_mission_data);
 
+		// Send acknowledgement
+		aplink_waypoints_ack waypoints_ack;
+		waypoints_ack.success = true;
 
-		// TODO: Instead of storing waypoints in commander, maybe use a global waypoints storage library like parameters
-		telem_new_waypoint_s new_waypoint_s;
-		new_waypoint_s.lat = (double)waypoint.lat * 1E-7;
-		new_waypoint_s.lon = (double)waypoint.lon * 1E-7;
-		new_waypoint_s.alt = -waypoint.alt;
-		new_waypoint_s.index = _last_waypoint_loaded;
-		new_waypoint_s.num_waypoints = _num_waypoints;
-		new_waypoint_s.timestamp = _hal->get_time_us();
-		_telem_new_waypoint_pub.publish(new_waypoint_s);
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_waypoints_ack_pack(waypoints_ack, packet);
+		_hal->transmit_telem(packet, len);
+	}
+	else
+	{
+		// Request next waypoint if waypoints not finished loading
+		aplink_request_waypoint req_waypoint;
+		req_waypoint.index = ++_last_waypoint_loaded;
 
-		// Check if all waypoints have been loaded
-		if (_last_waypoint_loaded == _num_waypoints - 1)
-		{
-			// Send acknowledgement if waypoints finished loading
-			aplink_waypoints_ack waypoints_ack;
-			waypoints_ack.success = true;
-
-			uint8_t packet[MAX_PACKET_LEN];
-			uint16_t len = aplink_waypoints_ack_pack(waypoints_ack, packet);
-			_hal->transmit_telem(packet, len);
-		}
-		else
-		{
-			// Request next waypoint if waypoints not finished loading
-			aplink_request_waypoint req_waypoint;
-			req_waypoint.index = ++_last_waypoint_loaded;
-
-			uint8_t packet[MAX_PACKET_LEN];
-			uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
-			_hal->transmit_telem(packet, len);
-		}
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
+		_hal->transmit_telem(packet, len);
 	}
 }
 
@@ -258,13 +277,13 @@ uint8_t Telem::get_mode_id()
 	switch (_modes_data.system_mode)
 	{
 	case System_mode::LOAD_PARAMS:
-		return MODE_ID::CONFIG;
+		return APLINK_MODE_ID::APLINK_MODE_ID_CONFIG;
 	case System_mode::STARTUP:
-		return MODE_ID::STARTUP;
+		return APLINK_MODE_ID::APLINK_MODE_ID_STARTUP;
 	case System_mode::FLIGHT:
 		break;
 	default:
-		return MODE_ID::UNKNOWN;
+		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
 	}
 
 	// Handle flight modes
@@ -275,28 +294,28 @@ uint8_t Telem::get_mode_id()
 		switch (_modes_data.manual_mode)
 		{
 		case Manual_mode::DIRECT:
-			return MODE_ID::MANUAL;
+			return APLINK_MODE_ID::APLINK_MODE_ID_MANUAL;
 		case Manual_mode::STABILIZED:
-			return MODE_ID::FBW;
+			return APLINK_MODE_ID::APLINK_MODE_ID_FBW;
 		default:
-			return MODE_ID::UNKNOWN;
+			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
 		}
 	case Flight_mode::AUTO:
 		// Handle auto sub-modes
 		switch (_modes_data.auto_mode)
 		{
 		case Auto_mode::TAKEOFF:
-			return MODE_ID::TAKEOFF;
+			return APLINK_MODE_ID::APLINK_MODE_ID_TAKEOFF;
 		case Auto_mode::MISSION:
-			return MODE_ID::MISSION;
+			return APLINK_MODE_ID::APLINK_MODE_ID_MISSION;
 		case Auto_mode::LAND:
-			return MODE_ID::LAND;
+			return APLINK_MODE_ID::APLINK_MODE_ID_LAND;
 		case Auto_mode::FLARE:
-			return MODE_ID::FLARE;
+			return APLINK_MODE_ID::APLINK_MODE_ID_FLARE;
 		default:
-			return MODE_ID::UNKNOWN;
+			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
 		}
 	default:
-		return MODE_ID::UNKNOWN;
+		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
 	}
 }

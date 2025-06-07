@@ -155,10 +155,8 @@ struct waypoint_s
 {
 	float previous_north = 0;
 	float previous_east = 0;
-	float previous_alt = 0;
 	float current_north = 0;
 	float current_east = 0;
-	float current_alt = 0;
 	uint8_t current_index = 0;
 	uint8_t num_waypoints = 0;
 	uint64_t timestamp = 0;

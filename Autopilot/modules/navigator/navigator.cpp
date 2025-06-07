@@ -18,62 +18,79 @@ Navigator::Navigator(HAL* hal, DataBus* data_bus)
 
 void Navigator::update()
 {
-	float acc_rad;
+	_local_pos = _local_pos_sub.get();
 
-	param_get(NAV_ACC_RAD, &acc_rad);
-
-	poll_data_bus();
+	// Reset waypoint index if there is a new mission
+	if (mission_get_version() > _last_mission_version)
+	{
+		_last_mission_version = mission_get_version();
+		_curr_wp_idx = 0;
+	}
 
 	// Get target waypoint
-	const Waypoint& target_wp = _waypoints[_curr_wp_idx];
+	const mission_item_t& target_wp = mission_get().mission_items[_curr_wp_idx];
+
+	switch (mission_get().mission_type)
+	{
+	case mission_type_t::MISSION_LOITER:
+		update_loiter();
+		break;
+	case mission_type_t::MISSION_WAYPOINT:
+		update_waypoint();
+		break;
+	case mission_type_t::MISSION_LAND:
+		update_land();
+		break;
+	}
 
 	// Convert waypoint to local NED coordinates
 	double tgt_north, tgt_east;
 	lat_lon_to_meters(_local_pos.ref_lat, _local_pos.ref_lon,
-					  target_wp.lat, target_wp.lon, &tgt_north, &tgt_east);
+					  target_wp.latitude, target_wp.longitude, &tgt_north, &tgt_east);
 
 	// Check distance to waypoint to determine if waypoint reached
+	float acc_rad;
+
+	param_get(NAV_ACC_RAD, &acc_rad);
+
 	float dist_to_wp = distance(_local_pos.x, tgt_north, _local_pos.y, tgt_east);
-	if (dist_to_wp < acc_rad &&
-		_curr_wp_idx < _telem_new_waypoint.num_waypoints - 1)
+
+	if ((dist_to_wp < acc_rad) && (_curr_wp_idx < mission_get().num_items - 1))
 	{
 		_curr_wp_idx++; // Move to next waypoint
 
 		// Publish waypoint
-		const Waypoint& prev_wp = _waypoints[_curr_wp_idx - 1];
+		const mission_item_t& prev_wp = mission_get().mission_items[_curr_wp_idx - 1];
 
 		double prev_north, prev_east;
 		lat_lon_to_meters(_local_pos.ref_lat, _local_pos.ref_lon,
-						  prev_wp.lat, prev_wp.lon, &prev_north, &prev_east);
+						  prev_wp.latitude, prev_wp.longitude, &prev_north, &prev_east);
 
 		_waypoint_pub.publish(
 			waypoint_s{
-				.previous_north = prev_north,
-				.previous_east = prev_east,
-				.previous_alt = prev_wp.alt,
-				.current_north = tgt_north,
-				.current_east = tgt_east,
-				.current_alt = target_wp.alt,
+				.previous_north = (float)prev_north,
+				.previous_east = (float)prev_east,
+				.current_north = (float)tgt_north,
+				.current_east = (float)tgt_east,
 				.current_index = _curr_wp_idx,
-				.num_waypoints = _telem_new_waypoint.num_waypoints,
+				.num_waypoints = mission_get().num_items,
 				.timestamp = _hal->get_time_us()
 			}
 		);
 	}
 }
 
-void Navigator::poll_data_bus()
+void Navigator::update_loiter()
 {
-	if (_telem_new_waypoint_sub.check_new())
-	{
-		_telem_new_waypoint = _telem_new_waypoint_sub.get();
 
-		_waypoints[_telem_new_waypoint.index] = Waypoint{
-			.lat = _telem_new_waypoint.lat,
-			.lon = _telem_new_waypoint.lon,
-			.alt = _telem_new_waypoint.alt
-		};
-	}
+}
 
-	_local_pos = _local_pos_sub.get();
+void Navigator::update_waypoint()
+{
+
+}
+
+void Navigator::update_land()
+{
+
 }
