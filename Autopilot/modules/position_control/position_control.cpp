@@ -107,6 +107,16 @@ void PositionControl::update_takeoff()
 // Update roll and altitude setpoints
 void PositionControl::update_mission()
 {
+	switch (mission_get().mission_type)
+	{
+	case MISSION_LOITER:
+		break;
+	case MISSION_WAYPOINT:
+		break;
+	case MISSION_LAND:
+		break;
+	}
+
 	float cruise_speed;
 
 	param_get(MIS_SPD, &cruise_speed);
@@ -132,11 +142,14 @@ void PositionControl::update_land()
 	// Update roll setpoint
 	_position_control.roll_setpoint = l1_calculate_roll();
 
-	// Calculate altitude setpoint
-	_d_setpoint = calculate_altitude_setpoint(
-		_waypoint.current_north, _waypoint.current_east, _waypoint.current_alt,
-		_waypoint.previous_north, _waypoint.previous_east, _waypoint.previous_alt
+	// Follow glideslope
+	const float along_track_dist = compute_along_track_distance(
+		_waypoint.previous_north, _waypoint.previous_east,
+		_waypoint.current_north, _waypoint.current_east,
+		_local_pos.x, _local_pos.y
 	);
+
+	_d_setpoint = along_track_dist * tanf(mission_get().glideslope_angle * DEG_TO_RAD);
 
 	// Update TECS
 	tecs_calculate_energies(landing_speed, _d_setpoint, 1);
@@ -177,46 +190,6 @@ void PositionControl::update_flare()
 	tecs_calculate_energies(0, _d_setpoint, 2);
 	_position_control.pitch_setpoint = tecs_control_energy_balance();
 	_position_control.throttle_setpoint = 0;
-}
-
-float PositionControl::calculate_altitude_setpoint(const float prev_north, const float prev_east, const float prev_down,
-		  	  	  	  	  	  	  	  	  	  	   const float tgt_north, const float tgt_east, const float tgt_down)
-{
-	float acceptance_radius;
-
-	param_get(NAV_ACC_RAD, &acceptance_radius);
-
-	// Set altitude setpoint to first waypoint during start of mission
-	if (_waypoint.current_index == 1)
-	{
-		return tgt_down;
-	}
-
-	const float dist_prev_tgt = distance(prev_north, prev_east, tgt_north, tgt_east);
-	const float along_track_dist = compute_along_track_distance(
-		prev_north, prev_east, tgt_north, tgt_east,
-		_local_pos.x, _local_pos.y
-	);
-
-	const float initial_dist = acceptance_radius;
-	float final_dist;
-
-	if (_modes_data.auto_mode == Auto_mode::LAND)
-	{
-		// During landing, go directly to landing point
-		final_dist = dist_prev_tgt;
-	}
-	else
-	{
-		// Reach altitude when within acceptance radius of next waypoint
-		final_dist = dist_prev_tgt - acceptance_radius;
-	}
-
-	// Altitude first order hold
-	return lerp(initial_dist, prev_down,
-		final_dist, tgt_down,
-		clamp(along_track_dist, initial_dist, final_dist)
-	);
 }
 
 float PositionControl::l1_calculate_roll() const

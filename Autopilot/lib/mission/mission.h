@@ -34,7 +34,6 @@ typedef struct {
 	mission_item_t mission_items[MAX_MISSION_ITEMS];
 	mission_type_t mission_type;
 	uint8_t num_items;
-	float altitude;
 	float loiter_radius;
 	loiter_direction_t loiter_direction;
 	float final_leg_dist;

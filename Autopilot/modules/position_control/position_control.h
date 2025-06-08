@@ -56,8 +56,6 @@ private:
 	void update_land();
 	void update_flare();
 
-	float calculate_altitude_setpoint(const float prev_north, const float prev_east, const float prev_down,
-	  	  	  	  	  	 	 	 	  const float tgt_north, const float tgt_east, const float tgt_down);
 	float l1_calculate_roll() const;
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);

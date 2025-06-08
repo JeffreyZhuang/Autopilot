@@ -24,9 +24,8 @@ private:
 
 	uint8_t _last_mission_version = 0;
 
-	void update_loiter();
 	void update_waypoint();
-	void update_land();
+	void update_loiter_land();
 };
 
 
