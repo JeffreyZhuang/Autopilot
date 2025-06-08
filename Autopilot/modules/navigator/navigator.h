@@ -1,12 +1,12 @@
 #ifndef MODULES_NAVIGATOR_NAVIGATOR_H_
 #define MODULES_NAVIGATOR_NAVIGATOR_H_
 
+#include <lib/hal/hal.h>
+#include <lib/module/module.h>
 #include "lib/data_bus/data_bus.h"
 #include "lib/mission/mission.h"
 #include "lib/parameters/params.h"
 #include "lib/utils/utils.h"
-#include "hal.h"
-#include "module.h"
 
 class Navigator : public Module
 {

@@ -1,9 +1,9 @@
 #ifndef MODULES_SENSORS_SENSORS_H_
 #define MODULES_SENSORS_SENSORS_H_
 
+#include <lib/constants/constants.h>
+#include <lib/module/module.h>
 #include "lib/parameters/params.h"
-#include "module.h"
-#include "constants.h"
 
 class Sensors : Module
 {

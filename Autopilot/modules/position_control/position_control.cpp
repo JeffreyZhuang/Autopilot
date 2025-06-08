@@ -1,4 +1,4 @@
-#include "position_control.h"
+#include <modules/position_control/position_control.h>
 
 // S. Park, J. Deyst, and J. P. How, "A New Nonlinear Guidance Logic for Trajectory Tracking,"
 // Proceedings of the AIAA Guidance, Navigation and Control

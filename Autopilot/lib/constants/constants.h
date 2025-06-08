@@ -1,5 +1,7 @@
-#ifndef CONSTANTS_H_
-#define CONSTANTS_H_
+#ifndef LIB_CONSTANTS_CONSTANTS_H_
+#define LIB_CONSTANTS_CONSTANTS_H_
+
+// TODO: Rename constants better, like CONSTANTS_ONE_G
 
 // Unit Conversions
 constexpr float G = 9.81;
@@ -12,4 +14,4 @@ constexpr float DEG_TO_RAD = 0.0174533;
 constexpr float DT_MIN = 0.001;
 constexpr float DT_MAX = 1;
 
-#endif /* CONSTANTS_H_ */
+#endif /* LIB_CONSTANTS_CONSTANTS_H_ */

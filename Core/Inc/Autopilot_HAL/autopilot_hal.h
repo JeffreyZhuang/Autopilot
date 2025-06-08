@@ -1,6 +1,7 @@
 #ifndef INC_AUTOPILOT_HAL_H_
 #define INC_AUTOPILOT_HAL_H_
 
+#include <lib/hal/hal.h>
 #include "lib/utils/utils.h"
 #include "Drivers/sbus_input.h"
 #include "Drivers/servo.h"
@@ -12,7 +13,6 @@
 #include "Drivers/uart_stream.h"
 #include "Drivers/usb_stream.h"
 #include "Drivers/cxof.h"
-#include "hal.h"
 
 extern "C"
 {

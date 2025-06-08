@@ -1,10 +1,10 @@
 #ifndef MODULES_MIXER_MIXER_H_
 #define MODULES_MIXER_MIXER_H_
 
+#include <lib/hal/hal.h>
+#include <lib/module/module.h>
 #include "lib/parameters/params.h"
 #include "lib/utils/utils.h"
-#include "hal.h"
-#include "module.h"
 
 class Mixer : public Module
 {

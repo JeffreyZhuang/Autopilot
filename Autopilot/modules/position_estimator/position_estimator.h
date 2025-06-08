@@ -1,12 +1,12 @@
 #ifndef POSITION_ESTIMATOR_H
 #define POSITION_ESTIMATOR_H
 
+#include <lib/constants/constants.h>
+#include <lib/hal/hal.h>
+#include <lib/module/module.h>
 #include "lib/parameters/params.h"
 #include "lib/kalman/kalman.h"
 #include "lib/utils/utils.h"
-#include "hal.h"
-#include "constants.h"
-#include "module.h"
 #include <stdio.h>
 
 static constexpr int n = 6;

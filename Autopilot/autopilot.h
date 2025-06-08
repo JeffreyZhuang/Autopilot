@@ -1,8 +1,9 @@
 #ifndef AUTOPILOT_H
 #define AUTOPILOT_H
 
+#include <lib/hal/hal.h>
+#include <modules/position_control/position_control.h>
 #include "modules/attitude_control/attitude_control.h"
-#include "modules/position_control/position_control.h"
 #include "modules/position_estimator/position_estimator.h"
 #include "modules/ahrs/ahrs.h"
 #include "modules/commander/commander.h"
@@ -13,7 +14,6 @@
 #include "modules/telemetry/telem.h"
 #include "modules/sensors/sensors.h"
 #include "modules/usb_comm/usb_comm.h"
-#include "hal.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <cstring>

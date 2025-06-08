@@ -1,9 +1,9 @@
 #ifndef MODULES_USB_COMM_USB_COMM_H_
 #define MODULES_USB_COMM_USB_COMM_H_
 
+#include <lib/module/module.h>
 #include "lib/utils/utils.h"
 #include "lib/parameters/params.h"
-#include "module.h"
 
 extern "C"
 {

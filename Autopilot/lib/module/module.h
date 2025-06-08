@@ -1,8 +1,8 @@
-#ifndef MODULE_H_
-#define MODULE_H_
+#ifndef LIB_MODULE_MODULE_H_
+#define LIB_MODULE_MODULE_H_
 
 #include <lib/data_bus/data_bus.h>
-#include "hal.h"
+#include <lib/hal/hal.h>
 
 /**
  * Abstract module class
@@ -20,4 +20,4 @@ protected:
 	DataBus* _data_bus;
 };
 
-#endif /* MODULE_H_ */
+#endif /* LIB_MODULE_MODULE_H_ */

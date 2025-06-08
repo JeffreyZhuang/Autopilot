@@ -2,8 +2,8 @@
 #define MODULES_STORAGE_STORAGE_H_
 
 #include <lib/data_bus/data_bus.h>
-#include "hal.h"
-#include "module.h"
+#include <lib/hal/hal.h>
+#include <lib/module/module.h>
 #include <stdint.h>
 #include <cstring>
 #include <stdio.h>

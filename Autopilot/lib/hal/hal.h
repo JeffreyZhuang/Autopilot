@@ -1,5 +1,5 @@
-#ifndef HAL_H_
-#define HAL_H_
+#ifndef LIB_HAL_HAL_H_
+#define LIB_HAL_HAL_H_
 
 #include "lib/data_bus/data_bus.h"
 

@@ -1,13 +1,13 @@
 #ifndef TELEM_H_
 #define TELEM_H_
 
+#include <lib/constants/constants.h>
+#include <lib/hal/hal.h>
+#include <lib/module/module.h>
 #include "lib/parameters/params.h"
 #include "lib/mission/mission.h"
 #include "lib/data_bus/modes.h"
 #include "lib/utils/utils.h"
-#include "hal.h"
-#include "constants.h"
-#include "module.h"
 #include <cstdio>
 #include <cstring>
 
