@@ -151,11 +151,12 @@ void PositionControl::update_mission()
 	_l1_control.navigate_waypoints(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy, _local_pos.gnd_spd,
 								   _waypoint.previous_north, _waypoint.previous_east,
 								   _waypoint.current_north, _waypoint.current_east);
-	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
 
 	// Update TECS
 	_tecs.set_alt_weight(1);
 	_tecs.update(_local_pos.z, _local_pos.gnd_spd, mission_get_altitude(), _cruise_speed, _dt);
+
+	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
 	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
 	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
@@ -166,7 +167,6 @@ void PositionControl::update_land()
 	_l1_control.navigate_waypoints(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy, _local_pos.gnd_spd,
 								   _waypoint.previous_north, _waypoint.previous_east,
 								   _waypoint.current_north, _waypoint.current_east);
-	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
 
 	// Follow glideslope
 	const float along_track_dist = compute_along_track_distance(
@@ -180,6 +180,8 @@ void PositionControl::update_land()
 	// Update TECS
 	_tecs.set_alt_weight(1);
 	_tecs.update(_local_pos.z, _local_pos.gnd_spd, z_setpoint, _landing_speed, _dt);
+
+	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
 	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
 	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
@@ -193,30 +195,31 @@ void PositionControl::update_flare()
 		_flare_initialized = true;
 	}
 
-	// Calculate the glideslope angle based on the altitude difference and horizontal distance
-	const float dist_land_appr = distance(_waypoint.previous_north, _waypoint.previous_east,
-										  _waypoint.current_north, _waypoint.current_east);
-	const float glideslope_angle = atan2f(_flare_alt, dist_land_appr - _acceptance_radius);
+	// Calculate the glideslope angle and sink rate
+	const float dist_land_appr = distance(_waypoint.previous_north, _waypoint.previous_east, _waypoint.current_north, _waypoint.current_east);
+	const float glideslope_angle = atan2f(_flare_alt, dist_land_appr);
+	const float glideslope_sink_rate = _landing_speed * sinf(glideslope_angle);
+
+	// Make sure initial altitude is greater than final altitude
+	const float initial_altitude = fmaxf(_flare_alt, 0);
+
+	// Make sure initial sink rate is greater than final sink rate
+	const float initial_sink_rate = fmaxf(glideslope_sink_rate, _flare_sink_rate);
+
+	// Make sure altitude is between initial and final altitude
+	const float clamped_altitude = clamp(-_local_pos.z, 0, initial_altitude);
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
-	const float final_altitude = 0;
-	const float final_sink_rate = _flare_sink_rate;
-	const float initial_altitude = fmaxf(_flare_alt, final_altitude);
-	const float initial_sink_rate = fmaxf(_landing_speed * sinf(glideslope_angle),
-								  	  	  final_sink_rate);
-	const float sink_rate = lerp(initial_altitude, initial_sink_rate,
-								 final_altitude, final_sink_rate,
-								 clamp(-_local_pos.z, final_altitude, initial_altitude));
+	const float sink_rate = lerp(initial_altitude, initial_sink_rate, 0, _flare_sink_rate, clamped_altitude);
 
 	// Update altitude setpoint with the calculated sink rate
 	_flare_z_setpoint += sink_rate * _dt;
 
-	// Level the wings
-	_position_control.roll_setpoint = 0;
-
 	// Update TECS
 	_tecs.set_alt_weight(2);
 	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _flare_z_setpoint, 0, _dt);
+
+	_position_control.roll_setpoint = 0;
 	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
 	_position_control.throttle_setpoint = 0;
 }
