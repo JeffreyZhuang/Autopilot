@@ -153,12 +153,9 @@ void PositionControl::update_mission()
 								   _waypoint.current_north, _waypoint.current_east);
 	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
 
-	// Calculate altitude setpoint
-	_d_setpoint = mission_get_altitude();
-
 	// Update TECS
 	_tecs.set_alt_weight(1);
-	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _d_setpoint, _cruise_speed, _dt);
+	_tecs.update(_local_pos.z, _local_pos.gnd_spd, mission_get_altitude(), _cruise_speed, _dt);
 	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
 	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
@@ -178,11 +175,11 @@ void PositionControl::update_land()
 		_local_pos.x, _local_pos.y
 	);
 
-	_d_setpoint = along_track_dist * tanf(mission_get().glideslope_angle * DEG_TO_RAD);
+	float z_setpoint = along_track_dist * tanf(mission_get().glideslope_angle * DEG_TO_RAD);
 
 	// Update TECS
 	_tecs.set_alt_weight(1);
-	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _d_setpoint, _landing_speed, _dt);
+	_tecs.update(_local_pos.z, _local_pos.gnd_spd, z_setpoint, _landing_speed, _dt);
 	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
 	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
@@ -190,6 +187,12 @@ void PositionControl::update_land()
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
 void PositionControl::update_flare()
 {
+	if (!_flare_initialized)
+	{
+		_flare_z_setpoint = _flare_alt;
+		_flare_initialized = true;
+	}
+
 	// Calculate the glideslope angle based on the altitude difference and horizontal distance
 	const float dist_land_appr = distance(_waypoint.previous_north, _waypoint.previous_east,
 										  _waypoint.current_north, _waypoint.current_east);
@@ -206,14 +209,14 @@ void PositionControl::update_flare()
 								 clamp(-_local_pos.z, final_altitude, initial_altitude));
 
 	// Update altitude setpoint with the calculated sink rate
-	_d_setpoint += sink_rate * _dt;
+	_flare_z_setpoint += sink_rate * _dt;
 
 	// Level the wings
 	_position_control.roll_setpoint = 0;
 
 	// Update TECS
 	_tecs.set_alt_weight(2);
-	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _d_setpoint, 0, _dt);
+	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _flare_z_setpoint, 0, _dt);
 	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
 	_position_control.throttle_setpoint = 0;
 }

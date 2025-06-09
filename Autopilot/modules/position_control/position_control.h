@@ -21,9 +21,6 @@ public:
 	void update() override;
 
 private:
-	uint64_t _last_time = 0;
-	float _dt = 0;
-
 	Subscriber<AHRS_data> _ahrs_sub;
 	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<Modes_data> _modes_sub;
@@ -42,7 +39,13 @@ private:
 	TECS _tecs;
 	L1Control _l1_control;
 
-	float _d_setpoint = 0;
+	// Time
+	uint64_t _last_time = 0;
+	float _dt = 0;
+
+	// Flare
+	bool _flare_initialized = false;
+	float _flare_z_setpoint = 0;
 
 	// Parameters
 	float _roll_limit;
