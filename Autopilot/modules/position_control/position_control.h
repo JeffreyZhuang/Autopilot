@@ -21,6 +21,12 @@ public:
 	void update() override;
 
 private:
+	enum class LandingState {
+		LOITER,
+		GLIDESLOPE,
+		FLARE
+	};
+
 	Subscriber<AHRS_data> _ahrs_sub;
 	Subscriber<local_position_s> _local_pos_sub;
 	Subscriber<Modes_data> _modes_sub;
@@ -43,8 +49,8 @@ private:
 	uint64_t _last_time = 0;
 	float _dt = 0;
 
-	// Flare
-	bool _flare_started = false;
+	// Landing
+	LandingState _landing_state = LandingState::LOITER;
 	float _flare_z_setpoint = 0;
 
 	// Parameters
@@ -69,14 +75,20 @@ private:
 	void handle_auto_mode();
 	void update_takeoff();
 	void update_mission();
+
 	void update_land();
-	void update_flare();
+	void update_land_loiter();
+	void update_land_glideslope();
+	void update_land_flare();
+	void reset_landing_state();
 
 	void update_waypoint();
 	void update_loiter();
 
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);
+	void move_point(float north, float east, float distance, float bearing_deg,
+					float *new_north, float *new_east);
 };
 
 #endif /* L1_CONTROLLER_H_ */

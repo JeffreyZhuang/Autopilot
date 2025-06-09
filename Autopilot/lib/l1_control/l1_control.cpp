@@ -24,8 +24,11 @@ void L1Control::navigate_waypoints(float x, float y, float vel_x, float vel_y, f
 	// Calculate plane heading error
 	const float hdg_err = hdg_setpoint - plane_hdg;
 
+	// Calculate the L1 gain
+	const float k_l1 = 4.0f * _l1_damping * _l1_damping;
+
 	// Calculate lateral acceleration using l1 guidance
-	const float lateral_accel = 2 * powf(ground_speed, 2) / l1_dist * sinf(hdg_err);
+	const float lateral_accel = k_l1 * ground_speed * ground_speed / l1_dist * sinf(hdg_err);
 
 	// Calculate roll to get desired lateral accel
 	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
@@ -42,8 +45,14 @@ void L1Control::navigate_loiter(float x, float y, float vel_x, float vel_y, floa
 	float K_crosstrack = omega * omega;
 	float K_velocity = 2.0f * _l1_damping * omega;
 
+	// Calculate the L1 gain
+	float k_l1 = 4.0f * _l1_damping * _l1_damping;
+
+	// Calculate the L1 ratio
 	float l1_ratio = 1.0f / M_PI * _l1_damping * _l1_period;
-	float k_l1 = 4.0f * powf(_l1_damping, 2); // L1 gain
+
+	// Calculate the L1 length required for the desired period
+	float l1_dist = l1_ratio * ground_speed;
 
 	// Compute vector from loiter center to aircraft position
 	float dx = x - target_x;
@@ -78,13 +87,19 @@ void L1Control::navigate_loiter(float x, float y, float vel_x, float vel_y, floa
 	eta = fminf(fmaxf(eta, -M_PI / 2.0f), M_PI / 2.0f);
 
 	// Decide mode: circle vs capture
-	float accel_capture = k_l1 * ground_speed * ground_speed / (l1_ratio * ground_speed) * sinf(eta);
+	float accel_capture = k_l1 * ground_speed * ground_speed / l1_dist * sinf(eta);
 	bool outside_circle = xtrack_error > 0.0f;
 
 	if (((accel_capture < lateral_accel && direction > 0) ||
 		 (accel_capture > lateral_accel && direction < 0)) &&
-		 outside_circle) {
+		 outside_circle)
+	{
 		lateral_accel = accel_capture;
+		_circle_mode = false;
+	}
+	else
+	{
+		_circle_mode = true;
 	}
 
 	// Calculate roll to get desired lateral accel

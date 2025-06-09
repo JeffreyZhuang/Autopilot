@@ -53,10 +53,12 @@ void PositionControl::update_parameters()
 	tecs_param.max_throttle = 1;
 	_tecs.set_param(tecs_param);
 
-	float l1_period, roll_limit;
+	float l1_period, l1_damping, roll_limit;
 	param_get(L1_PERIOD, &l1_period);
+	param_get(L1_DAMPING, &l1_damping);
 	param_get(L1_ROLL_LIM, &roll_limit);
 	_l1_control.set_l1_period(l1_period);
+	_l1_control.set_l1_damping(l1_damping);
 	_l1_control.set_roll_limit(roll_limit);
 }
 
@@ -131,6 +133,11 @@ void PositionControl::update_takeoff()
 
 void PositionControl::update_mission()
 {
+	if (mission_get().mission_type != MISSION_LAND)
+	{
+		reset_landing_state();
+	}
+
 	switch (mission_get().mission_type)
 	{
 	case MISSION_EMPTY:
@@ -149,7 +156,6 @@ void PositionControl::update_mission()
 
 void PositionControl::update_waypoint()
 {
-	// Update roll setpoint
 	_l1_control.navigate_waypoints(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy, _local_pos.gnd_spd,
 								   _waypoint.previous_north, _waypoint.previous_east,
 								   _waypoint.current_north, _waypoint.current_east);
@@ -165,9 +171,20 @@ void PositionControl::update_waypoint()
 
 void PositionControl::update_loiter()
 {
+	int8_t direction;
+
+	if (mission_get().loiter_direction == LOITER_RIGHT)
+	{
+		direction = 1;
+	}
+	else
+	{
+		direction = -1;
+	}
+
 	_l1_control.navigate_loiter(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy,
 								_local_pos.gnd_spd, _waypoint.current_north, _waypoint.current_east,
-								mission_get().loiter_radius, 0);
+								mission_get().loiter_radius, direction);
 
 	// Update TECS
 	_tecs.set_alt_weight(1);
@@ -180,61 +197,127 @@ void PositionControl::update_loiter()
 
 void PositionControl::update_land()
 {
-	if (_flare_started)
+	switch (_landing_state)
 	{
-		update_flare();
-	}
-	else
-	{
-		// Update L1 controller
-		_l1_control.navigate_waypoints(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy, _local_pos.gnd_spd,
-									   _waypoint.previous_north, _waypoint.previous_east,
-									   _waypoint.current_north, _waypoint.current_east);
-
-		// Follow glideslope
-		const float along_track_dist = compute_along_track_distance(
-			_waypoint.previous_north, _waypoint.previous_east,
-			_waypoint.current_north, _waypoint.current_east,
-			_local_pos.x, _local_pos.y
-		);
-
-		float z_setpoint = along_track_dist * tanf(mission_get().glideslope_angle * DEG_TO_RAD);
-
-		// Update TECS
-		_tecs.set_alt_weight(1);
-		_tecs.update(_local_pos.z, _local_pos.gnd_spd, z_setpoint, _landing_speed, _dt);
-
-		_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
-		_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
-		_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
-
-		// Detect flare
-		if (-_local_pos.z < _flare_alt)
-		{
-			_flare_z_setpoint = _flare_alt;
-			_flare_started = true;
-		}
+	case LandingState::LOITER:
+		update_land_loiter();
+		break;
+	case LandingState::GLIDESLOPE:
+		update_land_glideslope();
+		break;
+	case LandingState::FLARE:
+		update_land_flare();
+		break;
 	}
 }
 
-void PositionControl::update_flare()
+void PositionControl::update_land_loiter()
 {
-	// Calculate the glideslope angle and sink rate
-	const float dist_land_appr = distance(_waypoint.previous_north, _waypoint.previous_east, _waypoint.current_north, _waypoint.current_east);
-	const float glideslope_angle = atan2f(_flare_alt, dist_land_appr);
-	const float glideslope_sink_rate = _landing_speed * sinf(glideslope_angle);
+	int8_t direction;
 
-	// Make sure initial altitude is greater than final altitude
+	if (mission_get().loiter_direction == LOITER_RIGHT)
+	{
+		direction = 1;
+	}
+	else
+	{
+		direction = -1;
+	}
+
+	// Get position of the start of the glideslope
+	float glideslope_start_north, glideslope_start_east;
+
+	move_point(_waypoint.current_north, _waypoint.current_east, mission_get().final_leg_dist, mission_get().runway_heading,
+			   &glideslope_start_north, &glideslope_start_east);
+
+	// Calculate heading perpendicular to the runway in the direction of the loiter point
+	float perpendicular_heading = mission_get().runway_heading - 90 * direction;
+
+	// Calculate the position of the loiter point
+	float loiter_north, loiter_east;
+
+	move_point(glideslope_start_north, glideslope_start_east, mission_get().loiter_radius, perpendicular_heading,
+			   &loiter_north, &loiter_east);
+
+	_l1_control.navigate_loiter(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy,
+								_local_pos.gnd_spd, loiter_north, loiter_east,
+								mission_get().loiter_radius, direction);
+
+	if (_l1_control.get_circle_mode())
+	{
+		// Calculate loiter altitude
+		float altitude_setpoint = mission_get().final_leg_dist * tanf(mission_get().glideslope_angle * DEG_TO_RAD);
+
+		_tecs.set_alt_weight(1);
+		_tecs.update(_local_pos.z, _local_pos.gnd_spd, altitude_setpoint, _landing_speed, _dt);
+
+		float heading_error = fabs(_ahrs_data.yaw - mission_get().runway_heading); // TODO: Use position or something, not yaw
+		float altitude_error = fabs(-_local_pos.z - altitude_setpoint);
+		float speed_error = fabs(_local_pos.gnd_spd - _landing_speed);
+
+		if ((heading_error < 10) && (altitude_error < 1) && (speed_error < 2))
+		{
+			// Switch to next state
+			_landing_state = LandingState::GLIDESLOPE;
+		}
+	}
+	else
+	{
+		_tecs.set_alt_weight(1);
+		_tecs.update(_local_pos.z, _local_pos.gnd_spd, mission_get_altitude(), _cruise_speed, _dt);
+	}
+
+	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
+	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
+	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
+}
+
+void PositionControl::update_land_glideslope()
+{
+	// Get position of the start of the glideslope
+	float glideslope_start_north, glideslope_start_east;
+
+	move_point(_waypoint.current_north, _waypoint.current_east, mission_get().final_leg_dist, mission_get().runway_heading,
+			   &glideslope_start_north, &glideslope_start_east);
+
+	_l1_control.navigate_waypoints(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy, _local_pos.gnd_spd,
+								   glideslope_start_north, glideslope_start_east,
+								   _waypoint.current_north, _waypoint.current_east);
+
+	// Follow glideslope
+	const float along_track_dist = compute_along_track_distance(
+		_waypoint.previous_north, _waypoint.previous_east,
+		_waypoint.current_north, _waypoint.current_east,
+		_local_pos.x, _local_pos.y
+	);
+
+	float z_setpoint = along_track_dist * tanf(mission_get().glideslope_angle * DEG_TO_RAD);
+
+	// Update TECS
+	_tecs.set_alt_weight(1);
+	_tecs.update(_local_pos.z, _local_pos.gnd_spd, z_setpoint, _landing_speed, _dt);
+
+	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
+	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
+	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
+
+	// Detect flare
+	if (-_local_pos.z < _flare_alt)
+	{
+		_flare_z_setpoint = _flare_alt;
+		_landing_state = LandingState::FLARE;
+	}
+}
+
+void PositionControl::update_land_flare()
+{
+	const float glideslope_sink_rate = _landing_speed * sinf(mission_get().glideslope_angle * DEG_TO_RAD);
 	const float initial_altitude = fmaxf(_flare_alt, 0);
-
-	// Make sure initial sink rate is greater than final sink rate
 	const float initial_sink_rate = fmaxf(glideslope_sink_rate, _flare_sink_rate);
-
-	// Make sure altitude is between initial and final altitude
-	const float clamped_altitude = clamp(-_local_pos.z, 0, initial_altitude);
+	const float clamped_vehicle_altitude = clamp(-_local_pos.z, 0, initial_altitude);
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
-	const float sink_rate = lerp(initial_altitude, initial_sink_rate, 0, _flare_sink_rate, clamped_altitude);
+	const float sink_rate = lerp(initial_altitude, initial_sink_rate, 0, _flare_sink_rate, clamped_vehicle_altitude);
 
 	// Update altitude setpoint with the calculated sink rate
 	_flare_z_setpoint += sink_rate * _dt;
@@ -253,6 +336,11 @@ void PositionControl::publish_status()
 	_position_control_pub.publish(_position_control);
 }
 
+void PositionControl::reset_landing_state()
+{
+	_landing_state = LandingState::LOITER;
+}
+
 // Helper function to compute along-track distance (projected aircraft position onto path)
 float PositionControl::compute_along_track_distance(float start_n, float start_e,
 												    float end_n, float end_e,
@@ -267,4 +355,16 @@ float PositionControl::compute_along_track_distance(float start_n, float start_e
 	const float proj_factor = ((pos_n - start_n) * vec_north + (pos_e - start_e) * vec_east) /
 							  (vec_norm * vec_norm);
 	return proj_factor * vec_norm;
+}
+
+void PositionControl::move_point(float north, float east, float distance, float bearing_deg,
+								 float *new_north, float *new_east)
+{
+	/*
+	 * Calculate new position after moving a given distance from
+	 * an original point at a given bearing
+	 */
+	float bearing_rad = bearing_deg * DEG_TO_RAD;
+	*new_north = north + distance * cosf(bearing_rad);
+	*new_east = east + distance * sinf(bearing_rad);
 }

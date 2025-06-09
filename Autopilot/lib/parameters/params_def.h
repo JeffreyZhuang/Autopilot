@@ -28,6 +28,7 @@ PARAM(TECS_PTCH_LIM, PARAM_TYPE_FLOAT) // Maximum pitch angle, deg
 
 // L1 Controller
 PARAM(L1_PERIOD, PARAM_TYPE_FLOAT) // L1 controller period
+PARAM(L1_DAMPING, PARAM_TYPE_FLOAT) // L1 controller damping
 PARAM(L1_ROLL_LIM, PARAM_TYPE_FLOAT) // L1 controller roll limit
 
 // Navigator

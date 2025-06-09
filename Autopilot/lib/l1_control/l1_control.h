@@ -22,14 +22,9 @@ public:
 	void set_roll_limit(float roll_limit) { _roll_limit = roll_limit; };
 
 	float get_roll_setpoint() { return _roll_setpoint; };
+	bool get_circle_mode() { return _circle_mode; };
 
 private:
-	// Local position in NED frame
-	struct Position {
-		float x;
-		float y;
-	};
-
 	// Parameters
 	float _l1_period = 0;
 	float _l1_damping = 0;
@@ -37,6 +32,7 @@ private:
 
 	// Output
 	float _roll_setpoint = 0;
+	bool _circle_mode = false;
 };
 
 #endif /* LIB_L1_CONTROL_L1_CONTROL_H_ */
