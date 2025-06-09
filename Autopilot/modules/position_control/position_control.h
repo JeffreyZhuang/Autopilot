@@ -44,6 +44,16 @@ private:
 
 	float _d_setpoint = 0;
 
+	// Parameters
+	float _roll_limit;
+	float _pitch_limit;
+	float _takeoff_pitch;
+	float _cruise_speed;
+	float _landing_speed;
+	float _acceptance_radius;
+	float _flare_sink_rate;
+	float _flare_alt;
+
 	void poll_vehicle_data();
 	void update_time();
 	void update_parameters();
