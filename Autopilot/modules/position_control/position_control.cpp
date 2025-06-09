@@ -11,34 +11,20 @@ PositionControl::PositionControl(HAL* hal, DataBus* data_bus)
 {
 }
 
-void PositionControl::update()
+void PositionControl::update_time()
 {
 	const uint64_t time = _hal->get_time_us();
 	_dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
 	_last_time = time;
+}
 
+void PositionControl::poll_vehicle_data()
+{
 	_ahrs_data = _ahrs_sub.get();
 	_local_pos = _local_pos_sub.get();
 	_modes_data = _modes_sub.get();
 	_waypoint = _waypoint_sub.get();
 	_rc_data = _rc_sub.get();
-
-	update_parameters();
-
-	if (_modes_data.system_mode == System_mode::FLIGHT)
-	{
-		switch (_modes_data.flight_mode)
-		{
-		case Flight_mode::MANUAL:
-			handle_manual_mode();
-			break;
-		case Flight_mode::AUTO:
-			handle_auto_mode();
-			break;
-		}
-	}
-
-	_position_control_pub.publish(_position_control);
 }
 
 void PositionControl::update_parameters()
@@ -67,6 +53,28 @@ void PositionControl::update_parameters()
 
 	_l1_control.set_l1_period(l1_period);
 	_l1_control.set_roll_limit(roll_limit);
+}
+
+void PositionControl::update()
+{
+	update_time();
+	poll_vehicle_data();
+	update_parameters();
+
+	if (_modes_data.system_mode == System_mode::FLIGHT)
+	{
+		switch (_modes_data.flight_mode)
+		{
+		case Flight_mode::MANUAL:
+			handle_manual_mode();
+			break;
+		case Flight_mode::AUTO:
+			handle_auto_mode();
+			break;
+		}
+	}
+
+	publish_status();
 }
 
 void PositionControl::handle_manual_mode()
@@ -226,6 +234,11 @@ void PositionControl::update_flare()
 	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _d_setpoint, 0, _dt);
 	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
 	_position_control.throttle_setpoint = 0;
+}
+
+void PositionControl::publish_status()
+{
+	_position_control_pub.publish(_position_control);
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)

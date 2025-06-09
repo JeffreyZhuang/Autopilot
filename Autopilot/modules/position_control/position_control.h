@@ -44,7 +44,10 @@ private:
 
 	float _d_setpoint = 0;
 
+	void poll_vehicle_data();
+	void update_time();
 	void update_parameters();
+	void publish_status();
 
 	void handle_manual_mode();
 	void update_direct();
