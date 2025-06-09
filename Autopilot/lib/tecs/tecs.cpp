@@ -1,41 +1,88 @@
 #include "tecs.h"
 
+void TECS::update(float alt_m, float vel_mps, float target_alt_m, float target_vel_mps)
+{
+	const State state{alt_m, vel_mps};
+	const Setpoint setpoint{target_alt_m, target_vel_mps};
+
+	SpecificEnergies specific_energies = calc_specific_energies(state, setpoint, _param);
+
+	calc_pitch_control(specific_energies, _param);
+	calc_throttle_control(specific_energies, _param);
+}
+
+// Calculate specific energy
+// SPe = gh
+// SKe = 1/2 v^2
+TECS::SpecificEnergies TECS::calc_specific_energies(const State state, const Setpoint setpoint, const Param param)
+{
+	SpecificEnergies specific_energies;
+
+	specific_energies.kinetic.estimate = 0.5 * powf(state.vel_mps, 2);
+	specific_energies.kinetic.setpoint = 0.5 * powf(setpoint.target_vel_mps, 2);
+
+	specific_energies.potential.estimate = G * state.alt_m;
+	specific_energies.potential.setpoint = G * setpoint.target_alt_m;
+
+	return specific_energies;
+}
+
 // wb: weight balance
 // wb = 0: only spd
 // wb = 1: balanced
 // wb = 2: only alt
-void TECS::calc_specific_energies(float alt_m, float vel_mps, float target_vel_mps, float target_alt_m, float wb)
+TECS::ControlValues TECS::calc_energy_balance(const SpecificEnergies specific_energies, const Param param)
 {
-	// Calculate specific energy
-	// SPe = gh
-	// SKe = 1/2 v^2
-	// Ignore mass since its the energy ratio that matters
-	float energy_pot = G * alt_m;
-	float energy_kin = 0.5 * powf(vel_mps, 2);
-	float energy_total = energy_pot + energy_kin;
+	ControlValues energy_balance;
 
-	// Calculate target energy using same equations
-	float target_pot = G * (-target_alt_m);
-	float target_kin = 0.5 * powf(target_vel_mps, 2);
-	float target_total = target_pot + target_kin;
+	energy_balance.estimate = specific_energies.potential.estimate * param.alt_weight -
+							  specific_energies.kinetic.estimate * (2.0 - param.alt_weight);
 
-	// Clamp total energy setpoint within allowed airspeed range
-	// Prevent stall/overspeed
-	float min_kin = 0.5 * powf(_param.min_spd, 2);
-	float max_kin = 0.5 * powf(_param.max_spd, 2);
-	target_total = clamp(target_total, energy_pot + min_kin, energy_pot + max_kin);
+	energy_balance.setpoint = specific_energies.potential.setpoint * param.alt_weight -
+							  specific_energies.kinetic.setpoint * (2.0 - param.alt_weight);
 
-	// Compute energy difference setpoint and measurement
-	float energy_diff_setpoint = wb * target_pot - (2.0 - wb) * target_kin;
-	float energy_diff = wb * energy_pot - (2.0 - wb) * energy_kin;
+	// Clamp total energy setpoint within allowed airspeed range to prevent stall/overspeed
+	float min_kinetic_energy = 0.5 * powf(param.min_spd, 2);
+	float max_kinetic_energy = 0.5 * powf(param.max_spd, 2);
+	float min_energy_balance_setpoint = specific_energies.potential.setpoint * param.alt_weight - max_kinetic_energy * (2.0f - param.alt_weight);
+	float max_energy_balance_setpoint = param.alt_weight * specific_energies.potential.setpoint - min_kinetic_energy * (2.0f - param.alt_weight);
 
-	// Clamp energy balance within allowed range
-	float min_diff = wb * target_pot - (2.0f - wb) * max_kin;
-	float max_diff = wb * target_pot - (2.0f - wb) * min_kin;
-	energy_diff_setpoint = clamp(energy_diff_setpoint, min_diff, max_diff);
+	energy_balance.setpoint = clamp(energy_balance.setpoint, min_energy_balance_setpoint, max_energy_balance_setpoint);
 
-	_total_energy_setpoint = target_total;
-	_total_energy = energy_total;
-	_energy_balance_setpoint = energy_diff_setpoint;
-	_energy_balance = energy_diff;
+	return energy_balance;
+}
+
+void TECS::calc_pitch_control(const SpecificEnergies specific_energies, const Param param)
+{
+	ControlValues energy_balance = calc_energy_balance(specific_energies, param);
+
+	float error = energy_balance.setpoint - energy_balance.estimate;
+
+	_pitch_setpoint = param.pitch_gain * error;
+}
+
+TECS::ControlValues TECS::calc_total_energy(const SpecificEnergies specific_energies, const Param param)
+{
+	ControlValues total_energy;
+
+	total_energy.estimate = specific_energies.kinetic.estimate + specific_energies.potential.estimate;
+
+	total_energy.setpoint = specific_energies.kinetic.setpoint + specific_energies.potential.setpoint;
+
+	// Clamp total energy setpoint within allowed airspeed range to prevent stall/overspeed
+	float min_total_energy_setpoint = specific_energies.potential.setpoint + 0.5 * powf(param.min_spd, 2);
+	float max_total_energy_setpoint = specific_energies.potential.setpoint + 0.5 * powf(param.max_spd, 2);
+
+	total_energy.setpoint = clamp(total_energy.setpoint, min_total_energy_setpoint, max_total_energy_setpoint);
+
+	return total_energy;
+}
+
+void TECS::calc_throttle_control(const SpecificEnergies specific_energies, const Param param)
+{
+	ControlValues total_energy = calc_total_energy(specific_energies, param);
+
+	float error = total_energy.setpoint - total_energy.estimate;
+
+	_throttle_setpoint = param.throttle_gain * error;
 }
