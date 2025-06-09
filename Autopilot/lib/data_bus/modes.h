@@ -18,9 +18,7 @@ enum class Flight_mode
 enum class Auto_mode
 {
 	TAKEOFF,
-	MISSION,
-	LAND,
-	FLARE
+	MISSION
 };
 
 enum class Manual_mode

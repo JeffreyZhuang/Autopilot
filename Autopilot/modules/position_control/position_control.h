@@ -44,7 +44,7 @@ private:
 	float _dt = 0;
 
 	// Flare
-	bool _flare_initialized = false;
+	bool _flare_started = false;
 	float _flare_z_setpoint = 0;
 
 	// Parameters
@@ -72,7 +72,9 @@ private:
 	void update_land();
 	void update_flare();
 
-	float l1_calculate_roll() const;
+	void update_waypoint();
+	void update_loiter();
+
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);
 };

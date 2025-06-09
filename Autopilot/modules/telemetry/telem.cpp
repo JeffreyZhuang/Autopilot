@@ -308,10 +308,10 @@ uint8_t Telem::get_mode_id()
 			return APLINK_MODE_ID::APLINK_MODE_ID_TAKEOFF;
 		case Auto_mode::MISSION:
 			return APLINK_MODE_ID::APLINK_MODE_ID_MISSION;
-		case Auto_mode::LAND:
-			return APLINK_MODE_ID::APLINK_MODE_ID_LAND;
-		case Auto_mode::FLARE:
-			return APLINK_MODE_ID::APLINK_MODE_ID_FLARE;
+//		case Auto_mode::LAND:
+//			return APLINK_MODE_ID::APLINK_MODE_ID_LAND;
+//		case Auto_mode::FLARE:
+//			return APLINK_MODE_ID::APLINK_MODE_ID_FLARE;
 		default:
 			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
 		}

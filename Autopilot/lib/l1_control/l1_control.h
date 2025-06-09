@@ -14,10 +14,11 @@ class L1Control
 public:
 	void navigate_waypoints(float x, float y, float vel_x, float vel_y, float ground_speed,
 			    			float start_x, float start_y, float end_x, float end_y);
-	void navigate_loiter();
-	void navigate_heading();
+	void navigate_loiter(float x, float y, float vel_x, float vel_y, float ground_speed,
+						 float target_x, float target_y, float radius, int8_t direction);
 
 	void set_l1_period(float period) { _l1_period = period; };
+	void set_l1_damping(float damping) { _l1_damping = damping; }
 	void set_roll_limit(float roll_limit) { _roll_limit = roll_limit; };
 
 	float get_roll_setpoint() { return _roll_setpoint; };
@@ -31,6 +32,7 @@ private:
 
 	// Parameters
 	float _l1_period = 0;
+	float _l1_damping = 0;
 	float _roll_limit = 0;
 
 	// Output

@@ -10,16 +10,34 @@ AttitudeControl::AttitudeControl(HAL* hal, DataBus* data_bus)
 {
 }
 
-void AttitudeControl::update()
+void AttitudeControl::update_time()
 {
 	const uint64_t time = _hal->get_time_us();
 	_dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
 	_last_time = time;
+}
 
+void AttitudeControl::update_parameters()
+{
+	param_get(ATT_ROLL_KP, &_roll_kp);
+	param_get(ATT_ROLL_KI, &_roll_ki);
+	param_get(ATT_PTCH_KP, &_ptch_kp);
+	param_get(ATT_PTCH_KI, &_ptch_ki);
+}
+
+void AttitudeControl::poll_vehicle_data()
+{
 	_ahrs_data = _ahrs_sub.get();
 	_modes_data = _modes_sub.get();
 	_position_control = _position_control_sub.get();
 	_rc_data = _rc_sub.get();
+}
+
+void AttitudeControl::update()
+{
+	update_time();
+	update_parameters();
+	poll_vehicle_data();
 
 	if (_modes_data.system_mode == System_mode::FLIGHT)
 	{
@@ -34,7 +52,7 @@ void AttitudeControl::update()
 		}
 	}
 
-	_ctrl_cmd_pub.publish(_ctrl_cmd_data);
+	publish_status();
 }
 
 void AttitudeControl::handle_manual_mode()
@@ -50,21 +68,6 @@ void AttitudeControl::handle_manual_mode()
 	}
 }
 
-void AttitudeControl::handle_auto_mode()
-{
-	switch (_modes_data.auto_mode)
-	{
-	case Auto_mode::TAKEOFF:
-		update_takeoff();
-		break;
-	case Auto_mode::MISSION:
-	case Auto_mode::LAND:
-	case Auto_mode::FLARE:
-		update_mission();
-		break;
-	}
-}
-
 void AttitudeControl::update_direct()
 {
 	_ctrl_cmd_data.rud_cmd = _rc_data.ail_norm;
@@ -76,54 +79,25 @@ void AttitudeControl::update_stabilized()
 	control_roll_ptch();
 }
 
-void AttitudeControl::update_takeoff()
-{
-	control_roll_ptch_no_integral();
-}
-
-void AttitudeControl::update_mission()
+void AttitudeControl::handle_auto_mode()
 {
 	control_roll_ptch();
 }
 
-void AttitudeControl::control_roll_ptch()
+void AttitudeControl::publish_status()
 {
-	float roll_kp, roll_ki, ptch_kp, ptch_ki;
-
-	// Get roll and pitch P and I gains
-	param_get(ATT_ROLL_KP, &roll_kp);
-	param_get(ATT_ROLL_KI, &roll_ki);
-	param_get(ATT_PTCH_KP, &ptch_kp);
-	param_get(ATT_PTCH_KI, &ptch_ki);
-
-	_ctrl_cmd_data.rud_cmd = roll_controller.get_output(
-		_ahrs_data.roll, _position_control.roll_setpoint,
-		roll_kp, roll_ki, 1, -1, 1, 0, _dt
-	);
-
-	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
-		_ahrs_data.pitch, _position_control.pitch_setpoint,
-		ptch_kp, ptch_ki, 1, -1, 1, 0, _dt
-	);
+	_ctrl_cmd_pub.publish(_ctrl_cmd_data);
 }
 
-// Use update parameters function like PX4
-
-void AttitudeControl::control_roll_ptch_no_integral()
+void AttitudeControl::control_roll_ptch()
 {
-	float roll_kp, ptch_kp;
-
-	// Get roll and pitch P gains
-	param_get(ATT_ROLL_KP, &roll_kp);
-	param_get(ATT_PTCH_KP, &ptch_kp);
-
 	_ctrl_cmd_data.rud_cmd = roll_controller.get_output(
 		_ahrs_data.roll, _position_control.roll_setpoint,
-		roll_kp, 0, 0, -1, 1, 0, _dt
+		_roll_kp, _roll_ki, 1, -1, 1, 0, _dt
 	);
 
 	_ctrl_cmd_data.ele_cmd = pitch_controller.get_output(
 		_ahrs_data.pitch, _position_control.pitch_setpoint,
-		ptch_kp, 0, 0, -1, 1, 0, _dt
+		_ptch_kp, _ptch_ki, 1, -1, 1, 0, _dt
 	);
 }

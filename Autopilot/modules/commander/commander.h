@@ -28,13 +28,19 @@ private:
 	RC_data _rc_data{};
 	waypoint_s _waypoint{};
 
+	// Parameters
+	float _takeoff_alt;
+	float _flare_alt;
+
+	void update_parameters();
+	void poll_vehicle_data();
+
 	void handle_flight_mode();
 	void handle_auto_mode();
 	void handle_switches();
 	void update_config();
 	void update_startup();
 	void update_takeoff();
-	void update_mission();
 	void update_land();
 };
 

@@ -37,17 +37,24 @@ private:
 	Modes_data _modes_data;
 	Ctrl_cmd_data _ctrl_cmd_data;
 
+	// Parameters
+	float _roll_kp;
+	float _roll_ki;
+	float _ptch_kp;
+	float _ptch_ki;
+
+	void update_time();
+	void update_parameters();
+	void poll_vehicle_data();
+
 	void handle_manual_mode();
 	void update_direct();
 	void update_stabilized();
-
 	void handle_auto_mode();
-	void update_takeoff();
-	void update_mission();
-	void update_touchdown();
+
+	void publish_status();
 
 	void control_roll_ptch();
-	void control_roll_ptch_no_integral();
 };
 
 #endif /* CONTROL_H_ */

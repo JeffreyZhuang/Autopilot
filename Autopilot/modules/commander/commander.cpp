@@ -15,12 +15,24 @@ Commander::Commander(HAL* hal, DataBus* data_bus)
 	_modes_pub.publish(_modes_data);
 }
 
-void Commander::update()
+void Commander::update_parameters()
+{
+	param_get(TKO_ALT, &_takeoff_alt);
+	param_get(LND_FL_ALT, &_flare_alt);
+}
+
+void Commander::poll_vehicle_data()
 {
 	_local_pos = _local_pos_sub.get();
 	_ahrs_data = _ahrs_sub.get();
 	_rc_data = _rc_sub.get();
 	_waypoint = _waypoint_sub.get();
+}
+
+void Commander::update()
+{
+	update_parameters();
+	poll_vehicle_data();
 
 	switch (_modes_data.system_mode)
 	{
@@ -40,28 +52,31 @@ void Commander::update()
 	_modes_pub.publish(_modes_data);
 }
 
+void Commander::update_config()
+{
+	if (param_all_set())
+	{
+		_modes_data.system_mode = System_mode::STARTUP;
+	}
+}
+
+void Commander::update_startup()
+{
+	bool transmitter_safe = _rc_data.thr_norm == 0 &&
+							!_rc_data.man_sw &&
+							!_rc_data.mod_sw;
+
+	if (_ahrs_data.converged && _local_pos.converged &&
+		_rc_data.tx_conn && transmitter_safe)
+	{
+		_modes_data.system_mode = System_mode::FLIGHT;
+	}
+}
+
 void Commander::handle_flight_mode()
 {
 	handle_switches();
 	handle_auto_mode();
-}
-
-void Commander::handle_auto_mode()
-{
-	switch (_modes_data.auto_mode)
-	{
-	case Auto_mode::TAKEOFF:
-		update_takeoff();
-		break;
-	case Auto_mode::MISSION:
-		update_mission();
-		break;
-	case Auto_mode::LAND:
-		update_land();
-		break;
-	case Auto_mode::FLARE:
-		break;
-	}
 }
 
 void Commander::handle_switches()
@@ -87,55 +102,22 @@ void Commander::handle_switches()
 	}
 }
 
-void Commander::update_config()
+void Commander::handle_auto_mode()
 {
-	if (param_all_set())
+	switch (_modes_data.auto_mode)
 	{
-		_modes_data.system_mode = System_mode::STARTUP;
-	}
-}
-
-void Commander::update_startup()
-{
-	bool transmitter_safe = _rc_data.thr_norm == 0 &&
-							!_rc_data.man_sw &&
-							!_rc_data.mod_sw;
-
-	if (_ahrs_data.converged && _local_pos.converged &&
-		_rc_data.tx_conn && transmitter_safe)
-	{
-		_modes_data.system_mode = System_mode::FLIGHT;
+	case Auto_mode::TAKEOFF:
+		update_takeoff();
+		break;
+	case Auto_mode::MISSION:
+		break;
 	}
 }
 
 void Commander::update_takeoff()
 {
-	float takeoff_alt;
-
-	param_get(TKO_ALT, &takeoff_alt);
-
-	if (-_local_pos.z > takeoff_alt)
+	if (-_local_pos.z > _takeoff_alt)
 	{
 		_modes_data.auto_mode = Auto_mode::MISSION;
-	}
-}
-
-void Commander::update_mission()
-{
-	if (_waypoint.current_index == _waypoint.num_waypoints - 1)
-	{
-		_modes_data.auto_mode = Auto_mode::LAND;
-	}
-}
-
-void Commander::update_land()
-{
-	float flare_alt;
-
-	param_get(LND_FL_ALT, &flare_alt);
-
-	if (-_local_pos.z < flare_alt)
-	{
-		_modes_data.auto_mode = Auto_mode::FLARE;
 	}
 }
