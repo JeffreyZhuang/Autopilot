@@ -1,4 +1,4 @@
-#include <lib/module/module.h>
+#include "module.h"
 
 Module::Module(HAL* hal, DataBus* data_bus)
 {

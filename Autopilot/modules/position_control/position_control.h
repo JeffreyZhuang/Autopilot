@@ -1,9 +1,10 @@
 #ifndef L1_CONTROLLER_H_
 #define L1_CONTROLLER_H_
 
-#include <lib/constants/constants.h>
-#include <lib/hal/hal.h>
-#include <lib/module/module.h>
+#include "lib/tecs/tecs.h"
+#include "lib/constants/constants.h"
+#include "lib/hal/hal.h"
+#include "lib/module/module.h"
 #include "lib/parameters/params.h"
 #include "lib/pi_control/pi_control.h"
 #include "lib/utils/utils.h"
@@ -37,14 +38,11 @@ private:
 	position_control_s _position_control{};
 	RC_data _rc_data{};
 
-	PI_control energy_balance_controller;
-	PI_control total_energy_controller;
+	TECS _tecs;
 
-	float _total_energy_setpoint = 0;
-	float _total_energy = 0;
-	float _energy_balance_setpoint = 0;
-	float _energy_balance = 0;
 	float _d_setpoint = 0;
+
+	void update_parameters();
 
 	void handle_manual_mode();
 	void update_direct();
@@ -59,9 +57,6 @@ private:
 	float l1_calculate_roll() const;
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);
-	float tecs_control_total_energy();
-	float tecs_control_energy_balance();
-	void tecs_calculate_energies(float target_vel_mps, float target_alt_m, float wb);
 };
 
 #endif /* L1_CONTROLLER_H_ */

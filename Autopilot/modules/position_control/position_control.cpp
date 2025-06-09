@@ -27,6 +27,8 @@ void PositionControl::update()
 	_waypoint = _waypoint_sub.get();
 	_rc_data = _rc_sub.get();
 
+	update_parameters();
+
 	if (_modes_data.system_mode == System_mode::FLIGHT)
 	{
 		switch (_modes_data.flight_mode)
@@ -41,6 +43,26 @@ void PositionControl::update()
 	}
 
 	_position_control_pub.publish(_position_control);
+}
+
+void PositionControl::update_parameters()
+{
+	TECS::Param tecs_param = {0};
+
+	param_get(MIN_SPD, &tecs_param.min_spd);
+	param_get(MAX_SPD, &tecs_param.max_spd);
+	param_get(TECS_PTCH_KP, &tecs_param.pitch_gain);
+	param_get(TECS_PTCH_KI, &tecs_param.pitch_integral_gain);
+	param_get(TECS_PTCH_LIM, &tecs_param.max_pitch);
+	param_get(TECS_THR_KP, &tecs_param.throttle_gain);
+	param_get(TECS_THR_KI, &tecs_param.throttle_integral_gain);
+	param_get(MIS_THR, &tecs_param.throttle_trim);
+	tecs_param.min_pitch = -tecs_param.max_pitch;
+	tecs_param.alt_weight = 1;
+	tecs_param.min_throttle = 0;
+	tecs_param.max_throttle = 1;
+
+	_tecs.set_param(tecs_param);
 }
 
 void PositionControl::handle_manual_mode()
@@ -128,9 +150,10 @@ void PositionControl::update_mission()
 	_d_setpoint = mission_get_altitude();
 
 	// Update TECS
-	tecs_calculate_energies(cruise_speed, _d_setpoint, 1);
-	_position_control.pitch_setpoint = tecs_control_energy_balance();
-	_position_control.throttle_setpoint = tecs_control_total_energy();
+	_tecs.set_alt_weight(1);
+	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _d_setpoint, cruise_speed, _dt);
+	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
+	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
 
 void PositionControl::update_land()
@@ -152,9 +175,10 @@ void PositionControl::update_land()
 	_d_setpoint = along_track_dist * tanf(mission_get().glideslope_angle * DEG_TO_RAD);
 
 	// Update TECS
-	tecs_calculate_energies(landing_speed, _d_setpoint, 1);
-	_position_control.pitch_setpoint = tecs_control_energy_balance();
-	_position_control.throttle_setpoint = tecs_control_total_energy();
+	_tecs.set_alt_weight(1);
+	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _d_setpoint, landing_speed, _dt);
+	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
+	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
 
 // Decrease altitude setpoint at the flare sink rate and set roll to 0
@@ -187,8 +211,10 @@ void PositionControl::update_flare()
 	_d_setpoint += sink_rate * _dt;
 	_position_control.roll_setpoint = 0;
 
-	tecs_calculate_energies(0, _d_setpoint, 2);
-	_position_control.pitch_setpoint = tecs_control_energy_balance();
+	// Update TECS
+	_tecs.set_alt_weight(2);
+	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _d_setpoint, 0, _dt);
+	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
 	_position_control.throttle_setpoint = 0;
 }
 
@@ -247,77 +273,4 @@ float PositionControl::compute_along_track_distance(float start_n, float start_e
 	const float proj_factor = ((pos_n - start_n) * vec_north + (pos_e - start_e) * vec_east) /
 							  (vec_norm * vec_norm);
 	return proj_factor * vec_norm;
-}
-
-// wb: weight balance
-// wb = 0: only spd
-// wb = 1: balanced
-// wb = 2: only alt
-void PositionControl::tecs_calculate_energies(float target_vel_mps, float target_alt_m, float wb)
-{
-	float min_spd, max_spd;
-
-	param_get(MIN_SPD, &min_spd);
-	param_get(MAX_SPD, &max_spd);
-
-	// Calculate specific energy
-	// SPe = gh
-	// SKe = 1/2 v^2
-	// Ignore mass since its the energy ratio that matters
-	float energy_pot = G * (-_local_pos.z);
-	float energy_kin = 0.5 * powf(_local_pos.gnd_spd, 2);
-	float energy_total = energy_pot + energy_kin;
-
-	// Calculate target energy using same equations
-	float target_pot = G * (-target_alt_m);
-	float target_kin = 0.5 * powf(target_vel_mps, 2);
-	float target_total = target_pot + target_kin;
-
-	// Clamp total energy setpoint within allowed airspeed range
-	// Prevent stall/overspeed
-	float min_kin = 0.5 * powf(min_spd, 2);
-	float max_kin = 0.5 * powf(max_spd, 2);
-	target_total = clamp(target_total, energy_pot + min_kin, energy_pot + max_kin);
-
-	// Compute energy difference setpoint and measurement
-	float energy_diff_setpoint = wb * target_pot - (2.0 - wb) * target_kin;
-	float energy_diff = wb * energy_pot - (2.0 - wb) * energy_kin;
-
-	// Clamp energy balance within allowed range
-	float min_diff = wb * target_pot - (2.0f - wb) * max_kin;
-	float max_diff = wb * target_pot - (2.0f - wb) * min_kin;
-	energy_diff_setpoint = clamp(energy_diff_setpoint, min_diff, max_diff);
-
-	_total_energy_setpoint = target_total;
-	_total_energy = energy_total;
-	_energy_balance_setpoint = energy_diff_setpoint;
-	_energy_balance = energy_diff;
-}
-
-float PositionControl::tecs_control_energy_balance()
-{
-	float kP, kI, ptch_lim;
-
-	param_get(TECS_PTCH_KP, &kP);
-	param_get(TECS_PTCH_KI, &kI);
-	param_get(TECS_PTCH_LIM, &ptch_lim);
-
-	return energy_balance_controller.get_output(
-		_energy_balance, _energy_balance_setpoint,
-		kP, kI, ptch_lim, -ptch_lim, ptch_lim, 0, _dt
-	);
-}
-
-float PositionControl::tecs_control_total_energy()
-{
-	float kP, kI, cruise_thr_trim;
-
-	param_get(TECS_THR_KP, &kP);
-	param_get(TECS_THR_KI, &kI);
-	param_get(MIS_THR, &cruise_thr_trim);
-
-	return total_energy_controller.get_output(
-		_total_energy, _total_energy_setpoint,
-		kP, kI, 1, 0, 1, cruise_thr_trim, _dt
-	);
 }
