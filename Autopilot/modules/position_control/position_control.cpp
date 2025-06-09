@@ -1,8 +1,4 @@
-#include <modules/position_control/position_control.h>
-
-// S. Park, J. Deyst, and J. P. How, "A New Nonlinear Guidance Logic for Trajectory Tracking,"
-// Proceedings of the AIAA Guidance, Navigation and Control
-// Conference, Aug 2004. AIAA-2004-4900.
+#include "position_control.h"
 
 PositionControl::PositionControl(HAL* hal, DataBus* data_bus)
 	: Module(hal, data_bus),
@@ -63,6 +59,14 @@ void PositionControl::update_parameters()
 	tecs_param.max_throttle = 1;
 
 	_tecs.set_param(tecs_param);
+
+	float l1_period, roll_limit;
+
+	param_get(L1_PERIOD, &l1_period);
+	param_get(L1_ROLL_LIM, &roll_limit);
+
+	_l1_control.set_l1_period(l1_period);
+	_l1_control.set_roll_limit(roll_limit);
 }
 
 void PositionControl::handle_manual_mode()
@@ -144,7 +148,10 @@ void PositionControl::update_mission()
 	param_get(MIS_SPD, &cruise_speed);
 
 	// Update roll setpoint
-	_position_control.roll_setpoint = l1_calculate_roll();
+	_l1_control.navigate_waypoints(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy, _local_pos.gnd_spd,
+								   _waypoint.previous_north, _waypoint.previous_east,
+								   _waypoint.current_north, _waypoint.current_east);
+	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
 
 	// Calculate altitude setpoint
 	_d_setpoint = mission_get_altitude();
@@ -163,7 +170,10 @@ void PositionControl::update_land()
 	param_get(LND_SPD, &landing_speed);
 
 	// Update roll setpoint
-	_position_control.roll_setpoint = l1_calculate_roll();
+	_l1_control.navigate_waypoints(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy, _local_pos.gnd_spd,
+								   _waypoint.previous_north, _waypoint.previous_east,
+								   _waypoint.current_north, _waypoint.current_east);
+	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
 
 	// Follow glideslope
 	const float along_track_dist = compute_along_track_distance(
@@ -216,47 +226,6 @@ void PositionControl::update_flare()
 	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _d_setpoint, 0, _dt);
 	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
 	_position_control.throttle_setpoint = 0;
-}
-
-float PositionControl::l1_calculate_roll() const
-{
-	float l1_period, roll_lim;
-
-	param_get(L1_PERIOD, &l1_period);
-	param_get(L1_ROLL_LIM, &roll_lim);
-
-	// Calculate track heading (bearing from previous to target waypoint)
-	const float trk_hdg = atan2f(_waypoint.current_east - _waypoint.previous_east,
-								 _waypoint.current_north - _waypoint.previous_north);
-
-	// Compute cross-track error (perpendicular distance from aircraft to path)
-	const float rel_east = _local_pos.y - _waypoint.current_east;
-	const float rel_north = _local_pos.x - _waypoint.current_north;
-	const float xte = cosf(trk_hdg) * rel_east - sinf(trk_hdg) * rel_north;
-
-	// Calculate L1 distance and scale with speed
-	const float l1_dist = fmaxf(l1_period * _local_pos.gnd_spd / M_PI, 1.0);
-
-	// Calculate correction angle
-	const float correction_angle = asinf(clamp(xte / l1_dist, -1, 1)); // Domain of acos is [-1, 1]
-
-	// Apply correction angle to track heading to compute heading setpoint
-	const float hdg_setpoint = trk_hdg - correction_angle;
-
-	// Calculate plane velocity heading
-	const float plane_hdg = atan2f(_local_pos.vy, _local_pos.vx);
-
-	// Calculate plane heading error
-	const float hdg_err = hdg_setpoint - plane_hdg;
-
-	// Calculate lateral acceleration using l1 guidance
-	const float lateral_accel = 2 * powf(_local_pos.gnd_spd, 2) / l1_dist * sinf(hdg_err);
-
-	// Calculate roll to get desired lateral accel
-	const float roll = atanf(lateral_accel / G) * RAD_TO_DEG;
-
-	// Return clamped roll angle
-	return clamp(roll, -roll_lim, roll_lim);
 }
 
 // Helper function to compute along-track distance (projected aircraft position onto path)

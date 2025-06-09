@@ -9,6 +9,7 @@
 #include "lib/pi_control/pi_control.h"
 #include "lib/utils/utils.h"
 #include "lib/mission/mission.h"
+#include "lib/l1_control/l1_control.h"
 #include <math.h>
 #include <cstdio>
 
@@ -39,6 +40,7 @@ private:
 	RC_data _rc_data{};
 
 	TECS _tecs;
+	L1Control _l1_control;
 
 	float _d_setpoint = 0;
 
