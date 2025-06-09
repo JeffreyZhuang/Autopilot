@@ -74,16 +74,16 @@ private:
 
 	void handle_auto_mode();
 	void update_takeoff();
+
 	void update_mission();
+	void update_mission_waypoint();
+	void update_mission_loiter();
 
 	void update_land();
 	void update_land_loiter();
 	void update_land_glideslope();
 	void update_land_flare();
 	void reset_landing_state();
-
-	void update_waypoint();
-	void update_loiter();
 
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);

@@ -65,6 +65,7 @@ private:
 	void update_param_set();
 	void update_waypoints_count();
 	void update_waypoint();
+	void update_set_altitude();
 	void send_telemetry();
 	void send_calibration();
 

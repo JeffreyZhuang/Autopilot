@@ -143,10 +143,10 @@ void PositionControl::update_mission()
 	case MISSION_EMPTY:
 		break;
 	case MISSION_LOITER:
-		update_loiter();
+		update_mission_loiter();
 		break;
 	case MISSION_WAYPOINT:
-		update_waypoint();
+		update_mission_waypoint();
 		break;
 	case MISSION_LAND:
 		update_land();
@@ -154,7 +154,7 @@ void PositionControl::update_mission()
 	}
 }
 
-void PositionControl::update_waypoint()
+void PositionControl::update_mission_waypoint()
 {
 	_l1_control.navigate_waypoints(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy, _local_pos.gnd_spd,
 								   _waypoint.previous_north, _waypoint.previous_east,
@@ -169,7 +169,7 @@ void PositionControl::update_waypoint()
 	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
 
-void PositionControl::update_loiter()
+void PositionControl::update_mission_loiter()
 {
 	int8_t direction;
 

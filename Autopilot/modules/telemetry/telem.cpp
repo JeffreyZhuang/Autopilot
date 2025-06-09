@@ -49,6 +49,10 @@ void Telem::update()
 		{
 			update_waypoint();
 		}
+		else if (telem_msg.msg_id == SET_ALTITUDE_MSG_ID)
+		{
+			update_set_altitude();
+		}
 	}
 }
 
@@ -212,7 +216,9 @@ void Telem::update_waypoints_count()
 	_mission_data.runway_heading = waypoints_count.runway_heading;
 
 	// Request first waypoint
-	aplink_request_waypoint req_waypoint = {0};
+	aplink_request_waypoint req_waypoint = {
+		.index = 0
+	};
 
 	uint8_t packet[MAX_PACKET_LEN];
 	uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
@@ -253,6 +259,22 @@ void Telem::update_waypoint()
 		uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
 		_hal->transmit_telem(packet, len);
 	}
+}
+
+void Telem::update_set_altitude()
+{
+	aplink_set_altitude msg{};
+	aplink_set_altitude_unpack(&telem_msg, &msg);
+
+	mission_set_altitude(msg.altitude);
+
+	aplink_set_altitude_result result = {
+		.success = true
+	};
+
+	uint8_t packet[MAX_PACKET_LEN];
+	uint16_t len = aplink_set_altitude_result_pack(result, packet);
+	_hal->transmit_telem(packet, len);
 }
 
 bool Telem::read_telem(aplink_msg* msg)
