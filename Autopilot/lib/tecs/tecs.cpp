@@ -11,30 +11,31 @@ void TECS::update(float alt_m, float vel_mps, float target_alt_m, float target_v
 	calc_throttle_control(specific_energies, _param);
 }
 
-// Calculate specific energy
-// SPe = gh
-// SKe = 1/2 v^2
 TECS::SpecificEnergies TECS::calc_specific_energies(const State state, const Setpoint setpoint, const Param param)
 {
 	SpecificEnergies specific_energies;
 
+	// SKe = 1/2 v^2
 	specific_energies.kinetic.estimate = 0.5 * powf(state.vel_mps, 2);
 	specific_energies.kinetic.setpoint = 0.5 * powf(setpoint.target_vel_mps, 2);
 
+	// SPe = gh
 	specific_energies.potential.estimate = G * state.alt_m;
 	specific_energies.potential.setpoint = G * setpoint.target_alt_m;
 
 	return specific_energies;
 }
 
-// wb: weight balance
-// wb = 0: only spd
-// wb = 1: balanced
-// wb = 2: only alt
 TECS::ControlValues TECS::calc_energy_balance(const SpecificEnergies specific_energies, const Param param)
 {
 	ControlValues energy_balance;
 
+	/*
+	 * The alt_weight variable controls how speed and altitude are prioritized by the pitch demand calculation
+	 * A weighting of 1 gives equal speed and altitude priority
+	 * A weighting of 0 gives 100% priority to speed control
+	 * A weighting of 2 gives 100% priority to altitude control
+	 */
 	energy_balance.estimate = specific_energies.potential.estimate * param.alt_weight -
 							  specific_energies.kinetic.estimate * (2.0 - param.alt_weight);
 
