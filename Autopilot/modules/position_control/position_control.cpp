@@ -196,7 +196,7 @@ void PositionControl::update_flare()
 	// Calculate the glideslope angle based on the altitude difference and horizontal distance
 	const float dist_land_appr = distance(_waypoint.previous_north, _waypoint.previous_east,
 										  _waypoint.current_north, _waypoint.current_east);
-	const float glideslope_angle = atan2f(mission_get_altitude(), dist_land_appr - _acceptance_radius);
+	const float glideslope_angle = atan2f(_flare_alt, dist_land_appr - _acceptance_radius);
 
 	// Linearly interpolate the sink rate based on the current altitude and flare parameters
 	const float final_altitude = 0;
