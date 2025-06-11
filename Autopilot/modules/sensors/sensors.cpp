@@ -33,7 +33,6 @@ void Sensors::parameters_update()
 	param_get(MAG_SI_ZX, &_si_zx);
 	param_get(MAG_SI_ZY, &_si_zy);
 	param_get(MAG_SI_ZZ, &_si_zz);
-	param_get(ENABLE_HITL, &_enable_hitl);
 }
 
 void Sensors::update()
@@ -42,13 +41,13 @@ void Sensors::update()
 
 	_modes_data = _modes_sub.get();
 
-	if (_modes_data.system_mode == System_mode::CALIBRATION)
+	switch (_modes_data.system_mode)
 	{
-		update_calibration();
-	}
-	else if ((_modes_data.system_mode == System_mode::FLIGHT) ||
-			 (_modes_data.system_mode == System_mode::STARTUP))
-	{
+	case System_mode::LOAD_PARAMS:
+		update_load_params();
+		break;
+	case System_mode::STARTUP:
+	case System_mode::FLIGHT:
 		if (_enable_hitl)
 		{
 			update_hitl();
@@ -57,6 +56,24 @@ void Sensors::update()
 		{
 			update_flight();
 		}
+		break;
+	case System_mode::CALIBRATION:
+		update_calibration();
+		break;
+	}
+}
+
+void Sensors::update_load_params()
+{
+	// This function detects if HITL simulator is connected by
+	// checking if HITL data is received
+
+	// HITL simulator MUST to be connected during startup mode to enable HITL
+	// That prevents the AHRS from initializing before HITL started
+
+	if (_hitl_sensors_sub.check_new())
+	{
+		_enable_hitl = true;
 	}
 }
 
@@ -109,31 +126,6 @@ void Sensors::update_flight()
 	}
 }
 
-// Send raw sensor data without calibration
-void Sensors::update_calibration()
-{
-	float ax, ay, az, gx, gy, gz;
-
-	if (_hal->read_imu(&ax, &ay, &az, &gx, &gy, &gz))
-	{
-		_imu_pub.publish(IMU_data{gx, gy, gz, ax, ay, az, _hal->get_time_us()});
-	}
-
-	float baro_alt;
-
-	if (_hal->read_baro(&baro_alt))
-	{
-		_baro_pub.publish(Baro_data{baro_alt, _hal->get_time_us()});
-	}
-
-	float mx, my, mz;
-
-	if (_hal->read_mag(&mx, &my, &mz))
-	{
-		_mag_pub.publish(Mag_data{mx, my, mz, _hal->get_time_us()});
-	}
-}
-
 void Sensors::update_hitl()
 {
 	if (_hitl_sensors_sub.check_new())
@@ -160,5 +152,31 @@ void Sensors::update_hitl()
 			.lon = (double)_hitl_sensors.gps_lon / 1E7,
 			.timestamp = _hal->get_time_us()
 		});
+	}
+}
+
+
+// Send raw sensor data without calibration
+void Sensors::update_calibration()
+{
+	float ax, ay, az, gx, gy, gz;
+
+	if (_hal->read_imu(&ax, &ay, &az, &gx, &gy, &gz))
+	{
+		_imu_pub.publish(IMU_data{gx, gy, gz, ax, ay, az, _hal->get_time_us()});
+	}
+
+	float baro_alt;
+
+	if (_hal->read_baro(&baro_alt))
+	{
+		_baro_pub.publish(Baro_data{baro_alt, _hal->get_time_us()});
+	}
+
+	float mx, my, mz;
+
+	if (_hal->read_mag(&mx, &my, &mz))
+	{
+		_mag_pub.publish(Mag_data{mx, my, mz, _hal->get_time_us()});
 	}
 }

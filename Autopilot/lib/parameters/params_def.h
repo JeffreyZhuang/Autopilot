@@ -88,6 +88,3 @@ PARAM(EKF_GNSS_VAR, PARAM_TYPE_FLOAT) // GNSS variance
 PARAM(EKF_OF_VAR, PARAM_TYPE_FLOAT) // Optical flow variance
 PARAM(EKF_OF_MIN, PARAM_TYPE_INT32) // Minimum accepted reading, pixels/sec
 PARAM(EKF_OF_MAX, PARAM_TYPE_INT32) // Maximum accepted reading, pixels/sec
-
-// System
-PARAM(ENABLE_HITL, PARAM_TYPE_INT32) // Enable hardware-in-the-loop testing

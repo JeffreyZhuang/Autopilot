@@ -26,6 +26,8 @@ private:
 	Modes_data _modes_data;
 	hitl_sensors_s _hitl_sensors;
 
+	bool _enable_hitl = false;
+
 	// Parameters
 	float _gyr_off_x;
 	float _gyr_off_y;
@@ -45,13 +47,13 @@ private:
 	float _si_zx;
 	float _si_zy;
 	float _si_zz;
-	bool _enable_hitl;
 
 	void parameters_update();
 
-	void update_calibration();
+	void update_load_params();
 	void update_flight();
 	void update_hitl();
+	void update_calibration();
 };
 
 #endif /* MODULES_SENSORS_SENSORS_H_ */
