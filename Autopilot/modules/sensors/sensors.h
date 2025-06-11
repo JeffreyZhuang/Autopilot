@@ -1,8 +1,8 @@
 #ifndef MODULES_SENSORS_SENSORS_H_
 #define MODULES_SENSORS_SENSORS_H_
 
-#include <lib/constants/constants.h>
-#include <lib/module/module.h>
+#include "lib/constants/constants.h"
+#include "lib/module/module.h"
 #include "lib/parameters/params.h"
 
 class Sensors : Module
@@ -25,6 +25,29 @@ private:
 
 	Modes_data _modes_data;
 	hitl_sensors_s _hitl_sensors;
+
+	// Parameters
+	float _gyr_off_x;
+	float _gyr_off_y;
+	float _gyr_off_z;
+	float _acc_off_x;
+	float _acc_off_y;
+	float _acc_off_z;
+	float _hi_x;
+	float _hi_y;
+	float _hi_z;
+	float _si_xx;
+	float _si_xy;
+	float _si_xz;
+	float _si_yx;
+	float _si_yy;
+	float _si_yz;
+	float _si_zx;
+	float _si_zy;
+	float _si_zz;
+	bool _enable_hitl;
+
+	void parameters_update();
 
 	void update_calibration();
 	void update_flight();

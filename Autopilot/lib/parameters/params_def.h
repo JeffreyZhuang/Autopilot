@@ -49,7 +49,6 @@ PARAM(PWM_MAX_AUX2, PARAM_TYPE_INT32) // Max duty auxiliary channel 2, us
 PARAM(PWM_MAX_AUX3, PARAM_TYPE_INT32) // Max duty auxiliary channel 3, us
 PARAM(PWM_REV_ELE, PARAM_TYPE_INT32) // Reverse elevator channel
 PARAM(PWM_REV_RUD, PARAM_TYPE_INT32) // Reverse rudder channel
-PARAM(PWM_REV_THR, PARAM_TYPE_INT32) // Reverse throttle channel
 PARAM(PWM_REV_AUX1, PARAM_TYPE_INT32) // Reverse auxiliary channel 1
 PARAM(PWM_REV_AUX2, PARAM_TYPE_INT32) // Reverse auxiliary channel 2
 PARAM(PWM_REV_AUX3, PARAM_TYPE_INT32) // Reverse auxiliary channel 3

@@ -28,6 +28,18 @@ private:
 	uint16_t _rudder_duty = 0;
 	uint16_t _throttle_duty = 0;
 
+	// Parameters
+	int32_t _pwm_min_ele;
+	int32_t _pwm_max_ele;
+	int32_t _pwm_min_rud;
+	int32_t _pwm_max_rud;
+	int32_t	_pwm_min_thr;
+	int32_t _pwm_max_thr;
+	int32_t _rev_ele;
+	int32_t _rev_rud;
+
+	void parameters_update();
+
 	void update_config();
 	void update_startup();
 	void update_flight();

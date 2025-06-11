@@ -41,13 +41,15 @@ private:
 	Power_data _power_data{};
 	hitl_sensors_s _hitl_sensors;
 	Baro_data _baro_data;
+	HITL_output_data _hitl_output_data;
 
 	aplink_msg msg;
 
 	bool read_usb();
 	void read_hitl();
 	void transmit_hitl();
-	void transmit_debug();
+	void transmit_vehicle_status();
+	uint8_t get_mode_id();
 };
 
 #endif /* MODULES_USB_COMM_USB_COMM_H_ */

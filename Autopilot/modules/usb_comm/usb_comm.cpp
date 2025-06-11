@@ -18,9 +18,10 @@ USBComm::USBComm(HAL* hal, DataBus* data_bus)
 
 void USBComm::update()
 {
-	bool enable_hitl;
-
-	param_get(ENABLE_HITL, &enable_hitl);
+	_modes_data = _modes_sub.get();
+	_ahrs_data = _ahrs_sub.get();
+	_gnss_data = _gnss_sub.get();
+	_hitl_output_data = _hitl_output_sub.get();
 
 	// Read
 	if (read_usb())
@@ -31,15 +32,9 @@ void USBComm::update()
 		}
 	}
 
-	// Transmit
-	if (enable_hitl)
-	{
-		transmit_hitl();
-	}
-	else
-	{
-		transmit_debug();
-	}
+	// Transmit status for debug purposes
+	transmit_vehicle_status();
+	transmit_hitl();
 }
 
 bool USBComm::read_usb()
@@ -70,36 +65,83 @@ void USBComm::read_hitl()
 	hitl_data.imu_gx = hitl_sensors.imu_gx;
 	hitl_data.imu_gy = hitl_sensors.imu_gy;
 	hitl_data.imu_gz = hitl_sensors.imu_gz;
+	hitl_data.timestamp = _hal->get_time_us();
 
 	_hitl_sensors_pub.publish(hitl_data);
 }
 
 void USBComm::transmit_hitl()
 {
-	HITL_output_data hitl_output_data = _hitl_output_sub.get();
-
 	aplink_hitl_commands hitl_commands;
-	hitl_commands.ele_pwm = hitl_output_data.ele_duty;
-	hitl_commands.rud_pwm = hitl_output_data.rud_duty;
-	hitl_commands.thr_pwm = hitl_output_data.thr_duty;
+	hitl_commands.ele_pwm = _hitl_output_data.ele_duty;
+	hitl_commands.rud_pwm = _hitl_output_data.rud_duty;
+	hitl_commands.thr_pwm = _hitl_output_data.thr_duty;
 
 	uint8_t buffer[MAX_PACKET_LEN];
 	uint16_t size = aplink_hitl_commands_pack(hitl_commands, buffer);
-
 	_hal->usb_transmit(buffer, size);
 }
 
-void USBComm::transmit_debug()
+void USBComm::transmit_vehicle_status()
 {
-	// Send comma separated values to web serial plotter for debug
-	double gnss_north_meters, gnss_east_meters;
-	lat_lon_to_meters(_local_pos.ref_lat, _local_pos.ref_lon,
-					  _gnss_data.lat, _gnss_data.lon, &gnss_north_meters, &gnss_east_meters);
+	aplink_vehicle_status_full vehicle_status_full{};
+	vehicle_status_full.roll = (int16_t)(_ahrs_data.roll * 100);
+	vehicle_status_full.pitch = (int16_t)(_ahrs_data.pitch * 100);
+	vehicle_status_full.yaw = (int16_t)(_ahrs_data.yaw * 100);
+	vehicle_status_full.alt = 1;
+	vehicle_status_full.spd = 2;
+	vehicle_status_full.mode_id = get_mode_id();
 
-	char tx_buff[200];
-	sprintf(tx_buff, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
-			_local_pos.vx, _local_pos.vy, _local_pos.vz,
-			_local_pos.x, _local_pos.y, _local_pos.z);
+	uint8_t packet[MAX_PACKET_LEN];
+	uint16_t len = aplink_vehicle_status_full_pack(vehicle_status_full, packet);
+	_hal->usb_transmit(packet, len);
+}
 
-	_hal->usb_transmit((uint8_t*)tx_buff, strlen(tx_buff));
+uint8_t USBComm::get_mode_id()
+{
+	// Handle system modes first
+	switch (_modes_data.system_mode)
+	{
+	case System_mode::LOAD_PARAMS:
+		return APLINK_MODE_ID::APLINK_MODE_ID_CONFIG;
+	case System_mode::STARTUP:
+		return APLINK_MODE_ID::APLINK_MODE_ID_STARTUP;
+	case System_mode::FLIGHT:
+		break;
+	default:
+		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
+	}
+
+	// Handle flight modes
+	switch (_modes_data.flight_mode)
+	{
+	case Flight_mode::MANUAL:
+		// Handle manual sub-modes
+		switch (_modes_data.manual_mode)
+		{
+		case Manual_mode::DIRECT:
+			return APLINK_MODE_ID::APLINK_MODE_ID_MANUAL;
+		case Manual_mode::STABILIZED:
+			return APLINK_MODE_ID::APLINK_MODE_ID_FBW;
+		default:
+			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
+		}
+	case Flight_mode::AUTO:
+		// Handle auto sub-modes
+		switch (_modes_data.auto_mode)
+		{
+		case Auto_mode::TAKEOFF:
+			return APLINK_MODE_ID::APLINK_MODE_ID_TAKEOFF;
+		case Auto_mode::MISSION:
+			return APLINK_MODE_ID::APLINK_MODE_ID_MISSION;
+//		case Auto_mode::LAND:
+//			return APLINK_MODE_ID::APLINK_MODE_ID_LAND;
+//		case Auto_mode::FLARE:
+//			return APLINK_MODE_ID::APLINK_MODE_ID_FLARE;
+		default:
+			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
+		}
+	default:
+		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
+	}
 }

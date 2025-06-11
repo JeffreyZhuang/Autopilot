@@ -17,6 +17,8 @@ constexpr uint8_t MAN_CH = 4;
 constexpr uint8_t MOD_CH = 5;
 constexpr uint8_t NUM_CH = 6;
 
+constexpr uint16_t TX_CONN_THRESHOLD = 500; // Transmitter channels must be above this PWM value
+
 class RCHandler : public Module
 {
 public:
@@ -31,6 +33,12 @@ private:
 
 	Modes_data _modes_data;
 	RC_data _rc_data;
+
+	// Parameters
+	int32_t _min_duty;
+	int32_t _max_duty;
+
+	void parameters_update();
 };
 
 #endif /* MODULES_RC_HANDLER_RC_HANDLER_H_ */

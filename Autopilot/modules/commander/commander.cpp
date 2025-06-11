@@ -67,7 +67,8 @@ void Commander::update_startup()
 							!_rc_data.mod_sw;
 
 	if (_ahrs_data.converged && _local_pos.converged &&
-		_rc_data.tx_conn && transmitter_safe)
+		_rc_data.tx_conn && transmitter_safe &&
+		mission_get().mission_type != MISSION_EMPTY)
 	{
 		_modes_data.system_mode = System_mode::FLIGHT;
 	}
