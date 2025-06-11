@@ -18,13 +18,6 @@ enum APLINK_PARAM_TYPE
 
 };
 
-enum APLINK_COMMAND_ID
-{
-
-    APLINK_COMMAND_ID_CALIBRATE,
-
-};
-
 enum APLINK_MODE_ID
 {
 
@@ -710,28 +703,28 @@ inline bool aplink_param_set_unpack(aplink_msg_t* msg, aplink_param_set_t* outpu
     return false;
 }
   
-#define COMMAND_MSG_ID 16
+#define REQUEST_CAL_SENSORS_MSG_ID 16
 
 #pragma pack(push, 1)
-typedef struct aplink_command
+typedef struct aplink_request_cal_sensors
 {
     
     
-    uint8_t command_id;
+    uint8_t placeholder;
     
     
-} aplink_command_t;
+} aplink_request_cal_sensors_t;
 #pragma pack(pop)
                                    
-inline uint16_t aplink_command_pack(aplink_command_t data, uint8_t packet[]) {
+inline uint16_t aplink_request_cal_sensors_pack(aplink_request_cal_sensors_t data, uint8_t packet[]) {
     uint8_t buffer[sizeof(data)];
     memcpy(buffer, &data, sizeof(data));
-    return aplink_pack(packet, buffer, sizeof(buffer), COMMAND_MSG_ID);
+    return aplink_pack(packet, buffer, sizeof(buffer), REQUEST_CAL_SENSORS_MSG_ID);
 }
 
-inline bool aplink_command_unpack(aplink_msg_t* msg, aplink_command_t* output) {
-    if (msg->payload_len == sizeof(aplink_command_t)) {
-        memcpy(output, msg->payload, sizeof(aplink_command_t));
+inline bool aplink_request_cal_sensors_unpack(aplink_msg_t* msg, aplink_request_cal_sensors_t* output) {
+    if (msg->payload_len == sizeof(aplink_request_cal_sensors_t)) {
+        memcpy(output, msg->payload, sizeof(aplink_request_cal_sensors_t));
         return true;
     }
     return false;

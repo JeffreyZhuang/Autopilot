@@ -13,7 +13,9 @@ Telem::Telem(HAL* hal, DataBus* data_bus)
 	  _power_sub(data_bus->power_node),
 	  _ctrl_cmd_sub(data_bus->ctrl_cmd_node),
 	  _baro_sub(data_bus->baro_node),
-	  _imu_sub(data_bus->imu_node)
+	  _imu_sub(data_bus->imu_node),
+	  _uncal_imu_sub(data_bus->uncalibrated_imu_node),
+	  _uncal_mag_sub(data_bus->uncalibrated_mag_node)
 {
 	telem_msg.start_reading = false;
 	telem_msg.packet_idx = 0;
@@ -25,14 +27,7 @@ void Telem::update()
 	_ahrs_data = _ahrs_sub.get();
 	_gnss_data = _gnss_sub.get();
 
-	if (_modes_data.system_mode == System_mode::CALIBRATION)
-	{
-		send_calibration();
-	}
-	else
-	{
-		send_telemetry();
-	}
+	send_telemetry();
 
 	if (read_telem(&telem_msg))
 	{
@@ -52,6 +47,10 @@ void Telem::update()
 		else if (telem_msg.msg_id == SET_ALTITUDE_MSG_ID)
 		{
 			update_set_altitude();
+		}
+		else if (telem_msg.msg_id == REQUEST_CAL_SENSORS_MSG_ID)
+		{
+			send_calibration();
 		}
 	}
 }
@@ -110,25 +109,23 @@ void Telem::send_telemetry()
 
 void Telem::send_calibration()
 {
-	float current_time_s =_hal->get_time_us() * US_TO_S;
+	uncalibrated_imu_s imu = _uncal_imu_sub.get();
+	uncalibrated_mag_s mag = _uncal_mag_sub.get();
 
-	if (current_time_s - last_cal_sensors_transmit_s >= CAL_SENSORS_DT)
-	{
-		last_cal_sensors_transmit_s = current_time_s;
+	aplink_cal_sensors cal_sensors;
+	cal_sensors.ax = imu.ax;
+	cal_sensors.ay = imu.ay;
+	cal_sensors.az = imu.az;
+	cal_sensors.gx = imu.gx;
+	cal_sensors.gy = imu.gy;
+	cal_sensors.gz = imu.gz;
+	cal_sensors.mx = mag.mx;
+	cal_sensors.my = mag.my;
+	cal_sensors.mz = mag.mz;
 
-		aplink_cal_sensors cal_sensors;
-		cal_sensors.ax = _imu_data.ax;
-		cal_sensors.ay = _imu_data.ay;
-		cal_sensors.az = _imu_data.az;
-		cal_sensors.gx = _imu_data.gx;
-		cal_sensors.gy = _imu_data.gy;
-		cal_sensors.gz = _imu_data.gz;
-
-		uint8_t packet[MAX_PACKET_LEN];
-		uint16_t len = aplink_cal_sensors_pack(cal_sensors, packet);
-
-		_hal->transmit_telem(packet, len);
-	}
+	uint8_t packet[MAX_PACKET_LEN];
+	uint16_t len = aplink_cal_sensors_pack(cal_sensors, packet);
+	_hal->transmit_telem(packet, len);
 }
 
 void Telem::update_param_set()

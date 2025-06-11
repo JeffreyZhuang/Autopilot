@@ -9,7 +9,9 @@ Sensors::Sensors(HAL* hal, DataBus* data_bus)
 	  _baro_pub(data_bus->baro_node),
 	  _of_pub(data_bus->of_node),
 	  _gnss_pub(data_bus->gnss_node),
-	  _power_pub(data_bus->power_node)
+	  _power_pub(data_bus->power_node),
+	  _unc_imu_pub(data_bus->uncalibrated_imu_node),
+	  _unc_mag_pub(data_bus->uncalibrated_mag_node)
 {
 }
 
@@ -57,9 +59,6 @@ void Sensors::update()
 			update_flight();
 		}
 		break;
-	case System_mode::CALIBRATION:
-		update_calibration();
-		break;
 	}
 }
 
@@ -83,6 +82,8 @@ void Sensors::update_flight()
 
 	if (_hal->read_imu(&ax, &ay, &az, &gx, &gy, &gz))
 	{
+		_unc_imu_pub.publish(uncalibrated_imu_s{gx, gy, gz, ax, ay, az, _hal->get_time_us()});
+
 		// Apply IMU calibration
 		gx -= -_gyr_off_x;
 		gy -= _gyr_off_y;
@@ -105,6 +106,8 @@ void Sensors::update_flight()
 
 	if (_hal->read_mag(&mx, &my, &mz))
 	{
+		_unc_mag_pub.publish(uncalibrated_mag_s{mx, my, mz, _hal->get_time_us()});
+
 		// Apply hard-iron offsets
 		mx -= _hi_x;
 		my -= _hi_y;
@@ -152,31 +155,5 @@ void Sensors::update_hitl()
 			.lon = (double)_hitl_sensors.gps_lon / 1E7,
 			.timestamp = _hal->get_time_us()
 		});
-	}
-}
-
-
-// Send raw sensor data without calibration
-void Sensors::update_calibration()
-{
-	float ax, ay, az, gx, gy, gz;
-
-	if (_hal->read_imu(&ax, &ay, &az, &gx, &gy, &gz))
-	{
-		_imu_pub.publish(IMU_data{gx, gy, gz, ax, ay, az, _hal->get_time_us()});
-	}
-
-	float baro_alt;
-
-	if (_hal->read_baro(&baro_alt))
-	{
-		_baro_pub.publish(Baro_data{baro_alt, _hal->get_time_us()});
-	}
-
-	float mx, my, mz;
-
-	if (_hal->read_mag(&mx, &my, &mz))
-	{
-		_mag_pub.publish(Mag_data{mx, my, mz, _hal->get_time_us()});
 	}
 }

@@ -13,8 +13,18 @@ PositionEstimator::PositionEstimator(HAL* hal, DataBus* data_bus)
 {
 }
 
+void PositionEstimator::parameters_update()
+{
+	param_get(EKF_GNSS_VAR, &_gnss_variance);
+	param_get(EKF_BARO_VAR, &_baro_variance);
+	param_get(EKF_OF_MIN, &_of_min);
+	param_get(EKF_OF_MAX, &_of_max);
+}
+
 void PositionEstimator::update()
 {
+	parameters_update();
+
 	const uint64_t time = _hal->get_time_us();
 	_dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
 	_last_time = time;
@@ -113,14 +123,12 @@ void PositionEstimator::predict_accel()
 	acc_ned(2) += G;
 
 	kalman.predict(acc_ned, get_a(_dt), get_b(_dt), get_q());
+
 	update_plane();
 }
 
 void PositionEstimator::update_gps()
 {
-	float gnss_variance;
-	param_get(EKF_GNSS_VAR, &gnss_variance);
-
 	// Convert lat/lon to meters
 	double gnss_north_meters, gnss_east_meters;
 	lat_lon_to_meters(_local_pos.ref_lat, _local_pos.ref_lon,
@@ -134,24 +142,22 @@ void PositionEstimator::update_gps()
 	H << 1, 0, 0, 0, 0, 0,
 		 0, 1, 0, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 2> R(gnss_variance, gnss_variance);
+	Eigen::DiagonalMatrix<float, 2> R(_gnss_variance, _gnss_variance);
 
 	kalman.update(R, H, y);
+
 	update_plane();
 }
 
 void PositionEstimator::update_baro()
 {
-	float baro_variance;
-	param_get(EKF_BARO_VAR, &baro_variance);
-
 	Eigen::VectorXf y(1);
 	y << -(_baro_data.alt - _local_pos.ref_alt);
 
 	Eigen::MatrixXf H(1, n);
 	H << 0, 0, 1, 0, 0, 0;
 
-	Eigen::DiagonalMatrix<float, 1> R(baro_variance);
+	Eigen::DiagonalMatrix<float, 1> R(_baro_variance);
 
 	kalman.update(R, H, y);
 
@@ -207,12 +213,8 @@ Eigen::Vector3f PositionEstimator::inertial_to_ned(const Eigen::Vector3f& imu_me
 
 bool PositionEstimator::is_of_reliable()
 {
-	int32_t of_min, of_max;
-	param_get(EKF_OF_MIN, &of_min);
-	param_get(EKF_OF_MAX, &of_max);
-
 	float flow = sqrtf(powf(_of_data.x, 2) + powf(_of_data.y, 2));
-	return flow > of_min && flow < of_max;
+	return flow > _of_min && flow < _of_max;
 }
 
 Eigen::MatrixXf PositionEstimator::get_a(float dt)

@@ -15,8 +15,20 @@ AHRS::AHRS(HAL* hal, DataBus* data_bus)
 {
 }
 
+void AHRS::parameters_update()
+{
+	param_get(AHRS_MAG_DECL, &_mag_decl);
+	param_get(AHRS_BETA_GAIN, &_ahrs_beta_gain);
+	param_get(AHRS_ACC_MAX, &_ahrs_acc_max);
+
+	filter.set_dt(_dt);
+	filter.set_beta(_ahrs_beta_gain);
+}
+
 void AHRS::update()
 {
+	parameters_update();
+
 	const uint64_t time = _hal->get_time_us();
 	_dt = clamp((time - _last_time) * US_TO_S, DT_MIN, DT_MAX);
 	_last_time = time;
@@ -25,8 +37,6 @@ void AHRS::update()
 
 	if (_modes_data.system_mode != System_mode::LOAD_PARAMS)
 	{
-		update_parameters();
-
 		if (!_ahrs_data.converged)
 		{
 			update_initialization();
@@ -36,16 +46,6 @@ void AHRS::update()
 			update_running();
 		}
 	}
-}
-
-void AHRS::update_parameters()
-{
-	float beta;
-
-	param_get(AHRS_BETA_GAIN, &beta);
-
-	filter.set_dt(_dt);
-	filter.set_beta(beta);
 }
 
 void AHRS::update_initialization()
@@ -118,15 +118,11 @@ void AHRS::update_gyro()
 
 void AHRS::publish_ahrs()
 {
-	float mag_decl;
-
-	param_get(AHRS_MAG_DECL, &mag_decl);
-
 	_ahrs_data.roll = filter.getRoll();
 	_ahrs_data.pitch = filter.getPitch();
 
 	// Add magnetic declination and normalize to [-180, 180]
-	_ahrs_data.yaw = fmod(filter.getYaw() + mag_decl + 180.0f, 360.0f) - 180.0f;
+	_ahrs_data.yaw = fmod(filter.getYaw() + _mag_decl + 180.0f, 360.0f) - 180.0f;
 
 	_ahrs_data.timestamp = _hal->get_time_us();
 
@@ -185,13 +181,10 @@ void AHRS::set_initial_angles()
 
 bool AHRS::is_accel_reliable()
 {
-	float acc_max;
-	param_get(AHRS_ACC_MAX, &acc_max);
-
 	float accel_magnitude = sqrtf(powf(_imu_data.ax, 2) +
 								  powf(_imu_data.ay, 2) +
 								  powf(_imu_data.az, 2));
 
 	// Assuming 1g reference
-	return fabs(accel_magnitude - 1.0f) < acc_max;
+	return fabs(accel_magnitude - 1.0f) < _ahrs_acc_max;
 }

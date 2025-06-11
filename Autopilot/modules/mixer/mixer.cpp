@@ -39,8 +39,6 @@ void Mixer::update()
 	case System_mode::FLIGHT:
 		update_flight();
 		break;
-	case System_mode::CALIBRATION:
-		break;
 	}
 }
 

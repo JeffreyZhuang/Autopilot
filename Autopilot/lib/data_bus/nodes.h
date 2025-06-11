@@ -11,6 +11,25 @@
 #include "modes.h"
 #include <stdint.h>
 
+struct uncalibrated_imu_s
+{
+	float gx = 0;
+	float gy = 0;
+	float gz = 0;
+	float ax = 0;
+	float ay = 0;
+	float az = 0;
+	uint64_t timestamp = 0;
+};
+
+struct uncalibrated_mag_s
+{
+	float mx = 0;
+	float my = 0;
+	float mz = 0;
+	uint64_t timestamp = 0;
+};
+
 struct IMU_data
 {
 	float gx = 0;

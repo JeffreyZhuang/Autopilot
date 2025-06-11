@@ -12,10 +12,6 @@
 #include <stdio.h>
 #include <math.h>
 
-/**
- * @brief Attitude Heading Reference System
- *
- */
 class AHRS : public Module
 {
 public:
@@ -54,6 +50,13 @@ private:
 	Modes_data _modes_data{};
 	AHRS_data _ahrs_data;
 
+	// Parameters
+	float _mag_decl;
+	float _ahrs_beta_gain;
+	float _ahrs_acc_max;
+
+	void parameters_update();
+
 	void update_initialization();
 	void update_running();
 	void update_gyro();
@@ -62,7 +65,6 @@ private:
 	void set_initial_angles();
 	void publish_ahrs();
 	bool is_accel_reliable();
-	void update_parameters();
 };
 
 #endif

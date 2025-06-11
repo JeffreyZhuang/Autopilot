@@ -5,8 +5,7 @@ enum class System_mode
 {
 	LOAD_PARAMS,
 	STARTUP,
-	FLIGHT,
-	CALIBRATION
+	FLIGHT
 };
 
 enum class Flight_mode

@@ -22,6 +22,8 @@ private:
 	Publisher<OF_data> _of_pub;
 	Publisher<GNSS_data> _gnss_pub;
 	Publisher<Power_data> _power_pub;
+	Publisher<uncalibrated_imu_s> _unc_imu_pub;
+	Publisher<uncalibrated_mag_s> _unc_mag_pub;
 
 	Modes_data _modes_data;
 	hitl_sensors_s _hitl_sensors;

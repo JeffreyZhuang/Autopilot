@@ -29,6 +29,8 @@ struct DataBus
    	Node<hitl_sensors_s> hitl_sensors_node;
    	Node<HITL_output_data> hitl_output_node;
    	Node<position_control_s> position_control_node;
+   	Node<uncalibrated_imu_s> uncalibrated_imu_node;
+   	Node<uncalibrated_mag_s> uncalibrated_mag_node;
 };
 
 #endif /* LIB_DATA_BUS_DATA_BUS_H_ */

@@ -45,6 +45,14 @@ private:
     AHRS_data _ahrs_data{};
     IMU_data _imu_data{};
 
+    // Parameters
+    float _gnss_variance;
+    float _baro_variance;
+    int32_t _of_min;
+    int32_t _of_max;
+
+    void parameters_update();
+
     void update_initialization();
     void update_running();
 

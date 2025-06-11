@@ -21,7 +21,6 @@ extern "C"
 static constexpr float VEHICLE_STATUS_FULL_DT = 0.03;
 static constexpr float GPS_RAW_DT = 0.5;
 static constexpr float POWER_DT = 1;
-static constexpr float CAL_SENSORS_DT = 0.1;
 
 class Telem : public Module
 {
@@ -41,6 +40,8 @@ private:
 	Subscriber<Ctrl_cmd_data> _ctrl_cmd_sub;
 	Subscriber<Baro_data> _baro_sub;
 	Subscriber<IMU_data> _imu_sub;
+	Subscriber<uncalibrated_imu_s> _uncal_imu_sub;
+	Subscriber<uncalibrated_mag_s> _uncal_mag_sub;
 
 	Ctrl_cmd_data _ctrl_cmd_data;
 	AHRS_data _ahrs_data;
@@ -56,7 +57,6 @@ private:
 
 	float last_vehicle_status_full_transmit_s = 0;
 	float last_gps_raw_transmit_s = 0;
-	float last_cal_sensors_transmit_s = 0;
 	float last_power_transmit_s = 0;
 
 	mission_data_t _mission_data;

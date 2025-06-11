@@ -45,8 +45,6 @@ void Commander::update()
 	case System_mode::FLIGHT:
 		handle_flight_mode();
 		break;
-	case System_mode::CALIBRATION:
-		break;
 	}
 
 	_modes_pub.publish(_modes_data);
