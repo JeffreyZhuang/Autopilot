@@ -74,8 +74,6 @@ private:
 	void transmit_usb();
 	void transmit_packet(uint8_t packet[], uint16_t size);
 	bool parse_packet();
-
-	uint8_t get_mode_id();
 };
 
 #endif /* TELEM_H_ */

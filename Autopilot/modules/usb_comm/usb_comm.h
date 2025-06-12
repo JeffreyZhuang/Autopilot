@@ -48,7 +48,6 @@ private:
 	bool read_usb();
 	void read_hitl();
 	void transmit();
-	uint8_t get_mode_id();
 };
 
 #endif /* MODULES_USB_COMM_USB_COMM_H_ */

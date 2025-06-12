@@ -69,7 +69,12 @@ void Telem::send_telemetry()
 		vehicle_status_full.yaw = (int16_t)(_ahrs_data.yaw * 100);
 		vehicle_status_full.alt = 1;
 		vehicle_status_full.spd = 2;
-		vehicle_status_full.mode_id = get_mode_id();
+		vehicle_status_full.mode_id = get_mode_id(
+			_modes_data.system_mode,
+			_modes_data.flight_mode,
+			_modes_data.auto_mode,
+			_modes_data.manual_mode
+		);
 
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_vehicle_status_full_pack(vehicle_status_full, packet);
@@ -233,7 +238,7 @@ void Telem::update_waypoint()
 	};
 
 	// Check if all waypoints have been loaded
-	if (_last_waypoint_loaded == _mission_data.num_items - 1)
+	if (_last_waypoint_loaded == _mission_data.num_items)
 	{
 		// Update mission if waypoints finished loading
 		mission_set(_mission_data);
@@ -250,7 +255,7 @@ void Telem::update_waypoint()
 	{
 		// Request next waypoint if waypoints not finished loading
 		aplink_request_waypoint req_waypoint;
-		req_waypoint.index = _last_waypoint_loaded++;
+		req_waypoint.index = _last_waypoint_loaded;
 
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
@@ -288,53 +293,4 @@ bool Telem::read_telem(aplink_msg* msg)
 	}
 
 	return false;
-}
-
-uint8_t Telem::get_mode_id()
-{
-	// Handle system modes first
-	switch (_modes_data.system_mode)
-	{
-	case System_mode::LOAD_PARAMS:
-		return APLINK_MODE_ID::APLINK_MODE_ID_CONFIG;
-	case System_mode::STARTUP:
-		return APLINK_MODE_ID::APLINK_MODE_ID_STARTUP;
-	case System_mode::FLIGHT:
-		break;
-	default:
-		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
-	}
-
-	// Handle flight modes
-	switch (_modes_data.flight_mode)
-	{
-	case Flight_mode::MANUAL:
-		// Handle manual sub-modes
-		switch (_modes_data.manual_mode)
-		{
-		case Manual_mode::DIRECT:
-			return APLINK_MODE_ID::APLINK_MODE_ID_MANUAL;
-		case Manual_mode::STABILIZED:
-			return APLINK_MODE_ID::APLINK_MODE_ID_FBW;
-		default:
-			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
-		}
-	case Flight_mode::AUTO:
-		// Handle auto sub-modes
-		switch (_modes_data.auto_mode)
-		{
-		case Auto_mode::TAKEOFF:
-			return APLINK_MODE_ID::APLINK_MODE_ID_TAKEOFF;
-		case Auto_mode::MISSION:
-			return APLINK_MODE_ID::APLINK_MODE_ID_MISSION;
-//		case Auto_mode::LAND:
-//			return APLINK_MODE_ID::APLINK_MODE_ID_LAND;
-//		case Auto_mode::FLARE:
-//			return APLINK_MODE_ID::APLINK_MODE_ID_FLARE;
-		default:
-			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
-		}
-	default:
-		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
-	}
 }

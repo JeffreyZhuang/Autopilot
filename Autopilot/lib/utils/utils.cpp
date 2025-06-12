@@ -91,3 +91,49 @@ float distance(float n1, float e1, float n2, float e2)
 	const float de = e2 - e1;
 	return sqrtf(dn * dn + de * de);
 }
+
+uint8_t get_mode_id(System_mode system_mode, Flight_mode flight_mode,
+					Auto_mode auto_mode, Manual_mode manual_mode)
+{
+	switch (system_mode)
+	{
+	case System_mode::LOAD_PARAMS:
+		return APLINK_MODE_ID::APLINK_MODE_ID_CONFIG;
+	case System_mode::STARTUP:
+		return APLINK_MODE_ID::APLINK_MODE_ID_STARTUP;
+	case System_mode::FLIGHT:
+		break;
+	default:
+		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
+	}
+
+	switch (flight_mode)
+	{
+	case Flight_mode::MANUAL:
+		switch (manual_mode)
+		{
+		case Manual_mode::DIRECT:
+			return APLINK_MODE_ID::APLINK_MODE_ID_MANUAL;
+		case Manual_mode::STABILIZED:
+			return APLINK_MODE_ID::APLINK_MODE_ID_FBW;
+		default:
+			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
+		}
+	case Flight_mode::AUTO:
+		switch (auto_mode)
+		{
+		case Auto_mode::TAKEOFF:
+			return APLINK_MODE_ID::APLINK_MODE_ID_TAKEOFF;
+		case Auto_mode::MISSION:
+			return APLINK_MODE_ID::APLINK_MODE_ID_MISSION;
+//		case Auto_mode::LAND:
+//			return APLINK_MODE_ID::APLINK_MODE_ID_LAND;
+//		case Auto_mode::FLARE:
+//			return APLINK_MODE_ID::APLINK_MODE_ID_FLARE;
+		default:
+			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
+		}
+	default:
+		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
+	}
+}

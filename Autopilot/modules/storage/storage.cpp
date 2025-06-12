@@ -48,11 +48,15 @@ void Storage::update()
 
 void Storage::write()
 {
+	// Make dedicated APLink message so its easier...
+	// Also so you can add time
+
 	aplink_gps_raw gps_raw;
 	gps_raw.lat = _gnss_data.lat;
 	gps_raw.lon = _gnss_data.lon;
 	gps_raw.sats = _gnss_data.sats;
 	gps_raw.fix = _gnss_data.fix;
+
 	uint8_t gps_raw_buff[MAX_PACKET_LEN];
 	uint16_t gps_raw_len = aplink_gps_raw_pack(gps_raw, gps_raw_buff);
 	for (int i = 0; i < gps_raw_len; i++)
@@ -64,6 +68,13 @@ void Storage::write()
 	vehicle_status_full.roll = _ahrs_data.roll;
 	vehicle_status_full.pitch = _ahrs_data.pitch;
 	vehicle_status_full.yaw = _ahrs_data.yaw;
+	vehicle_status_full.mode_id = get_mode_id(
+		_modes_data.system_mode,
+		_modes_data.flight_mode,
+		_modes_data.auto_mode,
+		_modes_data.manual_mode
+	);
+
 	uint8_t vehicle_status_full_buff[MAX_PACKET_LEN];
 	uint16_t vehicle_status_full_len = aplink_vehicle_status_full_pack(vehicle_status_full, vehicle_status_full_buff);
 	for (int i = 0; i < vehicle_status_full_len; i++)

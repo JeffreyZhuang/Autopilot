@@ -82,7 +82,12 @@ void USBComm::transmit()
 	vehicle_status_full.yaw = (int16_t)(_ahrs_data.yaw * 100);
 	vehicle_status_full.alt = 1;
 	vehicle_status_full.spd = 2;
-	vehicle_status_full.mode_id = get_mode_id();
+	vehicle_status_full.mode_id = get_mode_id(
+		_modes_data.system_mode,
+		_modes_data.flight_mode,
+		_modes_data.auto_mode,
+		_modes_data.manual_mode
+	);
 
 	uint8_t buffer[MAX_PACKET_LEN * 2];
 	uint16_t offset = 0;
@@ -90,55 +95,6 @@ void USBComm::transmit()
 	offset += aplink_hitl_commands_pack(hitl_commands, buffer + offset);
 	offset += aplink_vehicle_status_full_pack(vehicle_status_full, buffer + offset);
 
-	// You must transmit together in one USB call!
+	// You must transmit together in a single USB call!
 	_hal->usb_transmit(buffer, offset);
-}
-
-uint8_t USBComm::get_mode_id()
-{
-	// Handle system modes first
-	switch (_modes_data.system_mode)
-	{
-	case System_mode::LOAD_PARAMS:
-		return APLINK_MODE_ID::APLINK_MODE_ID_CONFIG;
-	case System_mode::STARTUP:
-		return APLINK_MODE_ID::APLINK_MODE_ID_STARTUP;
-	case System_mode::FLIGHT:
-		break;
-	default:
-		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
-	}
-
-	// Handle flight modes
-	switch (_modes_data.flight_mode)
-	{
-	case Flight_mode::MANUAL:
-		// Handle manual sub-modes
-		switch (_modes_data.manual_mode)
-		{
-		case Manual_mode::DIRECT:
-			return APLINK_MODE_ID::APLINK_MODE_ID_MANUAL;
-		case Manual_mode::STABILIZED:
-			return APLINK_MODE_ID::APLINK_MODE_ID_FBW;
-		default:
-			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
-		}
-	case Flight_mode::AUTO:
-		// Handle auto sub-modes
-		switch (_modes_data.auto_mode)
-		{
-		case Auto_mode::TAKEOFF:
-			return APLINK_MODE_ID::APLINK_MODE_ID_TAKEOFF;
-		case Auto_mode::MISSION:
-			return APLINK_MODE_ID::APLINK_MODE_ID_MISSION;
-//		case Auto_mode::LAND:
-//			return APLINK_MODE_ID::APLINK_MODE_ID_LAND;
-//		case Auto_mode::FLARE:
-//			return APLINK_MODE_ID::APLINK_MODE_ID_FLARE;
-		default:
-			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
-		}
-	default:
-		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
-	}
 }
