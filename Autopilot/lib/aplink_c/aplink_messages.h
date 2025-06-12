@@ -730,5 +730,56 @@ inline bool aplink_request_cal_sensors_unpack(aplink_msg_t* msg, aplink_request_
     return false;
 }
 
+#define FLIGHT_LOG_MSG_ID 17
+
+#pragma pack(push, 1)
+typedef struct aplink_flight_log
+{
+
+
+    uint64_t time_us;
+
+
+
+    float roll;
+
+
+
+    float pitch;
+
+
+
+    float yaw;
+
+
+
+    float lat;
+
+
+
+    float lon;
+
+
+
+    uint8_t system_mode;
+
+
+} aplink_flight_log_t;
+#pragma pack(pop)
+
+inline uint16_t aplink_flight_log_pack(aplink_flight_log_t data, uint8_t packet[]) {
+    uint8_t buffer[sizeof(data)];
+    memcpy(buffer, &data, sizeof(data));
+    return aplink_pack(packet, buffer, sizeof(buffer), FLIGHT_LOG_MSG_ID);
+}
                     
+inline bool aplink_flight_log_unpack(aplink_msg_t* msg, aplink_flight_log_t* output) {
+    if (msg->payload_len == sizeof(aplink_flight_log_t)) {
+        memcpy(output, msg->payload, sizeof(aplink_flight_log_t));
+        return true;
+    }
+    return false;
+}
+
+
 #endif /* APLINK_MESSAGES_H_ */

@@ -21,9 +21,12 @@ private:
 
 	local_position_s _local_pos;
 	uint8_t _curr_wp_idx = 1;
-
 	uint8_t _last_mission_version = 0;
 
+	// Parameters
+	float _acc_rad;
+
+	void parameters_update();
 	void update_waypoint();
 	void update_loiter_land();
 };

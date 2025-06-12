@@ -16,8 +16,15 @@ Navigator::Navigator(HAL* hal, DataBus* data_bus)
 {
 }
 
+void Navigator::parameters_update()
+{
+	param_get(NAV_ACC_RAD, &_acc_rad);
+}
+
 void Navigator::update()
 {
+	parameters_update();
+
 	_local_pos = _local_pos_sub.get();
 
 	// Reset waypoint index if there is a new mission
@@ -64,10 +71,6 @@ void Navigator::update_loiter_land()
 
 void Navigator::update_waypoint()
 {
-	float acc_rad;
-
-	param_get(NAV_ACC_RAD, &acc_rad);
-
 	// Get target waypoint
 	const mission_item_t& target_wp = mission_get().mission_items[_curr_wp_idx];
 
@@ -79,7 +82,7 @@ void Navigator::update_waypoint()
 	float dist_to_wp = distance(_local_pos.x, tgt_north, _local_pos.y, tgt_east);
 
 	// Check distance to waypoint to determine if waypoint reached
-	if ((dist_to_wp < acc_rad) && (_curr_wp_idx < mission_get().num_items - 1))
+	if ((dist_to_wp < _acc_rad) && (_curr_wp_idx < mission_get().num_items - 1))
 	{
 		_curr_wp_idx++; // Move to next waypoint
 
