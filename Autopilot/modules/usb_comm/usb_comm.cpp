@@ -33,8 +33,7 @@ void USBComm::update()
 	}
 
 	// Transmit status for debug purposes
-	transmit_vehicle_status();
-	transmit_hitl();
+	transmit();
 }
 
 bool USBComm::read_usb()
@@ -70,20 +69,13 @@ void USBComm::read_hitl()
 	_hitl_sensors_pub.publish(hitl_data);
 }
 
-void USBComm::transmit_hitl()
+void USBComm::transmit()
 {
 	aplink_hitl_commands hitl_commands;
 	hitl_commands.ele_pwm = _hitl_output_data.ele_duty;
 	hitl_commands.rud_pwm = _hitl_output_data.rud_duty;
 	hitl_commands.thr_pwm = _hitl_output_data.thr_duty;
 
-	uint8_t buffer[MAX_PACKET_LEN];
-	uint16_t size = aplink_hitl_commands_pack(hitl_commands, buffer);
-	_hal->usb_transmit(buffer, size);
-}
-
-void USBComm::transmit_vehicle_status()
-{
 	aplink_vehicle_status_full vehicle_status_full{};
 	vehicle_status_full.roll = (int16_t)(_ahrs_data.roll * 100);
 	vehicle_status_full.pitch = (int16_t)(_ahrs_data.pitch * 100);
@@ -92,9 +84,14 @@ void USBComm::transmit_vehicle_status()
 	vehicle_status_full.spd = 2;
 	vehicle_status_full.mode_id = get_mode_id();
 
-	uint8_t packet[MAX_PACKET_LEN];
-	uint16_t len = aplink_vehicle_status_full_pack(vehicle_status_full, packet);
-	_hal->usb_transmit(packet, len);
+	uint8_t buffer[MAX_PACKET_LEN * 2];
+	uint16_t offset = 0;
+
+	offset += aplink_hitl_commands_pack(hitl_commands, buffer + offset);
+	offset += aplink_vehicle_status_full_pack(vehicle_status_full, buffer + offset);
+
+	// You must transmit together in one USB call!
+	_hal->usb_transmit(buffer, offset);
 }
 
 uint8_t USBComm::get_mode_id()

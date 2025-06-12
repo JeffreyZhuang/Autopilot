@@ -11,6 +11,17 @@ USB_stream::USB_stream()
 
 void USB_stream::transmit(uint8_t tx_buff[], int len)
 {
+	// NOTE: You must buffer and send everything in one transmit
+	// If you call transmit right after another transmit,
+	// the USB will be busy waiting for the first transmit
+	// to complete and the second transmit will not be executed
+
+	// Better way is to add to ring buffer
+	// On transmit completion interrupt, empty the
+	// rest of the buffer if its not empty yet
+
+	// A while loop that blocks until USB is ready doesn't work
+	// because if USB is not connected it will block forever
 	CDC_Transmit_FS(tx_buff, len);
 }
 

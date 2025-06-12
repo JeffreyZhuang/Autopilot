@@ -55,7 +55,6 @@ private:
 	void update_load_params();
 	void update_flight();
 	void update_hitl();
-	void update_calibration();
 };
 
 #endif /* MODULES_SENSORS_SENSORS_H_ */

@@ -250,7 +250,7 @@ void Telem::update_waypoint()
 	{
 		// Request next waypoint if waypoints not finished loading
 		aplink_request_waypoint req_waypoint;
-		req_waypoint.index = ++_last_waypoint_loaded;
+		req_waypoint.index = _last_waypoint_loaded++;
 
 		uint8_t packet[MAX_PACKET_LEN];
 		uint16_t len = aplink_request_waypoint_pack(req_waypoint, packet);
