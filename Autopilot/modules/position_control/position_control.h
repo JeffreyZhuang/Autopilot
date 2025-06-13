@@ -73,6 +73,7 @@ private:
 	void update_stabilized();
 
 	void handle_auto_mode();
+	void update_detect();
 	void update_takeoff();
 
 	void update_mission();

@@ -81,11 +81,17 @@ void AttitudeControl::update_stabilized()
 
 void AttitudeControl::handle_auto_mode()
 {
+	if (_modes_data.auto_mode == Auto_mode::DETECT)
+	{
+		// Reset integral here
+	}
+
 	control_roll_ptch();
 }
 
 void AttitudeControl::publish_status()
 {
+	_ctrl_cmd_data.timestamp = _hal->get_time_us();
 	_ctrl_cmd_pub.publish(_ctrl_cmd_data);
 }
 

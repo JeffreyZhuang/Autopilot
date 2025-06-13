@@ -8,6 +8,8 @@
 #include "lib/data_bus/data_bus.h"
 #include <stdio.h>
 
+static constexpr float TAKEOFF_DETECT_THR = 0.9;
+
 class Commander : public Module
 {
 public:
@@ -41,6 +43,7 @@ private:
 	void handle_switches();
 	void update_config();
 	void update_startup();
+	void update_detect();
 	void update_takeoff();
 	void update_land();
 };

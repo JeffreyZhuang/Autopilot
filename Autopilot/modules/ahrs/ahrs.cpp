@@ -122,6 +122,7 @@ void AHRS::publish_ahrs()
 	_ahrs_data.pitch = filter.getPitch();
 
 	// Add magnetic declination and normalize to [-180, 180]
+	// TODO: THIS DOES NOT WORK BECAUSE IF MAG IS TURNED OFF... IT WILL SUBTRACT DECL EVEN IF THERES NONE
 	_ahrs_data.yaw = fmod(filter.getYaw() + _mag_decl + 180.0f, 360.0f) - 180.0f;
 
 	_ahrs_data.timestamp = _hal->get_time_us();

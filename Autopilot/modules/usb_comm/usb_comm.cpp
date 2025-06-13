@@ -64,6 +64,14 @@ void USBComm::read_hitl()
 	hitl_data.imu_gx = hitl_sensors.imu_gx;
 	hitl_data.imu_gy = hitl_sensors.imu_gy;
 	hitl_data.imu_gz = hitl_sensors.imu_gz;
+	hitl_data.mag_x = hitl_sensors.mag_x;
+	hitl_data.mag_y = hitl_sensors.mag_y;
+	hitl_data.mag_z = hitl_sensors.mag_z;
+	hitl_data.baro_asl = hitl_sensors.baro_asl;
+	hitl_data.gps_lat = hitl_sensors.gps_lat;
+	hitl_data.gps_lon = hitl_sensors.gps_lon;
+	hitl_data.of_x = hitl_sensors.of_x;
+	hitl_data.of_y = hitl_sensors.of_y;
 	hitl_data.timestamp = _hal->get_time_us();
 
 	_hitl_sensors_pub.publish(hitl_data);

@@ -115,6 +115,9 @@ void PositionControl::handle_auto_mode()
 {
 	switch (_modes_data.auto_mode)
 	{
+	case Auto_mode::DETECT:
+		update_detect();
+		break;
 	case Auto_mode::TAKEOFF:
 		update_takeoff();
 		break;
@@ -124,11 +127,21 @@ void PositionControl::handle_auto_mode()
 	}
 }
 
+
+void PositionControl::update_detect()
+{
+	_position_control.throttle_setpoint = _rc_data.thr_norm;
+}
+
 void PositionControl::update_takeoff()
 {
+	// Speed only
+	_tecs.set_alt_weight(0);
+	_tecs.update(0, _local_pos.gnd_spd, 0, _cruise_speed, _dt);
+
 	_position_control.roll_setpoint = 0;
 	_position_control.pitch_setpoint = _takeoff_pitch;
-	_position_control.throttle_setpoint = _rc_data.thr_norm;
+	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
 
 void PositionControl::update_mission()
@@ -333,6 +346,7 @@ void PositionControl::update_land_flare()
 
 void PositionControl::publish_status()
 {
+	_position_control.timestamp = _hal->get_time_us();
 	_position_control_pub.publish(_position_control);
 }
 

@@ -16,6 +16,11 @@
 // Optical flow
 // Datalogging
 
+// By convention, the transmitter must be setup such that stick forward decreases PWM, and stick back increases PWM
+// The PWM value direction corresponds to pitch direction
+// Positive ele_norm variable means moving the elevator in the direction that causes a pitch up
+// Positive elevator PWM also means moving the elevator in the direction that causes a pitch up
+
 Autopilot* Autopilot::_instance = nullptr;
 
 Autopilot::Autopilot(HAL* hal)

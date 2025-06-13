@@ -39,6 +39,8 @@ void RCHandler::update()
 		// Check if transmitter is connected
 		_rc_data.tx_conn = rc_input[THR_CH] > TX_CONN_THRESHOLD;
 
+		_rc_data.timestamp = _hal->get_time_us();
+
 		_rc_pub.publish(_rc_data);
 	}
 }

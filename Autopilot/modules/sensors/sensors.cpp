@@ -67,7 +67,7 @@ void Sensors::update_load_params()
 	// This function detects if HITL simulator is connected by
 	// checking if HITL data is received
 
-	// HITL simulator MUST to be connected during startup mode to enable HITL
+	// HITL simulator MUST to be connected during load params mode to enable HITL
 	// That prevents the AHRS from initializing before HITL started
 
 	if (_hitl_sensors_sub.check_new())
@@ -145,6 +145,13 @@ void Sensors::update_hitl()
 			.timestamp = _hal->get_time_us()
 		});
 
+		_mag_pub.publish(Mag_data{
+			_hitl_sensors.mag_x,
+			_hitl_sensors.mag_y,
+			_hitl_sensors.mag_z,
+			_hal->get_time_us()
+		});
+
 		_baro_pub.publish(Baro_data{
 			_hitl_sensors.baro_asl,
 			_hal->get_time_us()
@@ -153,6 +160,8 @@ void Sensors::update_hitl()
 		_gnss_pub.publish(GNSS_data{
 			.lat = (double)_hitl_sensors.gps_lat / 1E7,
 			.lon = (double)_hitl_sensors.gps_lon / 1E7,
+			.sats = 10,
+			.fix = true,
 			.timestamp = _hal->get_time_us()
 		});
 	}

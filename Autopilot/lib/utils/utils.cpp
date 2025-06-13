@@ -102,34 +102,28 @@ uint8_t get_mode_id(System_mode system_mode, Flight_mode flight_mode,
 	case System_mode::STARTUP:
 		return APLINK_MODE_ID::APLINK_MODE_ID_STARTUP;
 	case System_mode::FLIGHT:
-		break;
-	default:
-		return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
-	}
-
-	switch (flight_mode)
-	{
-	case Flight_mode::MANUAL:
-		switch (manual_mode)
+		switch (flight_mode)
 		{
-		case Manual_mode::DIRECT:
-			return APLINK_MODE_ID::APLINK_MODE_ID_MANUAL;
-		case Manual_mode::STABILIZED:
-			return APLINK_MODE_ID::APLINK_MODE_ID_FBW;
-		default:
-			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
-		}
-	case Flight_mode::AUTO:
-		switch (auto_mode)
-		{
-		case Auto_mode::TAKEOFF:
-			return APLINK_MODE_ID::APLINK_MODE_ID_TAKEOFF;
-		case Auto_mode::MISSION:
-			return APLINK_MODE_ID::APLINK_MODE_ID_MISSION;
-//		case Auto_mode::LAND:
-//			return APLINK_MODE_ID::APLINK_MODE_ID_LAND;
-//		case Auto_mode::FLARE:
-//			return APLINK_MODE_ID::APLINK_MODE_ID_FLARE;
+		case Flight_mode::MANUAL:
+			switch (manual_mode)
+			{
+			case Manual_mode::DIRECT:
+				return APLINK_MODE_ID::APLINK_MODE_ID_MANUAL;
+			case Manual_mode::STABILIZED:
+				return APLINK_MODE_ID::APLINK_MODE_ID_FBW;
+			default:
+				return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
+			}
+		case Flight_mode::AUTO:
+			switch (auto_mode)
+			{
+			case Auto_mode::TAKEOFF:
+				return APLINK_MODE_ID::APLINK_MODE_ID_TAKEOFF;
+			case Auto_mode::MISSION:
+				return APLINK_MODE_ID::APLINK_MODE_ID_MISSION;
+			default:
+				return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
+			}
 		default:
 			return APLINK_MODE_ID::APLINK_MODE_ID_UNKNOWN;
 		}

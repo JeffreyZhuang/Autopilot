@@ -67,8 +67,10 @@ void Telem::send_telemetry()
 		vehicle_status_full.roll = (int16_t)(_ahrs_data.roll * 100);
 		vehicle_status_full.pitch = (int16_t)(_ahrs_data.pitch * 100);
 		vehicle_status_full.yaw = (int16_t)(_ahrs_data.yaw * 100);
-		vehicle_status_full.alt = 1;
-		vehicle_status_full.spd = 2;
+		vehicle_status_full.alt = (int16_t)(-_local_pos.z * 100);
+		vehicle_status_full.spd = (int16_t)(_local_pos.gnd_spd * 100);
+		vehicle_status_full.lat = (int32_t)(_gnss_data.lat * 1E7);
+		vehicle_status_full.lon = (int32_t)(_gnss_data.lon * 1E7);
 		vehicle_status_full.mode_id = get_mode_id(
 			_modes_data.system_mode,
 			_modes_data.flight_mode,

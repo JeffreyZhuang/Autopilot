@@ -26,6 +26,7 @@ void Mixer::update()
 	parameters_update();
 
 	_modes_data = _modes_sub.get();
+	_position_control = _position_control_sub.get();
 	_ctrl_cmd_data = _ctrl_cmd_sub.get();
 
 	switch (_modes_data.system_mode)

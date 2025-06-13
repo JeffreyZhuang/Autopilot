@@ -105,11 +105,22 @@ void Commander::handle_auto_mode()
 {
 	switch (_modes_data.auto_mode)
 	{
+	case Auto_mode::DETECT:
+		update_detect();
+		break;
 	case Auto_mode::TAKEOFF:
 		update_takeoff();
 		break;
 	case Auto_mode::MISSION:
 		break;
+	}
+}
+
+void Commander::update_detect()
+{
+	if (_rc_data.thr_norm > TAKEOFF_DETECT_THR)
+	{
+		_modes_data.auto_mode = Auto_mode::TAKEOFF;
 	}
 }
 
