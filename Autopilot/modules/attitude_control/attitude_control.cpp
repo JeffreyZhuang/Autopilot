@@ -10,6 +10,8 @@ AttitudeControl::AttitudeControl(HAL* hal, DataBus* data_bus)
 {
 }
 
+// TODO: Reset integrals when mode change detected
+
 void AttitudeControl::update_time()
 {
 	const uint64_t time = _hal->get_time_us();
@@ -81,11 +83,6 @@ void AttitudeControl::update_stabilized()
 
 void AttitudeControl::handle_auto_mode()
 {
-	if (_modes_data.auto_mode == Auto_mode::DETECT)
-	{
-		// Reset integral here
-	}
-
 	control_roll_ptch();
 }
 

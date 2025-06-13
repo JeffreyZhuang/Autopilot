@@ -115,9 +115,6 @@ void PositionControl::handle_auto_mode()
 {
 	switch (_modes_data.auto_mode)
 	{
-	case Auto_mode::DETECT:
-		update_detect();
-		break;
 	case Auto_mode::TAKEOFF:
 		update_takeoff();
 		break;
@@ -127,16 +124,10 @@ void PositionControl::handle_auto_mode()
 	}
 }
 
-
-void PositionControl::update_detect()
-{
-	_position_control.throttle_setpoint = _rc_data.thr_norm;
-}
-
+// TODO: I should probably add pitch to throttle feedforward...
 void PositionControl::update_takeoff()
 {
-	// Speed only
-	_tecs.set_alt_weight(0);
+	_tecs.set_alt_weight(0); // Speed only
 	_tecs.update(0, _local_pos.gnd_spd, 0, _cruise_speed, _dt);
 
 	_position_control.roll_setpoint = 0;

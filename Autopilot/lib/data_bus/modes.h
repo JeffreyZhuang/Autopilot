@@ -16,7 +16,6 @@ enum class Flight_mode
 
 enum class Auto_mode
 {
-	DETECT,
 	TAKEOFF,
 	MISSION
 };

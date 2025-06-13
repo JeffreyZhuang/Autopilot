@@ -2,6 +2,7 @@
 
 static uint8_t mission_version = 0;
 static float mission_altitude = 0;
+static bool altitude_set = false;
 
 static mission_data_t mission = {
 	.mission_type = MISSION_EMPTY,
@@ -38,9 +39,15 @@ uint8_t mission_get_version()
 void mission_set_altitude(float altitude)
 {
 	mission_altitude = altitude;
+	altitude_set = true;
 }
 
 float mission_get_altitude()
 {
 	return mission_altitude;
+}
+
+bool mission_check_altitude_set()
+{
+	return altitude_set;
 }

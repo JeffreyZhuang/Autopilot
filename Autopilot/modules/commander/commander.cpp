@@ -64,9 +64,12 @@ void Commander::update_startup()
 							!_rc_data.man_sw &&
 							!_rc_data.mod_sw;
 
-	if (_ahrs_data.converged && _local_pos.converged &&
-		_rc_data.tx_conn && transmitter_safe &&
-		mission_get().mission_type != MISSION_EMPTY)
+	if (_ahrs_data.converged &&
+		_local_pos.converged &&
+		_rc_data.tx_conn &&
+		transmitter_safe &&
+		mission_get().mission_type != MISSION_EMPTY &&
+		mission_check_altitude_set())
 	{
 		_modes_data.system_mode = System_mode::FLIGHT;
 	}
@@ -105,22 +108,11 @@ void Commander::handle_auto_mode()
 {
 	switch (_modes_data.auto_mode)
 	{
-	case Auto_mode::DETECT:
-		update_detect();
-		break;
 	case Auto_mode::TAKEOFF:
 		update_takeoff();
 		break;
 	case Auto_mode::MISSION:
 		break;
-	}
-}
-
-void Commander::update_detect()
-{
-	if (_rc_data.thr_norm > TAKEOFF_DETECT_THR)
-	{
-		_modes_data.auto_mode = Auto_mode::TAKEOFF;
 	}
 }
 

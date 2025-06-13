@@ -43,7 +43,6 @@ private:
 	void handle_switches();
 	void update_config();
 	void update_startup();
-	void update_detect();
 	void update_takeoff();
 	void update_land();
 };

@@ -112,6 +112,8 @@ void Telem::send_telemetry()
 		uint16_t len = aplink_power_pack(power, packet);
 		_hal->transmit_telem(packet, len);
 	}
+
+//	aplink_control_setpoints control_setpoints;
 }
 
 void Telem::send_calibration()

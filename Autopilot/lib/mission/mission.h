@@ -48,6 +48,7 @@ bool mission_check_loaded();
 uint8_t mission_get_version();
 void mission_set_altitude(float altitude);
 float mission_get_altitude();
+bool mission_check_altitude_set();
 
 #ifdef __cplusplus
 }
