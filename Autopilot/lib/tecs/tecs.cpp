@@ -40,7 +40,6 @@ TECS::ControlValues TECS::calc_energy_balance(const SpecificEnergies specific_en
 
 	energy_balance.setpoint = specific_energies.potential.setpoint * param.alt_weight - specific_energies.kinetic.setpoint * (2.0 - param.alt_weight);
 
-	// TODO: MOVE THIS TO ITS OWN FUNCTION (calc_energy_balance_limit) SO YOU CAN REUSE CALC_ENERGY_BALANCE FUNCTION
 	float min_kinetic_energy = 0.5 * powf(param.min_spd, 2);
 	float max_kinetic_energy = 0.5 * powf(param.max_spd, 2);
 	float min_energy_balance_setpoint = specific_energies.potential.setpoint * param.alt_weight - max_kinetic_energy * (2.0f - param.alt_weight);

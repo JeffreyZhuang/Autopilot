@@ -31,10 +31,12 @@ void Storage::update()
 			if (_gnss_data.fix)
 			{
 				char filename[50];
+
 				sprintf(filename, "%d-%d-%d-%d-%d-%d",
 						_gnss_data.year, _gnss_data.month,
 						_gnss_data.day, _gnss_data.hours,
 						_gnss_data.minutes, _gnss_data.seconds);
+
 				_hal->create_file(filename, strlen(filename));
 				file_created = true;
 			}

@@ -21,6 +21,7 @@ extern "C"
 static constexpr float VEHICLE_STATUS_FULL_DT = 0.03;
 static constexpr float GPS_RAW_DT = 0.5;
 static constexpr float POWER_DT = 1;
+static constexpr float CONTROL_SP_DT = 0.1;
 
 class Telem : public Module
 {
@@ -58,6 +59,7 @@ private:
 	float last_vehicle_status_full_transmit_s = 0;
 	float last_gps_raw_transmit_s = 0;
 	float last_power_transmit_s = 0;
+	float last_control_sp_transmit_s;
 
 	mission_data_t _mission_data;
 	uint8_t _last_waypoint_loaded = 0;

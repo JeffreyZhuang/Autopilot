@@ -61,6 +61,8 @@ void Sd::interrupt_callback()
 
 	if (sd_mode == SDMode::CREATE_FILE)
 	{
+		printf("SD Driver creating file: %s\n", file_name);
+
 		FRESULT res = f_open(&fil, file_name, FA_WRITE | FA_CREATE_NEW);
 		if (res != FR_OK)
 		{

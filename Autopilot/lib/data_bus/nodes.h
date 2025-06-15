@@ -11,6 +11,13 @@
 #include "modes.h"
 #include <stdint.h>
 
+struct tecs_setpoint_s
+{
+	float alt = 0;
+	float spd = 0;
+	uint64_t timestamp = 0;
+};
+
 struct uncalibrated_imu_s
 {
 	float gx = 0;

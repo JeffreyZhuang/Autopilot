@@ -99,8 +99,6 @@ void PositionControl::handle_manual_mode()
 
 void PositionControl::update_direct()
 {
-	_position_control.roll_setpoint = 0;
-	_position_control.pitch_setpoint = 0;
 	_position_control.throttle_setpoint = _rc_data.thr_norm;
 }
 
@@ -165,12 +163,13 @@ void PositionControl::update_mission_waypoint()
 								   _waypoint.current_north, _waypoint.current_east);
 
 	// Update TECS
+	_tecs_setpoint.alt = mission_get_altitude();
+	_tecs_setpoint.spd = _cruise_speed;
 	_tecs.set_alt_weight(1);
-	_tecs.update(_local_pos.z, _local_pos.gnd_spd, mission_get_altitude(), _cruise_speed, _dt);
+
+	tecs_update_pitch_throttle();
 
 	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
-	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
-	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
 
 void PositionControl::update_mission_loiter()
@@ -191,12 +190,13 @@ void PositionControl::update_mission_loiter()
 								mission_get().loiter_radius, direction);
 
 	// Update TECS
+	_tecs_setpoint.alt = mission_get_altitude();
+	_tecs_setpoint.spd = _cruise_speed;
 	_tecs.set_alt_weight(1);
-	_tecs.update(_local_pos.z, _local_pos.gnd_spd, mission_get_altitude(), _cruise_speed, _dt);
+
+	tecs_update_pitch_throttle();
 
 	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
-	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
-	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
 
 void PositionControl::update_land()
@@ -252,8 +252,8 @@ void PositionControl::update_land_loiter()
 		// Calculate loiter altitude
 		float altitude_setpoint = mission_get().final_leg_dist * tanf(mission_get().glideslope_angle * DEG_TO_RAD);
 
-		_tecs.set_alt_weight(1);
-		_tecs.update(_local_pos.z, _local_pos.gnd_spd, altitude_setpoint, _landing_speed, _dt);
+		_tecs_setpoint.alt = altitude_setpoint;
+		_tecs_setpoint.spd = _landing_speed;
 
 		float heading_error = fabs(_ahrs_data.yaw - mission_get().runway_heading); // TODO: Use position or something, not yaw
 		float altitude_error = fabs(-_local_pos.z - altitude_setpoint);
@@ -267,13 +267,14 @@ void PositionControl::update_land_loiter()
 	}
 	else
 	{
-		_tecs.set_alt_weight(1);
-		_tecs.update(_local_pos.z, _local_pos.gnd_spd, mission_get_altitude(), _cruise_speed, _dt);
+		_tecs_setpoint.alt = mission_get_altitude();
+		_tecs_setpoint.spd = _cruise_speed;
 	}
 
+	_tecs.set_alt_weight(1);
+	tecs_update_pitch_throttle();
+
 	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
-	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
-	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
 
 void PositionControl::update_land_glideslope()
@@ -298,12 +299,12 @@ void PositionControl::update_land_glideslope()
 	float z_setpoint = along_track_dist * tanf(mission_get().glideslope_angle * DEG_TO_RAD);
 
 	// Update TECS
+	_tecs_setpoint.alt = -z_setpoint;
+	_tecs_setpoint.spd = _landing_speed;
 	_tecs.set_alt_weight(1);
-	_tecs.update(_local_pos.z, _local_pos.gnd_spd, z_setpoint, _landing_speed, _dt);
+	tecs_update_pitch_throttle();
 
 	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
-	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
-	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 
 	// Detect flare
 	if (-_local_pos.z < _flare_alt)
@@ -333,6 +334,13 @@ void PositionControl::update_land_flare()
 	_position_control.roll_setpoint = 0;
 	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
 	_position_control.throttle_setpoint = 0;
+}
+
+void PositionControl::tecs_update_pitch_throttle()
+{
+	_tecs.update(-_local_pos.z, _local_pos.gnd_spd, _tecs_setpoint.alt, _tecs_setpoint.spd, _dt);
+	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
+	_position_control.throttle_setpoint = _tecs.get_throttle_setpoint();
 }
 
 void PositionControl::publish_status()

@@ -113,7 +113,20 @@ void Telem::send_telemetry()
 		_hal->transmit_telem(packet, len);
 	}
 
-//	aplink_control_setpoints control_setpoints;
+	if (current_time_s - last_control_sp_transmit_s >= CONTROL_SP_DT)
+	{
+		last_control_sp_transmit_s = current_time_s;
+
+		aplink_control_setpoints control_setpoints;
+		control_setpoints.roll_sp = 0;
+		control_setpoints.pitch_sp = 0;
+		control_setpoints.alt_sp = (int16_t)(mission_get_altitude() * 1e2);
+		control_setpoints.spd_sp = 0;
+
+		uint8_t packet[MAX_PACKET_LEN];
+		uint16_t len = aplink_control_setpoints_pack(control_setpoints, packet);
+		_hal->transmit_telem(packet, len);
+	}
 }
 
 void Telem::send_calibration()

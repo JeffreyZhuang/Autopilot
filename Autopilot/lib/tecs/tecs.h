@@ -28,6 +28,7 @@ public:
 
 	void update(float alt_m, float vel_mps, float target_alt_m, float target_vel_mps, float dt);
 
+	// Parameters
 	void set_param(Param param) { _param = param; };
 	void set_min_spd(float min_spd) { _param.min_spd = min_spd; };
 	void set_max_spd(float max_spd) { _param.max_spd = max_spd; };

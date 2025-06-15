@@ -41,6 +41,7 @@ private:
 	waypoint_s _waypoint{};
 	position_control_s _position_control{};
 	RC_data _rc_data{};
+	tecs_setpoint_s _tecs_setpoint;
 
 	TECS _tecs;
 	L1Control _l1_control;
@@ -84,6 +85,8 @@ private:
 	void update_land_glideslope();
 	void update_land_flare();
 	void reset_landing_state();
+
+	void tecs_update_pitch_throttle();
 
 	float compute_along_track_distance(float start_n, float start_e, float end_n, float end_e,
 			 	 	 	 	 	 	   float pos_n, float pos_e);
