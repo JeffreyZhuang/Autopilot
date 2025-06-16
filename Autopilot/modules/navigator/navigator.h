@@ -29,6 +29,7 @@ private:
 	void parameters_update();
 	void update_waypoint();
 	void update_loiter_land();
+	void publish_waypoint();
 };
 
 

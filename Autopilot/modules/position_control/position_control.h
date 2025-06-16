@@ -52,7 +52,7 @@ private:
 
 	// Landing
 	LandingState _landing_state = LandingState::LOITER;
-	float _flare_z_setpoint = 0;
+	float _flare_alt_setpoint = 0;
 
 	// Parameters
 	float _roll_limit;

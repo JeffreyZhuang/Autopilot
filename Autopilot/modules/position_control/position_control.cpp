@@ -158,25 +158,44 @@ void PositionControl::update_mission()
 
 void PositionControl::update_mission_waypoint()
 {
-	_l1_control.navigate_waypoints(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy, _local_pos.gnd_spd,
-								   _waypoint.previous_north, _waypoint.previous_east,
-								   _waypoint.current_north, _waypoint.current_east);
+	if (_waypoint.current_index == mission_get().num_items - 1)
+	{
+		int8_t direction;
 
-	// Update TECS
+		if (mission_get().loiter_direction == LOITER_LEFT)
+		{
+			direction = 1;
+		}
+		else
+		{
+			direction = -1;
+		}
+
+		_l1_control.navigate_loiter(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy,
+									_local_pos.gnd_spd, _waypoint.current_north, _waypoint.current_east,
+									mission_get().loiter_radius, direction);
+	}
+	else
+	{
+		_l1_control.navigate_waypoints(_local_pos.x, _local_pos.y, _local_pos.vx, _local_pos.vy, _local_pos.gnd_spd,
+									   _waypoint.previous_north, _waypoint.previous_east,
+									   _waypoint.current_north, _waypoint.current_east);
+	}
+
+	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
+
 	_tecs_setpoint.alt = mission_get_altitude();
 	_tecs_setpoint.spd = _cruise_speed;
 	_tecs.set_alt_weight(1);
 
 	tecs_update_pitch_throttle();
-
-	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
 }
 
 void PositionControl::update_mission_loiter()
 {
 	int8_t direction;
 
-	if (mission_get().loiter_direction == LOITER_RIGHT)
+	if (mission_get().loiter_direction == LOITER_LEFT)
 	{
 		direction = 1;
 	}
@@ -189,14 +208,13 @@ void PositionControl::update_mission_loiter()
 								_local_pos.gnd_spd, _waypoint.current_north, _waypoint.current_east,
 								mission_get().loiter_radius, direction);
 
-	// Update TECS
+	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
+
 	_tecs_setpoint.alt = mission_get_altitude();
 	_tecs_setpoint.spd = _cruise_speed;
 	_tecs.set_alt_weight(1);
 
 	tecs_update_pitch_throttle();
-
-	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
 }
 
 void PositionControl::update_land()
@@ -247,6 +265,8 @@ void PositionControl::update_land_loiter()
 								_local_pos.gnd_spd, loiter_north, loiter_east,
 								mission_get().loiter_radius, direction);
 
+	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
+
 	if (_l1_control.get_circle_mode())
 	{
 		// Calculate loiter altitude
@@ -273,8 +293,6 @@ void PositionControl::update_land_loiter()
 
 	_tecs.set_alt_weight(1);
 	tecs_update_pitch_throttle();
-
-	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
 }
 
 void PositionControl::update_land_glideslope()
@@ -289,6 +307,8 @@ void PositionControl::update_land_glideslope()
 								   glideslope_start_north, glideslope_start_east,
 								   _waypoint.current_north, _waypoint.current_east);
 
+	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
+
 	// Follow glideslope
 	const float along_track_dist = compute_along_track_distance(
 		_waypoint.previous_north, _waypoint.previous_east,
@@ -298,18 +318,15 @@ void PositionControl::update_land_glideslope()
 
 	float z_setpoint = along_track_dist * tanf(mission_get().glideslope_angle * DEG_TO_RAD);
 
-	// Update TECS
 	_tecs_setpoint.alt = -z_setpoint;
 	_tecs_setpoint.spd = _landing_speed;
 	_tecs.set_alt_weight(1);
 	tecs_update_pitch_throttle();
 
-	_position_control.roll_setpoint = _l1_control.get_roll_setpoint();
-
 	// Detect flare
 	if (-_local_pos.z < _flare_alt)
 	{
-		_flare_z_setpoint = _flare_alt;
+		_flare_alt_setpoint = _flare_alt;
 		_landing_state = LandingState::FLARE;
 	}
 }
@@ -325,11 +342,11 @@ void PositionControl::update_land_flare()
 	const float sink_rate = lerp(initial_altitude, initial_sink_rate, 0, _flare_sink_rate, clamped_vehicle_altitude);
 
 	// Update altitude setpoint with the calculated sink rate
-	_flare_z_setpoint += sink_rate * _dt;
+	_flare_alt_setpoint -= sink_rate * _dt;
 
 	// Update TECS
 	_tecs.set_alt_weight(2);
-	_tecs.update(_local_pos.z, _local_pos.gnd_spd, _flare_z_setpoint, 0, _dt);
+	_tecs.update(-_local_pos.z, _local_pos.gnd_spd, -_flare_alt_setpoint, 0, _dt);
 
 	_position_control.roll_setpoint = 0;
 	_position_control.pitch_setpoint = _tecs.get_pitch_setpoint();
